@@ -1,0 +1,3250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>LOCK IN</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
+
+/* ================================================================
+   LOCK IN — LI7 v1.9.0
+   Author: Vincent Gonzalez | © 2026 Zengine™ | www.zengine.site
+   CSS: Dark dock atmosphere, amber accents, perspective trailer. v1.9.1.
+================================================================ */
+
+/* ── DARK MODE (default) ── */
+:root{
+  --bg:#080706;--bg2:#0d0b09;--bg3:#131009;
+  --acc:#d4a843;--acc-bright:#e8c060;--acc-dim:#8a6820;
+  --t1:#e0d4bc;--t2:#a89878;--t3:#685e4e;
+  --ok:#28b870;--warn:#d48020;--danger:#cc3820;
+  --border:#221e18;--border2:#2e2820;--border3:#3a3228;
+  --sm:#8858c8;--sm-bright:#b07de8;
+  --lg:#b04040;--lg-bright:#d86060;
+  --panel-left-w:128px;--panel-right-w:150px;
+  --pause-bg:rgba(4,3,2,.97);
+}
+[data-theme="light"]{
+  --bg:#ede8df;--bg2:#e4ded4;--bg3:#d8d0c4;
+  --acc:#a07018;--acc-bright:#b88828;--acc-dim:#705008;
+  --t1:#180e04;--t2:#382818;--t3:#6a5838;
+  --ok:#157840;--warn:#a05810;--danger:#982010;
+  --border:#c8bea8;--border2:#b8ae98;--border3:#a89e88;
+  --sm:#5838a0;--sm-bright:#7858c0;
+  --lg:#882020;--lg-bright:#b04040;
+  --pause-bg:rgba(238,233,226,.97);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100dvh;background:var(--bg);color:var(--t1);
+  font-family:'Barlow Condensed',sans-serif;overflow:hidden;
+  user-select:none;-webkit-user-select:none;}
+
+#root{display:flex;height:100dvh;max-width:1120px;margin:0 auto;}
+
+/* ── LEFT STATS PANEL ── */
+#stats-panel{flex-shrink:0;width:var(--panel-left-w);background:var(--bg2);
+  border-right:2px solid var(--border2);display:flex;flex-direction:column;
+  position:relative;overflow:hidden;z-index:8;}
+#stats-panel::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent,var(--acc) 25%,var(--acc) 75%,transparent);opacity:.6;}
+.sp-hdr{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;
+  color:var(--acc);text-transform:uppercase;text-align:center;
+  padding:8px 4px 6px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,.2);}
+.sp-block{padding:8px 10px 6px;border-bottom:1px solid var(--border);}
+.sp-block:last-child{border-bottom:none;}
+.sp-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
+  color:var(--t2);text-transform:uppercase;margin-bottom:3px;font-weight:bold;}
+.sp-big{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:2px;
+  color:var(--acc);line-height:1;display:block;}
+.sp-big.ok{color:var(--ok);}.sp-big.warn{color:var(--warn);}
+.sp-big.danger{color:var(--danger);animation:blink .5s infinite;}
+.sp-med{font-family:'Share Tech Mono',monospace;font-size:15px;font-weight:bold;
+  color:var(--t1);display:block;line-height:1.2;}
+.sp-bar{height:6px;background:rgba(0,0,0,.35);border-radius:3px;overflow:hidden;
+  border:1px solid var(--border);margin-top:4px;}
+.sp-bar-fill{height:100%;border-radius:3px;transition:width .25s;}
+#sp-h-fill{background:linear-gradient(90deg,var(--ok),var(--acc));}
+#sp-int-fill{background:linear-gradient(90deg,#882020,#c04040,var(--warn));}
+#sp-cog-wrap{height:8px;background:rgba(0,0,0,.35);border-radius:4px;
+  border:1px solid var(--border);position:relative;margin-top:4px;}
+#sp-cog-g{position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(204,56,32,.5),rgba(40,184,112,.2) 40%,rgba(40,184,112,.2) 60%,rgba(204,56,32,.5));
+  border-radius:4px;}
+#sp-cog-d{position:absolute;top:1px;width:8px;height:6px;background:rgba(255,255,255,.9);
+  border-radius:2px;transform:translateX(-50%);left:50%;transition:left .2s;}
+#sp-cog-s{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;display:block;margin-top:3px;}
+.sp-row{display:flex;}
+.sp-half{flex:1;padding:6px 8px 5px;}
+.sp-half:first-child{border-right:1px solid var(--border);}
+.sp-half .sp-lbl{font-size:9px;}
+.sp-half .sp-med{font-size:14px;}
+#sp-time{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--t2);font-weight:bold;display:block;}
+
+/* ── MAIN COLUMN ── */
+#main-col{flex:1;display:flex;flex-direction:column;min-width:0;}
+
+/* ── HEADER ── */
+#hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:4px 8px;height:36px;background:var(--bg2);border-bottom:1px solid var(--border2);
+  position:relative;z-index:10;}
+#hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--acc) 30%,var(--acc) 70%,transparent);opacity:.3;}
+.logo{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:5px;color:var(--acc);line-height:1;}
+,.logo sub{font-size:10px;letter-spacing:1px;color:var(--t3);display:block;font-family:'Share Tech Mono',monospace;}
+.hdr-mid{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.7px;
+  color:var(--t2);text-align:center;font-weight:bold;}
+#pause-btn{background:transparent;border:1px solid var(--border2);color:var(--t2);
+  font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;
+  padding:2px 8px;border-radius:3px;cursor:pointer;}
+#pause-btn:hover{border-color:var(--acc);color:var(--acc);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* ═══════════════════════════════════════════════════════
+   START MENU — v1.9.0
+   Three modes: TRAINING / SHIFT / LEVELS (coming soon)
+═══════════════════════════════════════════════════════ */
+#start-menu{
+  position:fixed;inset:0;z-index:400;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 120% 100% at 50% 60%,#0f0d0a,#040302);
+  gap:0;
+}
+/* Amber header stripe */
+#start-menu::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:repeating-linear-gradient(90deg,var(--acc) 0,var(--acc) 12px,transparent 12px,transparent 24px);
+  opacity:.5;
+}
+#start-menu::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:repeating-linear-gradient(90deg,var(--acc) 0,var(--acc) 12px,transparent 12px,transparent 24px);
+  opacity:.3;
+}
+/* Logo block */
+#sm-logo{text-align:center;margin-bottom:6px;}
+#sm-wordmark{
+  font-family:'Bebas Neue',cursive;font-size:clamp(52px,10vw,88px);
+  letter-spacing:16px;color:var(--acc);
+  text-shadow:0 0 60px rgba(212,168,67,.35),0 0 120px rgba(212,168,67,.12);
+  display:block;line-height:1;
+}
+#sm-sub{
+  font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:4px;
+  color:var(--t2);text-transform:uppercase;display:block;margin-top:2px;
+}
+#sm-tagline{
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;
+  color:var(--t3);text-align:center;margin-bottom:28px;
+}
+/* Mode cards */
+#sm-modes{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;padding:0 20px;}
+.sm-card{
+  width:180px;min-height:200px;
+  background:rgba(14,12,9,.9);border:1px solid var(--border2);border-radius:6px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px 14px;gap:8px;cursor:pointer;position:relative;overflow:hidden;
+  transition:border-color .2s,background .2s,transform .15s;
+}
+.sm-card:hover{border-color:var(--acc);background:rgba(22,18,12,.95);transform:translateY(-2px);}
+.sm-card.locked{cursor:default;opacity:.55;}
+.sm-card.locked:hover{border-color:var(--border2);background:rgba(14,12,9,.9);transform:none;}
+/* Card top accent bar */
+.sm-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sm-card.mode-training::before{background:linear-gradient(90deg,var(--ok),#60d8a0);}
+.sm-card.mode-shift::before{background:linear-gradient(90deg,var(--acc),var(--acc-bright));}
+.sm-card.mode-levels::before{background:linear-gradient(90deg,#6060cc,#9090ff);}
+.sm-card-ico{font-size:32px;line-height:1;margin-bottom:2px;}
+.sm-card-name{
+  font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:4px;
+  color:var(--t1);text-align:center;
+}
+.sm-card.mode-training .sm-card-name{color:var(--ok);}
+.sm-card.mode-shift .sm-card-name{color:var(--acc);}
+.sm-card.mode-levels .sm-card-name{color:#9090ff;}
+.sm-card-desc{
+  font-family:'Share Tech Mono',monospace;font-size:10px;line-height:1.55;
+  color:var(--t3);text-align:center;
+}
+.sm-card-badge{
+  font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;
+  background:rgba(96,96,200,.18);border:1px solid rgba(96,96,200,.3);
+  color:#a0a0e0;border-radius:3px;padding:2px 8px;margin-top:4px;
+}
+/* Version / copyright footer */
+#sm-footer{
+  position:absolute;bottom:14px;left:0;right:0;text-align:center;
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
+  color:rgba(255,255,255,.12);
+}
+
+/* ── TRAINING SIDE PANEL ── */
+/* DECISION: overlay is a right-side panel — wall is fully visible and unobscured.
+   The whole point of the demo is to WATCH the wall while reading the principle. */
+#training-overlay{
+  position:fixed;
+  top:0;right:0;bottom:0;
+  width:290px;
+  z-index:450;display:none;
+  flex-direction:column;
+  background:rgba(8,7,5,.97);
+  border-left:2px solid var(--border2);
+  box-shadow:-8px 0 32px rgba(0,0,0,.6);
+  overflow:hidden;
+}
+#training-overlay::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--ok) 40%,var(--ok) 60%,transparent);
+  opacity:.7;
+}
+#training-overlay.vis{display:flex;}
+
+/* Panel header */
+#to-header{
+  flex-shrink:0;
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border2);
+  background:rgba(0,0,0,.25);
+}
+#to-title{
+  font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:5px;
+  color:var(--ok);line-height:1;display:block;
+}
+#to-sub{
+  font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  color:var(--t3);display:block;margin-top:3px;text-transform:uppercase;
+}
+
+/* Step counter */
+#to-status{
+  flex-shrink:0;
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  color:var(--acc);font-weight:bold;letter-spacing:.8px;
+  padding:8px 16px 6px;
+  border-bottom:1px solid var(--border);
+  min-height:32px;display:flex;align-items:center;
+}
+
+/* Principle card — the main teaching moment */
+#to-principle-card{
+  flex:1;
+  padding:16px 16px 12px;
+  display:flex;flex-direction:column;gap:10px;
+  overflow:hidden;
+}
+#to-principle{
+  font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;
+  color:var(--acc);line-height:1.1;
+  border-left:3px solid var(--acc);
+  padding-left:10px;
+  transition:opacity .3s;
+}
+#to-reason{
+  font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;
+  color:rgba(224,212,188,.95);line-height:1.55;
+  transition:opacity .3s;
+}
+
+/* Controls area */
+#to-controls{
+  flex-shrink:0;
+  padding:12px 16px;
+  border-top:1px solid var(--border2);
+  display:flex;flex-direction:column;gap:8px;
+  background:rgba(0,0,0,.2);
+}
+.to-btn-row{display:flex;gap:8px;}
+.to-btn{
+  flex:1;
+  font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;
+  padding:9px 0;border-radius:4px;cursor:pointer;border:1px solid;
+  text-align:center;
+}
+.to-btn-play{
+  background:linear-gradient(180deg,var(--ok),#1a8048);
+  color:#040f06;border-color:var(--ok);
+}
+.to-btn-play:hover{filter:brightness(1.1);}
+.to-btn-exit{background:transparent;color:var(--t2);border-color:var(--border2);}
+.to-btn-exit:hover{border-color:var(--acc);color:var(--acc);}
+#to-speed{display:flex;gap:5px;align-items:center;}
+.to-speed-lbl{
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:var(--t3);letter-spacing:.5px;margin-right:2px;
+}
+.to-speed-btn{
+  flex:1;
+  font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:bold;
+  padding:4px 0;border:1px solid var(--border2);border-radius:3px;cursor:pointer;
+  background:transparent;color:var(--t2);text-align:center;
+}
+.to-speed-btn.active{border-color:var(--ok);color:var(--ok);background:rgba(40,184,112,.1);}
+#to-exit-hint{
+  font-family:'Share Tech Mono',monospace;font-size:9px;
+  color:rgba(255,255,255,.18);letter-spacing:.8px;text-align:center;
+}
+
+/* ── SHIFT MODE SESSION HEADER BADGE ── */
+#shift-badge{
+  display:none;font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:var(--acc);letter-spacing:1px;font-weight:bold;
+}
+#shift-badge.vis{display:block;}
+
+/* ── WORLD ── */
+#world{flex:1;display:flex;min-height:0;position:relative;}
+#scene-wrap{flex:1;position:relative;min-width:0;min-height:0;}
+#scene{display:block;width:100%;height:100%;cursor:crosshair;}
+
+/* ── RIGHT FEEDBACK PANEL ── */
+#fb-panel{flex-shrink:0;width:var(--panel-right-w);background:var(--bg2);
+  border-left:2px solid var(--border2);display:flex;flex-direction:column;
+  position:relative;overflow:hidden;z-index:8;}
+#fb-panel::after{content:'';position:absolute;right:0;top:0;bottom:0;width:2px;
+  background:linear-gradient(180deg,transparent,var(--acc) 25%,var(--acc) 75%,transparent);opacity:.5;}
+.fp-hdr{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;
+  color:var(--acc);text-transform:uppercase;text-align:center;
+  padding:8px 4px 6px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,.2);}
+#fp-grade-card{padding:8px 10px 6px;border-bottom:1px solid var(--border2);text-align:center;}
+#fp-grade{font-family:'Bebas Neue',cursive;font-size:56px;letter-spacing:4px;line-height:1;display:block;}
+#fp-grade-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);display:block;margin-top:-1px;font-weight:bold;}
+#fp-subs{padding:6px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:4px;}
+.fp-sg{display:flex;align-items:center;justify-content:space-between;gap:4px;}
+.fp-sg-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t2);width:50px;flex-shrink:0;font-weight:bold;}
+.fp-sg-bar{flex:1;height:5px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden;}
+.fp-sg-fill{height:100%;border-radius:3px;transition:width .4s;}
+.fp-sg-val{font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;min-width:26px;text-align:right;}
+#fp-wt{padding:6px 10px;border-bottom:1px solid var(--border);}
+.fp-wt-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.8px;
+  color:var(--t2);text-transform:uppercase;margin-bottom:4px;font-weight:bold;}
+.fp-wt-bar{display:flex;height:9px;border-radius:3px;overflow:hidden;gap:1px;}
+.fp-wt-seg{height:100%;transition:flex .4s;}
+.fp-wt-leg{display:flex;gap:6px;margin-top:3px;flex-wrap:wrap;}
+.fp-wt-dot{display:flex;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--t2);}
+.fp-wt-dot span{width:8px;height:8px;border-radius:2px;display:inline-block;}
+#fp-counts{padding:6px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:4px;}
+.fp-ct{display:flex;justify-content:space-between;align-items:baseline;}
+.fp-ct-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t2);font-weight:bold;}
+.fp-ct-val{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:var(--t1);}
+.fp-ct-val.ok{color:var(--ok);}.fp-ct-val.warn{color:var(--warn);}.fp-ct-val.danger{color:var(--danger);}
+#fp-tip{padding:8px 10px;flex:1;display:flex;flex-direction:column;gap:4px;overflow:hidden;}
+.fp-tip-hdr{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;color:var(--acc);text-transform:uppercase;font-weight:bold;}
+#fp-tip-h{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--t1);line-height:1.3;}
+#fp-tip-s{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--t2);line-height:1.5;margin-top:2px;}
+
+/* ── OVERLAYS ── */
+.fo{position:fixed;inset:0;pointer-events:none;z-index:50;transition:background .1s;}
+#fl-danger{background:rgba(204,56,32,0);}#fl-danger.on{background:rgba(204,56,32,.14);}
+#fl-ok{background:rgba(40,184,112,0);}#fl-ok.on{background:rgba(40,184,112,.07);}
+#fl-panic{background:rgba(212,100,0,0);}#fl-panic.on{background:rgba(212,100,0,.09);}
+#fl-crunch{background:rgba(220,20,20,0);}#fl-crunch.on{background:rgba(220,20,20,.16);}
+#fl-bulkhead{background:rgba(212,168,67,0);}#fl-bulkhead.on{background:rgba(212,168,67,.1);}
+
+#banner{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Bebas Neue',cursive;letter-spacing:3px;color:var(--acc);
+  text-shadow:0 0 28px rgba(212,168,67,.5);text-align:center;
+  padding:10px 22px;background:rgba(5,4,2,.96);border-radius:4px;
+  border:1px solid rgba(212,168,67,.3);pointer-events:none;z-index:62;
+  opacity:0;transition:opacity .2s;font-size:clamp(16px,3.2vw,28px);min-width:160px;}
+#banner.vis{opacity:1;}
+#banner.danger{color:var(--danger);border-color:rgba(204,56,32,.38);}
+#banner.ok{color:var(--ok);border-color:rgba(40,184,112,.38);}
+#banner.panic{color:var(--warn);border-color:rgba(212,120,20,.38);}
+
+/* Next-trailer popup — center bottom, not top-right */
+#next-popup{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+  z-index:30;display:none;flex-direction:column;align-items:center;gap:4px;
+  pointer-events:all;animation:popIn .3s cubic-bezier(.34,1.56,.64,1) both;
+  background:rgba(5,4,2,.94);border:1px solid rgba(40,184,112,.35);
+  border-radius:5px;padding:10px 16px;min-width:190px;
+  box-shadow:0 0 28px rgba(40,184,112,.14);}
+#next-popup.vis{display:flex;}
+@keyframes popIn{from{opacity:0;transform:translateX(-50%) scale(.85) translateY(8px);}
+  to{opacity:1;transform:translateX(-50%) scale(1) translateY(0);}}
+#next-popup-badge{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;
+  color:var(--ok);font-weight:bold;}
+#next-popup-btn{background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;
+  border:none;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:4px;
+  padding:7px 18px;border-radius:4px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.3);}
+#next-popup-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(40,184,112,.45);}
+
+/* ── PAUSE OVERLAY ── */
+#ov-pause{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;
+  background:var(--pause-bg);backdrop-filter:blur(4px);}
+#ov-pause.vis{display:flex;}
+.pause-title{font-family:'Bebas Neue',cursive;font-size:56px;letter-spacing:8px;
+  color:var(--acc);text-shadow:0 0 40px rgba(212,168,67,.3);text-align:center;}
+.pause-sub{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;
+  color:var(--t2);text-align:center;}
+.pause-menu{display:flex;flex-direction:column;gap:8px;width:100%;max-width:280px;margin-top:6px;}
+.pmb{width:100%;padding:11px 0;border-radius:4px;cursor:pointer;
+  font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:5px;
+  border:1px solid var(--pause-border);text-align:center;transition:all .15s;}
+.pmb-resume{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;border-color:var(--acc);}
+.pmb-resume:hover{filter:brightness(1.1);}
+.pmb-restart{background:transparent;color:var(--t1);border-color:var(--border2);}
+.pmb-restart:hover{border-color:var(--acc);color:var(--acc);}
+.pmb-theme{background:transparent;color:var(--t2);border-color:var(--border);}
+.pmb-theme:hover{border-color:var(--t2);color:var(--t1);}
+.pause-hint{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;
+  color:var(--t3);text-align:center;margin-top:4px;}
+
+/* ── PAUSE BUTTON ── */
+#pause-btn{background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.25);
+  color:var(--acc);font-family:'Bebas Neue',cursive;font-size:13px;
+  letter-spacing:2px;padding:2px 8px;border-radius:3px;cursor:pointer;margin-left:6px;}
+#pause-btn:hover{background:rgba(212,168,67,.2);}
+
+/* Game-over overlay */
+#ov-end{position:fixed;inset:0;z-index:200;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;
+  background:radial-gradient(ellipse 80% 60% at 50% 45%,rgba(18,12,6,.97),rgba(4,3,2,.99))}
+#ov-end.vis{display:flex;}
+.ov-title{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:7px;
+  color:var(--danger);text-shadow:0 0 50px rgba(204,56,32,.35);text-align:center;line-height:.9;}
+.ov-sub{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;
+  color:var(--t2);text-align:center;max-width:320px;line-height:1.7;}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;max-width:300px;}
+.sg{background:rgba(18,14,8,.9);border:1px solid var(--border);border-radius:4px;padding:7px 10px;}
+.sg .v{font-family:'Bebas Neue',cursive;font-size:26px;color:var(--acc);letter-spacing:2px;display:block;line-height:1;}
+.sg .l{font-size:10px;color:var(--t2);letter-spacing:1.2px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;}
+.btn-p{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;
+  border:none;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:5px;
+  padding:10px 40px;border-radius:3px;cursor:pointer;box-shadow:0 0 28px rgba(212,168,67,.22);}
+
+/* Score pop */
+.spp{position:fixed;font-family:'Bebas Neue',cursive;pointer-events:none;z-index:65;
+  animation:spu .9s ease-out forwards;letter-spacing:2px;}
+@keyframes spu{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-50px) scale(1.25);}}
+
+/* Panic bar (bars strip removed — stats in left panel) */
+#panic-wrap{display:none;flex-shrink:0;padding:2px 8px;background:rgba(0,0,0,.25);}
+#panic-wrap.vis{display:block;}
+#panic-bg{height:5px;background:rgba(20,14,8,.6);border-radius:3px;border:1px solid rgba(255,140,0,.2);overflow:hidden;}
+#panic-fill{height:100%;background:linear-gradient(90deg,#d48020,#cc3820);border-radius:3px;transition:width .5s linear;}
+#panic-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;color:#e86020;
+  letter-spacing:.8px;text-align:center;margin-top:2px;text-transform:uppercase;font-weight:bold;}
+
+/* Watermark */
+#zw{position:fixed;bottom:3px;right:6px;font-family:'Share Tech Mono',monospace;
+  font-size:9px;color:rgba(255,255,255,.09);letter-spacing:1px;pointer-events:none;z-index:1;}
+
+/* Footer conveyor */
+#footer{flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border2);padding:3px 6px 3px;z-index:10;}
+#conv-header{display:flex;align-items:center;justify-content:space-between;padding:0 2px 2px;}
+.conv-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.7px;color:var(--t2);text-transform:uppercase;font-weight:bold;}
+#rot-btn{background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.28);
+  color:var(--acc);font-family:'Bebas Neue',cursive;font-size:14px;
+  letter-spacing:2px;padding:3px 10px;border-radius:3px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- PAUSE OVERLAY -->
+<div id="ov-pause">
+  <div class="pause-title">PAUSED</div>
+  <div class="pause-sub">LOCK IN — LI7 v1.9.1</div>
+  <div class="pause-menu">
+    <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
+    <button class="pmb pmb-theme" id="theme-btn" onclick="toggleTheme()">◑ LIGHT MODE</button>
+    <button class="pmb pmb-restart" onclick="pauseRestart()">↺ RESTART</button>
+  </div>
+  <div class="pause-hint">ESC or ⏸ to resume · R to rotate pieces</div>
+</div>
+
+<!-- ═══════════════════ START MENU ═══════════════════ -->
+<div id="start-menu">
+  <div id="sm-logo">
+    <span id="sm-wordmark">LOCK IN</span>
+    <span id="sm-sub">LI7 · FREIGHT LOADING SIMULATOR</span>
+  </div>
+  <div id="sm-tagline">SELECT YOUR MODE TO BEGIN</div>
+  <div id="sm-modes">
+
+    <!-- TRAINING MODE -->
+    <div class="sm-card mode-training" onclick="startTraining()">
+      <div class="sm-card-ico">🎓</div>
+      <div class="sm-card-name">TRAINING</div>
+      <div class="sm-card-desc">Watch an ideal wall load in a continuous loop. Study the foundation-first NC anchoring strategy before your shift.</div>
+    </div>
+
+    <!-- SHIFT MODE -->
+    <div class="sm-card mode-shift" onclick="startShift()">
+      <div class="sm-card-ico">🚛</div>
+      <div class="sm-card-name">SHIFT</div>
+      <div class="sm-card-desc">Free-build walls back to back. At 85%+ height, advance to the next wall. Load as many as you can — just like a real shift.</div>
+    </div>
+
+    <!-- LEVELS — COMING SOON -->
+    <div class="sm-card mode-levels locked">
+      <div class="sm-card-ico">🏆</div>
+      <div class="sm-card-name">LEVELS</div>
+      <div class="sm-card-desc">Graduating scenarios with time pressure, load requirements, and specific freight challenges.</div>
+      <div class="sm-card-badge">COMING SOON</div>
+    </div>
+
+  </div>
+  <div id="sm-footer">LOCK IN v1.9.1 · © 2026 ZENGINE™ · WWW.ZENGINE.SITE</div>
+</div>
+
+<!-- TRAINING SIDE PANEL -->
+<!-- DECISION: Panel sits on the right. Wall is fully visible. No dimming. -->
+<div id="training-overlay">
+  <div id="to-header">
+    <span id="to-title">TRAINING</span>
+    <span id="to-sub">WATCH THE WALL · READ THE PRINCIPLE</span>
+  </div>
+
+  <div id="to-status">PRESS PLAY TO BEGIN</div>
+
+  <div id="to-principle-card">
+    <div id="to-principle">LOCK IN — FREIGHT LOADING SIMULATOR</div>
+    <div id="to-reason">Each placement demonstrates a real hub loading principle used on every shift. Watch where pieces go and why — then go load one yourself.</div>
+  </div>
+
+  <div id="to-controls">
+    <div class="to-btn-row">
+      <button class="to-btn to-btn-play" onclick="toggleTrainingPlay()">▶ PLAY</button>
+      <button class="to-btn to-btn-exit" onclick="exitTraining()">✕ EXIT</button>
+    </div>
+    <div id="to-speed">
+      <span class="to-speed-lbl">PACE:</span>
+      <button class="to-speed-btn" onclick="setDemoSpeed(0.5)">SLOW</button>
+      <button class="to-speed-btn active" onclick="setDemoSpeed(1)">NORMAL</button>
+      <button class="to-speed-btn" onclick="setDemoSpeed(2)">FAST</button>
+    </div>
+    <div id="to-exit-hint">ESC OR ✕ EXIT TO RETURN TO MENU</div>
+  </div>
+</div>
+
+<!-- FLASH OVERLAYS -->
+<div class="fo" id="fl-danger"></div>
+<div class="fo" id="fl-ok"></div>
+<div class="fo" id="fl-panic"></div>
+<div class="fo" id="fl-crunch"></div>
+<div class="fo" id="fl-bulkhead"></div>
+
+<div id="banner">LOCK IN!</div>
+
+<div id="root">
+
+  <!-- LEFT STATS PANEL -->
+  <div id="stats-panel">
+    <div class="sp-hdr">◈ OPS TERMINAL</div>
+    <div class="sp-block"><div class="sp-lbl">CUBES</div><span class="sp-big" id="sp-score">0</span></div>
+    <div class="sp-block"><div class="sp-lbl">PPH</div><span class="sp-big" id="sp-pph">—</span></div>
+    <div class="sp-block">
+      <div class="sp-lbl">WALL HT</div>
+      <span class="sp-med" id="sp-h-val">0%</span>
+      <div class="sp-bar"><div class="sp-bar-fill" id="sp-h-fill" style="width:0%"></div></div>
+    </div>
+    <div class="sp-block">
+      <div class="sp-lbl">STRUCT</div>
+      <span class="sp-med" id="sp-int-val">100%</span>
+      <div class="sp-bar"><div class="sp-bar-fill" id="sp-int-fill" style="width:100%"></div></div>
+    </div>
+    <div class="sp-block">
+      <div class="sp-lbl">BALANCE</div>
+      <div id="sp-cog-wrap"><div id="sp-cog-g"></div><div id="sp-cog-d"></div></div>
+      <span id="sp-cog-s" style="color:var(--ok)">STABLE</span>
+    </div>
+    <div class="sp-row">
+      <div class="sp-half sp-block"><div class="sp-lbl">PACK</div><span class="sp-med" id="sp-eff">0%</span></div>
+      <div class="sp-half sp-block"><div class="sp-lbl">PLACED</div><span class="sp-med" id="sp-placed">0</span></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-half sp-block"><div class="sp-lbl">SHELVES</div><span class="sp-med" id="sp-tetris">0</span></div>
+      <div class="sp-half sp-block"><div class="sp-lbl">LOCKS</div><span class="sp-med" id="sp-bulkhead">0</span></div>
+    </div>
+    <div class="sp-block"><div class="sp-lbl">ELAPSED</div><span id="sp-time">00:00</span></div>
+    <div class="sp-block" style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;">
+      <div class="sp-lbl">TRAILER</div><span class="sp-med" id="sp-truck">#1</span>
+    </div>
+  </div>
+
+  <!-- MAIN COLUMN -->
+  <div id="main-col">
+    <div id="hdr">
+      <div class="logo">LOCK IN<sub>LI7 v1.9.1</sub></div>
+      <div class="hdr-mid" id="conv-lbl-txt">▶ PRESELECTOR BELT — SELECT A PIECE</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span id="shift-badge"></span>
+        <button id="pause-btn" onclick="togglePause()">⏸ PAUSE</button>
+      </div>
+    </div>
+    <div id="panic-wrap">
+      <div id="panic-bg"><div id="panic-fill" style="width:100%"></div></div>
+      <div id="panic-lbl">DISPATCH IN —s</div>
+    </div>
+    <div id="world">
+      <div id="scene-wrap">
+        <canvas id="scene"></canvas>
+        <div id="next-popup">
+          <div id="next-popup-badge">✓ 92% — WALL COMPLETE</div>
+          <button id="next-popup-btn" onclick="nextTrailer()">NEXT TRAILER ▶</button>
+          <div id="next-popup-sub">OR KEEP LOADING → MAX PACK</div>
+        </div>
+        <div id="coach-shelf" style="
+          position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+          font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.2px;
+          color:rgba(212,168,67,.85);background:rgba(4,3,2,.88);
+          border:1px solid rgba(212,168,67,.22);border-radius:3px;
+          padding:4px 12px;pointer-events:none;z-index:10;
+          text-align:center;white-space:nowrap;transition:opacity .5s;margin-bottom:52px;">
+          💡 BUILD FLOOR SHELF WITH NC'S FIRST — SETS THE FOUNDATION</div>
+      </div>
+    </div>
+    <div id="footer">
+      <div id="conv-header">
+        <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
+        <div class="conv-lbl">▶ PRESELECTOR BELT</div>
+        <button id="rot-btn" onclick="rotateSel()">↻ ROT [R]</button>
+      </div>
+      <canvas id="belt-canvas" style="display:block;width:100%;"></canvas>
+    </div>
+  </div>
+
+  <!-- RIGHT FEEDBACK PANEL -->
+  <div id="fb-panel">
+    <div class="fp-hdr">◈ LOAD ASSESSMENT</div>
+    <div id="fp-grade-card">
+      <span id="fp-grade" style="color:var(--ok)">A</span>
+      <span id="fp-grade-lbl">WALL QUALITY</span>
+    </div>
+    <div id="fp-subs">
+      <div class="fp-sg"><div class="fp-sg-lbl">STRUCT</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-struct" style="width:100%;background:var(--ok)"></div></div><div class="fp-sg-val ok" id="fp-sg-struct-v">100</div></div>
+      <div class="fp-sg"><div class="fp-sg-lbl">BALANCE</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-bal" style="width:100%;background:var(--ok)"></div></div><div class="fp-sg-val ok" id="fp-sg-bal-v">100</div></div>
+      <div class="fp-sg"><div class="fp-sg-lbl">DENSITY</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-dens" style="width:0%;background:var(--t3)"></div></div><div class="fp-sg-val" id="fp-sg-dens-v">0</div></div>
+      <div class="fp-sg"><div class="fp-sg-lbl">SUPPORT</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-sup" style="width:100%;background:var(--ok)"></div></div><div class="fp-sg-val ok" id="fp-sg-sup-v">100</div></div>
+    </div>
+    <div id="fp-wt">
+      <div class="fp-wt-lbl">WEIGHT MIX</div>
+      <div class="fp-wt-bar">
+        <div class="fp-wt-seg" id="fp-wt-hvy" style="flex:0;background:#c04040;"></div>
+        <div class="fp-wt-seg" id="fp-wt-reg" style="flex:1;background:#c4943c;"></div>
+        <div class="fp-wt-seg" id="fp-wt-sml" style="flex:0;background:#8858c8;"></div>
+      </div>
+      <div class="fp-wt-leg">
+        <div class="fp-wt-dot"><span style="background:#c04040"></span><span id="fp-wt-hvy-p">0%</span> HVY</div>
+        <div class="fp-wt-dot"><span style="background:#c4943c"></span><span id="fp-wt-reg-p">0%</span> REG</div>
+        <div class="fp-wt-dot"><span style="background:#8858c8"></span><span id="fp-wt-sml-p">0%</span> SML</div>
+      </div>
+    </div>
+    <div id="fp-counts">
+      <div class="fp-ct"><div class="fp-ct-lbl">VOIDS</div><div class="fp-ct-val" id="fp-voids">0</div></div>
+      <div class="fp-ct"><div class="fp-ct-lbl">SHELVES LOCKED</div><div class="fp-ct-val ok" id="fp-shelves">0</div></div>
+      <div class="fp-ct"><div class="fp-ct-lbl">BULKHEADS</div><div class="fp-ct-val ok" id="fp-bulkheads">0</div></div>
+      <div class="fp-ct"><div class="fp-ct-lbl">NC ON WALL</div><div class="fp-ct-val" id="fp-nc">0</div></div>
+      <div class="fp-ct"><div class="fp-ct-lbl">CRUNCHES</div><div class="fp-ct-val" id="fp-crunches">0</div></div>
+    </div>
+    <div id="fp-tip">
+      <div class="fp-tip-hdr">▸ COACH</div>
+      <div id="fp-tip-h">Load your floor first.</div>
+      <div id="fp-tip-s">Place NCs along the floor before stacking regular freight — it anchors your wall.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- GAME OVER -->
+<div id="ov-end">
+  <div class="ov-title" id="end-title">ROUND<br>OVER</div>
+  <div class="ov-sub" id="end-sub"></div>
+  <div class="sgrid">
+    <div class="sg"><span class="v" id="es-score">0</span><span class="l">Total Cubes</span></div>
+    <div class="sg"><span class="v" id="es-pph">0</span><span class="l">Best PPH</span></div>
+    <div class="sg"><span class="v" id="es-trucks">0</span><span class="l">Trailers</span></div>
+    <div class="sg"><span class="v" id="es-int">100%</span><span class="l">Avg Integrity</span></div>
+  </div>
+  <button class="btn-p" onclick="returnToMenu()">RELOAD YARD</button>
+</div>
+
+<div id="zw">WWW.ZENGINE.SITE | © 2026 ZENGINE™</div>
+
+<script>
+// ================================================================
+// LOCK IN — LI7 v1.9.1
+// Author: Vincent Gonzalez | © 2026 Zengine™ | www.zengine.site
+// LAST STABLE: v1.9.0
+//
+// CHANGE LOG v1.8.0:
+//   • LEGIBILITY PASS (accessibility requirement) — CSS floor lifted:
+//       Panel labels 6-7px → 10px | Values 12-13px → 14-15px
+//       Floor slot canvas: name 8px min, dims 8px, NC badge 8px
+//       Belt dims 9px → 11px | Panic 8px → 11px | Footer label 9px → 11px
+//       Feedback: all labels 10px, values 13px, coach tips 9-14px
+//   • START MENU — full-screen mode selection:
+//       TRAINING: looping demo, 20-step ideal wall, 3 speeds, pause/exit
+//       SHIFT: back-to-back walls, session accumulates totals
+//       LEVELS: Coming Soon (Phoenix Run / Chicago Overnight teaser)
+//   • SHIFT MODE: nextTrailer() clears grid only, keeps session running.
+//       Header badge SHIFT · WALL N. End screen = session totals.
+//   • RETURN TO MENU: RELOAD YARD + pause-restart → start menu.
+//   • BOOT: resize() → initTruck() → showStartMenu()
+//
+// KNOWN OPEN: 3D depth axis, box image system (ready to wire)
+// ================================================================
+
+// ── CONSTANTS ──
+var GW=17, GH=20, WIN_H=0.92;
+var MAX_NC_SLOTS=8, MAX_BAG_SLOTS=8;
+var MIN_PPH=55, LOW_PPH_GRACE=30, LOW_PPH_FAIL=120;
+var LARGE_DANGER_FAIL=18;
+var PANIC_THRESHOLD=0.85, PANIC_DURATION=60, PANIC_BONUS_MAX=800;
+var STOW_BONUS=200, TETRIS_BONUS=500, BULKHEAD_BONUS=500, BRICK_BONUS=300;
+var RECOVERY_BONUS=400, CRUNCH_PENALTY=80, COLLAPSE_INT_COST=18;
+// DECISION: Hazard warning at 85% fill; actual game-over only fires when a
+// NEW nc/bag tries to spawn into completely full panel (all 8 slots taken).
+// This means 3-4 NCs per wall is comfortable — only chronic ignoring kills you.
+var NC_HAZARD_FILL=0.85;
+var BAG_DWELL_FILL=0.85;
+var BELT_PIECE_COUNT=6;
+// Floor slot geometry — populated in computeFloorSlots()
+var FLOOR_NC_SLOTS_X=[],FLOOR_BAG_SLOTS_X=[],FLOOR_SLOT_Y=0,FLOOR_SLOT_W=0,FLOOR_SLOT_H=0;
+// BUG FIX: NC stale hazard guard
+var ncHazardFired=false,ncHazardTO=null;
+// BUG FIX: tetris fresh-lock — prevents calcIntegrity overwriting shelf recovery
+var _freshLock=false;
+
+// ── UNIQUE ID COUNTER ──
+// Date.now() has ms resolution — two spawns in same ms get same id → invisible boxes.
+// This counter guarantees uniqueness across the entire session.
+var _UID=0;
+function uid(prefix){return(prefix||'P')+(++_UID)+'_'+Math.random().toString(36).slice(2,5);}
+
+// ── PIECE POOLS ──
+// Source: FSPM doc + Vince's real-world freight expertise.
+// P_SMALL ~10% belt. P_NC: 57 entries, full subcategories incl bed frames/rails.
+function makeRect(w,h){var c=[];for(var y=0;y<h;y++)for(var x=0;x<w;x++)c.push([x,y]);return c;}
+
+var P_SMALL=[
+  {w:1,h:1,wc:1,type:'small',n:'CUBE'},
+  {w:2,h:1,wc:1,type:'small',n:'FLAT'},
+  {w:1,h:2,wc:1,type:'small',n:'SLIM'},
+  {w:3,h:1,wc:1,type:'small',n:'STRIP'},
+  {w:1,h:3,wc:1,type:'small',n:'POST'},
+  {w:2,h:2,wc:2,type:'small',n:'SQUARE'},
+  {w:3,h:2,wc:2,type:'small',n:'BRICK'},
+  {w:2,h:3,wc:2,type:'small',n:'BLOCK'},
+  {w:4,h:1,wc:1,type:'small',n:'BOARD'},
+  {w:5,h:1,wc:1,type:'small',n:'PLANK'},
+  {w:4,h:2,wc:2,type:'small',n:'MEDIA'},
+  {w:3,h:2,wc:1,type:'small',n:'SHOES'},
+  {w:4,h:3,wc:2,type:'small',n:'APPAREL'},
+  {w:3,h:3,wc:2,type:'small',n:'SM-APPL'},
+  {w:2,h:4,wc:2,type:'small',n:'COFFEE-M'},
+  {w:2,h:2,wc:2,type:'small',n:'L-SM',cells:[[0,0],[0,1],[1,1]]},
+  {w:3,h:2,wc:2,type:'small',n:'L-FLAT',cells:[[0,0],[1,0],[2,0],[2,1]]},
+  {w:5,h:1,wc:1,type:'small',n:'POLYBAG'},
+  {w:6,h:1,wc:1,type:'small',n:'SOFTGOOD'},
+  {w:4,h:1,wc:1,type:'small',n:'ENVELOPE'},
+  {w:2,h:2,wc:3,type:'small',n:'SM-HEAVY'},
+  {w:3,h:2,wc:3,type:'small',n:'TOOLBOX'},
+];
+
+var P_REG=[
+  {w:2,h:3,wc:2,type:'regular',n:'BOX-S'},
+  {w:3,h:2,wc:2,type:'regular',n:'CARTON'},
+  {w:3,h:3,wc:3,type:'regular',n:'CARTON-M'},
+  {w:4,h:2,wc:2,type:'regular',n:'CARTON-F'},
+  {w:4,h:3,wc:3,type:'regular',n:'CARTON-L'},
+  {w:5,h:2,wc:2,type:'regular',n:'CARTON-W'},
+  {w:5,h:3,wc:3,type:'regular',n:'BOX-M'},
+  {w:6,h:2,wc:3,type:'regular',n:'BOX-W'},
+  {w:2,h:4,wc:3,type:'regular',n:'TALL-S'},
+  {w:3,h:4,wc:3,type:'regular',n:'TALL-M'},
+  {w:2,h:5,wc:3,type:'regular',n:'TALL-L'},
+  {w:3,h:5,wc:3,type:'regular',n:'TALL-XL'},
+  {w:6,h:3,wc:3,type:'regular',n:'BULK-W'},
+  {w:7,h:2,wc:3,type:'regular',n:'WIDE-XL'},
+  {w:8,h:2,wc:3,type:'regular',n:'WIDE-XXL'},
+  {w:4,h:4,wc:3,type:'regular',n:'BIG'},
+  {w:5,h:4,wc:4,type:'regular',n:'BIG-L'},
+  {w:3,h:3,wc:3,type:'regular',n:'L-REG',cells:[[0,0],[0,1],[0,2],[1,2],[2,2]]},
+  {w:4,h:3,wc:3,type:'regular',n:'L-WIDE',cells:[[0,0],[1,0],[2,0],[3,0],[0,1],[0,2]]},
+  {w:4,h:2,wc:3,type:'regular',n:'L-LONG',cells:[[0,0],[0,1],[1,1],[2,1],[3,1]]},
+  {w:3,h:3,wc:3,type:'regular',n:'T-MED',cells:[[0,0],[1,0],[2,0],[1,1],[1,2]]},
+  {w:2,h:2,wc:3,type:'regular',n:'DRUM-SM',shape:'drum'},
+  {w:3,h:3,wc:4,type:'regular',n:'DRUM-MED',shape:'drum'},
+  {w:1,h:5,wc:2,type:'regular',n:'TUBE'},
+  {w:1,h:6,wc:2,type:'regular',n:'PIPE'},
+  {w:2,h:6,wc:3,type:'regular',n:'PIPE-W'},
+  {w:6,h:4,wc:4,type:'regular',n:'SHELF-BOX'},
+  {w:7,h:3,wc:4,type:'regular',n:'LONG-BOX'},
+  {w:9,h:2,wc:3,type:'regular',n:'RAIL-BOX'},
+  {w:3,h:6,wc:4,type:'regular',n:'COL-BOX'},
+  {w:5,h:5,wc:4,type:'regular',n:'CUBE-L'},
+  {w:10,h:2,wc:4,type:'regular',n:'PLANK-BOX'},
+];
+
+var P_LARGE=[
+  {w:6,h:5,wc:4,type:'large',n:'OVR-BOX'},
+  {w:8,h:3,wc:5,type:'large',n:'OVR-LONG'},
+  {w:5,h:6,wc:5,type:'large',n:'OVR-TALL'},
+  {w:10,h:3,wc:5,type:'large',n:'OVR-WIDE'},
+  {w:2,h:2,wc:3,type:'large',n:'TIRE-SM', shape:'tire'},
+  {w:3,h:3,wc:4,type:'large',n:'TIRE-MED',shape:'tire'},
+  {w:4,h:4,wc:5,type:'large',n:'TIRE-LG', shape:'tire'},
+  {w:5,h:2,wc:3,type:'large',n:'PALLET-S',shape:'pallet'},
+  {w:7,h:2,wc:4,type:'large',n:'PALLET-M',shape:'pallet'},
+  {w:9,h:2,wc:5,type:'large',n:'PALLET-L',shape:'pallet'},
+  {w:3,h:4,wc:4,type:'large',n:'DRUM-LG', shape:'drum'},
+  {w:4,h:4,wc:5,type:'large',n:'DRUM-XL', shape:'drum'},
+  {w:5,h:5,wc:4,type:'large',n:'CRATE'},
+  {w:6,h:4,wc:5,type:'large',n:'CRATE-L'},
+  {w:4,h:6,wc:5,type:'large',n:'CRATE-T'},
+  {w:8,h:4,wc:5,type:'large',n:'BUNDLE'},
+  {w:6,h:6,wc:5,type:'large',n:'SKID'},
+  {w:12,h:2,wc:4,type:'large',n:'FLATSKID'},
+];
+
+var P_NC=[
+  // Appliances
+  {w:3,h:4,wc:4,type:'large',n:'DISHWASH',   shape:'appliance',cat:'appliance',color:'#485870'},
+  {w:3,h:4,wc:4,type:'large',n:'WASHER',     shape:'appliance',cat:'appliance',color:'#486058'},
+  {w:3,h:4,wc:4,type:'large',n:'DRYER',      shape:'appliance',cat:'appliance',color:'#524858'},
+  {w:4,h:4,wc:5,type:'large',n:'WASHER-LG',  shape:'appliance',cat:'appliance',color:'#406050'},
+  {w:3,h:5,wc:5,type:'large',n:'FRIDGE-SM',  shape:'appliance',cat:'appliance',color:'#505878'},
+  {w:3,h:6,wc:5,type:'large',n:'FRIDGE-STD', shape:'appliance',cat:'appliance',color:'#484870'},
+  {w:4,h:6,wc:5,type:'large',n:'FRIDGE-LG',  shape:'appliance',cat:'appliance',color:'#404068'},
+  {w:4,h:7,wc:5,type:'large',n:'FRIDGE-XL',  shape:'appliance',cat:'appliance',color:'#383860'},
+  {w:5,h:6,wc:5,type:'large',n:'SIDE-BY-SIDE',shape:'appliance',cat:'appliance',color:'#303060'},
+  {w:4,h:5,wc:4,type:'large',n:'RANGE',      shape:'appliance',cat:'appliance',color:'#584840'},
+  {w:5,h:3,wc:5,type:'large',n:'FREEZER',    shape:'appliance',cat:'appliance',color:'#406070'},
+  {w:4,h:3,wc:3,type:'large',n:'MICROWAVE',  shape:'appliance',cat:'appliance',color:'#505868'},
+  // Furniture — seating
+  {w:4,h:3,wc:3,type:'large',n:'CHAIR-BOX',  shape:'furniture',cat:'furniture',color:'#786050'},
+  {w:5,h:3,wc:3,type:'large',n:'OFFICE-CHR', shape:'furniture',cat:'furniture',color:'#706048'},
+  {w:6,h:3,wc:4,type:'large',n:'LOVESEAT',   shape:'furniture',cat:'furniture',color:'#786858'},
+  {w:8,h:3,wc:4,type:'large',n:'COUCH',      shape:'furniture',cat:'furniture',color:'#7a6050'},
+  {w:10,h:3,wc:5,type:'large',n:'SECTIONAL', shape:'furniture',cat:'furniture',color:'#705848'},
+  // Furniture — tables
+  {w:5,h:3,wc:3,type:'large',n:'SIDE-TBL',   shape:'furniture',cat:'furniture',color:'#806840'},
+  {w:8,h:3,wc:4,type:'large',n:'DINING-TBL', shape:'furniture',cat:'furniture',color:'#746038'},
+  // Furniture — storage
+  {w:4,h:5,wc:4,type:'large',n:'DRESSER',    shape:'furniture',cat:'furniture',color:'#8a6840'},
+  {w:5,h:5,wc:4,type:'large',n:'DRESSER-LG', shape:'furniture',cat:'furniture',color:'#826040'},
+  {w:4,h:6,wc:4,type:'large',n:'ARMOIRE',    shape:'furniture',cat:'furniture',color:'#7a5838'},
+  {w:5,h:6,wc:4,type:'large',n:'WARDROBE',   shape:'furniture',cat:'furniture',color:'#6a5838'},
+  {w:6,h:5,wc:4,type:'large',n:'BOOKSHELF',  shape:'furniture',cat:'furniture',color:'#7a6048'},
+  // Mattresses
+  {w:8,h:2,wc:3,type:'large',n:'TWIN-MATT',  shape:'furniture',cat:'furniture',color:'#987060'},
+  {w:9,h:2,wc:3,type:'large',n:'FULL-MATT',  shape:'furniture',cat:'furniture',color:'#907058'},
+  {w:10,h:2,wc:4,type:'large',n:'QUEEN-MATT',shape:'furniture',cat:'furniture',color:'#887058'},
+  {w:11,h:2,wc:4,type:'large',n:'KING-MATT', shape:'furniture',cat:'furniture',color:'#806850'},
+  // Bed frames & rails
+  {w:9,h:1,wc:3,type:'large',n:'BEDRAIL',    shape:'furniture',cat:'furniture',color:'#706040'},
+  {w:11,h:1,wc:3,type:'large',n:'BEDRAIL-Q', shape:'furniture',cat:'furniture',color:'#686038'},
+  {w:12,h:1,wc:3,type:'large',n:'BEDRAIL-K', shape:'furniture',cat:'furniture',color:'#605830'},
+  {w:8,h:2,wc:4,type:'large',n:'FRAME-T',    shape:'furniture',cat:'furniture',color:'#685840'},
+  {w:10,h:2,wc:4,type:'large',n:'FRAME-Q',   shape:'furniture',cat:'furniture',color:'#626038'},
+  {w:12,h:2,wc:4,type:'large',n:'FRAME-K',   shape:'furniture',cat:'furniture',color:'#5a5838'},
+  {w:7,h:3,wc:4,type:'large',n:'HEADBOARD',  shape:'furniture',cat:'furniture',color:'#7a6448'},
+  {w:9,h:3,wc:4,type:'large',n:'HEADBOARD-K',shape:'furniture',cat:'furniture',color:'#726040'},
+  // Fitness
+  {w:5,h:4,wc:5,type:'large',n:'TREADMILL',  shape:'fitness',cat:'fitness',color:'#404858'},
+  {w:6,h:4,wc:5,type:'large',n:'ELLIPTICAL', shape:'fitness',cat:'fitness',color:'#384858'},
+  {w:4,h:4,wc:5,type:'large',n:'BIKE',       shape:'fitness',cat:'fitness',color:'#384050'},
+  {w:5,h:5,wc:5,type:'large',n:'ROWING-M',   shape:'fitness',cat:'fitness',color:'#303848'},
+  {w:4,h:3,wc:4,type:'large',n:'WEIGHTS',    shape:'fitness',cat:'fitness',color:'#484040'},
+  {w:6,h:3,wc:4,type:'large',n:'BENCH',      shape:'fitness',cat:'fitness',color:'#504040'},
+  // Safes & heavy industrial
+  {w:2,h:3,wc:5,type:'large',n:'SAFE-SM',    shape:'safe',cat:'heavy',color:'#383838'},
+  {w:3,h:3,wc:5,type:'large',n:'SAFE-MED',   shape:'safe',cat:'heavy',color:'#404040'},
+  {w:3,h:4,wc:5,type:'large',n:'SAFE-LG',    shape:'safe',cat:'heavy',color:'#484848'},
+  {w:4,h:3,wc:5,type:'large',n:'GENERATOR',  shape:'industrial',cat:'heavy',color:'#445038'},
+  {w:3,h:3,wc:4,type:'large',n:'COMPRESSOR', shape:'industrial',cat:'heavy',color:'#484838'},
+  {w:4,h:3,wc:4,type:'large',n:'WATER-HTR',  shape:'industrial',cat:'heavy',color:'#504840'},
+  // Outdoor hardware
+  {w:4,h:3,wc:4,type:'large',n:'GRILL-SM',   shape:'outdoor',cat:'outdoor',color:'#404840'},
+  {w:5,h:4,wc:4,type:'large',n:'GRILL-MED',  shape:'outdoor',cat:'outdoor',color:'#3c4838'},
+  {w:6,h:4,wc:4,type:'large',n:'GRILL-LG',   shape:'outdoor',cat:'outdoor',color:'#384038'},
+  {w:5,h:5,wc:4,type:'large',n:'SWING-SET',  shape:'outdoor',cat:'outdoor',color:'#687040'},
+  {w:7,h:4,wc:4,type:'large',n:'PLAYSET',    shape:'outdoor',cat:'outdoor',color:'#608040'},
+  {w:5,h:3,wc:3,type:'large',n:'MOWER',      shape:'outdoor',cat:'outdoor',color:'#506038'},
+  {w:4,h:4,wc:4,type:'large',n:'SNOWBLOWER', shape:'outdoor',cat:'outdoor',color:'#506878'},
+  {w:7,h:3,wc:4,type:'large',n:'PATIO-SET',  shape:'outdoor',cat:'outdoor',color:'#5a6840'},
+];
+
+var P_PANIC=[
+  {w:1,h:8,wc:3,type:'regular',n:'PIPE-T'},
+  {w:1,h:9,wc:3,type:'regular',n:'PIPE-XL'},
+  {w:12,h:1,wc:3,type:'regular',n:'PLANK-XL'},
+  {w:11,h:1,wc:3,type:'regular',n:'PLANK-L'},
+  {w:10,h:1,wc:2,type:'regular',n:'RAIL-XL'},
+  {w:13,h:1,wc:4,type:'regular',n:'RAIL-XXL'},
+  {w:3,h:3,wc:3,type:'regular',n:'L-WIDE',cells:[[0,0],[1,0],[2,0],[0,1],[0,2]]},
+  {w:3,h:3,wc:3,type:'regular',n:'L-FLIP',cells:[[0,0],[1,0],[2,0],[2,1],[2,2]]},
+  {w:4,h:3,wc:3,type:'regular',n:'T-BAR',cells:[[0,0],[1,0],[2,0],[3,0],[1,1],[2,1],[1,2],[2,2]]},
+  {w:5,h:2,wc:3,type:'regular',n:'BEAM'},
+  {w:2,h:7,wc:4,type:'regular',n:'MAST-T'},
+  {w:2,h:6,wc:4,type:'regular',n:'MAST'},
+  {w:14,h:1,wc:3,type:'regular',n:'BED-RAIL'},
+];
+
+var P_GAP=[
+  {w:1,h:1,wc:1,type:'small',n:'FILL'},
+  {w:1,h:2,wc:1,type:'small',n:'FILL'},
+  {w:2,h:1,wc:1,type:'small',n:'FILL'},
+  {w:1,h:1,wc:1,type:'small',n:'FILL'},
+  {w:2,h:1,wc:1,type:'small',n:'FILL'},
+];
+
+// ── FSPM — Freight Spawn Probability Matrix ──
+// Smalls ~10-15% per Vince spec, pulled from regular.
+// NC: guaranteed periodic via refillBelt interval system.
+var FSPM = {
+  phases:{
+    START:  {small:.10,regular:.58,large:.28,nc:.02,bag:.02},
+    MID:    {small:.12,regular:.50,large:.24,nc:.07,bag:.07},
+    END:    {small:.15,regular:.52,large:.17,nc:.06,bag:.10},
+    OVERFLOW:{small:.20,regular:.46,large:.10,nc:.04,bag:.20},
+  },
+  getPhase:function(fillRatio){
+    if(fillRatio<.20)return'START';
+    if(fillRatio<.70)return'MID';
+    if(fillRatio<PANIC_THRESHOLD)return'END';
+    return'OVERFLOW';
+  },
+  stateModifier:function(G){
+    var mods={small:0,regular:0,large:0,nc:0,bag:0};
+    var voids=getVoids(G.grid).length;
+    var cols=getColumnRisk(G.grid);
+    var h=wallH()/GH;
+    if(voids>8){mods.small+=.06;mods.regular-=.04;}
+    if(cols>4){mods.regular+=.06;mods.large-=.03;}
+    if(h<.20){mods.large+=.08;mods.small-=.04;}
+    return mods;
+  },
+  pickCategory:function(G){
+    var fill=countFilled()/(GW*GH);
+    var phase=this.getPhase(fill);
+    var base=this.phases[phase];
+    var mods=this.stateModifier(G);
+    var weights={};var total=0;
+    ['small','regular','large','nc','bag'].forEach(function(k){
+      weights[k]=Math.max(0,(base[k]||0)+(mods[k]||0));
+      total+=weights[k];
+    });
+    var r=Math.random()*total,acc=0;
+    for(var k in weights){acc+=weights[k];if(r<=acc)return k;}
+    return'regular';
+  }
+};
+
+// ── COLOR SYSTEM ──
+var CB=[
+  {b:'#c8955a',l:'#ddb07a',d:'#9a6535',t:'rgba(210,190,120,.55)'},
+  {b:'#b8834a',l:'#ce9e68',d:'#8a5f28',t:'rgba(200,175,100,.55)'},
+  {b:'#c4a060',l:'#d8b87c',d:'#967840',t:'rgba(215,195,130,.55)'},
+  {b:'#a87848',l:'#bf9260',d:'#7c5428',t:'rgba(195,170,105,.55)'},
+];
+function sRand(s){var x=s;return function(){x=(x*9301+49297)%233280;return x/233280;};}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+
+function seedPal(seed,type,shape,ncColor){
+  if(ncColor)return{b:ncColor,l:shx(ncColor,22),d:shx(ncColor,-16),t:'rgba(100,100,150,.55)'};
+  if(shape==='tire')return{b:'#2a2a2a',l:'#484848',d:'#111',t:'rgba(60,60,60,.7)'};
+  if(shape==='drum'){
+    var drums=[
+      {b:'#d4a010',l:'#e8b828',d:'#9a7008',t:'rgba(200,165,20,.65)'},
+      {b:'#c03010',l:'#d84828',d:'#882008',t:'rgba(185,80,30,.65)'},
+      {b:'#1060a0',l:'#2878b8',d:'#084878',t:'rgba(30,90,150,.65)'},
+    ];
+    return pick(drums);
+  }
+  if(shape==='pallet')return{b:'#8a6030',l:'#a87848',d:'#604018',t:'rgba(140,105,55,.6)'};
+  var sr=sRand(seed);
+  var h=Math.round(sr()*40+20),sat=Math.round(sr()*20+45),lb=Math.round(sr()*18+38);
+  var ll=Math.min(78,lb+14),ld=Math.max(18,lb-14);
+  var adj=type==='small'?6:type==='large'?-8:0;
+  return{b:'hsl('+h+','+sat+'%,'+(lb+adj)+'%)',l:'hsl('+h+','+sat+'%,'+(ll+adj)+'%)',
+    d:'hsl('+h+','+sat+'%,'+(ld+adj)+'%)',t:'hsla('+h+','+sat+'%,'+(lb+adj+10)+'%,0.6)'};
+}
+
+function shx(hex,amt){
+  hex=hex.replace('#','');
+  if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+  var r=Math.min(255,Math.max(0,parseInt(hex.substr(0,2),16)+amt));
+  var g=Math.min(255,Math.max(0,parseInt(hex.substr(2,2),16)+amt));
+  var b=Math.min(255,Math.max(0,parseInt(hex.substr(4,2),16)+amt));
+  return'#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
+}
+
+// ── LABEL SYSTEM ──
+var LABELS=[
+  {t:'STANDARD', s:'STD', ico:'',   bg:'rgba(240,238,228,.88)',tc:'#2a2010',isFrag:false},
+  {t:'PRIORITY', s:'PRI', ico:'★',  bg:'rgba(255,235,140,.90)',tc:'#5a3a00',isFrag:false},
+  {t:'FRAGILE',  s:'FRAG',ico:'⚠',  bg:'rgba(255,80,60,.88)', tc:'#fff',   isFrag:true},
+  {t:'THIS SIDE UP',s:'↑UP',ico:'↑',bg:'rgba(245,196,0,.90)',tc:'#2a1800', isFrag:false},
+  {t:'TOP LOAD', s:'TOP', ico:'↑',  bg:'rgba(100,200,255,.85)',tc:'#002040',isFrag:false},
+  {t:'DO NOT STACK',s:'DNS',ico:'✕',bg:'rgba(255,90,30,.88)', tc:'#fff',   isFrag:false},
+  {t:'KEEP DRY',  s:'DRY', ico:'💧', bg:'rgba(100,180,255,.85)',tc:'#001830',isFrag:false},
+  {t:'GLASS',     s:'GLS', ico:'◇',  bg:'rgba(200,240,255,.88)',tc:'#002040',isFrag:true},
+  {t:'HAZMAT',    s:'HZM', ico:'⚠',  bg:'rgba(255,200,0,.95)', tc:'#1a0000',isFrag:false},
+  {t:'FLAMMABLE', s:'FLAM',ico:'🔥', bg:'rgba(255,80,30,.92)', tc:'#fff',   isFrag:false},
+  {t:'TOXIC',     s:'TOX', ico:'☠',  bg:'rgba(160,80,220,.90)',tc:'#fff',   isFrag:false},
+  {t:'RUSH',      s:'RUSH',ico:'⚡', bg:'rgba(255,140,0,.92)', tc:'#000',   isFrag:false},
+  {t:'HEAVY',     s:'HVY', ico:'▼',  bg:'rgba(80,80,80,.88)',  tc:'#fff',   isFrag:false},
+  {t:'NC',        s:'NC',  ico:'🚫', bg:'rgba(255,60,40,.88)', tc:'#fff',   isFrag:false},
+  {t:'FILL',      s:'FILL',ico:'',   bg:'rgba(180,140,255,.8)',tc:'#0a0020',isFrag:false},
+];
+function pickLabel(type,isPanic,isNC,isGap){
+  if(isGap)return LABELS[14];
+  if(isNC)return LABELS[13];
+  if(isPanic)return LABELS[11];
+  var fill=G.grid?countFilled()/(GW*GH):0;
+  var isEarly=fill<0.25;
+  if(type==='large'){
+    // DECISION: Exclude TOP LOAD from large pieces entirely — NCs handle that.
+    // Fragile on large pieces only after wall has some foundation (25%+ filled).
+    var pool=LABELS.filter(function(l){
+      if(l.t==='TOP LOAD')return false;
+      if(l.t==='FRAGILE'&&isEarly)return false;
+      if(l.t==='GLASS'&&isEarly)return false;
+      return['HAZMAT','FLAMMABLE','TOXIC','HEAVY','DO NOT STACK','FRAGILE','GLASS'].indexOf(l.t)>=0;
+    });
+    if(pool.length&&Math.random()<.55)return pick(pool);
+  }
+  // TOP LOAD only appears on small/regular after wall is 30% built
+  var safeLabels=LABELS.slice(0,8).filter(function(l){
+    if(l.t==='TOP LOAD'&&isEarly)return false;
+    if(l.t==='FRAGILE'&&isEarly)return false;
+    return true;
+  });
+  if(type==='small')return safeLabels[Math.floor(Math.random()*Math.min(3,safeLabels.length))];
+  return pick(safeLabels.length?safeLabels:LABELS.slice(0,4));
+}
+
+// ── GAME STATE ──
+var S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0};
+var G={};
+var selBeltIdx=null, selBeltRot=0, selNCRot=0;
+var selNC=-1, selBag=-1;
+var gOver=false, paused=false;
+var placed=0, startT=null, lastLoopT=0;
+var pphLowSec=0, lgDangerSec=0;
+var panicActive=false, panicStartT=null, panicSealed=false;
+var recoveryActive=false, recoveryT=null, recoveryCount=0;
+var collapseAnimating=false;
+var convOffset=0;
+var animF=null;
+// bagLongPressTimer replaced by _bagLPTimer on canvas scene handler (v1.7.0)
+
+// Canvas references
+var scene=document.getElementById('scene');
+var sCtx=scene.getContext('2d');
+var belt=document.getElementById('belt-canvas');
+var bCtx=belt.getContext('2d');
+var W=1,H=1,BW=1,BH=44;
+
+// ── GEOMETRY ──
+var DL=0,DR=0,DT=0,DB=0,VPX=0,VPY=0;
+var NW={tl:{x:0,y:0},tr:{x:0,y:0},bl:{x:0,y:0},br:{x:0,y:0}};
+// DECISION: VP sits near the top-center (y=0.12) so the wall fills ~80% of height.
+// noseFrac=0.18 means the back wall is CLOSE and LARGE — fills the screen.
+// High noseFrac = tiny distant wall. Low noseFrac = wall right in your face.
+var VP={x:.5,y:.10};
+var NOSE_FRAC=0.18;
+var hCell=null;
+
+function computeGeom(){
+  DL=W*.012;DR=W-W*.012;
+  DT=H*.008;DB=H-H*.008;
+  VPX=VP.x*W;VPY=VP.y*H;
+  var nf=NOSE_FRAC;
+  function lp(ax,ay,t){return{x:ax+(VPX-ax)*t,y:ay+(VPY-ay)*t};}
+  NW.tl=lp(DL,DT,nf);NW.tr=lp(DR,DT,nf);
+  NW.bl=lp(DL,DB,nf);NW.br=lp(DR,DB,nf);
+  computeFloorSlots();
+}
+
+// ── FLOOR SLOT GEOMETRY ──
+// NC slots left of center conveyor, bag slots right. 4 visible each side.
+// DECISION: slots inside trailer space on canvas floor — not external DOM panels.
+function computeFloorSlots(){
+  var convNX=W/2,convNW=W*.17;
+  var slotH=Math.min(44,Math.max(30,(DB-H*.75)*0.88));
+  var slotW=Math.min(44,Math.max(26,(W/2-convNW/2)/5.5));
+  FLOOR_SLOT_W=slotW;FLOOR_SLOT_H=slotH;
+  FLOOR_SLOT_Y=DB-slotH-3;
+  var ncZoneRight=convNX-convNW/2-4;
+  FLOOR_NC_SLOTS_X=[];
+  for(var i=0;i<4;i++)FLOOR_NC_SLOTS_X.unshift(ncZoneRight-(i+1)*(slotW+3));
+  var bagZoneLeft=convNX+convNW/2+4;
+  FLOOR_BAG_SLOTS_X=[];
+  for(var i=0;i<4;i++)FLOOR_BAG_SLOTS_X.push(bagZoneLeft+i*(slotW+3));
+}
+
+function gridToCanvas(gx,gy){
+  var tx=gx/GW,ty=gy/GH;
+  var tx2=NW.tl.x+(NW.tr.x-NW.tl.x)*tx;
+  var ty2=NW.tl.y+(NW.tr.y-NW.tl.y)*tx;
+  var bx=NW.bl.x+(NW.br.x-NW.bl.x)*tx;
+  var by=NW.bl.y+(NW.br.y-NW.bl.y)*tx;
+  return{x:tx2+(bx-tx2)*ty,y:ty2+(by-ty2)*ty};
+}
+
+function canvasToGrid(cx,cy){
+  // Inverse bilinear — iterative Newton solve
+  var bestGX=0,bestGY=0,bestDist=1e9;
+  var step=1;
+  for(var gy=0;gy<=GH;gy+=step){
+    for(var gx=0;gx<=GW;gx+=step){
+      var p=gridToCanvas(gx,gy);
+      var d=(p.x-cx)*(p.x-cx)+(p.y-cy)*(p.y-cy);
+      if(d<bestDist){bestDist=d;bestGX=gx;bestGY=gy;}
+    }
+  }
+  return{x:Math.round(bestGX),y:Math.round(bestGY)};
+}
+
+// ── GRID PHYSICS ──
+function makeGrid(){return Array.from({length:GH},function(){return Array(GW).fill(null);});}
+
+function rotateCells90(cells){
+  // Always works on a copy — never mutates the source array
+  var maxY=Math.max.apply(null,cells.map(function(c){return c[1];}));
+  var r=cells.map(function(c){return[maxY-c[1],c[0]];});
+  var minX=Math.min.apply(null,r.map(function(c){return c[0];}));
+  var minY=Math.min.apply(null,r.map(function(c){return c[1];}));
+  return r.map(function(c){return[c[0]-minX,c[1]-minY];});
+}
+
+function getCells(box,rot){
+  // ALWAYS return a fresh copy — never return the shared box.cells reference.
+  // Mutating the returned array would corrupt the piece template for all future uses.
+  var baseCells=box.cells||makeRect(box.w,box.h);
+  // Deep copy before any rotation
+  var cells=baseCells.map(function(c){return[c[0],c[1]];});
+  var steps=(rot||0)%4;
+  if(steps===0)return cells;
+  if(box.type==='large'&&!box.isNC)return cells; // non-NC large: no rotate
+  var maxSteps=box.isNC?Math.min(steps,1):steps;
+  for(var s=0;s<maxSteps;s++)cells=rotateCells90(cells);
+  return cells;
+}
+
+function getDims(box,rot){
+  var cells=getCells(box,rot);
+  var maxX=Math.max.apply(null,cells.map(function(c){return c[0];}));
+  var maxY=Math.max.apply(null,cells.map(function(c){return c[1];}));
+  return{w:maxX+1,h:maxY+1,cells:cells};
+}
+
+function isLegal(grid,box,gx,gy,rot){
+  var d=getDims(box,rot);
+  if(gx<0||gy<0||gx+d.w>GW||gy+d.h>GH)return false;
+  for(var i=0;i<d.cells.length;i++){
+    var cx=d.cells[i][0],cy=d.cells[i][1];
+    if(grid[gy+cy][gx+cx])return false;
+  }
+  var bottomPerCol={};
+  for(var i=0;i<d.cells.length;i++){
+    var cx=d.cells[i][0],cy=d.cells[i][1];
+    if(bottomPerCol[cx]===undefined||cy>bottomPerCol[cx])bottomPerCol[cx]=cy;
+  }
+  var sup=0,total=0;
+  for(var col in bottomPerCol){
+    total++;
+    var absY=gy+bottomPerCol[col]+1;
+    if(absY>=GH){sup++;continue;}
+    if(grid[absY][gx+parseInt(col)])sup++;
+  }
+  return sup/total>0.5;
+}
+
+function anyLegal(grid,box){
+  for(var y=0;y<GH;y++)for(var x=0;x<GW;x++)
+    for(var rot=0;rot<4;rot++)
+      if(isLegal(grid,box,x,y,rot))return true;
+  return false;
+}
+
+function supportScore(grid){
+  var tot=0,ok=0;
+  for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+    if(!grid[y][x])continue;tot++;
+    if(y+1>=GH||grid[y+1][x])ok++;
+  }
+  return tot?ok/tot:1;
+}
+
+function calcCOG(grid){
+  var mass=0,wx=0;var seen={};
+  for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+    var c=grid[y][x];
+    if(c&&!seen[c.id]){seen[c.id]=true;mass+=c.box.wc;wx+=c.box.wc*(c.rx+c.w/2);}
+  }
+  return mass?wx/mass/GW:.5;
+}
+
+function getVoids(grid){
+  var v=[];
+  for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+    if(!grid[y][x]){
+      var ab=false;
+      for(var ay=0;ay<y;ay++)if(grid[ay][x]){ab=true;break;}
+      if(ab)v.push({x:x,y:y});
+    }
+  }
+  return v;
+}
+
+function getColumnRisk(grid){
+  var colPen=0;
+  for(var x=0;x<GW;x++){
+    var ids=[];
+    for(var y=GH-1;y>=0;y--){
+      var c=grid[y][x];
+      if(c&&(!ids.length||ids[ids.length-1]!==c.id))ids.push(c.id);
+      else if(!c&&ids.length){if(ids.length>=2)colPen++;ids=[];}
+    }
+    if(ids.length>=2)colPen++;
+  }
+  return colPen;
+}
+
+function wallH(){for(var y=0;y<GH;y++)for(var x=0;x<GW;x++)if(G.grid[y][x])return GH-y;return 0;}
+function countFilled(){var n=0;for(var r of G.grid)for(var c of r)if(c)n++;return n;}
+
+function calcIntegrity(grid){
+  if(!countFilled())return 100;
+  G.tetrisRows=G.tetrisRows||{};
+  // BUG FIX: If checkTetris just completed a shelf this frame, preserve
+  // the recovered integrity value — don't recalculate over it.
+  if(_freshLock){_freshLock=false;return G.integrity||100;}
+
+  // Count locked rows
+  var lockCount=0;
+  var highestLock=GH;
+  for(var ty=0;ty<GH;ty++){
+    if(G.tetrisRows[ty]){
+      lockCount++;
+      if(highestLock===GH)highestLock=ty;
+    }
+  }
+  var hasAnyLock=(highestLock<GH);
+
+  // Lock floor: each locked shelf guarantees minimum integrity
+  // 1 lock=15, 2=30, 3=45, 4=55, 5+=65 — wall cannot collapse through tetrises
+  var lockFloor=Math.min(65, lockCount*15);
+  var score=100;
+
+  var seen={};
+  for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+    var c=grid[y][x];
+    if(!c||seen[c.id])continue;seen[c.id]=true;
+
+    // Anchored below highest lock — zero penalty
+    if(c.ry>highestLock)continue;
+
+    // NCs are intentional top-loads — no integrity penalty ever
+    if(c.box.isNC)continue;
+
+    var heightFrac=(GH-c.ry)/GH;
+    // Penalty scale: halved with 1 lock, quartered with 2+
+    var penMult=hasAnyLock?(lockCount>=2?.2:.45):0.9;
+
+    // Check if this piece has solid support below it
+    var cells2=getCells(c.box,0);
+    var bpc={};
+    for(var i=0;i<cells2.length;i++){
+      var cx=cells2[i][0],cy2=cells2[i][1];
+      if(bpc[cx]===undefined||cy2>bpc[cx])bpc[cx]=cy2;
+    }
+    var sup=0,tot=0;
+    for(var col in bpc){
+      tot++;
+      var by=c.ry+parseInt(bpc[col])+1;
+      if(by>=GH||grid[by][c.rx+parseInt(col)])sup++;
+    }
+    var solidBase=(tot===0)||(sup/tot>=0.5);
+
+    // Heavy piece high up — only penalize if NOT on solid base
+    if(c.box.wc>=4&&heightFrac>.65&&!solidBase)
+      score-=c.box.wc*(heightFrac-.5)*penMult;
+
+    // Smalls under heavies — only penalize if no solid base
+    if(!solidBase&&c.ry+c.h<GH){
+      var smBelow=0,totalBelow=0;
+      for(var col2 in bpc){
+        var by2=c.ry+parseInt(bpc[col2])+1;
+        if(by2<GH&&grid[by2][c.rx+parseInt(col2)]){
+          totalBelow++;
+          if(grid[by2][c.rx+parseInt(col2)].box.type==='small')smBelow++;
+        }
+      }
+      if(totalBelow>0&&smBelow===totalBelow&&c.box.wc>=4)score-=5*penMult;
+    }
+  }
+
+  // COG penalty — softened significantly, only extreme imbalance matters
+  var cogDev=Math.abs((G.cog||.5)-.5);
+  if(cogDev>.30)score-=cogDev*20;
+
+  // Apply lock floor — tetrised walls cannot fall
+  return clamp(Math.round(Math.max(score,lockFloor)),0,100);
+}
+
+// ── PIECE GENERATION ──
+function genPiece(isPanic,isGap){
+  var tmpl;
+  if(isGap){tmpl=pick(P_GAP);}
+  else if(isPanic){tmpl=pick(P_PANIC);}
+  else{
+    var cat=FSPM.pickCategory(G);
+    if(cat==='small')tmpl=pick(P_SMALL);
+    else if(cat==='large')tmpl=pick(P_LARGE);
+    else if(cat==='nc'){
+      // NC pieces go to NC staging panel, not belt
+      spawnNC();return null;
+    }
+    else if(cat==='bag'){
+      // Bag goes to bag panel
+      spawnBag();return null;
+    }
+    else tmpl=pick(P_REG);
+  }
+  tmpl={...tmpl};
+  if(!tmpl.cells)tmpl.cells=makeRect(tmpl.w,tmpl.h);
+  var seed=rnd(100,9999);
+  var pal=seedPal(seed,tmpl.type,tmpl.shape,tmpl.color||null);
+  var labelDef=pickLabel(tmpl.type,isPanic,false,isGap);
+  return{...tmpl,id:'P'+Date.now().toString(36)+Math.random().toString(36).slice(2,4),
+    pal,labelDef,label:labelDef.t,seed,isFrag:labelDef.isFrag||false,isPanic:!!isPanic,isGap:!!isGap};
+}
+
+function spawnNC(){
+  var ncSlots=G.ncSlots;
+  var emptyIdx=ncSlots.findIndex(function(s){return!s;});
+  if(emptyIdx<0){
+    // DECISION: Game-over only fires when ALL 8 slots are occupied AND a new NC
+    // tries to spawn. Warning shows earlier at NC_HAZARD_FILL threshold.
+    triggerNCHazard();return;
+  }
+  // Deep-copy the template — never mutate the pool array
+  var tmpl={...pick(P_NC)};
+  tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
+  var seed=rnd(100,9999);
+  var pal=seedPal(seed,tmpl.type,tmpl.shape,tmpl.color);
+  var labelDef=pickLabel('large',false,true,false);
+  var piece={...tmpl,id:uid('NC'),pal,labelDef,label:'NC',seed,isFrag:false,isNC:true};
+  ncSlots[emptyIdx]=piece;
+  buildNCPanel();
+  checkPanelFill();
+}
+
+function spawnBag(){
+  var bagSlots=G.bagSlots;
+  var emptyIdx=bagSlots.findIndex(function(s){return!s;});
+  if(emptyIdx<0){triggerBagDwell();return;}
+  bagSlots[emptyIdx]={id:uid('BAG'),type:'bag',label:'SMALLS',w:2,h:2,wc:1,isBag:true};
+  buildBagPanel();
+  checkPanelFill();
+}
+
+function triggerNCHazard(){
+  // BUG FIX: guard re-entry; if player places an NC before the timeout fires, cancel endGame
+  if(ncHazardFired)return;
+  ncHazardFired=true;
+  showBanner('⚠ NC SAFETY HAZARD!<br><span style="font-size:.55em">STAGING AREA BLOCKED — UNSAFE CONDITIONS</span>','danger',3000);
+  flash('fl-danger');
+  ncHazardTO=setTimeout(function(){
+    // Re-check: if a slot opened (NC was placed), cancel the game-over
+    var stillFull=G.ncSlots.every(function(s){return s!==null;});
+    ncHazardFired=false;
+    if(stillFull)endGame('NC STAGING OVERLOADED — SAFETY HAZARD',false);
+  },3200);
+}
+
+function triggerBagDwell(){
+  showBanner('⏱ BAG DWELL TIME!<br><span style="font-size:.55em">TOO MANY BAGS SITTING — CLEAR THE LINE</span>','panic',3000);
+  flash('fl-panic');
+  setTimeout(function(){endGame('SMALLS BAG DWELL TIME EXCEEDED',false);},3200);
+}
+
+function checkPanelFill(){
+  // DOM panel elements removed in v1.7.0 — visual state shown on canvas floor slots
+  // Hazard/dwell warnings fire via drawFloorSlots() labels on the canvas
+}
+
+// ── BAG BREAKDOWN — EASTER EGG ──
+// Double-click OR long-press (500ms) on a bag slot
+function breakdownBag(idx){
+  var slot=G.bagSlots[idx];
+  if(!slot||!slot.isBag)return;
+  // Remove bag
+  G.bagSlots[idx]=null;
+  // Spawn 5 gap-fill pieces into remaining bag slots
+  var spawned=0;
+  for(var i=0;i<MAX_BAG_SLOTS&&spawned<5;i++){
+    if(!G.bagSlots[i]){
+      var gp=genPieceRaw(true);
+      gp.isBrokenBag=true;
+      G.bagSlots[i]=gp;
+      spawned++;
+    }
+  }
+  if(spawned>0){
+    showBanner('BAG BROKEN DOWN! 🎁<br><span style="font-size:.52em">'+spawned+' GAP-FILL PIECES — FILL THOSE VOIDS!</span>','ok',2500);
+    flash('fl-ok');
+  }
+  buildBagPanel();
+  checkPanelFill();
+}
+
+function genPieceRaw(isGap){
+  var tmpl={...pick(isGap?P_GAP:P_SMALL)};
+  tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
+  var seed=rnd(100,9999);
+  var pal={b:'#9060cc',l:'#b080ec',d:'#602090',t:'rgba(140,80,200,.55)'};
+  var labelDef=LABELS[14];
+  return{...tmpl,id:uid('GP'),
+    pal,labelDef,label:'FILL',seed,isFrag:false,isGap:true,isBrokenBag:true,wc:tmpl.wc||1};
+}
+
+// ── LIFT MECHANIC ──
+// Click a placed box with nothing selected → lifts it back to its origin panel.
+// DECISION: NCs return to ncSlots (staging panel), not the belt.
+// Regular and bag-sourced pieces return to front of belt.
+// READS: G.grid, G.belt, G.ncSlots, cell.box.isNC
+// WRITES: G.grid, G.belt or G.ncSlots, placed, selBeltIdx/selNC
+function liftBox(cell){
+  // Remove from grid
+  var cells2=cell.cells||makeRect(cell.w,cell.h);
+  for(var i=0;i<cells2.length;i++){
+    var cx=cells2[i][0],cy=cells2[i][1];
+    if(G.grid[cell.ry+cy]&&G.grid[cell.ry+cy][cell.rx+cx]===cell)
+      G.grid[cell.ry+cy][cell.rx+cx]=null;
+  }
+
+  var box={...cell.box};
+  box.cells=(box.cells||makeRect(box.w,box.h)).map(function(c){return[c[0],c[1]];});
+  box.id=uid('L');
+
+  // DECISION: NCs go back to staging panel, not conveyor belt.
+  if(cell.box.isNC){
+    var emptyIdx=-1;
+    for(var s=0;s<MAX_NC_SLOTS;s++){if(!G.ncSlots[s]){emptyIdx=s;break;}}
+    if(emptyIdx>=0){
+      G.ncSlots[emptyIdx]=box;
+      selNC=emptyIdx;selBeltIdx=null;selBag=-1;selNCRot=0;
+      buildNCPanel();
+      showBanner('📦 NC LIFTED — RESTAGE IT','',1200);
+    } else {
+      // No open NC slot — send to belt as fallback
+      G.belt.unshift(box);
+      if(G.belt.length>BELT_PIECE_COUNT+2)G.belt.pop();
+      selBeltIdx=0;selBeltRot=0;selNC=-1;selBag=-1;
+      showBanner('📦 NC LIFTED → BELT (STAGING FULL)','warn',1800);
+    }
+  } else {
+    // Regular / bag pieces return to front of belt
+    G.belt.unshift(box);
+    if(G.belt.length>BELT_PIECE_COUNT+2)G.belt.pop();
+    selBeltIdx=0;selBeltRot=0;selNC=-1;selBag=-1;
+    showBanner('📦 LIFTED — REPOSITION IT','',1200);
+  }
+
+  placed=Math.max(0,placed-1);
+  G.cog=calcCOG(G.grid);G.support=supportScore(G.grid);
+  G.integrity=calcIntegrity(G.grid);G.score=calcScore();
+  checkPanelFill();
+}
+function refillBelt(){
+  while(G.belt.length<BELT_PIECE_COUNT){
+    // Guaranteed periodic NC/bag spawn — not pure random
+    // One NC every NC_SPAWN_INTERVAL belt pieces consumed
+    var ncInterval=6, bagInterval=9;
+    G.beltSinceNC=(G.beltSinceNC||0);
+    G.beltSinceBag=(G.beltSinceBag||0);
+
+    if(G.beltSinceNC>=ncInterval){
+      spawnNC();
+      G.beltSinceNC=0;
+      continue; // NC goes to panel, not belt — keep filling belt
+    }
+    if(G.beltSinceBag>=bagInterval){
+      spawnBag();
+      G.beltSinceBag=0;
+      continue;
+    }
+
+    var isPanic=panicActive&&!panicSealed&&Math.random()<.35;
+    var p=genBeltPiece(isPanic);
+    if(p){
+      G.belt.push(p);
+      G.beltSinceNC++;
+      G.beltSinceBag++;
+    }
+  }
+}
+
+// Belt-only piece generator — never NC or bag
+function genBeltPiece(isPanic){
+  var tmpl;
+  if(isPanic){tmpl={...pick(P_PANIC)};}
+  else{
+    var r=Math.random();
+    var fill=G.grid?countFilled()/(GW*GH):0;
+    if(fill<.20){
+      if(r<.15)tmpl={...pick(P_SMALL)};
+      else if(r<.35)tmpl={...pick(P_LARGE)};
+      else tmpl={...pick(P_REG)};
+    }else if(fill<.70){
+      if(r<.20)tmpl={...pick(P_SMALL)};
+      else if(r<.38)tmpl={...pick(P_LARGE)};
+      else tmpl={...pick(P_REG)};
+    }else if(fill<PANIC_THRESHOLD){
+      if(r<.32)tmpl={...pick(P_SMALL)};
+      else if(r<.42)tmpl={...pick(P_LARGE)};
+      else tmpl={...pick(P_REG)};
+    }else{
+      if(r<.52)tmpl={...pick(P_SMALL)};
+      else if(r<.58)tmpl={...pick(P_LARGE)};
+      else tmpl={...pick(P_REG)};
+    }
+  }
+  if(!tmpl)return null;
+  // Deep-copy the template so we never mutate the pool entry
+  tmpl={...tmpl};
+  tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
+  var seed=rnd(100,9999);
+  var pal=seedPal(seed,tmpl.type,tmpl.shape,null);
+  var labelDef=pickLabel(tmpl.type,isPanic,false,false);
+  return{...tmpl,
+    id:uid('P'),
+    pal,labelDef,label:labelDef.t,seed,
+    isFrag:labelDef.isFrag||false,isPanic:!!isPanic,isGap:false};
+}
+
+// ── PLACE BOX ──
+function placeBox(source,sourceIdx,gx,gy,rot){
+  // source: 'belt' | 'nc' | 'bag'
+  var box;
+  if(source==='belt')box=G.belt[sourceIdx];
+  else if(source==='nc')box=G.ncSlots[sourceIdx];
+  else if(source==='bag')box=G.bagSlots[sourceIdx];
+  if(!box)return false;
+  if(!isLegal(G.grid,box,gx,gy,rot))return false;
+
+  // Fragile crush check — only fires for wc>=5, locked rows protect boxes
+  var crushed=checkFragileCrush(box,gx,gy,rot);
+  if(crushed.length){
+    crushed.forEach(function(c){c.isCrushed=true;});
+    G.crunchCount=(G.crunchCount||0)+crushed.length;
+    S.crunches=(S.crunches||0)+crushed.length;
+    flash('fl-crunch');
+    showBanner('💥 CRUNCH! -'+(CRUNCH_PENALTY*crushed.length)+' CUBES<br><span style="font-size:.5em">FRAGILE GOES ON TOP — LOCK IN A SHELF TO PROTECT!</span>','danger',3000);
+  }
+
+  var d=getDims(box,rot);
+  var cell={box:box,id:box.id,rx:gx,ry:gy,w:d.w,h:d.h,cells:d.cells,isCrushed:false};
+  for(var i=0;i<d.cells.length;i++){
+    var cx=d.cells[i][0],cy=d.cells[i][1];
+    G.grid[gy+cy][gx+cx]=cell;
+  }
+
+  // Remove from source
+  if(source==='belt'){G.belt.splice(sourceIdx,1);refillBelt();}
+  else if(source==='nc'){G.ncSlots[sourceIdx]=null;buildNCPanel();}
+  else if(source==='bag'){G.bagSlots[sourceIdx]=null;buildBagPanel();}
+
+  placed++;
+  G.cog=calcCOG(G.grid);
+  G.support=supportScore(G.grid);
+  // DECISION: checkTetris MUST run before calcIntegrity so that any newly
+  // completed shelf row is registered in G.tetrisRows before integrity is scored.
+  // Previously this was reversed, causing locked shelves to not protect the wall.
+  checkTetris();
+  G.integrity=calcIntegrity(G.grid);
+  G.score=calcScore();
+
+  // Cornerstone / Keystone bonus — NC placed pieces only
+  if(source==='nc'){checkKeystoneBonus(gx,gy,rot,box);}
+
+  checkBulkhead();checkBrickLock();checkRecovery();
+  checkPanelFill();
+  checkPanic();
+  updateCoachTip();
+
+  if((G.integrity||100)<=8&&!collapseAnimating)scheduleCollapse();
+  checkWin();
+
+  // Reset selection
+  if(source==='belt'){selBeltIdx=null;selBeltRot=0;}
+  else if(source==='nc')selNC=-1;
+  else if(source==='bag')selBag=-1;
+
+  return true;
+}
+
+var collapseTimeout=null; // track pending collapse so we can cancel it
+
+function scheduleCollapse(){
+  // Cancel any pending collapse — integrity may have recovered since it was scheduled
+  if(collapseTimeout)clearTimeout(collapseTimeout);
+  collapseTimeout=setTimeout(function(){
+    collapseTimeout=null;
+    // Re-check integrity NOW before actually collapsing — tetrises may have saved it
+    if((G.integrity||100)<=8&&!collapseAnimating&&!gOver){
+      triggerCollapse();
+    }
+  },180);
+}
+
+function checkFragileCrush(box,gx,gy,rot){
+  if(box.wc<5)return[];
+  var d=getDims(box,rot);
+  var bottomPerCol={};
+  for(var i=0;i<d.cells.length;i++){
+    var cx=d.cells[i][0],cy=d.cells[i][1];
+    if(bottomPerCol[cx]===undefined||cy>bottomPerCol[cx])bottomPerCol[cx]=cy;
+  }
+  var crushed=[];var seen={};
+  for(var col in bottomPerCol){
+    var landY=gy+parseInt(bottomPerCol[col])+1;
+    if(landY>=GH)continue;
+    var target=G.grid[landY]&&G.grid[landY][gx+parseInt(col)];
+    if(!target||seen[target.id]||!target.box.isFrag)continue;
+    // Is this row locked in (full shelf)? If so, box is protected.
+    if(isRowLockedIn(landY))continue;
+    // Does the fragile box have lateral support on BOTH sides? Protected.
+    if(hasLateralSupport(target))continue;
+    seen[target.id]=true;crushed.push(target);
+  }
+  return crushed;
+}
+
+function isRowLockedIn(y){
+  // A row is "locked in" if it is a complete full shelf (all GW cells filled).
+  // OR if it sits above any locked row (the locked row acts as a structural floor).
+  if(G.tetrisRows&&G.tetrisRows[y])return true;
+  // Check if any row below this one is locked
+  for(var ly=y+1;ly<GH;ly++){
+    if(G.tetrisRows&&G.tetrisRows[ly])return true;
+  }
+  return false;
+}
+
+function hasLateralSupport(cell){
+  // A piece has lateral support if cells on both its left and right edges
+  // have adjacent pieces (not just floor). Indicates it's locked in by neighbors.
+  var leftSupport=false,rightSupport=false;
+  var cells=cell.cells||makeRect(cell.w,cell.h);
+  for(var i=0;i<cells.length;i++){
+    var cx=cells[i][0],cy=cells[i][1];
+    var ax=cell.rx+cx,ay=cell.ry+cy;
+    if(ax>0&&G.grid[ay][ax-1]&&G.grid[ay][ax-1].id!==cell.id)leftSupport=true;
+    if(ax<GW-1&&G.grid[ay][ax+1]&&G.grid[ay][ax+1].id!==cell.id)rightSupport=true;
+  }
+  return leftSupport&&rightSupport;
+}
+
+// ── BONUS CHECKS ──
+function checkTetris(){
+  G.tetrisRows=G.tetrisRows||{};
+  var newLocks=0;
+  for(var y=0;y<GH;y++){
+    var full=true;
+    for(var x=0;x<GW;x++){if(!G.grid[y][x]){full=false;break;}}
+    if(full&&!G.tetrisRows[y]){
+      G.tetrisRows[y]=true;
+      G.tetrisTotal=(G.tetrisTotal||0)+1;
+      newLocks++;
+      // Integrity recovery: each shelf recovers up to 30 points
+      var prevInt=G.integrity||100;
+      var intBonus=Math.min(30, 100-prevInt);
+      G.integrity=Math.min(100, prevInt+intBonus);
+      // Score bonus applied directly here
+      G.score=(G.score||0)+TETRIS_BONUS;
+    }
+  }
+  if(newLocks>0){
+    // BUG FIX: set _freshLock so calcIntegrity skips recalc this turn
+    _freshLock=true;
+    // Cancel any pending collapse — a locked shelf saves the wall
+    if(collapseTimeout){clearTimeout(collapseTimeout);collapseTimeout=null;}
+    showBanner('🔒 LOCKED IN!<br><span style="font-size:.52em">+'+(TETRIS_BONUS*newLocks)+' CUBES — STRUCTURAL ANCHOR · WALL REINFORCED!</span>','ok',2500);
+    flash('fl-ok');
+  }
+}
+
+function checkBulkhead(){
+  G.bulkheadRows=G.bulkheadRows||{};
+  var prevFull=false,newB=0;
+  for(var y=0;y<GH;y++){
+    var f=0;for(var x=0;x<GW;x++)if(G.grid[y][x])f++;
+    var full=(f===GW);
+    if(full&&prevFull){var key=(y-1)+'-'+y;if(!G.bulkheadRows[key]){G.bulkheadRows[key]=true;newB++;}}
+    prevFull=full;
+  }
+  if(newB>0){
+    G.bulkheadCount=(G.bulkheadCount||0)+newB;
+    showBanner('BULKHEAD LOCK! 🔒<br><span style="font-size:.55em">+'+(BULKHEAD_BONUS*newB)+' CUBES</span>','ok',2500);
+    flash('fl-bulkhead');
+  }
+}
+
+function checkBrickLock(){
+  if(G.brickAwarded)return;
+  var stagger=0;var seen={};
+  for(var y=GH-2;y>=1;y--){
+    for(var x=0;x<GW;x++){
+      var c=G.grid[y][x];if(!c||seen[c.id])continue;seen[c.id]=true;
+      var below=G.grid[y+1]&&G.grid[y+1][x];
+      if(!below||below.id===c.id)continue;
+      if(Math.abs(c.rx-below.rx)>=1&&Math.abs(c.rx-below.rx)<=3)stagger++;
+    }
+  }
+  if(stagger>=4){
+    G.brickAwarded=true;
+    showBanner('BRICK LOCK! 🏗<br><span style="font-size:.55em">+'+BRICK_BONUS+' CUBES — STAGGERED WALL!</span>','ok',2200);
+    flash('fl-ok');
+  }
+}
+
+function checkRecovery(){
+  if(!recoveryActive)return;
+  var elapsed=(Date.now()-recoveryT)/1000;
+  if(elapsed>15){recoveryActive=false;return;}
+  recoveryCount++;
+  if(recoveryCount>=3){
+    recoveryActive=false;
+    G.recoveryCount=(G.recoveryCount||0)+1;
+    showBanner('RECOVERY! 💪<br><span style="font-size:.55em">+'+RECOVERY_BONUS+' CUBES</span>','ok',2000);
+    flash('fl-ok');
+  }
+}
+
+// ── CORNERSTONE / KEYSTONE BONUS ──
+function checkKeystoneBonus(gx,gy,rot,box){
+  G.ncPlaced=(G.ncPlaced||0)+1;
+  var d=getDims(box,rot);
+  var bonus=0,msg='';
+
+  if(G.ncPlaced===1){
+    // First NC on this trailer — Cornerstone
+    bonus=400;
+    msg='CORNERSTONE! 🧱<br><span style="font-size:.52em">+'+bonus+' CUBES — FIRST NC LOCKED IN!</span>';
+  } else {
+    var atLeft=(gx===0);
+    var atRight=(gx+d.w===GW);
+    var atFloor=(gy+d.h===GH);
+    var edgeCount=(atLeft?1:0)+(atRight?1:0)+(atFloor?1:0);
+    if(edgeCount>=2){
+      bonus=350;
+      msg='CORNER LOCK! 🔩<br><span style="font-size:.52em">+'+bonus+' CUBES — NC ANCHORED IN CORNER!</span>';
+    } else if(edgeCount===1){
+      bonus=150;
+      msg='WALL ANCHOR! ⚓<br><span style="font-size:.52em">+'+bonus+' CUBES — NC FLUSH TO WALL!</span>';
+    } else {
+      var vf=countVoidsFilled(gx,gy,d.w,d.h);
+      if(vf>=2){
+        bonus=200;
+        msg='VOID FILLER! 🎯<br><span style="font-size:.52em">+'+bonus+' CUBES — NC PLUGGED '+vf+' GAPS!</span>';
+      }
+    }
+  }
+  if(bonus>0){
+    G.score=(G.score||0)+bonus;
+    showBanner(msg,'ok',2400);flash('fl-ok');
+  }
+}
+
+function countVoidsFilled(gx,gy,gw,gh){
+  var count=0;
+  for(var dy=0;dy<gh;dy++)for(var dx=0;dx<gw;dx++){
+    var ax=gx+dx,ay=gy+dy;
+    var hadAbove=false;
+    for(var aay=0;aay<ay;aay++)if(G.grid[aay]&&G.grid[aay][ax]){hadAbove=true;break;}
+    if(hadAbove)count++;
+  }
+  return count;
+}
+
+function checkPanic(){
+  var fill=countFilled()/(GW*GH);
+  if(!panicActive&&fill>=PANIC_THRESHOLD&&!gOver){
+    panicActive=true;panicStartT=Date.now();panicSealed=false;
+    document.getElementById('panic-wrap').classList.add('vis');
+    flash('fl-panic');
+    showBanner('DISPATCH IN 60s! ⚡<br><span style="font-size:.52em">SEAL THE WALL — BONUS IF YOU BEAT THE CLOCK!</span>','panic',3000);
+    for(var i=0;i<3;i++){if(G.belt.length<BELT_PIECE_COUNT)G.belt.push(genPiece(true,false));}
+  }
+  if(panicActive&&!panicSealed&&!gOver){
+    var el2=(Date.now()-panicStartT)/1000;
+    var rem=Math.max(0,PANIC_DURATION-el2);
+    var pct=(rem/PANIC_DURATION)*100;
+    document.getElementById('panic-fill').style.width=pct+'%';
+    document.getElementById('panic-lbl').textContent='DISPATCH IN '+Math.ceil(rem)+'s — LOCK IT IN!';
+    if(rem<=0){endGame('DISPATCH TIMEOUT — TRAILER LEFT WITHOUT FULL WALL',false);}
+  }
+}
+
+function triggerCollapse(){
+  if(collapseAnimating)return;
+  collapseAnimating=true;
+  var candidates=[];var seen={};
+  for(var y=0;y<Math.floor(GH*.65);y++)for(var x=0;x<GW;x++){
+    var c=G.grid[y][x];
+    if(!c||seen[c.id])continue;seen[c.id]=true;
+    if(c.ry<GH*.6&&c.box.wc>=3)candidates.push(c);
+  }
+  var toRemove=candidates.slice(0,rnd(1,2));
+  toRemove.forEach(function(cell){
+    var cells2=cell.cells||makeRect(cell.w,cell.h);
+    for(var i=0;i<cells2.length;i++){
+      var cx=cells2[i][0],cy=cells2[i][1];
+      if(G.grid[cell.ry+cy]&&G.grid[cell.ry+cy][cell.rx+cx]===cell)G.grid[cell.ry+cy][cell.rx+cx]=null;
+    }
+    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)});
+  });
+  G.integrity=clamp((G.integrity||100)-COLLAPSE_INT_COST,0,100);
+  G.score=Math.max(0,(G.score||0)-80*toRemove.length);
+  recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
+  flash('fl-danger');
+  showBanner('⚠ COLLAPSE!<br><span style="font-size:.52em">RECOVER FAST FOR BONUS!</span>','danger',2500);
+  setTimeout(function(){collapseAnimating=false;},700);
+}
+
+// ── SCORE ──
+function calcScore(){
+  var el=elapsed(),pph=el>0?Math.round(placed/el*3600):0;
+  var eff=countFilled()/(GW*GH);
+  var hp=wallH()/GH;
+  var ss=supportScore(G.grid);
+  var voids=getVoids(G.grid).length;
+  var cogDev=Math.abs((G.cog||.5)-.5);
+  var integ=(G.integrity||100)/100;
+  var base=Math.round(eff*700+hp*500);
+  var speedM=clamp(.5+(pph/160)*2,.5,2.5);
+  var supM=clamp(.6+ss*.4,.6,1.0);
+  var integM=clamp(.5+integ*.5,.5,1.0);
+  var shelfB=(G.tetrisTotal||0)*TETRIS_BONUS;
+  var bulkB=(G.bulkheadCount||0)*BULKHEAD_BONUS;
+  var brickB=G.brickAwarded?BRICK_BONUS:0;
+  var recovB=(G.recoveryCount||0)*RECOVERY_BONUS;
+  var crunchP=(G.crunchCount||0)*300;
+  var voidP=voids*8;
+  var cogP=Math.round(cogDev*200);
+  var raw=base+shelfB+bulkB+brickB+recovB-crunchP-voidP-cogP;
+  return Math.max(0,Math.round(raw*speedM*supM*integM));
+}
+function elapsed(){return startT?(Date.now()-startT)/1000:0;}
+function getPPH(){var el=elapsed();return el>0?Math.round(placed/el*3600):0;}
+
+// ── WIN CHECK ──
+function checkWin(){
+  var hp=wallH()/GH;
+  if(hp>=WIN_H&&!gOver&&!document.getElementById('next-popup').classList.contains('vis')){
+    sealWall('WALL COMPLETE — '+(hp>=1?'PERFECT LOAD!':'92% TARGET HIT'));
+  }
+}
+function sealWall(reason){
+  if(panicActive&&!panicSealed){
+    panicSealed=true;
+    var rem=Math.max(0,PANIC_DURATION-(Date.now()-panicStartT)/1000);
+    if(rem>0){
+      var bonus=Math.round(PANIC_BONUS_MAX*(rem/PANIC_DURATION));
+      G.score+=bonus;
+      showBanner('DISPATCH BONUS! ⚡<br><span style="font-size:.52em">+'+bonus+' CUBES — SEALED WITH '+Math.ceil(rem)+'s LEFT!</span>','ok',3000);
+    }
+    document.getElementById('panic-wrap').classList.remove('vis');
+  }
+  document.getElementById('next-popup').classList.add('vis');
+  document.getElementById('next-popup-badge').textContent='✓ '+reason;
+}
+
+// nextTrailer() defined in mode system section — handles both shift and standard modes
+
+// ── GAME LOOP ──
+function loop(ts){
+  if(paused)return;
+  var dt=lastLoopT?Math.min((ts-lastLoopT)/1000,.1):.016;
+  lastLoopT=ts;
+  convOffset=(convOffset+0.42)%40;
+  computeGeom();
+  drawScene(ts);
+  drawBelt(ts);
+  updateHUD();
+  if(!gOver){
+    checkPPHFail(dt);
+    checkLargeDanger(dt);
+    checkPanic();
+  }
+  animF=requestAnimationFrame(loop);
+}
+
+// ── MAIN SCENE RENDERER ──
+function drawScene(ts){
+  sCtx.clearRect(0,0,W,H);
+  drawSurfaces(sCtx);
+  drawStructure(sCtx);
+  drawLights(sCtx,ts);
+  drawConveyorScene(sCtx,ts);
+  drawBackWall(sCtx);
+  drawWallBoxes(sCtx);
+  drawPlacementPreview(sCtx);
+  drawFloorSlots(sCtx);
+  drawDockFrame(sCtx);
+  drawAtmosphere(sCtx);
+}
+
+// ── FLOOR SLOT RENDERER ──
+// NC and bag staging slots on the trailer floor, flanking the conveyor.
+// READS: G.ncSlots, G.bagSlots, FLOOR_* geometry vars, selNC, selBag
+function drawFloorSlots(c){
+  if(!G.ncSlots)return;
+  var sw=FLOOR_SLOT_W,sh=FLOOR_SLOT_H,sy=FLOOR_SLOT_Y;
+  if(sw<4||sh<4)return;
+  var ncUsed=G.ncSlots.filter(Boolean).length;
+  var bagUsed=G.bagSlots.filter(Boolean).length;
+  // Section labels
+  if(FLOOR_NC_SLOTS_X.length>0){
+    c.save();c.font='bold 10px Share Tech Mono';
+    c.fillStyle='rgba(212,168,67,.7)';c.textAlign='left';c.textBaseline='bottom';
+    c.fillText('NC STAGE',FLOOR_NC_SLOTS_X[0],sy-4);
+    if(ncUsed>=Math.ceil(NC_HAZARD_FILL*MAX_NC_SLOTS)){
+      c.fillStyle='rgba(204,56,32,.9)';c.fillText('⚠ HAZARD',FLOOR_NC_SLOTS_X[2]||FLOOR_NC_SLOTS_X[0],sy-4);
+    }
+    c.restore();
+  }
+  if(FLOOR_BAG_SLOTS_X.length>0){
+    var lastBX=FLOOR_BAG_SLOTS_X[FLOOR_BAG_SLOTS_X.length-1]+sw;
+    c.save();c.font='bold 10px Share Tech Mono';
+    c.fillStyle='rgba(136,88,200,.8)';c.textAlign='right';c.textBaseline='bottom';
+    c.fillText('SMALLS',lastBX,sy-4);
+    if(bagUsed>=Math.ceil(BAG_DWELL_FILL*MAX_BAG_SLOTS)){
+      c.fillStyle='rgba(212,128,32,.9)';
+      c.fillText('⏱ DWELL',(FLOOR_BAG_SLOTS_X[1]||FLOOR_BAG_SLOTS_X[0]),sy-4);
+    }
+    c.restore();
+  }
+  // Draw NC slots (4 visible)
+  for(var i=0;i<4;i++){
+    var sx=FLOOR_NC_SLOTS_X[i];if(sx===undefined)continue;
+    var slot=G.ncSlots[i];var isSel=(selNC===i);
+    drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,'nc',i);
+  }
+  // Draw bag slots (4 visible)
+  for(var j=0;j<4;j++){
+    var bsx=FLOOR_BAG_SLOTS_X[j];if(bsx===undefined)continue;
+    var bslot=G.bagSlots[j];var bSel=(selBag===j);
+    drawOneFloorSlot(c,bsx,sy,sw,sh,bslot,bSel,'bag',j);
+  }
+  // Overflow indicators
+  if(ncUsed>4){c.save();c.font='bold 7px Share Tech Mono';c.fillStyle='rgba(212,168,67,.8)';c.textAlign='left';c.textBaseline='top';c.fillText('+'+(ncUsed-4),FLOOR_NC_SLOTS_X[0],sy+sh+2);c.restore();}
+  if(bagUsed>4){c.save();c.font='bold 7px Share Tech Mono';c.fillStyle='rgba(136,88,200,.8)';c.textAlign='right';c.textBaseline='top';c.fillText('+'+(bagUsed-4),(FLOOR_BAG_SLOTS_X[3]||FLOOR_BAG_SLOTS_X[0])+sw,sy+sh+2);c.restore();}
+}
+
+function drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,type,idx){
+  c.save();
+  // Warning stripe background — dock floor aesthetic
+  c.fillStyle='rgba(212,168,67,.05)';c.fillRect(sx,sy,sw,sh);
+  for(var s=0;s<Math.ceil(sw/8)+1;s++){
+    c.fillStyle=(s%2===0)?'rgba(212,168,67,.05)':'rgba(0,0,0,.04)';
+    c.fillRect(sx+s*8-4,sy,4,sh);
+  }
+  // Border
+  var borderCol=isSel
+    ?(type==='nc'?'rgba(220,90,90,.95)':'rgba(180,130,240,.95)')
+    :slot?(type==='nc'?'rgba(180,60,60,.55)':'rgba(130,80,200,.45)')
+    :'rgba(255,255,255,.08)';
+  c.strokeStyle=borderCol;c.lineWidth=isSel?2:1;
+  if(isSel){c.shadowColor=type==='nc'?'rgba(220,60,60,.5)':'rgba(140,80,220,.5)';c.shadowBlur=7;}
+  c.strokeRect(sx+.5,sy+.5,sw-1,sh-1);
+  c.shadowBlur=0;
+  if(!slot){
+    c.font='9px Share Tech Mono';c.fillStyle='rgba(255,255,255,.25)';
+    c.textAlign='center';c.textBaseline='middle';
+    c.fillText(type==='nc'?'NC':'BAG',sx+sw/2,sy+sh/2);
+    c.restore();return;
+  }
+  // Filled slot
+  var base=slot.color||slot.pal&&slot.pal.b||'#606060';
+  var g=c.createLinearGradient(sx,sy,sx+sw,sy+sh);
+  g.addColorStop(0,shx(base,16));g.addColorStop(1,shx(base,-12));
+  c.fillStyle=g;c.fillRect(sx+1,sy+1,sw-2,sh-2);
+  c.fillStyle='rgba(255,255,255,.1)';c.fillRect(sx+1,sy+1,sw-2,(sh-2)*.28);
+  var name=slot.n||slot.label||'?';
+  var fs=Math.max(8,Math.min(10,sw*.18));
+  c.font='bold '+fs+'px Share Tech Mono';c.fillStyle='rgba(255,240,180,.95)';
+  c.textAlign='center';c.textBaseline='top';
+  c.fillText(name.length>7?name.slice(0,6):name,sx+sw/2,sy+3);
+  var rot=(type==='nc'&&isSel)?selNCRot:0;
+  var dw=rot===1?(slot.h||slot.w):(slot.w||0);
+  var dh=rot===1?(slot.w||slot.h):(slot.h||0);
+  c.font='bold '+(fs-1)+'px Share Tech Mono';c.fillStyle='rgba(212,168,67,.9)';
+  c.textBaseline='bottom';c.fillText(dw+'×'+dh,sx+sw/2,sy+sh-2);
+  if(slot.isBag){c.font=(sh*.34)+'px serif';c.textBaseline='middle';c.fillText('🎒',sx+sw/2,sy+sh*.5+1);}
+  if(type==='nc'||slot.isNC){
+    c.font='bold 8px Share Tech Mono';c.fillStyle='rgba(255,60,40,.95)';
+    c.textAlign='left';c.textBaseline='top';c.fillText('NC',sx+2,sy+2);
+  }
+  c.restore();
+}
+
+// ── FLOOR SLOT HIT TEST ──
+// Returns {type:'nc'|'bag', idx:N} or null
+function hitTestFloorSlots(cx,cy){
+  var sy=FLOOR_SLOT_Y,sw=FLOOR_SLOT_W,sh=FLOOR_SLOT_H;
+  if(cy<sy-2||cy>sy+sh+2)return null;
+  for(var i=0;i<FLOOR_NC_SLOTS_X.length;i++){
+    var sx=FLOOR_NC_SLOTS_X[i];
+    if(cx>=sx&&cx<=sx+sw)return{type:'nc',idx:i};
+  }
+  for(var j=0;j<FLOOR_BAG_SLOTS_X.length;j++){
+    var bsx=FLOOR_BAG_SLOTS_X[j];
+    if(cx>=bsx&&cx<=bsx+sw)return{type:'bag',idx:j};
+  }
+  return null;
+}
+
+function drawSurfaces(c){
+  // Ceiling
+  c.beginPath();c.moveTo(DL,DT);c.lineTo(DR,DT);c.lineTo(NW.tr.x,NW.tr.y);c.lineTo(NW.tl.x,NW.tl.y);c.closePath();
+  var cg=c.createLinearGradient(W/2,DT,W/2,VPY);cg.addColorStop(0,'#1c1814');cg.addColorStop(1,'#0e0c09');
+  c.fillStyle=cg;c.fill();
+  // Floor
+  c.beginPath();c.moveTo(DL,DB);c.lineTo(DR,DB);c.lineTo(NW.br.x,NW.br.y);c.lineTo(NW.bl.x,NW.bl.y);c.closePath();
+  var fg=c.createLinearGradient(W/2,DB,W/2,NW.bl.y);fg.addColorStop(0,'#302618');fg.addColorStop(.4,'#261e0e');fg.addColorStop(1,'#1a1208');
+  c.fillStyle=fg;c.fill();
+  // Left wall
+  c.beginPath();c.moveTo(DL,DT);c.lineTo(NW.tl.x,NW.tl.y);c.lineTo(NW.bl.x,NW.bl.y);c.lineTo(DL,DB);c.closePath();
+  var lw=c.createLinearGradient(DL,H/2,NW.tl.x,H/2);lw.addColorStop(0,'#2c2419');lw.addColorStop(1,'#1c1610');
+  c.fillStyle=lw;c.fill();
+  // Right wall
+  c.beginPath();c.moveTo(DR,DT);c.lineTo(NW.tr.x,NW.tr.y);c.lineTo(NW.br.x,NW.br.y);c.lineTo(DR,DB);c.closePath();
+  var rw=c.createLinearGradient(DR,H/2,NW.tr.x,H/2);rw.addColorStop(0,'#241e14');rw.addColorStop(1,'#1a140c');
+  c.fillStyle=rw;c.fill();
+}
+
+function drawStructure(c){
+  c.save();
+  c.globalAlpha=.2;
+  for(var i=0;i<=9;i++){
+    var t=i/9;
+    var L={x:DL+(NW.tl.x-DL)*t,y:DT+(NW.tl.y-DT)*t};
+    var R2={x:DR+(NW.tr.x-DR)*t,y:DT+(NW.tr.y-DT)*t};
+    c.strokeStyle='#5a5040';c.lineWidth=Math.max(.4,3.2*(1-t*.62));
+    c.beginPath();c.moveTo(L.x,L.y);c.lineTo(R2.x,R2.y);c.stroke();
+  }
+  c.globalAlpha=.1;
+  for(var p=0;p<=15;p++){var pt=p/15;c.strokeStyle='#6a5030';c.lineWidth=.7;c.beginPath();c.moveTo(DL+(DR-DL)*pt,DB);c.lineTo(VPX,VPY);c.stroke();}
+  for(var f=1;f<=8;f++){
+    var ft=f/9;
+    var fL={x:DL+(NW.bl.x-DL)*ft,y:DB+(NW.bl.y-DB)*ft};
+    var fR={x:DR+(NW.br.x-DR)*ft,y:DB+(NW.br.y-DB)*ft};
+    c.strokeStyle='#5c4020';c.lineWidth=Math.max(.3,2.5*(1-ft));
+    c.beginPath();c.moveTo(fL.x,fL.y);c.lineTo(fR.x,fR.y);c.stroke();
+  }
+  c.globalAlpha=.1;
+  for(var lr=0;lr<=6;lr++){var lrt=lr/6;var lt={x:DL+(NW.tl.x-DL)*lrt,y:DT+(NW.tl.y-DT)*lrt};var lb={x:DL+(NW.bl.x-DL)*lrt,y:DB+(NW.bl.y-DB)*lrt};c.strokeStyle='#907060';c.lineWidth=Math.max(.3,2.8*(1-lrt*.5));c.beginPath();c.moveTo(lt.x,lt.y);c.lineTo(lb.x,lb.y);c.stroke();}
+  c.globalAlpha=.07;
+  for(var rr=0;rr<=6;rr++){var rrt=rr/6;var rtop={x:DR+(NW.tr.x-DR)*rrt,y:DT+(NW.tr.y-DT)*rrt};var rbot={x:DR+(NW.br.x-DR)*rrt,y:DB+(NW.br.y-DB)*rrt};c.strokeStyle='#6a5848';c.lineWidth=Math.max(.3,2*(1-rrt*.5));c.beginPath();c.moveTo(rtop.x,rtop.y);c.lineTo(rbot.x,rbot.y);c.stroke();}
+  c.restore();
+}
+
+function drawLights(c,ts){
+  var flicker=1+.012*Math.sin(ts*.003+1.7)*Math.sin(ts*.007);
+  [.09,.28,.50,.69,.84].forEach(function(lf){
+    var cy=((DT+(NW.tl.y-DT)*lf)+(DT+(NW.tr.y-DT)*lf))/2;
+    var cx=W/2,half=W*.085*(1-lf*.5);
+    var ga=(.1*(1-lf*.4))*flicker;
+    var lg=c.createRadialGradient(cx,cy+1,0,cx,cy+1,half*4);
+    lg.addColorStop(0,'rgba(255,250,215,'+(ga*3.2)+')');
+    lg.addColorStop(.4,'rgba(255,248,205,'+(ga*.8)+')');
+    lg.addColorStop(1,'rgba(255,248,200,0)');
+    c.fillStyle=lg;c.fillRect(cx-half*4,cy-half,half*8,half*6);
+    c.fillStyle='rgba(228,220,196,'+(0.62-lf*.28)+')';
+    c.fillRect(cx-half*.9,cy,half*1.8,Math.max(1,2.5*(1-lf*.5)));
+  });
+}
+
+// The conveyor in the scene — shows the belt running from the opening to the wall
+// The actual pieces on the belt are rendered in drawBelt() on the footer canvas
+function drawConveyorScene(c,ts){
+  var nW=W*.16,fW=W*.028,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
+  var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
+  c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();
+  var cg=c.createLinearGradient(nX,nY,fX,fY);cg.addColorStop(0,'#2e2820');cg.addColorStop(1,'#1a1610');
+  c.fillStyle=cg;c.fill();
+  c.save();
+  c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();c.clip();
+  for(var r=0;r<22;r++){
+    var raw=(r/22+(convOffset/40)*.12)%1,pt=raw*raw;
+    var rx=nX+(fX-nX)*pt,ry=nY+(fY-nY)*pt,rhw=(nW/2)+((fW/2)-(nW/2))*pt;
+    c.strokeStyle='rgba(75,62,48,'+(0.78-pt*.35)+')';c.lineWidth=Math.max(.3,3*(1-pt*.7));
+    c.beginPath();c.moveTo(rx-rhw,ry);c.lineTo(rx+rhw,ry);c.stroke();
+  }
+  c.strokeStyle='rgba(115,92,62,.7)';c.lineWidth=1.8;
+  c.beginPath();c.moveTo(nL,nY);c.lineTo(fL,fY);c.stroke();
+  c.beginPath();c.moveTo(nR,nY);c.lineTo(fR,fY);c.stroke();
+  c.restore();
+}
+
+function drawBackWall(c){
+  // Base fill
+  c.beginPath();c.moveTo(NW.tl.x,NW.tl.y);c.lineTo(NW.tr.x,NW.tr.y);c.lineTo(NW.br.x,NW.br.y);c.lineTo(NW.bl.x,NW.bl.y);c.closePath();c.fillStyle='#1e1a13';c.fill();
+  // Steel texture + grid
+  c.save();
+  c.beginPath();c.moveTo(NW.tl.x,NW.tl.y);c.lineTo(NW.tr.x,NW.tr.y);c.lineTo(NW.br.x,NW.br.y);c.lineTo(NW.bl.x,NW.bl.y);c.closePath();c.clip();
+  c.globalAlpha=.05;
+  for(var i=0;i<20;i++){var t=i/20;var s1={x:NW.tl.x+(NW.tr.x-NW.tl.x)*t,y:NW.tl.y+(NW.tr.y-NW.tl.y)*t};var s2={x:NW.bl.x+(NW.br.x-NW.bl.x)*t,y:NW.bl.y+(NW.br.y-NW.bl.y)*t};c.strokeStyle='#b09080';c.lineWidth=.5;c.beginPath();c.moveTo(s1.x,s1.y);c.lineTo(s2.x,s2.y);c.stroke();}
+  // Grid lines
+  c.globalAlpha=.1;c.strokeStyle='rgba(185,155,82,.9)';c.lineWidth=.5;
+  for(var gx=0;gx<=GW;gx++){var a=gridToCanvas(gx,0),b=gridToCanvas(gx,GH);c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.stroke();}
+  for(var gy=0;gy<=GH;gy++){var a2=gridToCanvas(0,gy),b2=gridToCanvas(GW,gy);c.beginPath();c.moveTo(a2.x,a2.y);c.lineTo(b2.x,b2.y);c.stroke();}
+  // Empty cell dots
+  c.globalAlpha=.055;c.fillStyle='rgba(185,155,82,1)';
+  for(var dy=0;dy<GH;dy++)for(var dx=0;dx<GW;dx++){var ct=gridToCanvas(dx+.5,dy+.5);c.beginPath();c.arc(ct.x,ct.y,.6,0,Math.PI*2);c.fill();}
+  c.restore();
+  // Locked-in row highlights (gold shimmer on full shelves)
+  G.tetrisRows=G.tetrisRows||{};
+  for(var lry in G.tetrisRows){
+    if(!G.tetrisRows[lry])continue;
+    var ly=parseInt(lry);
+    var rowTL=gridToCanvas(0,ly),rowTR=gridToCanvas(GW,ly);
+    var rowBL=gridToCanvas(0,ly+1),rowBR=gridToCanvas(GW,ly+1);
+    c.save();
+    c.beginPath();c.moveTo(rowTL.x,rowTL.y);c.lineTo(rowTR.x,rowTR.y);c.lineTo(rowBR.x,rowBR.y);c.lineTo(rowBL.x,rowBL.y);c.closePath();
+    c.fillStyle='rgba(212,168,67,.055)';c.fill();
+    c.strokeStyle='rgba(212,168,67,.22)';c.lineWidth=.8;c.stroke();
+    c.restore();
+  }
+  // 92% line
+  var tL=gridToCanvas(0,GH*(1-WIN_H)),tR=gridToCanvas(GW,GH*(1-WIN_H));
+  c.save();c.strokeStyle='rgba(46,196,122,.32)';c.lineWidth=1;c.setLineDash([5,4]);
+  c.beginPath();c.moveTo(tL.x,tL.y);c.lineTo(tR.x,tR.y);c.stroke();c.setLineDash([]);
+  c.fillStyle='rgba(46,196,122,.45)';c.font='bold 7px Share Tech Mono';c.textAlign='left';c.textBaseline='bottom';
+  c.fillText('92% — KEEP LOADING →',tL.x+3,tL.y-2);c.restore();
+}
+
+function drawWallBoxes(c){
+  var drawn={};
+  for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+    var cell=G.grid[y][x];
+    if(cell&&!drawn[cell.id]){drawn[cell.id]=true;renderWallBox(c,cell);}
+  }
+}
+
+function renderWallBox(c,cell){
+  var p=cell.box.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
+  var tl=gridToCanvas(cell.rx,cell.ry);
+  var tr=gridToCanvas(cell.rx+cell.w,cell.ry);
+  var bl=gridToCanvas(cell.rx,cell.ry+cell.h);
+  var br=gridToCanvas(cell.rx+cell.w,cell.ry+cell.h);
+
+  if(cell.isCrushed){
+    c.save();c.globalAlpha=.6;
+    c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();
+    c.fillStyle='#1a0808';c.fill();c.globalAlpha=1;c.fillStyle='rgba(255,30,0,.4)';c.fill();
+    c.restore();return;
+  }
+
+  // Main gradient face
+  c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();
+  var g=c.createLinearGradient(tl.x,tl.y,br.x,br.y);
+  g.addColorStop(0,p.l);g.addColorStop(.5,p.b);g.addColorStop(1,p.d);
+  c.fillStyle=g;c.fill();
+
+  // Top sheen
+  var mL={x:(tl.x+bl.x)/2,y:(tl.y+bl.y)/2},mR={x:(tr.x+br.x)/2,y:(tr.y+br.y)/2};
+  c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(mR.x,mR.y);c.lineTo(mL.x,mL.y);c.closePath();c.fillStyle='rgba(255,255,255,.1)';c.fill();
+
+  // Tape strip
+  function tp(a,b,t){return{x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};}
+  var ttl=tp(tl,bl,.22),ttr=tp(tr,br,.22),tbl=tp(tl,bl,.38),tbr=tp(tr,br,.38);
+  c.beginPath();c.moveTo(ttl.x,ttl.y);c.lineTo(ttr.x,ttr.y);c.lineTo(tbr.x,tbr.y);c.lineTo(tbl.x,tbl.y);c.closePath();
+  c.fillStyle='rgba(255,242,182,.22)';c.fill();
+
+  // Large hazard tint
+  if(cell.box.type==='large'||cell.box.isNC){
+    c.save();c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();c.clip();
+    c.globalAlpha=.07;c.fillStyle=cell.box.isNC?'#8080ff':'#f87171';c.fill();c.restore();
+  }
+
+  // Cartoon outline
+  c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();
+  c.strokeStyle='rgba(18,8,0,.7)';c.lineWidth=Math.max(.5,1.5);c.stroke();
+
+  // Label on face
+  drawBoxLabel(c,cell,tl,tr,bl,br,p);
+
+  // Fragile pulse glow
+  if(cell.box.isFrag&&!cell.isCrushed){
+    var a=.4+.28*Math.sin(Date.now()/280);
+    c.strokeStyle='rgba(255,70,50,'+a+')';c.lineWidth=1.6;
+    c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();c.stroke();
+  }
+}
+
+function drawBoxLabel(c,cell,tl,tr,bl,br,p){
+  var ld=cell.box.labelDef;if(!ld)return;
+  var cx=(tl.x+tr.x+bl.x+br.x)/4,cy=(tl.y+tr.y+bl.y+br.y)/4;
+  var boxW=Math.hypot(tr.x-tl.x,tr.y-tl.y);
+  var boxH=Math.hypot(bl.x-tl.x,bl.y-tl.y);
+  if(boxW<10||boxH<10)return;
+  var lw=Math.max(12,boxW*.68),lh=Math.max(9,boxH*.44);
+  var lx=cx-lw/2,ly=cy-lh/2;
+  c.fillStyle=ld.bg;c.fillRect(lx,ly,lw,lh);
+  c.strokeStyle='rgba(60,40,10,.3)';c.lineWidth=.6;c.strokeRect(lx,ly,lw,lh);
+  // DECISION: minimum 6px on wall labels — must be readable at perspective scale
+  var fs=Math.max(6,Math.min(lh*.42,10));
+  c.fillStyle=ld.tc;c.font='bold '+fs+'px Share Tech Mono';
+  c.textAlign='center';c.textBaseline='middle';
+  c.fillText(ld.ico?(ld.ico+' '+ld.s):(ld.s||ld.t),cx,cy-lh*.08);
+}
+
+function drawPlacementPreview(c){
+  if(!hCell)return;
+  var box=null,rot=0,source='';
+  if(selBeltIdx!==null&&G.belt[selBeltIdx]){box=G.belt[selBeltIdx];rot=selBeltRot;source='belt';}
+  else if(selNC>=0&&G.ncSlots[selNC]){box=G.ncSlots[selNC];rot=selNCRot;source='nc';}
+  else if(selBag>=0&&G.bagSlots[selBag]){box=G.bagSlots[selBag];rot=selBeltRot;source='bag';}
+  if(!box)return;
+
+  var gx=hCell.x,gy=hCell.y;
+  var ok=isLegal(G.grid,box,gx,gy,rot);
+  var d=getDims(box,rot);
+  var tl=gridToCanvas(gx,gy),tr=gridToCanvas(gx+d.w,gy);
+  var bl=gridToCanvas(gx,gy+d.h),br=gridToCanvas(gx+d.w,gy+d.h);
+
+  c.save();
+  if(ok){c.fillStyle='rgba(200,165,85,.12)';c.strokeStyle='rgba(245,196,0,.85)';}
+  else{c.fillStyle='rgba(255,50,20,.09)';c.strokeStyle='rgba(255,50,20,.75)';}
+  c.lineWidth=1.4;
+  c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();
+  c.fill();c.stroke();
+  c.fillStyle=ok?'rgba(255,255,255,.85)':'rgba(255,120,80,.9)';
+  c.font='bold 9px Share Tech Mono';c.textAlign='center';c.textBaseline='middle';
+  var cx=(tl.x+br.x)/2,cy=(tl.y+br.y)/2;
+  c.fillText(ok?(d.w+'×'+d.h):'✕',cx,cy);
+  c.restore();
+}
+
+function drawDockFrame(c){
+  var fw=W*.018;
+  c.fillStyle='#14110a';
+  c.fillRect(0,0,W,DT+fw*.3);c.fillRect(0,DB-fw*.3,W,fw*.3+H);
+  c.fillRect(0,0,DL+fw*.25,H);c.fillRect(DR-fw*.25,0,fw*.25+W,H);
+  c.strokeStyle='rgba(140,118,75,.24)';c.lineWidth=1.5;c.strokeRect(DL,DT,DR-DL,DB-DT);
+  c.save();c.globalAlpha=.15;
+  for(var s=0;s<Math.ceil(W/18)+2;s++){c.fillStyle=(s%2===0)?'#d4a843':'#14110a';c.fillRect(s*18,DB-5,9,5);}
+  c.restore();
+}
+
+function drawAtmosphere(c){
+  var ag=c.createRadialGradient(W/2,DT+H*.04,0,W/2,DT+H*.1,W*.55);
+  ag.addColorStop(0,'rgba(255,250,212,.04)');ag.addColorStop(1,'rgba(255,248,200,0)');
+  c.fillStyle=ag;c.fillRect(0,0,W,H);
+}
+
+// ── BELT CANVAS RENDERER ──
+// 6 boxes rolling toward the wall on the conveyor perspective belt
+// This is the footer canvas — full-width, BH pixels tall
+function drawBelt(ts){
+  bCtx.clearRect(0,0,BW,BH);
+
+  // Belt background
+  var bg=bCtx.createLinearGradient(0,0,0,BH);
+  bg.addColorStop(0,'rgba(18,14,9,.98)');bg.addColorStop(1,'rgba(10,8,6,1)');
+  bCtx.fillStyle=bg;bCtx.fillRect(0,0,BW,BH);
+
+  // Top border line
+  bCtx.strokeStyle='rgba(60,45,20,.6)';bCtx.lineWidth=1;
+  bCtx.beginPath();bCtx.moveTo(0,0);bCtx.lineTo(BW,0);bCtx.stroke();
+
+  // Roller lines across full belt width (animated)
+  bCtx.save();
+  var numR=20;
+  for(var r=0;r<numR;r++){
+    var rx=((r/numR)*BW+(convOffset/40)*BW*.05+BW)%BW;
+    bCtx.strokeStyle='rgba(55,45,32,.7)';bCtx.lineWidth=1.5;
+    bCtx.beginPath();bCtx.moveTo(rx,2);bCtx.lineTo(rx,BH-2);bCtx.stroke();
+  }
+  // Belt edge rails
+  bCtx.strokeStyle='rgba(100,80,50,.4)';bCtx.lineWidth=2;
+  bCtx.beginPath();bCtx.moveTo(0,2);bCtx.lineTo(BW,2);bCtx.stroke();
+  bCtx.beginPath();bCtx.moveTo(0,BH-2);bCtx.lineTo(BW,BH-2);bCtx.stroke();
+  bCtx.restore();
+
+  // Pieces — evenly spaced across the belt, sized to FILL the slot
+  var pieces=G.belt.slice(0,BELT_PIECE_COUNT);
+  var slotW=BW/BELT_PIECE_COUNT;
+  // Reserve bottom 14px for dimension label
+  var labelH=14;
+  pieces.forEach(function(piece,i){
+    var slotCX=slotW*(i+.5);
+    var isSelected=(selBeltIdx===i);
+    var rot=(isSelected)?selBeltRot:0;
+    var d=getDims(piece,rot);
+
+    // DECISION: Cap display aspect ratio to 0.4–2.2 so a 12×1 plank doesn't
+    // render as a 1px sliver and a 1×8 pipe doesn't overflow the slot.
+    // Visual representation is proportional, not pixel-accurate.
+    var rawAspect=d.w/d.h;
+    var dispAspect=Math.max(0.4,Math.min(2.2,rawAspect));
+
+    var maxBW=slotW*.84;
+    var maxBH=(BH-labelH-8)*.82;
+    var bw,bh;
+    if(dispAspect>=1){
+      bw=Math.min(maxBW,maxBH*dispAspect);
+      bh=bw/dispAspect;
+    } else {
+      bh=Math.min(maxBH,maxBW/dispAspect);
+      bw=bh*dispAspect;
+    }
+    bw=Math.min(bw,maxBW);bh=Math.min(bh,maxBH);
+    var bx=slotCX-bw/2;
+    var by=BH-labelH-bh-4;
+    if(isSelected)by-=5;
+
+    drawBeltPiece(bCtx,piece,bx,by,bw,bh,isSelected,i,ts);
+
+    // Dimensions label below piece — always visible, minimum 9px for legibility
+    var dimStr=d.w+'×'+d.h+(piece.n?(' '+piece.n):'');
+    bCtx.font=(isSelected?'bold ':'')+Math.max(11,Math.min(13,slotW*.18))+'px Share Tech Mono';
+    bCtx.textAlign='center';bCtx.textBaseline='bottom';
+    bCtx.fillStyle=isSelected?'rgba(212,168,67,.98)':'rgba(200,175,120,.88)';
+    bCtx.fillText(dimStr,slotCX,BH-2);
+  });
+
+  // Selected indicator above selected piece + rotation state
+  if(selBeltIdx!==null&&selBeltIdx<pieces.length){
+    var aX=slotW*(selBeltIdx+.5);
+    bCtx.fillStyle='rgba(212,168,67,.95)';
+    bCtx.font='bold 11px Share Tech Mono';bCtx.textAlign='center';bCtx.textBaseline='bottom';
+    bCtx.fillText('▼',aX,10);
+    if(selBeltRot>0){
+      bCtx.font='bold 8px Share Tech Mono';bCtx.fillStyle='rgba(212,168,67,.85)';
+      bCtx.textBaseline='top';
+      bCtx.fillText(selBeltRot*90+'°',aX,BH-11);
+    }
+  }
+}
+
+function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
+  var p=piece.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
+  var R=Math.max(2,Math.min(w,h)*.1);
+
+  if(isSel){
+    c.save();c.shadowColor='rgba(212,168,67,.6)';c.shadowBlur=12;
+  }
+
+  // Main body
+  var g=c.createLinearGradient(x,y,x+w,y+h);
+  g.addColorStop(0,p.l);g.addColorStop(.5,p.b);g.addColorStop(1,p.d);
+  c.fillStyle=g;c.beginPath();c.roundRect(x,y,w,h,R);c.fill();
+
+  // Top sheen
+  var sg=c.createLinearGradient(x,y,x,y+h*.3);
+  sg.addColorStop(0,'rgba(255,255,255,.22)');sg.addColorStop(1,'rgba(255,255,255,0)');
+  c.fillStyle=sg;c.beginPath();c.roundRect(x,y,w,h*.35,R);c.fill();
+
+  // Right shadow
+  var rg=c.createLinearGradient(x+w*.82,y,x+w,y);
+  rg.addColorStop(0,'rgba(0,0,0,0)');rg.addColorStop(1,'rgba(0,0,0,.22)');
+  c.fillStyle=rg;c.fillRect(x+w*.82,y+2,w*.18,h-4);
+
+  // Tape strip
+  if(w>14){
+    c.fillStyle=p.t;c.fillRect(x+1,y+h*.06,w-2,Math.max(2,h*.12));
+    c.fillStyle='rgba(255,255,255,.16)';c.fillRect(x+1,y+h*.06,w-2,Math.max(1,h*.05));
+  }
+
+  // Corrugation lines
+  c.strokeStyle='rgba(0,0,0,.08)';c.lineWidth=.5;
+  var corrStep=Math.max(3,h*.18);
+  for(var ly=corrStep;ly<h;ly+=corrStep){c.beginPath();c.moveTo(x+1,y+ly);c.lineTo(x+w-1,y+ly);c.stroke();}
+
+  // Cartoon outline
+  c.strokeStyle=isSel?'rgba(212,168,67,.9)':'rgba(20,10,0,.75)';
+  c.lineWidth=isSel?2:Math.max(1,Math.min(w,h)*.05);
+  c.beginPath();c.roundRect(x,y,w,h,R);c.stroke();
+
+  if(isSel)c.restore();
+
+  // Label badge
+  var ld=piece.labelDef;
+  if(ld&&w>14&&h>10){
+    var lw=Math.max(12,Math.min(w*.74,w-4));
+    var lh=Math.max(8,Math.min(h*.50,h-4));
+    var lx=x+(w-lw)*.5,ly2=y+(h-lh)*.55;
+    c.fillStyle=ld.bg;c.fillRect(lx,ly2,lw,lh);
+    c.strokeStyle='rgba(40,20,0,.25)';c.lineWidth=.5;c.strokeRect(lx,ly2,lw,lh);
+    // DECISION: minimum 6px on belt labels — readable is non-negotiable
+    var fs=Math.max(6,Math.min(lh*.44,8));
+    c.fillStyle=ld.tc;c.font='bold '+fs+'px Share Tech Mono';
+    c.textAlign='center';c.textBaseline='middle';
+    c.fillText(ld.ico?(ld.ico+' '+ld.s):ld.s,lx+lw*.5,ly2+lh*.5);
+  }
+
+  // Type border glow
+  if(piece.type==='large'||piece.isNC){c.strokeStyle='rgba(248,113,113,.5)';c.lineWidth=1.4;c.beginPath();c.roundRect(x,y,w,h,R);c.stroke();}
+  if(piece.type==='small'||piece.isGap){c.strokeStyle='rgba(192,132,252,.5)';c.lineWidth=1.1;c.beginPath();c.roundRect(x,y,w,h,R);c.stroke();}
+  if(piece.isPanic){c.strokeStyle='rgba(255,140,0,.7)';c.lineWidth=1.4;c.beginPath();c.roundRect(x,y,w,h,R);c.stroke();}
+
+  // Dim index label below piece
+  c.fillStyle='rgba(160,140,100,.4)';c.font='5.5px Share Tech Mono';c.textAlign='center';c.textBaseline='top';
+  c.fillText((idx+1),x+w*.5,y+h+2);
+}
+
+// ── PANEL BUILDERS (stubs — slots now on canvas floor) ──
+// DOM panel building removed in v1.7.0. NC and bag slots are
+// rendered directly on the scene canvas by drawFloorSlots().
+// These stubs preserve call-site compatibility.
+function buildNCPanel(){checkPanelFill();}
+function buildBagPanel(){checkPanelFill();}
+
+// ── HUD UPDATE ──
+// READS: G.*, S.*, placed, startT | WRITES: stats panel + feedback panel DOM
+function updateHUD(){
+  var hp=wallH()/GH;
+  var pph=getPPH();
+  var integ=G.integrity||100;
+  var eff=countFilled()/(GW*GH);
+  var cog=G.cog||.5,dev=Math.abs(cog-.5);
+  var voids=getVoids(G.grid).length;
+  var ss=supportScore(G.grid);
+
+  // ── LEFT STATS PANEL ──
+  function setEl(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
+  function setElStyle(id,prop,val){var e=document.getElementById(id);if(e)e.style[prop]=val;}
+  function setElClass(id,cls){var e=document.getElementById(id);if(e)e.className=cls;}
+
+  var scoreEl=document.getElementById('sp-score');
+  if(scoreEl){scoreEl.textContent=G.score||0;scoreEl.className='sp-big';}
+  var pphEl=document.getElementById('sp-pph');
+  if(pphEl){
+    pphEl.textContent=pph||'—';
+    var pphDanger=pph>0&&pph<MIN_PPH&&elapsed()>LOW_PPH_GRACE;
+    pphEl.className='sp-big'+(pphDanger?' danger':pph>=100?' ok':'');
+  }
+  setEl('sp-h-val',Math.round(hp*100)+'%');
+  setElStyle('sp-h-fill','width',(hp*100)+'%');
+  var intEl=document.getElementById('sp-int-val');
+  if(intEl){intEl.textContent=integ+'%';intEl.style.color=integ<35?'var(--danger)':integ<55?'var(--warn)':'var(--ok)';}
+  setElStyle('sp-int-fill','width',integ+'%');
+  var cogD=document.getElementById('sp-cog-d');if(cogD)cogD.style.left=(cog*100)+'%';
+  var cogS=document.getElementById('sp-cog-s');
+  if(cogS){
+    if(dev<.1){cogS.textContent='STABLE';cogS.style.color='var(--ok)';}
+    else if(dev<.22){cogS.textContent='CAUTION';cogS.style.color='var(--warn)';}
+    else{cogS.textContent='DANGER';cogS.style.color='var(--danger)';}
+  }
+  setEl('sp-eff',Math.round(eff*100)+'%');
+  setEl('sp-placed',placed);
+  setEl('sp-tetris',G.tetrisTotal||0);
+  setEl('sp-bulkhead',G.bulkheadCount||0);
+  setEl('sp-truck','#'+S.truck);
+  var timeEl=document.getElementById('sp-time');
+  if(timeEl){
+    var el=Math.floor(elapsed());
+    var mm=Math.floor(el/60),ss2=el%60;
+    timeEl.textContent=(mm<10?'0':'')+mm+':'+(ss2<10?'0':'')+ss2;
+  }
+
+  // Conveyor status text
+  document.getElementById('conv-lbl-txt').textContent=
+    selBeltIdx!==null?('▶ PIECE '+(selBeltIdx+1)+' SELECTED — CLICK WALL TO PLACE'):
+    selNC>=0?'▶ NC SELECTED — CLICK WALL TO PLACE':
+    selBag>=0?'▶ BAG SELECTED — CLICK WALL TO PLACE':
+    '▶ PRESELECTOR BELT — SELECT A PIECE';
+
+  // ── RIGHT FEEDBACK PANEL ──
+  updateFeedback(hp,pph,integ,eff,cog,voids,ss);
+}
+
+var _lastTipTs=0,_tipIdx=0;
+// READS: wall state | WRITES: feedback panel DOM
+function updateFeedback(hp,pph,integ,eff,cog,voids,ss){
+  var structScore=integ;
+  var balScore=Math.round(clamp(100-Math.abs(cog-.5)*400,0,100));
+  var densScore=Math.round(eff*100);
+  var supScore=Math.round(ss*100);
+  var overall=Math.round(structScore*.35+balScore*.25+densScore*.25+supScore*.15);
+
+  var grade,gCol;
+  if(overall>=95){grade='A+';gCol='#e8c060';}
+  else if(overall>=88){grade='A';gCol='#28b870';}
+  else if(overall>=80){grade='B+';gCol='#28b870';}
+  else if(overall>=72){grade='B';gCol='#60b840';}
+  else if(overall>=64){grade='C+';gCol='#d4a843';}
+  else if(overall>=55){grade='C';gCol='#d48020';}
+  else if(overall>=45){grade='D';gCol='#cc5820';}
+  else{grade='F';gCol='#cc3820';}
+  var gEl=document.getElementById('fp-grade');
+  if(gEl){gEl.textContent=grade;gEl.style.color=gCol;}
+
+  function setSG(fillId,valId,val){
+    var fe=document.getElementById(fillId);var ve=document.getElementById(valId);
+    if(!fe||!ve)return;
+    fe.style.width=val+'%';
+    var col=val>=75?'var(--ok)':val>=50?'var(--warn)':'var(--danger)';
+    fe.style.background=col;ve.textContent=val;ve.style.color=col;
+  }
+  setSG('fp-sg-struct','fp-sg-struct-v',structScore);
+  setSG('fp-sg-bal','fp-sg-bal-v',balScore);
+  setSG('fp-sg-dens','fp-sg-dens-v',densScore);
+  setSG('fp-sg-sup','fp-sg-sup-v',supScore);
+
+  // Weight mix
+  var heavy=0,reg=0,sml=0,tot=0,seen={};
+  for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
+    var cell=G.grid[y][x];
+    if(!cell||seen[cell.id])continue;seen[cell.id]=true;tot++;
+    if(cell.box.wc>=4)heavy++;
+    else if(cell.box.type==='small')sml++;
+    else reg++;
+  }
+  if(tot>0){
+    var hf=heavy/tot,rf=reg/tot,sf=sml/tot;
+    var hvE=document.getElementById('fp-wt-hvy');if(hvE)hvE.style.flex=hf.toFixed(3);
+    var rgE=document.getElementById('fp-wt-reg');if(rgE)rgE.style.flex=rf.toFixed(3);
+    var smE=document.getElementById('fp-wt-sml');if(smE)smE.style.flex=sf.toFixed(3);
+    var hvP=document.getElementById('fp-wt-hvy-p');if(hvP)hvP.textContent=Math.round(hf*100)+'%';
+    var rgP=document.getElementById('fp-wt-reg-p');if(rgP)rgP.textContent=Math.round(rf*100)+'%';
+    var smP=document.getElementById('fp-wt-sml-p');if(smP)smP.textContent=Math.round(sf*100)+'%';
+  }
+
+  function setCt(id,val,warnT,dangerT,higherBad){
+    var e=document.getElementById(id);if(!e)return;e.textContent=val;
+    if(higherBad)e.className='fp-ct-val'+(val>=dangerT?' danger':val>=warnT?' warn':'');
+    else e.className='fp-ct-val'+(val>=dangerT?' ok':val>=warnT?'':' warn');
+  }
+  setCt('fp-voids',voids,3,6,true);
+  setCt('fp-shelves',G.tetrisTotal||0,1,3,false);
+  setCt('fp-bulkheads',G.bulkheadCount||0,1,2,false);
+  setCt('fp-nc',G.ncPlaced||0,1,3,false);
+  setCt('fp-crunches',G.crunchCount||0,1,3,true);
+
+  // Coach tips — rotate every 8s
+  var now=Date.now();
+  if(now-_lastTipTs>8000){
+    _lastTipTs=now;
+    var tips=buildTips(hp,integ,voids,cog,ss,pph);
+    _tipIdx=(_tipIdx+1)%tips.length;
+    var tip=tips[_tipIdx];
+    var th=document.getElementById('fp-tip-h');var ts2=document.getElementById('fp-tip-s');
+    if(th)th.textContent=tip.h;if(ts2)ts2.textContent=tip.s;
+  }
+}
+
+function buildTips(hp,integ,voids,cog,ss,pph){
+  var tips=[];
+  if(hp<0.2)tips.push({h:'Build your floor first.',s:'Place NCs along the bottom row before stacking regular freight. A solid foundation is everything.'});
+  if(voids>5)tips.push({h:'Fill those voids.',s:'Gaps under loaded freight weaken the wall. Use smalls and bag breakdown pieces to plug holes.'});
+  if(integ<50)tips.push({h:'Wall integrity critical.',s:'Lock in a full shelf row to recover structural integrity. Unsupported heavy freight is your enemy.'});
+  if(Math.abs(cog-.5)>.22)tips.push({h:'Balance your load.',s:'Weight is shifting to one side. Alternate where you place heavy freight to keep COG centered.'});
+  if(ss<0.7)tips.push({h:'Support every piece.',s:'Over 30% of your freight is unsupported. Stack pieces on solid bases — avoid floating columns.'});
+  if(pph<60&&elapsed()>60)tips.push({h:'Pick up the pace.',s:'Your PPH is below target. Keep the belt moving and clear pieces quickly rather than waiting for the perfect spot.'});
+  if((G.tetrisTotal||0)===0&&hp>.3)tips.push({h:'Lock in a shelf.',s:'Complete a full row to earn LOCKED IN — bonus CUBES and structural integrity recovery. Even one shelf matters.'});
+  tips.push({h:'NCs anchor the wall.',s:'Non-conveyables on corners and floor edges earn bonus CUBES and prevent wall drift.'});
+  tips.push({h:'Stagger your rows.',s:'Offset box joints like a brick wall — pieces that bridge seams earn the BRICK LOCK bonus.'});
+  tips.push({h:'Bag breakdown tip.',s:'Long-press or double-click a smalls bag slot to break it into 5 gap-fill pieces for tight voids.'});
+  tips.push({h:'Heavy freight on top.',s:'NCs are never penalized for height. Regular freight needs solid support below — NCs do not.'});
+  return tips.length?tips:[{h:'Keep loading.',s:'Build toward 92% wall height to complete the trailer.'}];
+}
+
+// ── FAIL CONDITIONS ──
+function checkPPHFail(dt){
+  var el=elapsed();if(el<LOW_PPH_GRACE)return;
+  var pph=getPPH();
+  if(pph>0&&pph<MIN_PPH){
+    pphLowSec+=dt;
+    if(pphLowSec>=LOW_PPH_FAIL)endGame('PPH BELOW '+MIN_PPH+' FOR 2 MINUTES',false);
+  }else{pphLowSec=0;}
+}
+
+function checkLargeDanger(dt){
+  // DECISION: Heavy freight CAN go on top if it sits on solid shelving.
+  // Vince's real-world rule: a locked shelf (tetris row) or solid support
+  // below a heavy piece makes it structurally fine regardless of height.
+  // Only flag unsupported heavies floating in the top 40% with no base.
+  // NCs are NEVER flagged — they are placed intentionally and are often
+  // the last pieces loaded (top of wall).
+  var seen={};var danger=false;
+  for(var y=0;y<Math.floor(GH*.40);y++){
+    for(var x=0;x<GW;x++){
+      var c=G.grid[y][x];
+      if(!c||seen[c.id])continue;seen[c.id]=true;
+      // NCs never trigger large danger — they're intentional top-loads
+      if(c.box.isNC)continue;
+      // Exempt if below or at a locked row
+      if(isRowLockedIn(y))continue;
+      // Exempt if the piece has solid support underneath (>50% of bottom cells backed)
+      var cells2=getCells(c.box,0);
+      var bpc={};
+      for(var i=0;i<cells2.length;i++){
+        var cx2=cells2[i][0],cy2=cells2[i][1];
+        if(bpc[cx2]===undefined||cy2>bpc[cx2])bpc[cx2]=cy2;
+      }
+      var sup=0,tot=0;
+      for(var col in bpc){
+        tot++;
+        var by=c.ry+parseInt(bpc[col])+1;
+        if(by>=GH||G.grid[by][c.rx+parseInt(col)])sup++;
+      }
+      var supported=(tot===0)||(sup/tot>=0.5);
+      if(!supported&&c.box.wc>=4){danger=true;}
+    }
+  }
+  // Timer: 30s before game-over (up from 18s), and only for truly unsupported heavies
+  if(danger){
+    lgDangerSec+=dt;
+    if(lgDangerSec>=30)endGame('UNSUPPORTED HEAVY FREIGHT — BUILD A BASE FIRST',false);
+  } else {
+    lgDangerSec=Math.max(0,lgDangerSec-dt*.5);
+  }
+}
+
+// ── POINTER EVENTS ──
+function getPC(e,el){
+  var r=el.getBoundingClientRect();
+  var cx=e.clientX||(e.touches&&e.touches[0]&&e.touches[0].clientX)||(e.changedTouches&&e.changedTouches[0]&&e.changedTouches[0].clientX);
+  var cy2=e.clientY||(e.touches&&e.touches[0]&&e.touches[0].clientY)||(e.changedTouches&&e.changedTouches[0]&&e.changedTouches[0].clientY);
+  if(cx===undefined)return null;
+  return{mx:(cx-r.left)*(parseInt(el.width)||el.offsetWidth)/r.width,
+         my:(cy2-r.top)*(parseInt(el.height)||el.offsetHeight)/r.height};
+}
+
+scene.addEventListener('pointermove',function(e){
+  e.preventDefault();
+  var c2=getPC(e,scene);if(!c2)return;
+  var g=canvasToGrid(c2.mx,c2.my);
+  // Check if cursor is within nose wall bounds
+  if(g.x>=0&&g.x<GW&&g.y>=0&&g.y<GH)hCell={x:g.x,y:g.y};
+  else hCell=null;
+},{passive:false});
+
+scene.addEventListener('pointerup',function(e){
+  e.preventDefault();
+  var c2=getPC(e,scene);if(!c2)return;
+
+  // ── Floor slot hit test first ──
+  var slotHit=hitTestFloorSlots(c2.mx,c2.my);
+  if(slotHit){
+    if(slotHit.type==='nc'){
+      var slot=G.ncSlots[slotHit.idx];
+      if(!slot){selNC=-1;selBeltIdx=null;selBag=-1;return;}
+      var wasSel=(selNC===slotHit.idx);
+      if(wasSel){selNC=-1;selNCRot=0;}else{selNC=slotHit.idx;selBeltIdx=null;selBag=-1;}
+      return;
+    }
+    if(slotHit.type==='bag'){
+      var bslot=G.bagSlots[slotHit.idx];
+      if(!bslot){selBag=-1;selBeltIdx=null;selNC=-1;return;}
+      selBag=(selBag===slotHit.idx)?-1:slotHit.idx;
+      selBeltIdx=null;selNC=-1;return;
+    }
+  }
+
+  var g=canvasToGrid(c2.mx,c2.my);
+  if(g.x<0||g.x>=GW||g.y<0||g.y>=GH)return;
+
+  var nothingSelected=(selBeltIdx===null&&selNC<0&&selBag<0);
+  if(nothingSelected){
+    var existing=G.grid[g.y]&&G.grid[g.y][g.x];
+    if(existing){liftBox(existing);}
+    return;
+  }
+  if(selBeltIdx!==null){placeBox('belt',selBeltIdx,g.x,g.y,selBeltRot);return;}
+  if(selNC>=0){
+    placeBox('nc',selNC,g.x,g.y,selNCRot);
+    selNCRot=0;return;
+  }
+  if(selBag>=0){placeBox('bag',selBag,g.x,g.y,selBeltRot);return;}
+},{passive:false});
+
+// ── Long press + dblclick on bag floor slots ──
+var _bagLPTimer=null,_bagLPIdx=-1;
+scene.addEventListener('pointerdown',function(e){
+  var c2=getPC(e,scene);if(!c2)return;
+  var hit=hitTestFloorSlots(c2.mx,c2.my);
+  if(hit&&hit.type==='bag'){
+    var bs=G.bagSlots[hit.idx];
+    if(bs&&bs.isBag){
+      _bagLPIdx=hit.idx;
+      _bagLPTimer=setTimeout(function(){breakdownBag(_bagLPIdx);_bagLPTimer=null;},600);
+    }
+  }
+},{passive:true});
+scene.addEventListener('pointerup',function(){if(_bagLPTimer){clearTimeout(_bagLPTimer);_bagLPTimer=null;}},{passive:true,capture:false});
+scene.addEventListener('pointerleave',function(){if(_bagLPTimer){clearTimeout(_bagLPTimer);_bagLPTimer=null;}},{passive:true});
+scene.addEventListener('dblclick',function(e){
+  var c2=getPC(e,scene);if(!c2)return;
+  var hit=hitTestFloorSlots(c2.mx,c2.my);
+  if(hit&&hit.type==='bag'){var bs=G.bagSlots[hit.idx];if(bs&&bs.isBag)breakdownBag(hit.idx);}
+});
+
+scene.addEventListener('contextmenu',function(e){e.preventDefault();rotateSel();});
+
+// Belt click — select pieces
+// DECISION: Only reset selBeltRot when switching to a DIFFERENT piece.
+// Clicking the same piece again should NOT wipe the rotation you just set.
+belt.addEventListener('pointerup',function(e){
+  e.preventDefault();
+  var c2=getPC(e,belt);if(!c2)return;
+  var slotW=BW/BELT_PIECE_COUNT;
+  var idx=Math.floor(c2.mx/slotW);
+  if(idx>=0&&idx<G.belt.length){
+    if(selBeltIdx===idx){
+      // Same piece — deselect, keep rot for reference but clear selection
+      selBeltIdx=null;
+    } else {
+      // New piece — select it, reset rot
+      selBeltIdx=idx;
+      selBeltRot=0;
+      selNC=-1;selBag=-1;
+      buildNCPanel();buildBagPanel();
+    }
+  }
+},{passive:false});
+
+belt.addEventListener('contextmenu',function(e){e.preventDefault();rotateSel();});
+
+function rotateSel(){
+  var rotated=false;
+  if(selBeltIdx!==null&&selBeltIdx<G.belt.length){
+    var b=G.belt[selBeltIdx];
+    if(b){
+      // Only block rotation for non-NC large pieces (pallets, tires, etc.)
+      if(b.type==='large'&&!b.isNC){
+        showBanner('⚠ HEAVY FREIGHT — CANNOT ROTATE','danger',800);
+      } else {
+        selBeltRot=(selBeltRot+1)%4;
+        rotated=true;
+      }
+    }
+  } else if(selNC>=0&&G.ncSlots[selNC]){
+    selNCRot=(selNCRot+1)%2;
+    buildNCPanel();
+    rotated=true;
+  } else if(selBag>=0&&G.bagSlots[selBag]){
+    var bs=G.bagSlots[selBag];
+    if(bs&&!bs.isBag){
+      selBeltRot=(selBeltRot+1)%4;
+      rotated=true;
+    }
+  } else {
+    showBanner('SELECT A PIECE FIRST','',700);
+  }
+  if(rotated){
+    var degs=['0°','90°','180°','270°'];
+    var deg=selNC>=0?(selNCRot*90+'°'):degs[selBeltRot];
+    document.getElementById('conv-lbl-txt').textContent='↻ ROTATED '+deg+' — CLICK WALL TO PLACE';
+  }
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    // ESC exits training if active, otherwise toggles pause
+    if(gameMode==='training'){exitTraining();return;}
+    togglePause();return;
+  }
+  if(e.key==='r'||e.key==='R')rotateSel();
+});
+
+function updateCoachTip(){
+  // Hide the first-shelf tip once the bottom 2 rows have meaningful coverage
+  var coachEl=document.getElementById('coach-shelf');
+  if(!coachEl)return;
+  var bottomFilled=0;
+  for(var x=0;x<GW;x++){
+    if(G.grid[GH-1]&&G.grid[GH-1][x])bottomFilled++;
+    if(G.grid[GH-2]&&G.grid[GH-2][x])bottomFilled++;
+  }
+  if(bottomFilled>=GW){
+    coachEl.style.opacity='0';
+    setTimeout(function(){if(coachEl.parentNode)coachEl.parentNode.removeChild(coachEl);},600);
+  }
+}
+function flash(id){var e=document.getElementById(id);if(!e)return;e.classList.add('on');setTimeout(function(){e.classList.remove('on');},310);}
+var bannerTO=null;
+function showBanner(html,cls,dur){
+  var b=document.getElementById('banner');b.innerHTML=html;
+  b.className=cls?('vis '+cls):'vis';
+  if(bannerTO)clearTimeout(bannerTO);
+  bannerTO=setTimeout(function(){b.classList.remove('vis');b.className='';},dur||2000);
+}
+function showPop(x,y,t,col){
+  var e=document.createElement('div');e.className='spp';
+  e.style.cssText='left:'+x+'px;top:'+y+'px;font-size:14px;color:'+(col||'#f5c400')+';text-shadow:0 0 8px currentColor;';
+  e.textContent=t;document.body.appendChild(e);setTimeout(function(){e.remove();},950);
+}
+
+// ── START MENU + MODE SYSTEM ──
+// READS: gameMode | WRITES: start-menu vis, gameMode, shift state
+// BOOT ORDER: start menu shows first. restartGame() called by mode selection.
+
+var gameMode=''; // 'shift' | 'training'
+var shiftState={walls:0,totalBoxes:0,sessionStartT:null};
+var trainingState={playing:false,speed:1,stepIdx:0,stepTimer:null,loopCount:0};
+
+function showStartMenu(){
+  document.getElementById('start-menu').style.display='flex';
+  // Make sure game is not running
+  paused=true;
+  if(animF){cancelAnimationFrame(animF);animF=null;}
+}
+
+function hideStartMenu(){
+  document.getElementById('start-menu').style.display='none';
+}
+
+// ── TRAINING MODE ──
+// Pre-scripted sequence showing ideal wall: NC corners first, then regular freight staggered.
+// Plays in a loop at adjustable speed. No interaction with game grid.
+// DECISION: Training is a canvas DEMO — runs its own mini-loop, does not call restartGame().
+// ── DEMO SCRIPT — PRINCIPLE-ANNOTATED ──
+// Each step: piece placement + the loading principle it demonstrates.
+// p = short principle headline (Bebas Neue, amber, ALL CAPS feel)
+// r = reason — plain English explanation a trainee can understand and remember.
+// Placement geometry builds a genuine ideal wall: NC corners → NC wall edges →
+// wide floor cartons → staggered mid rows → smalls to fill → top fill.
+// DECISION: 24 steps covers all core principles without overstaying the loop.
+var DEMO_SCRIPT=[
+  // ── PHASE 1: ANCHOR YOUR CORNERS ──
+  {src:'nc',n:'WASHER',gx:0,gy:16,rot:0,
+   p:'ANCHOR YOUR CORNERS FIRST',
+   r:'The heaviest freight belongs in the bottom corners. It locks the wall foundation, earns a Cornerstone bonus, and prevents the whole wall from shifting in transit.'},
+  {src:'nc',n:'DISHWASH',gx:14,gy:16,rot:0,
+   p:'MIRROR YOUR ANCHORS — LEFT AND RIGHT',
+   r:'Two heavy NCs in opposite corners balance the load immediately. An uneven wall shifts weight to one side and damages freight. Always think in pairs.'},
+  // ── PHASE 2: BUILD THE FLOOR SHELF ──
+  {src:'reg',n:'WIDE-XXL',gx:3,gy:19,rot:0,
+   p:'FILL THE FLOOR WIDE BEFORE YOU BUILD UP',
+   r:'Wide cartons on the floor create a continuous shelf. Freight placed on top of a solid floor row is supported across its full base — nothing floats, nothing falls.'},
+  {src:'reg',n:'PLANK-BOX',gx:3,gy:18,rot:0,
+   p:'LOCK IN YOUR FIRST SHELF ROW',
+   r:'When a full horizontal row is complete, it becomes a structural anchor — a "Locked In" shelf. Everything above it is protected. Everything below it is secured.'},
+  {src:'reg',n:'BULK-W',gx:9,gy:19,rot:0,
+   p:'NO GAPS ON THE FLOOR',
+   r:'A gap in the floor shelf is a void under load. In a moving trailer, that void becomes a collapse point. Fill every cell on the bottom row before building up.'},
+  {src:'reg',n:'CARTON-L',gx:9,gy:18,rot:0,
+   p:'STAGGER YOUR JOINTS LIKE BRICKWORK',
+   r:'Offset each row so box edges don\'t line up vertically. Staggered joints distribute weight across multiple pieces — the same reason bricklayers never stack seam over seam.'},
+  // ── PHASE 3: NC WALL EDGES ──
+  {src:'nc',n:'FRIDGE-SM',gx:0,gy:11,rot:0,
+   p:'RUN NC\'S UP THE WALL EDGES',
+   r:'Non-conveyables placed flush against the wall edge get a Wall Anchor bonus. They act as vertical columns — the structural spine your freight leans against.'},
+  {src:'nc',n:'SAFE-MED',gx:14,gy:17,rot:0,
+   p:'HEAVY IS FINE HIGH — IF IT\'S SUPPORTED',
+   r:'NCs are never penalized for height. A fridge or safe placed on a solid base can go anywhere on the wall. The rule is support underneath, not weight class.'},
+  // ── PHASE 4: MID-WALL FILL ──
+  {src:'reg',n:'WIDE-XL',gx:3,gy:16,rot:0,
+   p:'BUILD EACH ROW LEFT TO RIGHT, BOTTOM TO TOP',
+   r:'Work systematically — fill a row completely before starting the next. Random placement creates voids. Voids under heavy freight cause collapse and score penalties.'},
+  {src:'reg',n:'BIG-L',gx:10,gy:16,rot:0,
+   p:'LARGE FREIGHT GOES WHERE IT FITS FLAT',
+   r:'Lay oversized cartons horizontally whenever possible. A flat piece distributes its weight over more cells — better support, better structure, less damage risk.'},
+  {src:'reg',n:'LONG-BOX',gx:3,gy:14,rot:0,
+   p:'LONG PIECES BRIDGE GAPS AND LOCK ROWS',
+   r:'A long carton spanning multiple cells ties the row together. It bridges any small void below and creates a wide, stable platform for the next layer.'},
+  {src:'reg',n:'TALL-M',gx:10,gy:13,rot:0,
+   p:'TALL FREIGHT NEEDS A SOLID BASE BELOW IT',
+   r:'Tall cartons have a high center of gravity. If they\'re not supported underneath, they\'ll fail your integrity check. Always place them on a completed row.'},
+  // ── PHASE 5: UPPER WALL ──
+  {src:'reg',n:'SHELF-BOX',gx:0,gy:10,rot:0,
+   p:'KEEP YOUR WALL MOVING UPWARD STEADILY',
+   r:'Your PPH — pieces per hour — measures your loading speed. A slow wall gets flagged. Work the belt continuously and fill from the bottom up without stopping.'},
+  {src:'reg',n:'CUBE-L',gx:7,gy:10,rot:0,
+   p:'SQUARE PIECES ARE YOUR BEST GAP-FILLERS',
+   r:'Cube-shaped freight fits almost anywhere. Use square and block pieces to fill the irregular gaps that long pieces leave behind. Never leave a void you can fill.'},
+  {src:'reg',n:'BIG',gx:4,gy:7,rot:0,
+   p:'WATCH YOUR CENTER OF GRAVITY',
+   r:'The COG indicator shows if weight is drifting left or right. An imbalanced wall scores a penalty and can shift in transit. Alternate heavy pieces side to side.'},
+  {src:'reg',n:'TALL-XL',gx:9,gy:7,rot:0,
+   p:'FRAGILE FREIGHT ALWAYS GOES ON TOP',
+   r:'Fragile items marked FRAG or GLASS must never have heavy freight placed directly above them. Build your solid freight first — fragile goes in last, on top.'},
+  {src:'reg',n:'CARTON-W',gx:12,gy:7,rot:0,
+   p:'USE ROTATION TO FIT AWKWARD PIECES',
+   r:'Press R to rotate any piece 90 degrees. A tall piece that won\'t fit upright might fit perfectly on its side. Always try both orientations before skipping.'},
+  // ── PHASE 6: SMALL FILL AND TOP ROW ──
+  {src:'reg',n:'WIDE-XL',gx:0,gy:5,rot:0,
+   p:'SMALLS AND BAGS FILL THE GAPS ABOVE',
+   r:'Light packages — polybags, envelopes, soft goods — are perfect for the top of the wall and tight spaces. They weigh almost nothing and won\'t damage what\'s below them.'},
+  {src:'reg',n:'BULK-W',gx:8,gy:5,rot:0,
+   p:'REACH 92% WALL HEIGHT TO COMPLETE YOUR LOAD',
+   r:'92% fill triggers wall completion and earns your trailer bonus. A perfect 100% load means maximum pack efficiency — the gold standard on every hub shift.'},
+  // ── PHASE 7: PANIC + SEAL ──
+  {src:'reg',n:'BOX-M',gx:4,gy:3,rot:0,
+   p:'AT 85% FILL — THE CLOCK STARTS',
+   r:'When the wall hits 85%, the dispatch timer fires. You have 60 seconds to seal the wall. Beat the clock and earn a Dispatch Bonus. Miss it and the trailer leaves short.'},
+  {src:'reg',n:'CARTON-M',gx:7,gy:3,rot:0,
+   p:'BULKHEAD LOCK — TWO FULL ROWS BACK TO BACK',
+   r:'Complete two consecutive full rows and you earn a Bulkhead Lock bonus. These double-locked rows are the strongest structural anchor in the wall — nearly collapse-proof.'},
+  {src:'reg',n:'CARTON-F',gx:11,gy:3,rot:0,
+   p:'SMALLS BAG BREAKDOWN — HIDDEN TOOL',
+   r:'Long-press or double-click a smalls bag on the floor to break it into 5 gap-fill pieces. Use this trick when you have awkward voids no standard piece can fill.'},
+  {src:'reg',n:'BOX-S',gx:4,gy:1,rot:0,
+   p:'THE WALL TELLS YOU IF IT\'S WORKING',
+   r:'Watch your Structure and Balance bars on the left. Green means your wall is solid. Red means something is wrong — unsupported freight, bad COG, or impending collapse.'},
+  {src:'reg',n:'CARTON',gx:7,gy:1,rot:0,
+   p:'LOCK IN — EVERY WALL, EVERY TIME',
+   r:'A locked-in wall isn\'t just a high score — it\'s freight that arrives intact. Every principle here is what real hub loaders use on every shift. Now go load one.'},
+];
+
+function startTraining(){
+  hideStartMenu();
+  gameMode='training';
+  // Reset demo grid
+  G={grid:makeGrid(),belt:[],ncSlots:Array(MAX_NC_SLOTS).fill(null),
+     bagSlots:Array(MAX_BAG_SLOTS).fill(null),
+     score:0,cog:.5,support:1,integrity:100,tetrisTotal:0,tetrisRows:{},
+     bulkheadRows:{},bulkheadCount:0,brickAwarded:false,crunchCount:0,
+     recoveryCount:0,ncPlaced:0,beltSinceNC:0,beltSinceBag:0};
+  trainingState={playing:false,speed:1,stepIdx:0,stepTimer:null,loopCount:0};
+  placed=0;startT=Date.now();gOver=false;paused=false;
+  document.getElementById('training-overlay').classList.add('vis');
+  // Initialize principle card
+  var pEl=document.getElementById('to-principle');
+  var rEl=document.getElementById('to-reason');
+  var stEl=document.getElementById('to-status');
+  var pCard=document.getElementById('to-principle-card');
+  if(pEl)pEl.textContent='SELECT PLAY TO BEGIN';
+  if(rEl)rEl.textContent='Each placement teaches a real hub loading principle. Study the wall — then go load one.';
+  if(stEl)stEl.textContent='';
+  if(pCard)pCard.style.opacity='1';
+  var btn=document.querySelector('.to-btn-play');
+  if(btn)btn.textContent='▶ PLAY';
+  // Start the scene render loop (no game logic)
+  if(animF)cancelAnimationFrame(animF);lastLoopT=0;
+  animF=requestAnimationFrame(trainingLoop);
+}
+
+function trainingLoop(ts){
+  if(gameMode!=='training'){return;}
+  var dt=lastLoopT?Math.min((ts-lastLoopT)/1000,.1):.016;
+  lastLoopT=ts;
+  convOffset=(convOffset+0.38)%40;
+  computeGeom();
+  drawScene(ts);
+  drawBelt(ts);
+  animF=requestAnimationFrame(trainingLoop);
+}
+
+function toggleTrainingPlay(){
+  var btn=document.querySelector('.to-btn-play');
+  if(trainingState.playing){
+    trainingState.playing=false;
+    if(trainingState.stepTimer){clearTimeout(trainingState.stepTimer);trainingState.stepTimer=null;}
+    btn.textContent='▶ PLAY';
+    document.getElementById('to-status').textContent='PAUSED';
+  } else {
+    trainingState.playing=true;
+    btn.textContent='⏸ PAUSE';
+    runDemoStep();
+  }
+}
+
+function runDemoStep(){
+  if(!trainingState.playing||gameMode!=='training')return;
+  var script=DEMO_SCRIPT;
+  var step=script[trainingState.stepIdx];
+
+  if(step){
+    // ── Show the principle for this step ──
+    var pCard=document.getElementById('to-principle-card');
+    var pEl=document.getElementById('to-principle');
+    var rEl=document.getElementById('to-reason');
+    if(pEl&&step.p){
+      // Fade out, swap text, fade in
+      if(pCard)pCard.style.opacity='0';
+      setTimeout(function(){
+        if(pEl)pEl.textContent=step.p;
+        if(rEl)rEl.textContent=step.r||'';
+        if(pCard)pCard.style.opacity='1';
+      },180);
+    }
+
+    // ── Place the piece ──
+    var box=null;
+    if(step.src==='nc'){
+      box=P_NC.find(function(p){return p.n===step.n;});
+    } else {
+      box=P_REG.find(function(p){return p.n===step.n;});
+      if(!box)box=P_LARGE.find(function(p){return p.n===step.n;});
+      if(!box)box=P_SMALL.find(function(p){return p.n===step.n;});
+    }
+
+    if(box){
+      var tmpl={...box};
+      tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
+      var seed=1234+trainingState.stepIdx;
+      var pal=seedPal(seed,tmpl.type,tmpl.shape,tmpl.color||null);
+      var labelDef=step.src==='nc'?LABELS[13]:LABELS[0];
+      var piece={...tmpl,id:uid('DM'),pal,labelDef,label:labelDef.t,seed,
+        isFrag:false,isPanic:false,isGap:false,isNC:(step.src==='nc')};
+
+      var rot=step.rot||0;
+      if(isLegal(G.grid,piece,step.gx,step.gy,rot)){
+        var d=getDims(piece,rot);
+        var cell={box:piece,id:piece.id,rx:step.gx,ry:step.gy,w:d.w,h:d.h,cells:d.cells,isCrushed:false};
+        for(var i=0;i<d.cells.length;i++){
+          var cx=d.cells[i][0],cy=d.cells[i][1];
+          G.grid[step.gy+cy][step.gx+cx]=cell;
+        }
+        placed++;
+        G.cog=calcCOG(G.grid);
+        checkTetris();
+      }
+
+      var pct=Math.round(countFilled()/(GW*GH)*100);
+      var stEl=document.getElementById('to-status');
+      if(stEl)stEl.textContent='STEP '+(trainingState.stepIdx+1)+' / '+script.length+' · '+pct+'% LOADED';
+    }
+    trainingState.stepIdx++;
+  }
+
+  // ── Loop ──
+  if(trainingState.stepIdx>=script.length){
+    trainingState.loopCount++;
+    var stEl2=document.getElementById('to-status');
+    if(stEl2)stEl2.textContent='✓ LOOP '+trainingState.loopCount+' COMPLETE — REPLAYING…';
+    var pEl2=document.getElementById('to-principle');
+    var rEl2=document.getElementById('to-reason');
+    if(pEl2)pEl2.textContent='THAT\'S A LOCKED-IN WALL';
+    if(rEl2)rEl2.textContent='Every principle you just watched is a real hub loading rule. The wall is about to reset — study it again, or hit EXIT and load one yourself in SHIFT mode.';
+    trainingState.stepTimer=setTimeout(function(){
+      G.grid=makeGrid();placed=0;G.cog=.5;G.tetrisRows={};
+      trainingState.stepIdx=0;
+      if(trainingState.playing)runDemoStep();
+    },4000/trainingState.speed);
+    return;
+  }
+
+  // DECISION: 4s default — slow enough for any reader to absorb the principle.
+  // Speed multiplier: SLOW=0.5 (8s), NORMAL=1 (4s), FAST=2 (2s).
+  var delay=Math.round(4000/trainingState.speed);
+  trainingState.stepTimer=setTimeout(runDemoStep,delay);
+}
+
+function setDemoSpeed(spd){
+  trainingState.speed=spd;
+  // DECISION: speed buttons use SLOW/NORMAL/FAST labels, not numeric multipliers.
+  // Map multiplier back to label for active state.
+  var labels={0.5:'SLOW',1:'NORMAL',2:'FAST'};
+  document.querySelectorAll('.to-speed-btn').forEach(function(b){
+    b.classList.toggle('active',b.textContent===labels[spd]);
+  });
+}
+
+function exitTraining(){
+  trainingState.playing=false;
+  if(trainingState.stepTimer){clearTimeout(trainingState.stepTimer);trainingState.stepTimer=null;}
+  document.getElementById('training-overlay').classList.remove('vis');
+  gameMode='';
+  showStartMenu();
+}
+
+// Training side panel: ESC key exits (handled by global keydown → togglePause catches it;
+// exitTraining() is wired to the EXIT button directly).
+
+// ── SHIFT MODE ──
+// Back-to-back walls. At 85%+ height, "NEXT WALL" advances.
+// Session accumulates total walls + boxes + time.
+// DECISION: nextWall() in shift mode clears grid only, doesn't reset session timer.
+
+function startShift(){
+  hideStartMenu();
+  gameMode='shift';
+  shiftState={walls:1,totalBoxes:0,sessionStartT:Date.now()};
+  updateShiftBadge();
+  paused=false;
+  restartGame();
+}
+
+function updateShiftBadge(){
+  var badge=document.getElementById('shift-badge');
+  if(!badge)return;
+  if(gameMode==='shift'){
+    badge.textContent='SHIFT · WALL '+shiftState.walls;
+    badge.classList.add('vis');
+  } else {
+    badge.classList.remove('vis');
+  }
+}
+
+// Override nextTrailer for shift mode
+function nextTrailer(){
+  document.getElementById('next-popup').classList.remove('vis');
+  if(gameMode==='shift'){
+    // Accumulate session stats
+    shiftState.totalBoxes+=placed;
+    shiftState.walls++;
+    S.totalScore+=G.score||0;
+    S.intHistory.push(G.integrity||100);
+    updateShiftBadge();
+    // Clear grid only — keep session going
+    G.grid=makeGrid();
+    G.score=0;G.cog=.5;G.support=1;G.integrity=100;
+    G.tetrisTotal=0;G.tetrisRows={};G.bulkheadRows={};G.bulkheadCount=0;
+    G.brickAwarded=false;G.crunchCount=0;G.recoveryCount=0;G.ncPlaced=0;
+    G.beltSinceNC=0;G.beltSinceBag=0;
+    placed=0;startT=Date.now();
+    selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;hCell=null;
+    lgDangerSec=0;pphLowSec=0;
+    collapseAnimating=false;panicActive=false;panicStartT=null;panicSealed=false;
+    recoveryActive=false;recoveryT=null;recoveryCount=0;
+    ncHazardFired=false;if(ncHazardTO){clearTimeout(ncHazardTO);ncHazardTO=null;}
+    _freshLock=false;_lastTipTs=0;
+    document.getElementById('panic-wrap').classList.remove('vis');
+    refillBelt();
+    for(var i=0;i<2;i++)spawnNC();
+    for(var i=0;i<2;i++)spawnBag();
+    showBanner('WALL '+shiftState.walls+' — LOAD IT UP! 🚛','ok',2000);
+    flash('fl-ok');
+  } else {
+    S.truck++;S.totalScore+=G.score||0;S.trucksDone=S.truck-1;
+    S.intHistory.push(G.integrity||100);
+    initTruck();
+  }
+}
+
+// endGame in shift mode — show end screen with session stats
+function endGameShift(reason){
+  if(gOver)return;gOver=true;
+  if(animF)cancelAnimationFrame(animF);
+  shiftState.totalBoxes+=placed;
+  var sessionMins=Math.round((Date.now()-shiftState.sessionStartT)/60000);
+  document.getElementById('es-score').textContent=S.totalScore+(G.score||0);
+  document.getElementById('es-pph').textContent=getPPH();
+  document.getElementById('es-trucks').textContent=shiftState.walls;
+  document.getElementById('es-int').textContent=shiftState.totalBoxes+' PCS';
+  document.getElementById('end-title').innerHTML='SHIFT<br>COMPLETE';
+  document.getElementById('end-sub').textContent=reason+' · '+sessionMins+'min session · '+shiftState.walls+' walls loaded';
+  document.getElementById('ov-end').classList.add('vis');
+}
+
+// ── RETURN TO MENU ──
+// Called by "RELOAD YARD" on end screen — returns to start menu for mode selection.
+function returnToMenu(){
+  document.getElementById('ov-end').classList.remove('vis');
+  if(animF){cancelAnimationFrame(animF);animF=null;}
+  gameMode='';updateShiftBadge();
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0};
+  initTruck();
+  showStartMenu();
+}
+
+// ── PAUSE / THEME ──
+// READS: paused, gOver, animF
+// WRITES: paused, animF, document.documentElement.dataset.theme
+
+function togglePause(){
+  if(gOver)return; // no pause on game-over screen
+  paused=!paused;
+  var ov=document.getElementById('ov-pause');
+  if(paused){
+    ov.classList.add('vis');
+    if(animF){cancelAnimationFrame(animF);animF=null;}
+  } else {
+    ov.classList.remove('vis');
+    lastLoopT=0; // prevent dt spike on resume
+    animF=requestAnimationFrame(loop);
+  }
+}
+
+function toggleTheme(){
+  var root=document.documentElement;
+  var isLight=(root.dataset.theme==='light');
+  root.dataset.theme=isLight?'':'light';
+  var btn=document.getElementById('theme-btn');
+  if(btn)btn.textContent=isLight?'◑ LIGHT MODE':'☀ DARK MODE';
+}
+
+function pauseRestart(){
+  paused=false;
+  document.getElementById('ov-pause').classList.remove('vis');
+  // DECISION: pause-restart returns to start menu, not instant restart.
+  // Player should choose their mode again.
+  if(animF){cancelAnimationFrame(animF);animF=null;}
+  gameMode='';
+  updateShiftBadge();
+  showStartMenu();
+}
+
+// ── LIFECYCLE ──
+function initTruck(){
+  G={
+    grid:makeGrid(),belt:[],ncSlots:Array(MAX_NC_SLOTS).fill(null),
+    bagSlots:Array(MAX_BAG_SLOTS).fill(null),
+    score:0,cog:.5,support:1,integrity:100,
+    tetrisTotal:0,tetrisRows:{},bulkheadRows:{},bulkheadCount:0,
+    brickAwarded:false,crunchCount:0,recoveryCount:0,ncPlaced:0,
+    beltSinceNC:0,beltSinceBag:0,
+  };
+  refillBelt();
+  // Seed a couple of NCs and bags so the panels aren't empty from the start
+  for(var i=0;i<2;i++)spawnNC();
+  for(var i=0;i<2;i++)spawnBag();
+  placed=0;startT=Date.now();
+  selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;hCell=null;
+  lgDangerSec=0;pphLowSec=0;gOver=false;
+  collapseAnimating=false;panicActive=false;panicStartT=null;panicSealed=false;
+  recoveryActive=false;recoveryT=null;recoveryCount=0;
+  ncHazardFired=false;if(ncHazardTO){clearTimeout(ncHazardTO);ncHazardTO=null;}
+  _freshLock=false;_lastTipTs=0;_tipIdx=0;
+  document.getElementById('panic-wrap').classList.remove('vis');
+  document.getElementById('next-popup').classList.remove('vis');
+}
+
+function restartGame(){
+  document.getElementById('ov-end').classList.remove('vis');
+  gameMode='';
+  updateShiftBadge();
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0};
+  initTruck();
+  if(animF)cancelAnimationFrame(animF);lastLoopT=0;animF=requestAnimationFrame(loop);
+}
+
+function endGame(reason,win){
+  if(gOver)return;
+  gOver=true;if(win){sealWall(reason);return;}
+  if(animF)cancelAnimationFrame(animF);
+  // DECISION: shift mode gets its own end screen with session totals
+  if(gameMode==='shift'){endGameShift(reason);return;}
+  S.totalScore+=G.score||0;S.bestPPH=Math.max(S.bestPPH,getPPH());
+  S.intHistory.push(G.integrity||100);S.trucksDone=S.truck;
+  var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
+  document.getElementById('es-score').textContent=S.totalScore;
+  document.getElementById('es-pph').textContent=S.bestPPH;
+  document.getElementById('es-trucks').textContent=S.trucksDone;
+  document.getElementById('es-int').textContent=avgInt+'%';
+  document.getElementById('end-title').innerHTML='ROUND<br>OVER';
+  document.getElementById('end-sub').textContent=reason;
+  document.getElementById('ov-end').classList.add('vis');
+}
+
+// ── RESIZE ──
+function resize(){
+  var sw=document.getElementById('scene-wrap');
+  W=sw.offsetWidth;H=sw.offsetHeight;
+  scene.width=W;scene.height=H;
+  var footer=document.getElementById('footer');
+  BW=footer?footer.offsetWidth:W;
+  BH=Math.round(Math.min(H*0.14,BW*0.11));
+  BH=Math.max(88,Math.min(110,BH));
+  belt.width=BW;belt.height=BH;
+  belt.style.height=BH+'px';
+  computeGeom();
+}
+window.addEventListener('resize',resize);
+
+// ── BOOT ──
+// v1.9.0: Show start menu first. Game does not auto-start.
+// BOOT ORDER: resize() → initTruck() (pre-warms state) → showStartMenu()
+resize();
+initTruck();
+showStartMenu();
+</script>
+</body>
+</html>
