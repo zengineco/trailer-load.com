@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOCK IN — Warehouse Loading Training That Plays Like a Game | trailer-load.com</title>
+<meta name="description" content="LOCK IN is a freight-loading training simulator. Free for workers. A metrics dashboard for CTE schools, trade programs, and employers. Built by people who load trailers.">
+<meta name="google-adsense-account" content="ca-pub-8826956454892311">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--t1:#2a2018;--t2:#6a5c48;--t3:#9a8b72;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--teal:#138578;--teal-bright:#19a594;--border:#cdbfa6;--ok:#1f9d57;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:var(--t1);font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.5;}
+a{color:var(--teal);}
+.bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:10px 22px;background:rgba(236,229,216,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);}
+.bar .left{display:flex;align-items:center;gap:10px;}
+.zg{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;background:var(--acc);width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:7px;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;}
+.bar nav a{font-family:'Share Tech Mono',monospace;font-size:12px;text-decoration:none;margin-left:16px;color:var(--t2);}
+.bar nav a:hover{color:var(--acc);}
+.wrap{max-width:980px;margin:0 auto;padding:0 22px;}
+.hero{text-align:center;padding:64px 0 46px;}
+.hero .kicker{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:3px;color:var(--acc-dim);}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:84px;line-height:.92;letter-spacing:1px;margin:10px 0 8px;}
+.hero p.sub{font-size:23px;color:var(--t2);max-width:660px;margin:0 auto 26px;}
+.btn{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:1px;text-decoration:none;padding:15px 34px;border-radius:9px;transition:transform .12s,background .15s;}
+.btn.play{background:var(--acc);color:#fff;box-shadow:0 6px 18px rgba(200,121,30,.35);}
+.btn.play:hover{background:var(--acc-bright);transform:translateY(-2px);}
+.btn.ghost{background:transparent;color:var(--teal);border:1px solid var(--teal);margin-left:10px;}
+.btn.ghost:hover{background:var(--teal);color:#fff;}
+.note{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);margin-top:14px;}
+section{padding:40px 0;border-top:1px solid var(--border);}
+h2{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:1px;margin:0 0 6px;}
+.lead{color:var(--t2);max-width:720px;margin:0 0 22px;font-size:19px;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;}
+.card h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin:0 0 6px;color:var(--acc);}
+.card.teal h3{color:var(--teal);}
+.card p{color:var(--t2);margin:0;}
+.steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+.step{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:22px 20px 18px;}
+.step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:18px;width:30px;height:30px;background:var(--acc);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;}
+.step h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;margin:6px 0 4px;}
+.step p{color:var(--t2);margin:0;font-size:16px;}
+.pitch{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.pitch .free h3,.pitch .paid h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin:0 0 8px;}
+.pitch .free h3{color:var(--ok);}
+.pitch .paid h3{color:var(--teal);}
+.pitch ul{padding-left:20px;color:var(--t2);margin:0;}
+.pitch li{margin-bottom:5px;}
+.who{display:flex;flex-wrap:wrap;gap:10px;}
+.tag{font-family:'Share Tech Mono',monospace;font-size:13px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;color:var(--t2);}
+.disclaim{background:var(--bg2);border-left:4px solid var(--acc);border-radius:0 8px 8px 0;padding:14px 18px;margin-top:24px;color:var(--t2);font-size:16px;}
+footer{border-top:1px solid var(--border);padding:24px 0 40px;text-align:center;}
+footer .links a{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--teal);text-decoration:none;margin:0 10px;}
+footer .zw{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);margin-top:12px;}
+@media(max-width:680px){.hero h1{font-size:58px;}.pitch{grid-template-columns:1fr;}.btn.ghost{margin-left:0;margin-top:10px;}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="left"><div class="zg">ZG</div><div class="logo">LOCK IN</div></div>
+  <nav><a href="#how">How it works</a><a href="#facilities">For schools &amp; employers</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav>
+</div>
+
+<div class="wrap">
+  <div class="hero" id="play">
+    <div class="kicker">FREIGHT LOADING · TRAINING SIMULATOR</div>
+    <h1>LOAD THE TRAILER.<br>LOCK IT IN.</h1>
+    <p class="sub">Warehouse loading practice that plays like a game — real load theory, support, balance, hazmat, and the veteran tricks the docks never put in a manual.</p>
+    <a class="btn play" href="lock-in.html">PLAY FREE — NO LOGIN</a>
+    <a class="btn ghost" href="#facilities">For schools &amp; employers</a>
+    <div class="note">Runs in your browser. Gameplay is always free. Save your stats only if you want to.</div>
+  </div>
+</div>
+
+<section id="how"><div class="wrap">
+  <h2>How it works</h2>
+  <p class="lead">Pieces ride in on the belt. You stack them into a trailer wall that has to hold up — support every box, keep the load balanced, lock complete rows into shelves, load hazmat low, and seal the wall before dispatch.</p>
+  <div class="steps">
+    <div class="step"><h3>Build the wall</h3><p>Select freight, place it, rotate it. Floor-up, support underneath, no floating boxes — the physics won't let you cheat gravity.</p></div>
+    <div class="step"><h3>Load it right</h3><p>Lock shelves, keep the center of gravity centered, fragile on top, hazmat below the waist line, and stuff the dead air inside tires.</p></div>
+    <div class="step"><h3>Get your grade</h3><p>Every wall is scored on integrity, density, pace, and safety — and ranked, from Rookie to Yard Legend.</p></div>
+  </div>
+</div></section>
+
+<section id="facilities"><div class="wrap">
+  <h2>Free for workers. A dashboard for the people training them.</h2>
+  <p class="lead">The game is free forever. What schools and employers pay for is the data — a dashboard showing the loading performance of the workers and students who opt in.</p>
+  <div class="pitch">
+    <div class="free">
+      <h3>Workers play free</h3>
+      <ul>
+        <li>Full game, every mechanic, no paywall.</li>
+        <li>Optional free account to keep your record.</li>
+        <li>You decide if your stats are saved.</li>
+        <li>You decide, separately, if a facility can see them.</li>
+      </ul>
+    </div>
+    <div class="paid">
+      <h3>Facilities get the metrics</h3>
+      <ul>
+        <li>A dashboard of opted-in players' performance.</li>
+        <li>Integrity, pace, safety incidents, readiness — the numbers managers already track.</li>
+        <li>Built for CTE programs (Perkins-eligible), trade schools, and warehouse ops teams.</li>
+        <li>Provisioned by Zengine when you come aboard.</li>
+      </ul>
+    </div>
+  </div>
+  <h3 style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin:28px 0 10px;">Who it's for</h3>
+  <div class="who">
+    <span class="tag">CTE high-school programs</span>
+    <span class="tag">Trade &amp; technical schools</span>
+    <span class="tag">Warehouse &amp; dock ops teams</span>
+    <span class="tag">Logistics employers</span>
+    <span class="tag">Workforce-readiness programs</span>
+  </div>
+  <div style="margin-top:24px;"><a class="btn play" href="mailto:hello@trailer-load.com?subject=LOCK%20IN%20facility%20dashboard">Get a facility dashboard →</a></div>
+  <div class="disclaim"><strong>Training supplement only.</strong> LOCK IN builds intuition and tracks readiness. It does not replace employer safety training, OSHA training, or any certification requirement. See <a href="terms.html">Terms</a>.</div>
+</div></section>
+
+<footer>
+  <div class="links"><a href="#play">Play</a> · <a href="#facilities">For facilities</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a> · <a href="mailto:hello@trailer-load.com">Contact</a></div>
+  <div class="zw">www.zengine.site | © 2026 Zengine&trade;</div>
+</footer>
+</body>
+</html>
