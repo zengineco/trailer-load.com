@@ -16,10 +16,16 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN — LI7 v2.3.3
+   LOCK IN — LI7 v2.4.5
    Author: Vincent Gonzalez | © 2026 Zengine™ | www.zengine.site
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v2.4.5 — POST-SORT REPORT (the readout, in-game). A 'POST-SORT REPORT' button on the end screen opens a dense clipboard sheet: every metric at WALL / SESSION / LIFETIME, six categorized blocks (throughput, load quality, safety+docs, mechanics) + a verdict band, matching the approved mock. SESSION + WALL are live (per-wall snapshots captured at each seal feed session averages; the four sub-scores are read from the end-screen tiles already computed). LIFETIME is fetched from the lockin_lifetime view when signed in, and reads 'LOG IN TO TRACK' (dashes) when anon. Printable (browser print = a clean paper scorecard). Build-once component — this is the same readout the profile/instructor views will reuse. Slot-occupancy + pack-fill utility still pending (need per-frame plumbing); shown as '—' for now.
+   CHANGE LOG v2.4.4 — REAL FREEZE FIX + ON-SCREEN DIAGNOSTICS. The mid-wall freeze was NOT the render loop (v2.4.0 mis-targeted it) — it was endGame: it cancels the animation frame FIRST, then runs a long unguarded chain (getElementById().textContent + fillTelemetryTiles() + zEndSession()), revealing the end overlay only on the LAST line. Any throw there = loop already dead + end screen never shown = hard freeze with the lose sound already played. FIX: both end paths (endGameShift + generic endGame) wrap fill/telemetry in try/catch and ALWAYS reveal the end overlay even if telemetry throws — never stranded on a dead frame; worst case is a partial end screen showing its REASON (so a wrongly-firing terminal is self-identifying). DIAGNOSTICS: liShowErr() paints a dismissable red strip with the error message + stack the first time anything throws (loop OR endGame) so the next incident is screenshot-and-fixed, not guessed. Pause stays live-play only; the always-on end screen is the terminal exit.
+   CHANGE LOG v2.4.3 — COUNTERS + SFX CUES. Wired the metrics that were writing null/0, and gave the new events SOUND (audio-learner support). NEW SFX: 'stage' (low rubber thunk — fires when a SET of 2+ SP pieces drops into staging, so a tire batch is an AUDIBLE heads-up, not a silent ambush) and 'dwell' (descending 3-beep warning, distinct from the hazard klaxon) on both SP and smalls dwell. NEW/REAL COUNTERS: ncDwellWarn, smallsDwellWarn, stagingActions, ncSpawned/ncPlaced + smallsSpawned (reusing bagsPlaced) -> placed-over-spawned UTILITY % is now real for SP and smalls; lift-lock denials now fold into rejectedDrops (your spec: denied actions count, misclicks don't). S init carries all new fields across every reset. avgWallPct/cubeEff/densityPct stay null til per-wall capture lands with the sheet. No gameplay/balance change — capture + audio only.
+   CHANGE LOG v2.4.2 — DATA SPINE: canonical summary contract + user_id. The session payload now writes the exact keys the lockin_lifetime view reads (camelCase: peakPph, avgPph, avgIntegrity, shelvesLocked, doubleLocks, nests, incTotal + per-type hazHigh/hazCrush/seg/killer, crunches, collapses, recoveries, hydrationBreaks, rotations, lifts, rejectedDrops, bagsBroken/Placed, hazmatLocks, bonuses). Incident-by-type and bonuses are DERIVED from data already tracked (no fragile event-site edits). Flat columns (total_score/best_pph/walls_loaded/avg_integrity/incident_count) are now populated too, so simple dashboard queries work without digging into jsonb. user_id is stamped from the auth session so a logged-in player's rows roll up into their lifetime. app_ver no longer hardcoded to 2.1.38. Not-yet-tracked metrics (dwell warnings, staging, utility %, per-wall fill/cube/density) write null/0 and get their counters next ship. Capture-only; no gameplay change.
+   CHANGE LOG v2.4.1 — TUNING: farm-tire spawn set 6 -> 4. A TIRE-FARM spawn was staging 6 SP slots at once, which could jam staging from 6/8 and tip a strong run (642 PPH, 9 shelves, 8 doubles) into an unavoidable NC-staging hazard with no room to clear. Farm sets now stage 4 (DB=2, STD/MC=4 unchanged), leaving headroom to work the wall down. The hazard is still a real fail condition — just survivable. Nest capacity (a farm tire's hollow still holds 6 smalls) is unchanged; that's physical.
+   CHANGE LOG v2.4.0 — FREEZE FIX (hard bug). The game could hard-freeze mid-wall (animation suspended, clicks still firing) — classic dead requestAnimationFrame loop: the frame reschedule was the LAST line of loop(), so ANY throw in a frame killed the loop permanently. Root throw found: the tire render fed ellipse() a radius from Math.max(3,_trx*0.92), but Math.max(3,NaN)===NaN, and ellipse() throws IndexSizeError on a non-finite radius — fatal once tires were on the wall. FIX (two layers): (1) tire radii/centre are now finite-guarded before any ellipse()/arc(). (2) the whole loop body is wrapped so it can NEVER die — a bad frame is caught, logged once to console + window.__LI_ERR {msg,stack,mode,placed}, and the next frame is always scheduled. A single bad frame is now a self-healing skip, not a freeze. Freeze-fix ONLY this ship; readout wiring is next.
    CHANGE LOG v2.3.3 — POLISH: COLORBLIND GRADE RING. The end-screen letter grade used a JS-hardcoded green->red hue ramp — the one grade color that slipped past the [data-cb] CSS remap (the four sub-score bars already remap via --ok/--warn/--danger). When Colorblind Mode is on, the grade hue now swaps to a CVD-safe teal->amber diverging ramp (no green-vs-red reliance), on-palette. The letter itself always carried the grade; this fixes the color channel for red-green CVD too. Procurement-relevant for school buyers (508/ADA). No other change.
    CHANGE LOG v2.3.2 — FINISHING PASS pt.3: DOCK BACKDROP. The fixed-width frame no longer floats on a flat field — the side margins now carry a warm dock texture (a soft amber work-light pool behind the game, an edge vignette, and faint vertical bay seams), and the frame is lifted off it with a soft drop shadow + hairline seam. CSS-only, works in both light and warm-dark. No layout or JS change.
    CHANGE LOG v2.3.1 — FINISHING PASS pt.2: STAGED FREIGHT IS ALIVE. The SP/NC and SMALLS staged by the wall no longer read as flat grid cells — every filled slot now gently bobs and breathes with a ready-glow sheen in its own accent (amber for SP, purple for smalls), phase-offset per slot so the pool reads as real freight sitting there ready to grab. Visual-only: hit-testing, selection, rotation, hazard/dwell timers all untouched. Next: dead-space dock backdrop, then mobile.
@@ -1017,6 +1023,60 @@ body[data-cb="trit"]{
 .lg-d > i{transform:rotate(-45deg);font-style:normal;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;color:var(--t1);}
 .legend-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);line-height:1.4;}
 
+
+/* ── v2.4.5 POST-SORT REPORT ── */
+#ov-postsort{position:fixed;inset:0;z-index:340;display:none;overflow:auto;
+  background:radial-gradient(80% 70% at 50% 30%,rgba(224,150,46,.07),rgba(20,12,4,.55) 75%),rgba(20,12,4,.5);
+  padding:26px 14px 50px;}
+#ov-postsort.vis{display:block;}
+.ps-card{max-width:1020px;margin:0 auto;background:linear-gradient(180deg,#f5eede,#efe6d3);
+  border:1px solid #cdbf9f;border-radius:6px;box-shadow:0 22px 50px rgba(20,12,4,.45);padding:26px 26px 16px;position:relative;}
+.ps-mast{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #2a2018;padding-bottom:7px;}
+.ps-mast .lg{font-family:'Bebas Neue';font-size:40px;line-height:.85;color:#2a2018;}
+.ps-mast .lg b{color:#c8791e;}
+.ps-mast .doc{font-family:'Bebas Neue';font-size:20px;letter-spacing:.15em;color:#6a5c48;margin-left:10px;}
+.ps-mast .stamp{font-family:'Share Tech Mono';font-size:10px;color:#c23a1a;border:2px solid #c23a1a;border-radius:4px;padding:3px 8px;transform:rotate(-4deg);letter-spacing:.06em;}
+.ps-rule{height:2px;background:#c8791e;margin:0 0 12px;}
+.ps-id{display:grid;grid-template-columns:repeat(4,1fr);gap:1px 22px;font-family:'Share Tech Mono';margin-bottom:14px;}
+.ps-id div{padding:4px 0;border-bottom:1px dotted #cdbf9f;}
+.ps-id .k{font-size:9px;letter-spacing:.12em;color:#9a8b72;display:block;}
+.ps-id .v{font-size:14px;color:#2a2018;}
+.ps-legend{display:flex;gap:0;margin-bottom:6px;align-items:flex-end;}
+.ps-legend .sp{margin-right:auto;font-family:'Barlow Condensed';font-weight:600;font-size:10px;letter-spacing:.08em;color:#9a8b72;text-transform:uppercase;align-self:center;}
+.ps-legend .h{width:86px;text-align:center;font-family:'Share Tech Mono';font-size:10px;letter-spacing:.08em;padding:3px 0;border-radius:3px 3px 0 0;}
+.ps-legend .h.w{color:#0e6b60;background:#e0efec;}
+.ps-legend .h.s{color:#9a5c12;background:#f4e6cf;}
+.ps-legend .h.l{color:#8a6a3a;background:#efe6d0;}
+.ps-blocks{column-count:2;column-gap:28px;}
+@media(max-width:700px){.ps-blocks{column-count:1;}#ov-postsort{padding:14px 6px 40px;}.ps-card{padding:18px 14px;}}
+.ps-block{break-inside:avoid;margin-bottom:15px;}
+.ps-block h4{font-family:'Bebas Neue';font-size:17px;letter-spacing:.07em;color:#2a2018;border-bottom:2px solid #2a2018;padding-bottom:2px;margin:0 0 1px;}
+.ps-block h4 .d{color:#c8791e;font-size:10px;}
+.ps-row{display:grid;grid-template-columns:1fr 86px 86px 86px;align-items:center;border-bottom:1px solid #d9cdb4;min-height:22px;}
+.ps-row:nth-child(odd){background:rgba(120,96,40,.022);}
+.ps-row .m{font-family:'Barlow Condensed';font-size:13.5px;font-weight:500;color:#2a2018;padding-left:2px;}
+.ps-row .m.sub{font-size:12px;color:#6a5c48;padding-left:12px;}
+.ps-row .n{font-family:'Share Tech Mono';font-size:13px;text-align:center;font-variant-numeric:tabular-nums;}
+.ps-row .n.w{color:#0e6b60;}
+.ps-row .n.s{color:#2a2018;font-weight:bold;}
+.ps-row .n.l{color:#8a6a3a;}
+.ps-verdict{break-inside:avoid;margin-top:2px;border:2px solid #2a2018;border-radius:6px;background:linear-gradient(180deg,#fff8ec,#f5eede);padding:13px 15px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.ps-ring{width:74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:5px solid #1f9d57;box-shadow:0 0 0 3px #f5eede;flex:0 0 auto;}
+.ps-ring span{font-family:'Bebas Neue';font-size:44px;color:#1f9d57;line-height:1;}
+.ps-vmid{flex:1;min-width:160px;}
+.ps-vmid .rk{font-family:'Bebas Neue';font-size:27px;letter-spacing:.04em;color:#2a2018;}
+.ps-vmid .ln{font-family:'Barlow Condensed';font-style:italic;font-size:14px;color:#6a5c48;}
+.ps-vsum{font-family:'Share Tech Mono';font-size:11px;min-width:210px;flex:0 0 auto;}
+.ps-vsum .vr{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dotted #cdbf9f;}
+.ps-vsum .vr .lb{color:#9a8b72;letter-spacing:.06em;}
+.ps-vsum .vr.s .va{color:#9a5c12;font-weight:bold;}
+.ps-vsum .vr.l .va{color:#8a6a3a;}
+.ps-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:2px solid #cdbf9f;padding-top:7px;font-family:'Share Tech Mono';font-size:10px;color:#9a8b72;letter-spacing:.05em;}
+.ps-foot .zg{display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border:1.5px solid #c8791e;border-radius:4px;color:#c8791e;font-family:'Bebas Neue';font-size:11px;}
+.ps-tools{position:sticky;top:0;display:flex;gap:8px;justify-content:flex-end;margin:-12px -12px 8px 0;}
+.ps-tools button{font-family:'Share Tech Mono';font-size:11px;letter-spacing:.05em;cursor:pointer;background:#2a2018;color:#f5eede;border:0;border-radius:5px;padding:7px 11px;}
+.ps-login{color:#c23a1a;font-size:10px;}
+@media print{#ov-postsort{position:static;background:#fff;padding:0;}.ps-tools{display:none;}.ps-card{box-shadow:none;border:1px solid #999;max-width:none;}}
 </style>
 </head>
 <body>
@@ -1024,7 +1084,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN — LI7 v2.3.3</div>
+  <div class="pause-sub">LOCK IN — LI7 v2.4.5</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1154,7 +1214,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v2.3.3 · © 2026 ZENGINE™ · WWW.ZENGINE.SITE</div>
+  <div id="sm-footer">LOCK IN v2.4.5 · © 2026 ZENGINE™ · WWW.ZENGINE.SITE</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1258,7 +1318,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v2.3.3 · SETTINGS · WWW.ZENGINE.SITE</div>
+      <div class="set-foot">LOCK IN v2.4.5 · SETTINGS · WWW.ZENGINE.SITE</div>
     </div>
   </div>
 </div>
@@ -1438,7 +1498,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>LI7 v2.3.3</sub></div>
+      <div class="logo">LOCK IN<sub>LI7 v2.4.5</sub></div>
       <div class="hdr-mid" id="conv-lbl-txt">▶ PRESELECTOR BELT — SELECT A PIECE</div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1569,8 +1629,11 @@ body[data-cb="trit"]{
     <div class="sg"><span class="v" id="es-time">0m</span><span class="l">Session Time</span></div>
    </div></div>
   </div>
+  <button class="btn-p" onclick="openPostSort()">◆ POST-SORT REPORT</button>
   <button class="btn-p" onclick="returnToMenu()">RELOAD YARD</button>
 </div>
+
+<div id="ov-postsort"><div class="ps-card" id="ps-card"></div></div>
 
 <div id="zw">WWW.ZENGINE.SITE | © 2026 ZENGINE™</div>
 <!-- v2.1.14 custom glove cursor — references /mouse.png by PATH. NEVER base64. -->
@@ -1607,7 +1670,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN — LI7 v2.3.3
+// LOCK IN — LI7 v2.4.5
 // Author: Vincent Gonzalez | © 2026 Zengine™ | www.zengine.site
 // LAST STABLE: v2.0.4
 //
@@ -2007,7 +2070,7 @@ function pickLabel(type,isPanic,isNC,isGap){
 }
 
 // ── GAME STATE ──
-var S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0};
+var S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
 // ============================================================
 // v2.1.38 — REVENUE ENGINE (data capture + double opt-in consent)
 // CONFIG: drop in the ZengineGames Supabase values. Anon key is public (RLS-protected).
@@ -2029,16 +2092,32 @@ function zLog(kind,data){
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
-  return {pid:p.pid,email:p.email||null,facility:p.facility||null,consent_self:!!p.consentSelf,consent_share:!!p.consentShare,
-    mode:gameMode,app_ver:'2.1.38',
+  var inc=S.incidents||[];
+  function _ic(t){var k=0,i;for(i=0;i<inc.length;i++){if(inc[i]&&inc[i].type===t)k++;}return k;}
+  var _walls=S.trucksDone||S.truck||0;
+  var _avgPph=(typeof avgPPH==='function'?avgPPH():(S.bestPPH||0));
+  // v2.4.2 — bonuses DERIVED from already-tracked bonus events (real per-event counter lands next ship)
+  var _bonuses=(S.recoveries||0)+(S.doubleLocks||0)+(S.hazShelfLocks||0)+(S.nests||0);
+  return {pid:p.pid,email:p.email||null,facility:p.facility||null,
+    user_id:(ZDATA.session&&ZDATA.session.uid)||null,
+    consent_self:!!p.consentSelf,consent_share:!!p.consentShare,opt_in_share:!!p.consentShare,
+    mode:gameMode,app_ver:'2.4.2',
     started_at:new Date(S.sessionStartT||Date.now()).toISOString(),ended_at:new Date().toISOString(),
     duration_s:Math.round((Date.now()-(S.sessionStartT||Date.now()))/1000),
-    summary:{score:S.totalScore||0,best_pph:S.bestPPH||0,trucks:S.trucksDone||S.truck||0,pieces:S.totalPieces||0,
-      shelves:S.shelvesLocked||0,double_locks:S.doubleLocks||0,recoveries:S.recoveries||0,crunches:S.crunches||0,
-      collapses:S.collapses||0,rotations:S.rotations||0,lifts:S.lifts||0,bags_broken:S.bagsBroken||0,
-      bags_placed:S.bagsPlaced||0,rejects:S.rejects||0,haz_violations:S.hazViolations||0,haz_shelf_locks:S.hazShelfLocks||0,
-      nests:S.nests||0,drinks:S.drinks||0,incidents:(S.incidents||[]).length,avg_integrity:ah},
-    incidents:S.incidents||[],events:ZDATA.events||[]};
+    total_score:S.totalScore||0,best_pph:S.bestPPH||0,walls_loaded:_walls,avg_integrity:ah,incident_count:inc.length,
+    summary:{
+      score:S.totalScore||0, pieces:S.totalPieces||0, walls:_walls,
+      peakPph:S.bestPPH||0, avgPph:_avgPph, avgIntegrity:ah,
+      avgWallPct:null, cubeEff:null, densityPct:null, ncUtilPct:(S.ncSpawned?Math.round((S.ncPlaced||0)/S.ncSpawned*100):null), smallsUtilPct:(S.smallsSpawned?Math.round((S.bagsPlaced||0)/S.smallsSpawned*100):null),
+      shelvesLocked:S.shelvesLocked||0, doubleLocks:S.doubleLocks||0, nests:S.nests||0,
+      incTotal:inc.length, incHazHigh:_ic('HAZMAT_HIGH'), incHazCrush:_ic('HAZMAT_CRUSH'), incSeg:_ic('SEGREGATION'), incKiller:_ic('KILLER'),
+      crunches:S.crunches||0, collapses:S.collapses||0, recoveries:S.recoveries||0,
+      hydrationBreaks:S.drinks||0, ncDwellWarn:S.ncDwellWarn||0, smallsDwellWarn:S.smallsDwellWarn||0,
+      rotations:S.rotations||0, lifts:S.lifts||0, rejectedDrops:S.rejects||0,
+      bagsBroken:S.bagsBroken||0, bagsPlaced:S.bagsPlaced||0, hazmatLocks:S.hazShelfLocks||0,
+      stagingActions:S.stagingActions||0, bonuses:_bonuses
+    },
+    incidents:inc, events:ZDATA.events||[]};
 }
 function zSendSession(){
   var p=zLoadPlayer();if(!p.consentSelf)return;          // no save without self-consent
@@ -2141,6 +2220,7 @@ var G={};
 var selBeltIdx=null, selBeltRot=0, selNCRot=0;
 var selNC=-1, selBag=-1;
 var gOver=false, paused=false;
+var _loopErrN=0; // v2.4.0 caught-frame-error counter (throttles logging)
 var placed=0, startT=null, lastLoopT=0;
 var pphLowSec=0, lgDangerSec=0, winHintT=0;
 var panicActive=false, panicStartT=null, panicSealed=false;
@@ -2248,6 +2328,8 @@ function playSfx(name){
   else if(name==='trailer'){tone('sawtooth',150,150,0.18,0.2);noise(0.1,0.15,420);}
   else if(name==='nest'){tone('sine',240,150,0.1,0.28);noise(0.05,0.12,700);}
   else if(name==='drink'){tone('sine',320,170,0.13,0.22);noise(0.06,0.09,480);}
+  else if(name==='stage'){tone('sine',150,80,0.13,0.32);noise(0.09,0.22,520);tone('sine',110,58,0.17,0.22);}
+  else if(name==='dwell'){tone('square',560,560,0.09,0.20);tone('square',440,440,0.12,0.18);tone('square',360,360,0.14,0.16);}
 }
 // ── v2.1.30: BACKGROUND MUSIC (HTML5 audio playlist, files served by path) ──
 var MUSIC={list:['1.mp3','2.mp3','3.mp3','4.mp3'],el:null,idx:0,started:false};
@@ -2752,8 +2834,8 @@ function spawnNC(){
   tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
   // v2.1.35 — tires ship in SETS (FARM=6, DB pair=2, STD/MC=4). Stage what fits; never overflow.
   var _setN=1;
-  if(tmpl.cat==='tire')_setN=(tmpl.n==='TIRE-FARM')?6:(tmpl.n==='TIRE-DB')?2:4;
-  var piece=null,_si,_slot2;
+  if(tmpl.cat==='tire')_setN=(tmpl.n==='TIRE-FARM')?4:(tmpl.n==='TIRE-DB')?2:4;
+  var piece=null,_si,_slot2,_staged=0;
   for(_si=0;_si<_setN;_si++){
     _slot2=ncSlots.findIndex(function(s){return!s;});
     if(_slot2<0)break;
@@ -2762,11 +2844,12 @@ function spawnNC(){
     var _lab=tmpl._isHaz?hazLabelDef(tmpl._hazClass):pickLabel('large',false,true,false);
     var _pc={...tmpl,cells:tmpl.cells.map(function(c){return[c[0],c[1]];}),id:uid('NC'),pal:_pal,labelDef:_lab,label:tmpl._isHaz?'HAZ':'NC',seed:_seed,isFrag:false,isNC:true,hazClass:tmpl._hazClass||null};
     assignOrientReq(_pc);
-    ncSlots[_slot2]=_pc;
+    ncSlots[_slot2]=_pc;_staged++;S.ncSpawned=(S.ncSpawned||0)+1;S.stagingActions=(S.stagingActions||0)+1;
     if(!piece)piece=_pc;
   }
   if(!piece){triggerNCHazard();return;}
   buildNCPanel();
+  if(_staged>=2&&typeof playSfx==='function')playSfx('stage'); // v2.4.3 audible heads-up when a SET (e.g. tires) drops into staging
   checkPanelFill();
   // Hub Mode: fire NC-appears commentary the exact second an NC hits staging
   // DECISION: this fires from spawnNC() not from placeBox() — it's about
@@ -2800,7 +2883,7 @@ function spawnBag(){
   var bagSlots=G.bagSlots;
   var emptyIdx=bagSlots.findIndex(function(s){return!s;});
   if(emptyIdx<0){triggerBagDwell();return;}
-  bagSlots[emptyIdx]={id:uid('BAG'),type:'bag',label:'SMALLS',w:2,h:2,wc:1,isBag:true};
+  bagSlots[emptyIdx]={id:uid('BAG'),type:'bag',label:'SMALLS',w:2,h:2,wc:1,isBag:true};S.smallsSpawned=(S.smallsSpawned||0)+1;
   buildBagPanel();
   checkPanelFill();
 }
@@ -2844,6 +2927,7 @@ function triggerNCHazard(){
   // BUG FIX: guard re-entry; if player places an NC before the timeout fires, cancel endGame
   if(ncHazardFired)return;
   ncHazardFired=true;
+  S.ncDwellWarn=(S.ncDwellWarn||0)+1;if(typeof playSfx==='function')playSfx('dwell'); // v2.4.3 count + audible SP dwell warning
   showBanner('⚠ SP SAFETY HAZARD!<br><span style="font-size:.55em">STAGING AREA BLOCKED — UNSAFE CONDITIONS</span>','danger',3000);
   flash('fl-danger');
   if(isForgiving()){ncHazardTO=setTimeout(function(){ncHazardFired=false;},6000);return;} // v2.1.10 coach, don't guillotine
@@ -2858,6 +2942,7 @@ function triggerNCHazard(){
 function triggerBagDwell(){
   if(bagDwellFired)return;
   bagDwellFired=true;
+  S.smallsDwellWarn=(S.smallsDwellWarn||0)+1;if(typeof playSfx==='function')playSfx('dwell'); // v2.4.3 count + audible smalls dwell warning
   showBanner('⏱ BAG DWELL TIME!<br><span style="font-size:.55em">TOO MANY BAGS SITTING — CLEAR THE LINE</span>','panic',3000);
   flash('fl-panic');
   if(isForgiving()){bagDwellTO=setTimeout(function(){bagDwellFired=false;},6000);return;} // v2.1.10 coach, don't guillotine
@@ -3155,7 +3240,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     }
     G.belt.splice(sourceIdx,1);refillBelt();
   }
-  else if(source==='nc'){G.ncSlots[sourceIdx]=null;buildNCPanel();}
+  else if(source==='nc'){G.ncSlots[sourceIdx]=null;S.ncPlaced=(S.ncPlaced||0)+1;buildNCPanel();}
   else if(source==='bag'){G.bagSlots[sourceIdx]=null;buildBagPanel();}
 
   placed++;
@@ -3614,6 +3699,7 @@ function sealWall(reason){
     setTimeout(function(){showLevelEnd(reason,false);},800);
     return;
   }
+  try{S.wallLog=S.wallLog||[];S.wallLog.push(snapWall());}catch(_sw){}
   document.getElementById('next-popup').classList.add('vis');
   document.getElementById('next-popup-badge').textContent='✓ '+reason;
 }
@@ -3621,28 +3707,51 @@ function sealWall(reason){
 // nextTrailer() defined in mode system section — handles both shift and standard modes
 
 // ── GAME LOOP ──
+function liShowErr(where,e){
+  try{
+    var m=(e&&e.message)||(''+e);
+    var st=((e&&e.stack)||'').substring(0,260);
+    window.__LI_ERR={where:where,msg:m,stack:(e&&e.stack)||'',mode:gameMode,placed:placed};
+    if(window.__LI_ERR_SHOWN)return;window.__LI_ERR_SHOWN=true;
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;left:0;right:0;top:0;z-index:99999;background:#c23a1a;color:#fff;font:12px/1.45 monospace;padding:9px 14px;white-space:pre-wrap;cursor:pointer;';
+    d.textContent='LOCK IN caught an error in '+where+' (SCREENSHOT THIS): '+m+'  ||  '+st+'   [tap to dismiss]';
+    d.onclick=function(){if(d&&d.parentNode)d.parentNode.removeChild(d);};
+    if(document.body)document.body.appendChild(d);
+    try{console.error('[LOCK IN]',where,e);}catch(_x){}
+  }catch(_x2){}
+}
 function loop(ts){
   if(paused)return;
   var dt=lastLoopT?Math.min((ts-lastLoopT)/1000,.1):.016;
   lastLoopT=ts;
-  convOffset=(convOffset+0.42)%40;
-  computeGeom();
-  drawScene(ts);
-  drawBelt(ts);
-  updateHUD();
-  if(!gOver){
-    checkPPHFail(dt);
-    checkLargeDanger(dt);
-    checkPanic();
-    checkWin(); // v2.1.17 advance even without a new placement (no more loader-limbo)
-    // Level mechanics ticks
-    if(gameMode==='level'&&_M){
-      if(_M.type==='drought')tickDrought(dt);
-      else if(_M.type==='midDrop')tickMidDrop();
-      else if(_M.type==='inspHold')tickInspHold(dt);
-      else if(_M.type==='strike')tickStrike(dt);
-      else if(_M.type==='trainer')tickTrainer();
+  // v2.4.0 — the loop must NEVER die. Any throw in a frame is caught + logged once,
+  // and the next frame is ALWAYS scheduled, so one bad frame self-heals instead of freezing.
+  try{
+    convOffset=(convOffset+0.42)%40;
+    computeGeom();
+    drawScene(ts);
+    drawBelt(ts);
+    updateHUD();
+    if(!gOver){
+      checkPPHFail(dt);
+      checkLargeDanger(dt);
+      checkPanic();
+      checkWin(); // v2.1.17 advance even without a new placement (no more loader-limbo)
+      // Level mechanics ticks
+      if(gameMode==='level'&&_M){
+        if(_M.type==='drought')tickDrought(dt);
+        else if(_M.type==='midDrop')tickMidDrop();
+        else if(_M.type==='inspHold')tickInspHold(dt);
+        else if(_M.type==='strike')tickStrike(dt);
+        else if(_M.type==='trainer')tickTrainer();
+      }
     }
+  }catch(_e){
+    _loopErrN++;
+    if(_loopErrN<=5){try{console.error('[LOCK IN] frame error #'+_loopErrN+':',_e);}catch(_x){}}
+    try{window.__LI_ERR={n:_loopErrN,msg:(_e&&_e.message)||(''+_e),stack:(_e&&_e.stack)||'',mode:gameMode,placed:placed};}catch(_x2){}
+    try{liShowErr('frame',_e);}catch(_x3){}
   }
   animF=requestAnimationFrame(loop);
 }
@@ -4083,6 +4192,9 @@ function renderWallBox(c,cell){
     var _txc=(tl.x+tr.x+bl.x+br.x)/4,_tyc=(tl.y+tr.y+bl.y+br.y)/4;
     var _trx=(Math.abs(tr.x-tl.x)+Math.abs(br.x-bl.x))/4;
     var _tryy=(Math.abs(bl.y-tl.y)+Math.abs(br.y-tr.y))/4;
+    // v2.4.0 — guard: a non-finite radius makes ellipse()/arc() throw and froze the loop. Math.max(3,NaN)===NaN.
+    if(!isFinite(_txc))_txc=0; if(!isFinite(_tyc))_tyc=0;
+    if(!isFinite(_trx)||_trx<=0)_trx=4; if(!isFinite(_tryy)||_tryy<=0)_tryy=4;
     c.save();
     c.strokeStyle='rgba(15,15,15,.92)';c.lineWidth=Math.max(2,_trx*0.13);
     c.beginPath();c.ellipse(_txc,_tyc,Math.max(3,_trx*0.92),Math.max(3,_tryy*0.82),0,0,Math.PI*2);c.stroke();
@@ -4758,6 +4870,7 @@ scene.addEventListener('pointerup',function(e){
     var existing=G.grid[g.y]&&G.grid[g.y][g.x];
     if(existing){
       if(isLoadBearing(existing)){
+        S.rejects=(S.rejects||0)+1; // v2.4.3 lift-lock is a denied action -> counts as a rejected drop
         if(typeof playSfx==='function')playSfx('deny');if(typeof addShake==='function')addShake(4);
         if(!G._liftWarn||Date.now()-G._liftWarn>2200){G._liftWarn=Date.now();showBanner('✕ CAN’T LIFT — IT’S HOLDING A LOAD. Pull from the top down.','warn',2000);}
       }else{liftBox(existing);}
@@ -5733,21 +5846,157 @@ function nextTrailer(){
 function endGameShift(reason){
   if(gOver)return;gOver=true;
   if(animF)cancelAnimationFrame(animF);
-  shiftState.totalBoxes+=placed;
-  var sessionMins=Math.round((Date.now()-shiftState.sessionStartT)/60000);
-  document.getElementById('es-score').textContent=S.totalScore+(G.score||0);
-  document.getElementById('es-pph').textContent=getPPH();
-  document.getElementById('es-trucks').textContent=shiftState.walls;
-  document.getElementById('es-int').textContent=shiftState.totalBoxes+' PCS';
-  var _inc=(S.incidents||[]).length;document.getElementById('es-incidents').textContent=_inc+(_inc>=2?' ⚠':'');
-  fillTelemetryTiles();if(typeof zEndSession==='function')zEndSession();
-  document.getElementById('end-title').innerHTML='SHIFT<br>COMPLETE';
-  document.getElementById('end-sub').textContent=reason+' · '+sessionMins+'min session · '+shiftState.walls+' walls loaded';
-  document.getElementById('ov-end').classList.add('vis');
+  try{
+    shiftState.totalBoxes+=placed;
+    var sessionMins=Math.round((Date.now()-shiftState.sessionStartT)/60000);
+    document.getElementById('es-score').textContent=S.totalScore+(G.score||0);
+    document.getElementById('es-pph').textContent=getPPH();
+    document.getElementById('es-trucks').textContent=shiftState.walls;
+    document.getElementById('es-int').textContent=shiftState.totalBoxes+' PCS';
+    var _inc=(S.incidents||[]).length;document.getElementById('es-incidents').textContent=_inc+(_inc>=2?' ⚠':'');
+    fillTelemetryTiles();if(typeof zEndSession==='function')zEndSession();
+    document.getElementById('end-title').innerHTML='SHIFT<br>COMPLETE';
+    document.getElementById('end-sub').textContent=reason+' · '+sessionMins+'min session · '+shiftState.walls+' walls loaded';
+  }catch(_e){liShowErr('endGameShift',_e);}
+  var _ovS=document.getElementById('ov-end');if(_ovS)_ovS.classList.add('vis'); // v2.4.4 end screen ALWAYS shows
 }
 
 // ── RETURN TO MENU ──
 // Called by "RELOAD YARD" on end screen — returns to start menu for mode selection.
+function snapWall(){
+  try{
+    var hp=Math.round(wallH()/GH*100), eff=Math.round(countFilled()/(GW*GH)*100);
+    return {score:G.score||0,pieces:placed||0,pph:getPPH()||0,integrity:G.integrity||0,
+      support:Math.round(supportScore(G.grid)||0),fillPct:hp,cubePct:eff,
+      voids:getVoids(G.grid).length,shelves:G.tetrisTotal||0,doubles:G.bulkheadCount||0,
+      cog:Math.round(Math.abs((G.cog||.5)-.5)*200)/100};
+  }catch(e){return {score:0,pieces:0,pph:0,integrity:0,support:0,fillPct:0,cubePct:0,voids:0,shelves:0,doubles:0,cog:0};}
+}
+function psTxt(id){var e=document.getElementById(id);return e?e.textContent:'\u2014';}
+function psFmtTime(sec){sec=Math.max(0,Math.round(sec||0));var m=Math.floor(sec/60),s2=sec%60;return m+':'+(s2<10?'0':'')+s2;}
+function fetchLifetime(cb){
+  var sx=ZDATA.session;
+  if(!sx||!sx.uid){cb('anon',null);return;}
+  try{
+    var url=ZDATA.endpoint+'/lockin_lifetime?user_id=eq.'+encodeURIComponent(sx.uid)+'&mode=eq.'+encodeURIComponent(gameMode)+'&select=*';
+    fetch(url,{headers:zAuthHeaders()}).then(function(r){return r.json();}).then(function(j){cb('ok',(j&&j.length)?j[0]:{});}).catch(function(e){console.error('fetchLifetime:',e);cb('err',null);});
+  }catch(e){cb('err',null);}
+}
+function openPostSort(){
+  var ov=document.getElementById('ov-postsort');if(!ov)return;
+  ov.classList.add('vis');
+  psBuild('loading',null);
+  fetchLifetime(function(state,life){psBuild(state,life);});
+}
+function closePostSort(){var ov=document.getElementById('ov-postsort');if(ov)ov.classList.remove('vis');}
+function psBuild(lifeState,life){
+  try{
+    var W=snapWall();
+    var p=(typeof zLoadPlayer==='function')?zLoadPlayer():{};
+    var durS=Math.round((Date.now()-(S.sessionStartT||Date.now()))/1000);
+    var walls=S.trucksDone||S.truck||0;
+    var pieces=S.totalPieces||0;
+    var wl=S.wallLog||[];
+    function wlAvg(k){if(!wl.length)return null;var t=0,i;for(i=0;i<wl.length;i++)t+=(wl[i][k]||0);return Math.round(t/wl.length);}
+    var inc=S.incidents||[];
+    function ic(t){var k=0,i;for(i=0;i<inc.length;i++){if(inc[i]&&inc[i].type===t)k++;}return k;}
+    var avgInt=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):'\u2014';
+    // LIFETIME cell
+    function L(key,suf){
+      if(lifeState==='anon')return '\u2014';
+      if(lifeState==='loading')return '\u2026';
+      if(!life||life[key]==null||life[key]==='')return '\u2014';
+      return life[key]+(suf||'');
+    }
+    function row(m,w,sv,lk,sub,suf){
+      return '<div class="ps-row"><span class="m'+(sub?' sub':'')+'">'+m+'</span>'+
+        '<span class="n w">'+(w==null?'\u2014':w)+'</span>'+
+        '<span class="n s">'+(sv==null?'\u2014':sv)+'</span>'+
+        '<span class="n l">'+L(lk,suf)+'</span></div>';
+    }
+    var pcsSec=durS>0?(pieces/durS).toFixed(2):'0.00';
+    var shMin=durS>0?(((S.shelvesLocked||0)/durS)*60).toFixed(1):'0.0';
+    var tWall=walls>0?psFmtTime(durS/walls):'\u2014';
+    var ncU=S.ncSpawned?Math.round((S.ncPlaced||0)/S.ncSpawned*100):null;
+    var smU=S.smallsSpawned?Math.round((S.bagsPlaced||0)/S.smallsSpawned*100):null;
+
+    var H='';
+    H+='<div class="ps-tools"><button onclick="window.print()">\u23cf PRINT</button><button onclick="closePostSort()">\u2715 CLOSE</button></div>';
+    H+='<div class="ps-mast"><div style="display:flex;align-items:baseline"><span class="lg">LOCK<b> IN</b></span><span class="doc">POST-SORT REPORT</span></div><span class="stamp">SESSION COMPLETE</span></div><div class="ps-rule"></div>';
+    H+='<div class="ps-id">'+
+      '<div><span class="k">LOADER</span><span class="v">'+((p.email||'').split('@')[0]||'GUEST')+'</span></div>'+
+      '<div><span class="k">FACILITY</span><span class="v">'+(p.facility||'\u2014')+'</span></div>'+
+      '<div><span class="k">MODE</span><span class="v">'+(gameMode||'\u2014').toUpperCase()+'</span></div>'+
+      '<div><span class="k">DATE</span><span class="v">'+new Date().toISOString().slice(0,10)+'</span></div>'+
+      '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
+      '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
+      '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
+      '<div><span class="k">BUILD</span><span class="v">LI7 v2.4.5</span></div></div>';
+    H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
+    H+='<div class="ps-blocks">';
+
+    H+='<div class="ps-block"><h4><span class="d">\u25b8</span> THROUGHPUT</h4>'+
+      row('Avg PPH',W.pph,Math.round((typeof avgPPH==='function')?avgPPH():0),'avg_pph')+
+      row('Peak PPH',W.pph,S.bestPPH||0,'peak_pph')+
+      row('Pieces / sec',null,pcsSec,null)+
+      row('Shelves / min',null,shMin,null)+
+      row('Avg time / wall',null,tWall,null)+'</div>';
+
+    H+='<div class="ps-block"><h4><span class="d">\u25b8</span> SAFETY \u00b7 DOCS RECEIVED</h4>'+
+      row('Incidents (total)',null,inc.length,'incidents')+
+      row('\u00b7 Hazmat-high',null,ic('HAZMAT_HIGH'),null,true)+
+      row('\u00b7 Hazmat-crush',null,ic('HAZMAT_CRUSH'),null,true)+
+      row('\u00b7 Segregation',null,ic('SEGREGATION'),null,true)+
+      row('\u00b7 Killer',null,ic('KILLER'),null,true)+
+      row('Crunches',null,S.crunches||0,'crunches')+
+      row('Collapses',null,S.collapses||0,'collapses')+
+      row('Recoveries',null,S.recoveries||0,'recoveries')+
+      row('Hydration breaks',null,S.drinks||0,'hydration_breaks')+
+      row('SP dwell warnings',null,S.ncDwellWarn||0,'nc_dwell_warnings')+
+      row('Smalls dwell warnings',null,S.smallsDwellWarn||0,'smalls_dwell_warnings')+'</div>';
+
+    H+='<div class="ps-block"><h4><span class="d">\u25b8</span> LOAD QUALITY</h4>'+
+      row('Integrity',W.integrity,avgInt,'avg_integrity')+
+      row('\u00b7 Structure',null,psTxt('fp-sg-struct-v'),null,true)+
+      row('\u00b7 Balance',null,psTxt('fp-sg-bal-v'),null,true)+
+      row('\u00b7 Density',null,psTxt('fp-sg-dens-v'),null,true)+
+      row('\u00b7 Support',W.support,psTxt('fp-sg-sup-v'),null,true)+
+      row('Cube fill %',W.cubePct,wlAvg('cubePct'),'cube_eff','','%')+
+      row('Wall fill %',W.fillPct,wlAvg('fillPct'),'avg_wall_pct','','%')+
+      row('Avg pieces / wall',W.pieces,(walls>0?Math.round(pieces/walls):'\u2014'),null)+
+      row('SP utility %',null,(ncU==null?'\u2014':ncU),'nc_util_pct','','%')+
+      row('Smalls utility %',null,(smU==null?'\u2014':smU),'smalls_util_pct','','%')+
+      row('Voids (open cells)',W.voids,null,null)+
+      row('Shelves locked',W.shelves,S.shelvesLocked||0,'shelves_locked')+
+      row('Double locks',W.doubles,S.doubleLocks||0,'double_locks')+
+      row('Tire nests (vet)',null,S.nests||0,'nests')+
+      row('COG offset',W.cog,null,null)+'</div>';
+
+    H+='<div class="ps-block"><h4><span class="d">\u25b8</span> MECHANICS</h4>'+
+      row('Rotations',null,S.rotations||0,'rotations')+
+      row('Lifts',null,S.lifts||0,'lifts')+
+      row('Rejected drops',null,S.rejects||0,'rejected_drops')+
+      row('Staging actions',null,S.stagingActions||0,null)+
+      row('Hazmat locks',null,S.hazShelfLocks||0,null)+
+      row('Bonuses received',null,S.bonuses||((S.recoveries||0)+(S.doubleLocks||0)+(S.hazShelfLocks||0)+(S.nests||0)),'bonuses')+
+      row('Bags broken / placed',null,(S.bagsBroken||0)+'/'+(S.bagsPlaced||0),null)+
+      row('Slot occupancy %',null,'\u2014',null)+
+      row('Pack-fill %',null,'\u2014',null)+'</div>';
+
+    H+='</div>'; // end blocks
+
+    var g=psTxt('es-grade-big'),rk=psTxt('es-rank'),vd=psTxt('es-verdict');
+    var lifeSum=(lifeState==='ok'&&life&&life.sessions)?((life.avg_pph||'\u2014')+' PPH \u00b7 '+(life.avg_integrity||'\u2014')+' INTEG \u00b7 '+(life.incidents||0)+' INC \u00b7 '+(life.sessions||0)+' SESS'):(lifeState==='anon'?'\u2014 log in to track \u2014':'\u2026');
+    H+='<div class="ps-verdict"><div class="ps-ring"><span>'+g+'</span></div>'+
+      '<div class="ps-vmid"><div class="rk">'+rk+'</div><div class="ln">'+vd+'</div></div>'+
+      '<div class="ps-vsum"><div class="vr s"><span class="lb">SESSION</span><span class="va">'+g+' \u00b7 '+Math.round((typeof avgPPH==='function')?avgPPH():0)+' PPH \u00b7 '+avgInt+' INTEG \u00b7 '+inc.length+' INC</span></div>'+
+      '<div class="vr l"><span class="lb">LIFETIME</span><span class="va">'+lifeSum+'</span></div></div></div>';
+
+    H+='<div class="ps-foot"><span>POST-SORT REPORT \u00b7 GENERATED ON SEAL \u00b7 SHOWN WITH LOADER CONSENT</span><span style="display:inline-flex;align-items:center;gap:7px"><span class="zg">ZG</span> WWW.ZENGINE.SITE | \u00a9 2026 ZENGINE\u2122</span></div>';
+
+    var card=document.getElementById('ps-card');if(card)card.innerHTML=H;
+  }catch(e){if(typeof liShowErr==='function')liShowErr('psBuild',e);}
+}
 function returnToMenu(){
   document.getElementById('ov-end').classList.remove('vis');
   document.getElementById('ov-level-end').classList.remove('vis');
@@ -5757,7 +6006,7 @@ function returnToMenu(){
   gameMode='';currentLevel=0;_LV=null;
   updateShiftBadge();
   PANIC_THRESHOLD=0.85;PANIC_DURATION=60;
-  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0};
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
   initTruck();
   showStartMenu();
 }
@@ -6018,7 +6267,7 @@ function startLevel(n){
   // Init game state
   paused=false;
   levelStartT=Date.now();
-  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0};
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
   initTruck();
   // Pre-spawn NCs into staging if level requires them
   if(_LV.ncPreload>0){
@@ -6920,7 +7169,7 @@ function restartGame(){
   document.getElementById('ov-end').classList.remove('vis');
   // v2.1.12 FIX: do NOT reset gameMode here — caller (startShift/startRegular) sets it.
   updateShiftBadge();
-  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0};
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
   initTruck();
   if(animF)cancelAnimationFrame(animF);lastLoopT=0;animF=requestAnimationFrame(loop);
 }
@@ -6933,18 +7182,20 @@ function endGame(reason,win){
   if(gameMode==='shift'){endGameShift(reason);return;}
   // DECISION: level mode gets its own end screen with star rating + analytics
   if(gameMode==='level'){showLevelEnd(reason,true);return;}
-  S.totalScore+=G.score||0;S.bestPPH=Math.max(S.bestPPH,getPPH());
-  S.intHistory.push(G.integrity||100);S.trucksDone=S.truck;
-  var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
-  document.getElementById('es-score').textContent=S.totalScore;
-  document.getElementById('es-pph').textContent=S.bestPPH;
-  document.getElementById('es-trucks').textContent=S.trucksDone;
-  document.getElementById('es-int').textContent=avgInt+'%';
-  var _inc=(S.incidents||[]).length;document.getElementById('es-incidents').textContent=_inc+(_inc>=2?' ⚠':'');
-  fillTelemetryTiles();if(typeof zEndSession==='function')zEndSession();
-  document.getElementById('end-title').innerHTML='ROUND<br>OVER';
-  document.getElementById('end-sub').textContent=reason;
-  document.getElementById('ov-end').classList.add('vis');
+  try{
+    S.totalScore+=G.score||0;S.bestPPH=Math.max(S.bestPPH,getPPH());
+    S.intHistory.push(G.integrity||100);S.trucksDone=S.truck;
+    var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
+    document.getElementById('es-score').textContent=S.totalScore;
+    document.getElementById('es-pph').textContent=S.bestPPH;
+    document.getElementById('es-trucks').textContent=S.trucksDone;
+    document.getElementById('es-int').textContent=avgInt+'%';
+    var _inc=(S.incidents||[]).length;document.getElementById('es-incidents').textContent=_inc+(_inc>=2?' ⚠':'');
+    fillTelemetryTiles();if(typeof zEndSession==='function')zEndSession();
+    document.getElementById('end-title').innerHTML='ROUND<br>OVER';
+    document.getElementById('end-sub').textContent=reason;
+  }catch(_e){liShowErr('endGame',_e);}
+  var _ovG=document.getElementById('ov-end');if(_ovG)_ovG.classList.add('vis'); // v2.4.4 end screen ALWAYS shows
 }
 
 // ── RESIZE ──
