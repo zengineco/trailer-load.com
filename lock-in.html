@@ -23,11 +23,15 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN — LI7 v2.9.8
+   LOCK IN — LI7 v2.10.2
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v2.10.2 - SCORE-FARM EXPLOIT KILLED. Lifting a placed piece and re-placing it re-awarded every bonus (VOID FILLER, CORNER/ANCHOR/CORNERSTONE, and the DOUBLE LOCK +shelf bonus), so a nested tire could be cycled for infinite cubes + pieces-per-wall. Two guards: (1) a piece earns its keystone/void-filler bonus ONCE ever (box._bonusEarned) - re-placement pays nothing and no longer double-counts the piece; (2) a row pays its shelf-lock bonus ONCE per trailer (G.tetrisPaid) - unsealing via lift then re-locking no longer re-pays. tetrisPaid resets with tetrisRows on every trailer. Bulkhead was already guarded (persistent bulkheadRows). Legit first-time scoring unchanged.
+   CHANGE LOG v2.10.1 - GRAB OFF THE BELT (the middle belt is now the preselector). The freight boxes riding up the aisle are now CLICKABLE - tap one to pick it up (selected box gets a teal highlight + the wall ghost), then click the wall to place, exactly like the bottom strip but on the real belt. SmallSort-style. drawBeltFreight stores each box's screen rect every frame; the scene pointerup tests those first and sets selBeltIdx. The bottom strip still works as a backstop for THIS build only - confirm the belt grabs clean and the strip gets deleted next (one line).
+   CHANGE LOG v2.10.0 - CONVEYABILITY RULE (the belt foundation). Long-thin and bulky freight physically lodges in a conveyor and jams the line, so it is non-conveyable by nature and now routes to NC staging (hand-loaded) instead of riding the belt. Rule: max>=8 OR (max>=7 AND min<=2) => NC. This pulls OVR-LONG 8x3, OVR-WIDE 10x3, PALLET-M 7x2, PALLET-L 9x2, BUNDLE 8x4, FLATSKID 12x2 off the belt and into NC. 6x1 stays conveyable (the limit); 6x6 and 7x3+ convey. Gauntlet (no NC) rerolls to a conveyable piece. Daily is UNTOUCHED (own deterministic generator - reconcile separately with a determinism reset so existing leaderboard scores hold). Belt now only carries conveyable freight - the foundation for grab-off-belt + jam.
+   CHANGE LOG v2.9.9 - REAL FREIGHT ON THE BELT (+ reverted the v2.9.8 square-cell shrink). (1) The v2.9.8 17:20 aspect-lock letterboxed/shrank the playfield - reverted to filling the photo wall (BACKDROP_WALL knobs unchanged; re-measure them for the new steel backdrop). (2) drawBeltFreight: the ACTUAL G.belt queue now rides UP the centre aisle to the wall and POOLS there, SmallSort-style - reskinned cardboard, perspective-scaled, front-of-queue pooled at the wall base, ground shadows + belt bob. Reflects real upcoming pieces, render-only (no state, no selection, no determinism touched). This is the freight-up-the-belt mechanic, built - not decoration.
    CHANGE LOG v2.9.8 - SQUARE CELLS + WALL RESKIN. (1) The photo-backdrop wall stretched the 17x20 grid to the image rectangle, so cube cells were non-square and a 5-cube piece could read as 6. The box-stacking grid is now locked to the largest 17:20 rectangle that fits inside the photo wall, centered - cell width === cell height, always, so piece sizes are eyeball-countable like on the dock. Aspect-lock beats filling the photo. (2) Placed boxes on the WALL now take the same card1..cardN cardboard surface as the belt pieces (drawWallBoxes/renderWallBox was a separate render that never got the texture). Seed-stable per piece, cached per-context. Graceful fallback to the kraft palette.
    CHANGE LOG v2.9.7 - RENDER-ON-LOAD FIX (the 'renders weird until I toggle settings' bug). resize() ran ONCE at boot, before fonts loaded and before the backdrop decoded - so scene-wrap reported transitional dimensions and computeGeom() ran with BACKDROP_OK false, leaving the canvas mis-sized and the box-grid locked to the procedural perspective instead of the photo wall; a manual zoom toggle fired a resize event that corrected it. Now the canvas re-fits when layout-shifting things actually arrive: backdrop image load (re-aligns to the photo), document.fonts.ready, window load, plus a deferred tick and an rAF. resize() only touches geometry, never game state.
    CHANGE LOG v2.9.6 - MULTIPLE CARDBOARD SURFACES. The single cardboard.png hook is now an array: drop card1.png through card8.png (tileable kraft swatches) in the repo and each box deterministically picks one by its seed - so a trailer shows varied box surfaces, not one repeated skin. A box always wears the same surface (seed-stable). Patterns are cached per-context and per-surface. Graceful fallback to the kraft palette for any slot with no image. Load as few or as many as you have (1-8); missing numbers just skip.
@@ -1235,7 +1239,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN — LI7 v2.9.8</div>
+  <div class="pause-sub">LOCK IN — LI7 v2.10.2</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1366,7 +1370,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v2.9.8 · © 2026</div>
+  <div id="sm-footer">LOCK IN v2.10.2 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1477,7 +1481,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v2.9.8 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v2.10.2 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1664,7 +1668,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>LI7 v2.9.8</sub></div>
+      <div class="logo">LOCK IN<sub>LI7 v2.10.2</sub></div>
       <div class="hdr-mid" id="conv-lbl-txt">▶ PRESELECTOR BELT — SELECT A PIECE</div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1846,7 +1850,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN — LI7 v2.9.8
+// LOCK IN — LI7 v2.10.2
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2424,6 +2428,7 @@ function zSaveConsent(){
 }
 var G={};
 var selBeltIdx=null, selBeltRot=0, selNCRot=0;
+var BELT_FREIGHT_HITS=[]; // v2.10.1 clickable belt-freight hit rects (screen coords)
 var selNC=-1, selBag=-1;
 var gOver=false, paused=false;
 var _loopErrN=0; // v2.4.0 caught-frame-error counter (throttles logging)
@@ -2630,16 +2635,7 @@ function computeGeom(){
   function lp(ax,ay,t){return{x:ax+(VPX-ax)*t,y:ay+(VPY-ay)*t};}
   NW.tl=lp(DL,DT,nf);NW.tr=lp(DR,DT,nf);
   NW.bl=lp(DL,DB,nf);NW.br=lp(DR,DB,nf);
-  if(BACKDROP_OK){
-    var _wl=DL+(DR-DL)*BACKDROP_WALL.l,_wr=DL+(DR-DL)*BACKDROP_WALL.r,_wt=DT+(DB-DT)*BACKDROP_WALL.t,_wb=DT+(DB-DT)*BACKDROP_WALL.b;
-    // v2.9.8 SQUARE CELLS — fit the largest GW:GH (17:20) rectangle inside the photo wall, centered.
-    // Guarantees cell width === cell height, so a 5-cube piece reads as 5 by eye. Aspect-lock beats fill.
-    var _aw=_wr-_wl,_ah=_wb-_wt,_targ=GW/GH,_fw,_fh,_cx,_cy;
-    if(_aw/_ah>_targ){_fh=_ah;_fw=_ah*_targ;}else{_fw=_aw;_fh=_aw/_targ;}
-    _cx=(_wl+_wr)/2;_cy=(_wt+_wb)/2;
-    _wl=_cx-_fw/2;_wr=_cx+_fw/2;_wt=_cy-_fh/2;_wb=_cy+_fh/2;
-    NW.tl={x:_wl,y:_wt};NW.tr={x:_wr,y:_wt};NW.bl={x:_wl,y:_wb};NW.br={x:_wr,y:_wb};
-  }
+  if(BACKDROP_OK){var _wl=DL+(DR-DL)*BACKDROP_WALL.l,_wr=DL+(DR-DL)*BACKDROP_WALL.r,_wt=DT+(DB-DT)*BACKDROP_WALL.t,_wb=DT+(DB-DT)*BACKDROP_WALL.b;NW.tl={x:_wl,y:_wt};NW.tr={x:_wr,y:_wt};NW.bl={x:_wl,y:_wb};NW.br={x:_wr,y:_wb};}
   computeFloorSlots();
 }
 
@@ -2981,6 +2977,30 @@ function calcIntegrity(grid){
 }
 
 // ── PIECE GENERATION ──
+// v2.10.0 CONVEYABILITY — long/thin and bulky freight physically lodges in the conveyor and jams the line.
+// It is NON-CONVEYABLE by nature, so it routes to NC staging (hand-loaded) instead of riding the belt.
+// Threshold (Vince ops rule): 6x1 conveys (limit); 7x2/9x2/10x3 lodge; 8x3/8x4/12x2 are too bulky.
+function isConveyable(w,h){
+  var L=(w>h)?w:h,S=(w>h)?h:w;
+  if(L>=8)return false;        // bulky / very long — destroys things in a jam (8xN, 10x3, 12x2)
+  if(L>=7&&S<=2)return false;  // long-thin — lodges sideways (7x1, 7x2, 9x2)
+  return true;                 // 6x1 ok (the limit), 6x6 ok, 7x3+ ok
+}
+function routeToNC(tmpl){
+  if(typeof G==='undefined'||!G.ncSlots)return;
+  var ncSlots=G.ncSlots;
+  var slot=ncSlots.findIndex(function(s){return!s;});
+  if(slot<0){if(typeof triggerNCHazard==='function')triggerNCHazard();return;}
+  var _seed=rnd(100,9999);
+  var _pal=seedPal(_seed,tmpl.type,tmpl.shape,tmpl.color||null);
+  var _lab=pickLabel('large',false,true,false);
+  var _cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(cc){return[cc[0],cc[1]];});
+  var _pc={...tmpl,cells:_cells,id:uid('NC'),pal:_pal,labelDef:_lab,label:'NC',seed:_seed,isFrag:false,isNC:true,hazClass:null};
+  assignOrientReq(_pc);
+  ncSlots[slot]=_pc;S.ncSpawned=(S.ncSpawned||0)+1;S.stagingActions=(S.stagingActions||0)+1;
+  if(typeof buildNCPanel==='function')buildNCPanel();
+  if(typeof checkPanelFill==='function')checkPanelFill();
+}
 function genPiece(isPanic,isGap){
   var tmpl;
   if(isGap){tmpl=pick(P_GAP);}
@@ -2998,6 +3018,11 @@ function genPiece(isPanic,isGap){
       else{spawnBag();return null;}
     }
     else tmpl=pick(P_REG);
+  }
+  // v2.10.0 conveyability gate (non-daily; daily uses its own deterministic generator)
+  if(tmpl&&!isPanic&&!isGap&&!isConveyable(tmpl.w,tmpl.h)){
+    if(gameMode==='gauntlet'){var _cg=0;while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_cg++<12){tmpl=pick(P_REG);}}
+    else{routeToNC(tmpl);return null;}
   }
   tmpl={...tmpl};
   if(!tmpl.cells)tmpl.cells=makeRect(tmpl.w,tmpl.h);
@@ -3739,9 +3764,11 @@ function checkTetris(){
     var full=true;
     for(var x=0;x<GW;x++){if(!G.grid[y][x]){full=false;break;}}
     if(full&&!G.tetrisRows[y]){
-      G.tetrisRows[y]=true;
+      G.tetrisRows[y]=true;newLocks++;
+      G.tetrisPaid=G.tetrisPaid||{};
+      if(!G.tetrisPaid[y]){
+      G.tetrisPaid[y]=true; // v2.10.2 lock bonus pays once per row per trailer (unseal+relock can't refarm)
       G.tetrisTotal=(G.tetrisTotal||0)+1;S.shelvesLocked=(S.shelvesLocked||0)+1; // v2.1.8
-      newLocks++;
       var prevInt=G.integrity||100;
       var intBonus=Math.min(30,100-prevInt);
       G.integrity=Math.min(100,prevInt+intBonus);
@@ -3757,6 +3784,7 @@ function checkTetris(){
         G.hazShelfLocks=(G.hazShelfLocks||0)+1;S.hazShelfLocks=(S.hazShelfLocks||0)+1;
         showBanner('\u2622 HAZMAT SHELF LOCKED +'+HAZMAT_SHELF_BONUS+'<br><span style="font-size:.52em">LOADED LOW, CAPPED, SECURED \u2014 THE VET MOVE.</span>','ok',3400);
       }
+      } // v2.10.2 end lock-pay guard
     }
   }
   if(newLocks>0){
@@ -3824,6 +3852,7 @@ function checkRecovery(){
 
 // ── CORNERSTONE / KEYSTONE BONUS ──
 function checkKeystoneBonus(gx,gy,rot,box){
+  if(box&&box._bonusEarned)return; // v2.10.2 anti-farm: a piece earns its placement bonus once, ever (lift+replace = nothing)
   G.ncPlaced=(G.ncPlaced||0)+1;
   var d=getDims(box,rot);
   var bonus=0,msg='';
@@ -3854,6 +3883,7 @@ function checkKeystoneBonus(gx,gy,rot,box){
   }
   if(bonus>0){
     G.score=(G.score||0)+bonus;
+    if(box)box._bonusEarned=true; // v2.10.2 mark earned
     showBanner(msg,'ok',2400);flash('fl-ok');
   }
 }
@@ -4106,6 +4136,7 @@ function drawScene(ts){
   if(BACKDROP_OK){drawBackdropImg(sCtx);}else{drawSurfaces(sCtx);drawStructure(sCtx);}
   drawLights(sCtx,ts);
   drawConveyorScene(sCtx,ts);
+  drawBeltFreight(sCtx,ts);
   drawBackWall(sCtx);
   drawWallBoxes(sCtx);
   drawParticles(sCtx);
@@ -4307,6 +4338,42 @@ function drawLights(c,ts){
 
 // The conveyor in the scene — shows the belt running from the opening to the wall
 // The actual pieces on the belt are rendered in drawBelt() on the footer canvas
+// v2.9.9 LIVE FREIGHT ON THE BELT - the real G.belt queue rides UP the aisle to the wall and POOLS,
+// SmallSort-style. Reskinned cardboard, reflects the ACTUAL upcoming pieces. Render-only, no state touched.
+function drawBeltFreight(c,ts){
+  BELT_FREIGHT_HITS=[];
+  if(typeof G==='undefined'||!G.belt||!G.belt.length)return;
+  var nW=W*.16,fW=W*.028,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
+  var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
+  var N=Math.min(G.belt.length,6);
+  var tex=(typeof loadedBoxTex==='function')?loadedBoxTex():[];
+  c.save();
+  c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();c.clip();
+  var i,piece,t,pt,rx,ry,rhw,bob,bw,bh,ar,p,g,im,pk;
+  for(i=N-1;i>=0;i--){
+    piece=G.belt[i];if(!piece)continue;
+    t=0.80-i*0.135;
+    if(t<0.04)continue;
+    pt=t*t;
+    rx=nX+(fX-nX)*pt;ry=nY+(fY-nY)*pt;rhw=(nW/2)+((fW/2)-(nW/2))*pt;
+    bob=Math.sin((ts||0)*0.0022+i*1.3)*rhw*0.05;
+    ar=piece.h/Math.max(1,piece.w);
+    bw=rhw*1.5;bh=bw*Math.max(0.55,Math.min(1.15,ar));
+    p=piece.pal||{l:'#d6b483',b:'#c49a5e',d:'#9a6f3a'};
+    c.save();
+    c.translate(rx,ry+bob);
+    c.globalAlpha=0.22;c.fillStyle='#000';c.beginPath();c.ellipse(0,2,Math.max(1,bw*0.55),Math.max(1,bw*0.16),0,0,Math.PI*2);c.fill();c.globalAlpha=1;
+    g=c.createLinearGradient(0,-bh,0,0);g.addColorStop(0,p.l);g.addColorStop(.5,p.b);g.addColorStop(1,p.d);
+    c.fillStyle=g;c.fillRect(-bw/2,-bh,bw,bh);
+    if(tex.length){im=tex[(((piece.seed)||1)>>>0)%tex.length];if(!c._boxPats)c._boxPats={};pk=im.idx;if(c._boxPats[pk]===undefined){try{c._boxPats[pk]=c.createPattern(im,'repeat');}catch(_e){c._boxPats[pk]=null;}}if(c._boxPats[pk]){c.save();c.beginPath();c.rect(-bw/2,-bh,bw,bh);c.clip();c.globalAlpha=.5;c.fillStyle=c._boxPats[pk];c.fillRect(-bw/2,-bh,bw,bh);c.globalAlpha=1;c.restore();}}
+    c.fillStyle='rgba(255,255,255,.10)';c.fillRect(-bw/2,-bh,bw,bh*0.3);
+    c.strokeStyle='rgba(60,40,18,.55)';c.lineWidth=Math.max(.5,1.5*(1-pt*.6));c.strokeRect(-bw/2,-bh,bw,bh);
+    if(selBeltIdx===i){c.strokeStyle='rgba(40,255,200,.95)';c.lineWidth=Math.max(1.5,3*(1-pt*.5));c.strokeRect(-bw/2,-bh,bw,bh);}
+    c.restore();
+    BELT_FREIGHT_HITS.push({idx:i,x:rx-bw/2,y:ry+bob-bh,w:bw,h:bh});
+  }
+  c.restore();
+}
 function drawConveyorScene(c,ts){
   var nW=W*.16,fW=W*.028,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
   var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
@@ -5238,6 +5305,13 @@ scene.addEventListener('pointerup',function(e){
       selBag=(selBag===slotHit.idx)?-1:slotHit.idx;
       selBeltIdx=null;selNC=-1;return;
     }
+  }
+
+  // v2.10.1 GRAB OFF THE BELT — click a freight box riding the aisle to pick it up (SmallSort-style)
+  if(BELT_FREIGHT_HITS&&BELT_FREIGHT_HITS.length){
+    var _fi,_fr,_fhit=-1;
+    for(_fi=0;_fi<BELT_FREIGHT_HITS.length;_fi++){_fr=BELT_FREIGHT_HITS[_fi];if(c2.mx>=_fr.x&&c2.mx<=_fr.x+_fr.w&&c2.my>=_fr.y&&c2.my<=_fr.y+_fr.h){_fhit=_fr.idx;break;}}
+    if(_fhit>=0){selBeltIdx=(selBeltIdx===_fhit)?null:_fhit;selBeltRot=0;selNC=-1;selBag=-1;return;}
   }
 
   var g=canvasToGrid(c2.mx,c2.my);
@@ -6245,7 +6319,7 @@ function runDemoStep(){
     if(pEl2)pEl2.textContent='THAT\'S A LOCKED-IN WALL';
     if(rEl2)rEl2.textContent='Every principle you just watched is a real hub loading rule. The wall is about to reset — study it again, or hit EXIT and load one yourself in SHIFT mode.';
     trainingState.stepTimer=setTimeout(function(){
-      G.grid=makeGrid();placed=0;G.cog=.5;G.tetrisRows={};G.drinks=0;
+      G.grid=makeGrid();placed=0;G.cog=.5;G.tetrisRows={};G.tetrisPaid={};G.drinks=0;
       trainingState.stepIdx=0;
       if(trainingState.playing)runDemoStep();
     },4000/trainingState.speed);
@@ -6335,7 +6409,7 @@ function nextTrailer(){
     // Clear grid only — keep session going
     G.grid=makeGrid();
     G.score=0;G.cog=.5;G.support=1;G.integrity=100;
-    G.tetrisTotal=0;G.tetrisRows={};G.bulkheadRows={};G.bulkheadCount=0;
+    G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
     G.brickAwarded=false;G.crunchCount=0;G.hazViolations=0;G.recoveryCount=0;G.ncPlaced=0;G.drinks=0;
     G.preselectDepth=0;G.preselectWarned=false;G.seamWarned=false;G.segWarned=false;
     G.beltSinceNC=0;G.beltSinceBag=0;
@@ -6500,7 +6574,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">LI7 v2.9.8</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.2</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
