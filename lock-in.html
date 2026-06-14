@@ -23,11 +23,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN — LI7 v2.10.7
+   LOCK IN — LI7 v2.10.8
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v2.10.8 - SLOP KILL PASS. (1) ROTATION FIX: belt freight wrongly inherited a HEAVY-FREIGHT-CANNOT-ROTATE block that caught ~half the 3x4s. Belt is all-conveyable now, so that block is gone - everything on the belt rotates. (2) BELT IS BLACK: the central conveyor was tan; it's now black rubber with grey rollers/rails. (3) NC and SMALLS grids moved off the belt into the side dead-space (centered in each side band) instead of crammed against the conveyor. (4) HEADER cleaned: dropped the 'LI7' slop from the visible logo (now just v2.10.8) and hid the redundant top-center status line. (5) REMOVED the NEXT-UP panel and the SP/HAZMAT side section from the right HUD - neither earned the space. No scoring/backend/determinism touched. NEXT: label overhaul + arrow-error mechanic, then the chute.
    CHANGE LOG v2.10.7 - WIDER BELT (less vanish) + VERTICAL STAGING GRIDS. (1) The belt tapered 28% down to 2.8% at the wall, so freight shrank to a point and disappeared into the perspective vanishing point. Base is now 30% and the far end is 13% (was 2.8%) - a gentle trapezoid, so pieces stay readable and grabbable all the way up to the wall instead of vanishing. (2) NC and SMALLS staging moved from 4x2 horizontal blocks to 2x4 VERTICAL column grids stacked up each side floor (per the sketch) - NC hugs the left of the belt and grows leftward/upward, SMALLS hugs the right. Square cells, sized off floor depth. The bottom preselector strip stays (it works). Geometry only - no gameplay/state/determinism touched. Tune live: belt nW/fW are two numbers, grid is cols=2 rows=4.
    CHANGE LOG v2.10.6 - WIDER BELT. The center belt was 16% of screen width - too thin, freight read small and the slots crowded it. Belt base is now 28% (your sketch: fat belt up the middle), so the conveyor graphic AND the freight boxes are bigger and easier to grab, while still tapering to the wall as a trapezoid. The NC (left) and SMALLS (right) floor zones key off the belt width, so they auto-shift outward and stay clear - no collision. Pure geometry change, no gameplay/state touched.
    CHANGE LOG v2.10.5 - THE BELT, FIXED AT THE ROOT. Root cause found: the belt is filled by genBeltPiece, NOT genPiece - so every conveyability gate AND the realistic weighting I added (v2.10.0-2.10.4) lived in a function that never touched the belt. That is why 7x2/8x4 kept coming and the mix stayed wrong. NOW: (1) genBeltPiece picks via pickWeighted (realistic freight frequency actually applies); (2) genBeltPiece gates conveyability - non-conveyable freight routes to NC, panic/gauntlet reroll conveyable. A 7x2 or 8x4 cannot reach the belt anymore (non-daily). (3) CLICKABILITY: belt boxes were overlapping perspective sprites, so clicks hit the wrong one. Rebuilt as evenly-spaced NON-overlapping slots (height capped to the slot gap), no bob, and the hit-test now picks the nearest box. Every piece is its own clean target with its W×H shown.\n   CHANGE LOG v2.10.4 - REALISTIC FREIGHT FREQUENCY. Spawns were uniform - a 5x1 was as likely as a 2x2 - so you saw too many long-thin pieces and too few small squares. Now weighted by realism: square/near-square and small-to-standard boxes are common (1x1, 2x1, 2x2, 2x3, 3x3, and the 3x4 Target/Chewy standard), while long-thin (4x1, 5x1, 6x1) are rare but present. Weight = aspect band x area band; knobs are in pieceWeight() for tuning. Applies to small/regular/large belt spawns (and gauntlet). Daily untouched (own deterministic generator).
@@ -1243,7 +1244,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN — LI7 v2.10.7</div>
+  <div class="pause-sub">LOCK IN — LI7 v2.10.8</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1374,7 +1375,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v2.10.7 · © 2026</div>
+  <div id="sm-footer">LOCK IN v2.10.8 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1485,7 +1486,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v2.10.7 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v2.10.8 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1672,8 +1673,8 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>LI7 v2.10.7</sub></div>
-      <div class="hdr-mid" id="conv-lbl-txt">▶ PRESELECTOR BELT — SELECT A PIECE</div>
+      <div class="logo">LOCK IN<sub>v2.10.8</sub></div><!--build LI7 v2.10.8-->
+      <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
         <button id="pause-btn" onclick="togglePause()">⏸ PAUSE</button>
@@ -1716,10 +1717,6 @@ body[data-cb="trit"]{
   <div id="fb-panel">
     <div class="fp-hdr">◈ LIVE FLOOR</div>
     <div class="rp-sec">
-      <div class="rp-sec-t">▸ NEXT UP</div>
-      <div id="nextup-list"></div>
-    </div>
-    <div class="rp-sec">
       <div class="rp-sec-t">▸ PERFORMANCE</div>
       <div class="perf-grid">
         <div class="perf-cell"><span class="perf-v" id="perf-pph">—</span><span class="perf-l">PPH</span></div>
@@ -1737,14 +1734,6 @@ body[data-cb="trit"]{
           <div><b id="safety-haz">0</b> <span class="safety-l">HAZ FLAGS</span></div>
         </div>
       </div>
-    </div>
-    <div class="rp-sec">
-      <div class="rp-sec-t">▸ SP / HAZMAT</div>
-      <div class="legend-line"><span class="lg-sp">SP</span>Special-Handling freight</div>
-      <div class="legend-haz">
-        <span class="lg-d"><i>1</i></span><span class="lg-d"><i>2</i></span><span class="lg-d"><i>3</i></span><span class="lg-d"><i>5</i></span><span class="lg-d"><i>6</i></span><span class="lg-d"><i>8</i></span><span class="lg-d"><i>9</i></span>
-      </div>
-      <div class="legend-sub">Diamond + class # = hazmat · load it low</div>
     </div>
     <div id="fp-tip">
       <div class="fp-tip-hdr">▸ COACH</div>
@@ -1854,7 +1843,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN — LI7 v2.10.7
+// LOCK IN — LI7 v2.10.8
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2669,8 +2658,9 @@ function computeFloorSlots(){
   FLOOR_SLOT_W=slotW;FLOOR_SLOT_H=slotH;
   var colGap=4,rowGap=4,rowH=slotH+rowGap,colW=slotW+colGap;
   FLOOR_SLOT_Y=DB-slotH-4; // bottom row (row 0) baseline
-  var ncZoneRight=convNX-convNW/2-8; // NC grid hugs left of belt, grows leftward
-  var bagZoneLeft=convNX+convNW/2+8; // SMALLS grid hugs right of belt, grows rightward
+  var beltL=convNX-convNW/2,beltR=convNX+convNW/2,gridW=2*colW; // v2.10.8 center grids in side dead-space (were crammed on the belt)
+  var ncZoneRight=((W*.06+beltL)/2)+gridW/2;  // NC grid centered in LEFT band, grows leftward
+  var bagZoneLeft=((beltR+W*.94)/2)-gridW/2;  // SMALLS grid centered in RIGHT band, grows rightward
   FLOOR_NC_SLOTS_X=[];FLOOR_NC_SLOTS_Y=[];FLOOR_BAG_SLOTS_X=[];FLOOR_BAG_SLOTS_Y=[];
   var k,col,row;
   for(k=0;k<8;k++){
@@ -4428,17 +4418,17 @@ function drawConveyorScene(c,ts){
   var nW=W*.30,fW=W*.13,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
   var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
   c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();
-  var cg=c.createLinearGradient(nX,nY,fX,fY);cg.addColorStop(0,'#cabb96');cg.addColorStop(1,'#b8a684');
+  var cg=c.createLinearGradient(nX,nY,fX,fY);cg.addColorStop(0,'#2c2c2e');cg.addColorStop(1,'#161618');
   c.fillStyle=cg;c.fill();
   c.save();
   c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();c.clip();
   for(var r=0;r<22;r++){
     var raw=(r/22+(convOffset/40)*.12)%1,pt=raw*raw;
     var rx=nX+(fX-nX)*pt,ry=nY+(fY-nY)*pt,rhw=(nW/2)+((fW/2)-(nW/2))*pt;
-    c.strokeStyle='rgba(150,124,80,'+(0.78-pt*.35)+')';c.lineWidth=Math.max(.3,3*(1-pt*.7));
+    c.strokeStyle='rgba(120,123,130,'+(0.55-pt*.30)+')';c.lineWidth=Math.max(.3,3*(1-pt*.7));
     c.beginPath();c.moveTo(rx-rhw,ry);c.lineTo(rx+rhw,ry);c.stroke();
   }
-  c.strokeStyle='rgba(120,96,40,.5)';c.lineWidth=1.8;
+  c.strokeStyle='rgba(74,76,82,.75)';c.lineWidth=1.8;
   c.beginPath();c.moveTo(nL,nY);c.lineTo(fL,fY);c.stroke();
   c.beginPath();c.moveTo(nR,nY);c.lineTo(fR,fY);c.stroke();
   c.restore();
@@ -5465,13 +5455,9 @@ function rotateSel(){
   if(selBeltIdx!==null&&selBeltIdx<G.belt.length){
     var b=G.belt[selBeltIdx];
     if(b){
-      // Only block rotation for non-NC large pieces (pallets, tires, etc.)
-      if(b.type==='large'&&!b.isNC){
-        showBanner('⚠ HEAVY FREIGHT — CANNOT ROTATE','danger',800);
-      } else {
-        selBeltRot=(selBeltRot+1)%4;
-        rotated=true;
-      }
+      // v2.10.8 belt holds only conveyable freight now — all of it rotates (the old large-type block wrongly caught 3x4s)
+      selBeltRot=(selBeltRot+1)%4;
+      rotated=true;
     }
   } else if(selNC>=0&&G.ncSlots[selNC]){
     var _ncp=G.ncSlots[selNC];
@@ -6624,7 +6610,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.7</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.8</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
