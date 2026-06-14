@@ -23,12 +23,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN — LI7 v2.10.8
+   LOCK IN — LI7 v2.10.10
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
-   CHANGE LOG v2.10.8 - SLOP KILL PASS. (1) ROTATION FIX: belt freight wrongly inherited a HEAVY-FREIGHT-CANNOT-ROTATE block that caught ~half the 3x4s. Belt is all-conveyable now, so that block is gone - everything on the belt rotates. (2) BELT IS BLACK: the central conveyor was tan; it's now black rubber with grey rollers/rails. (3) NC and SMALLS grids moved off the belt into the side dead-space (centered in each side band) instead of crammed against the conveyor. (4) HEADER cleaned: dropped the 'LI7' slop from the visible logo (now just v2.10.8) and hid the redundant top-center status line. (5) REMOVED the NEXT-UP panel and the SP/HAZMAT side section from the right HUD - neither earned the space. No scoring/backend/determinism touched. NEXT: label overhaul + arrow-error mechanic, then the chute.
+   CHANGE LOG v2.10.10 - CRASH FIX (floating screen). drawOneFloorSlot fed a staged piece's palette into shx() to shade the slot gradient. Regular box palettes are hsl() strings, not hex - and since the conveyability gate now routes regular freight into NC slots, shx() ran parseInt on 'hsl(...)' and produced '#NaNNaN44', which addColorStop rejects. That threw every frame, aborting drawScene mid-paint = the floating half-rendered screen. shx() is now bulletproof: hex shades exactly as before; hsl/rgba/named/garbage return unchanged (valid CSS, no shade, no crash). Fixes all shx callers, not just the floor slot. No other behavior touched.\n   CHANGE LOG v2.10.9 - LABEL OVERHAUL + THIS-SIDE-UP MECHANIC. (1) FRAG FLOOD FIXED: pickLabel was a uniform pick over 8 labels (2 of them fragile) so ~25% of freight read fragile, plus large pieces hit a fragile pool 55% of the time. Now WEIGHTED - STANDARD dominates, fragile+glass ~11%, and real service levels added (GROUND/OVERNIGHT/EXPRESS/MEDIA MAIL). (2) LABELS no longer perfect-centered: stamp sits in a seed-varied band, bigger boxes get a procedural BARCODE tag, all drawn via quad-interpolation so they sit on the box face. (3) THIS-SIDE-UP ARROWS: ~38% of belt freight + every SP/NC carries up-arrows that ROTATE with the piece. Lock it upright (rot 0) = ARROW UP; lock it on its side = ARROW MISSED (arrows turn red), a small score ding (x16) - but locked in, it still holds. Tracked in S as arrowsUp/arrowsMissed and shown on the post-sort report (Arrows Up / Missed). Daily generator untouched (bake later with the determinism reset). No grid/backend change.\n   CHANGE LOG v2.10.8 - SLOP KILL PASS. (1) ROTATION FIX: belt freight wrongly inherited a HEAVY-FREIGHT-CANNOT-ROTATE block that caught ~half the 3x4s. Belt is all-conveyable now, so that block is gone - everything on the belt rotates. (2) BELT IS BLACK: the central conveyor was tan; it's now black rubber with grey rollers/rails. (3) NC and SMALLS grids moved off the belt into the side dead-space (centered in each side band) instead of crammed against the conveyor. (4) HEADER cleaned: dropped the 'LI7' slop from the visible logo (now just v2.10.8) and hid the redundant top-center status line. (5) REMOVED the NEXT-UP panel and the SP/HAZMAT side section from the right HUD - neither earned the space. No scoring/backend/determinism touched. NEXT: label overhaul + arrow-error mechanic, then the chute.
    CHANGE LOG v2.10.7 - WIDER BELT (less vanish) + VERTICAL STAGING GRIDS. (1) The belt tapered 28% down to 2.8% at the wall, so freight shrank to a point and disappeared into the perspective vanishing point. Base is now 30% and the far end is 13% (was 2.8%) - a gentle trapezoid, so pieces stay readable and grabbable all the way up to the wall instead of vanishing. (2) NC and SMALLS staging moved from 4x2 horizontal blocks to 2x4 VERTICAL column grids stacked up each side floor (per the sketch) - NC hugs the left of the belt and grows leftward/upward, SMALLS hugs the right. Square cells, sized off floor depth. The bottom preselector strip stays (it works). Geometry only - no gameplay/state/determinism touched. Tune live: belt nW/fW are two numbers, grid is cols=2 rows=4.
    CHANGE LOG v2.10.6 - WIDER BELT. The center belt was 16% of screen width - too thin, freight read small and the slots crowded it. Belt base is now 28% (your sketch: fat belt up the middle), so the conveyor graphic AND the freight boxes are bigger and easier to grab, while still tapering to the wall as a trapezoid. The NC (left) and SMALLS (right) floor zones key off the belt width, so they auto-shift outward and stay clear - no collision. Pure geometry change, no gameplay/state touched.
    CHANGE LOG v2.10.5 - THE BELT, FIXED AT THE ROOT. Root cause found: the belt is filled by genBeltPiece, NOT genPiece - so every conveyability gate AND the realistic weighting I added (v2.10.0-2.10.4) lived in a function that never touched the belt. That is why 7x2/8x4 kept coming and the mix stayed wrong. NOW: (1) genBeltPiece picks via pickWeighted (realistic freight frequency actually applies); (2) genBeltPiece gates conveyability - non-conveyable freight routes to NC, panic/gauntlet reroll conveyable. A 7x2 or 8x4 cannot reach the belt anymore (non-daily). (3) CLICKABILITY: belt boxes were overlapping perspective sprites, so clicks hit the wrong one. Rebuilt as evenly-spaced NON-overlapping slots (height capped to the slot gap), no bob, and the hit-test now picks the nearest box. Every piece is its own clean target with its W×H shown.\n   CHANGE LOG v2.10.4 - REALISTIC FREIGHT FREQUENCY. Spawns were uniform - a 5x1 was as likely as a 2x2 - so you saw too many long-thin pieces and too few small squares. Now weighted by realism: square/near-square and small-to-standard boxes are common (1x1, 2x1, 2x2, 2x3, 3x3, and the 3x4 Target/Chewy standard), while long-thin (4x1, 5x1, 6x1) are rare but present. Weight = aspect band x area band; knobs are in pieceWeight() for tuning. Applies to small/regular/large belt spawns (and gauntlet). Daily untouched (own deterministic generator).
@@ -1244,7 +1244,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN — LI7 v2.10.8</div>
+  <div class="pause-sub">LOCK IN — LI7 v2.10.10</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1375,7 +1375,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v2.10.8 · © 2026</div>
+  <div id="sm-footer">LOCK IN v2.10.10 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1486,7 +1486,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v2.10.8 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v2.10.10 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1673,7 +1673,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v2.10.8</sub></div><!--build LI7 v2.10.8-->
+      <div class="logo">LOCK IN<sub>v2.10.10</sub></div><!--build LI7 v2.10.10-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1770,6 +1770,7 @@ body[data-cb="trit"]{
     <div class="sg"><span class="v" id="es-shelvesmin">0</span><span class="l">Shelves / Min</span></div>
     <div class="sg"><span class="v" id="es-gaps">0</span><span class="l">Gaps Left (wall)</span></div>
     <div class="sg"><span class="v" id="es-recoveries">0</span><span class="l">Recoveries</span></div>
+    <div class="sg"><span class="v" id="es-arrows">0 / 0</span><span class="l">Arrows Up / Missed</span></div>
    </div></div>
    <div class="es-sec"><div class="es-sec-t">SAFETY</div><div class="es-grid">
     <div class="sg"><span class="v" id="es-incidents">0</span><span class="l">Haz Incidents</span></div>
@@ -1843,7 +1844,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN — LI7 v2.10.8
+// LOCK IN — LI7 v2.10.10
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2202,11 +2203,16 @@ function seedPal(seed,type,shape,ncColor){
 }
 
 function shx(hex,amt){
-  hex=hex.replace('#','');
-  if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-  var r=Math.min(255,Math.max(0,parseInt(hex.substr(0,2),16)+amt));
-  var g=Math.min(255,Math.max(0,parseInt(hex.substr(2,2),16)+amt));
-  var b=Math.min(255,Math.max(0,parseInt(hex.substr(4,2),16)+amt));
+  // v2.10.10 BULLETPROOF: non-hex colors (hsl/rgba/named) can't be shaded here -> return as-is (valid CSS, never #NaN)
+  if(typeof hex!=='string')return'#606060';
+  if(hex.charAt(0)!=='#')return hex;
+  var h=hex.replace('#','');
+  if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  if(h.length<6)return hex;
+  var r=Math.min(255,Math.max(0,parseInt(h.substr(0,2),16)+amt));
+  var g=Math.min(255,Math.max(0,parseInt(h.substr(2,2),16)+amt));
+  var b=Math.min(255,Math.max(0,parseInt(h.substr(4,2),16)+amt));
+  if(isNaN(r)||isNaN(g)||isNaN(b))return hex;
   return'#'+[r,g,b].map(function(v){return v.toString(16).padStart(2,'0');}).join('');
 }
 
@@ -2227,6 +2233,10 @@ var LABELS=[
   {t:'HEAVY',     s:'HVY', ico:'▼',  bg:'rgba(80,80,80,.88)',  tc:'#fff',   isFrag:false},
   {t:'SP',        s:'SP',  ico:'🚫', bg:'rgba(255,60,40,.88)', tc:'#fff',   isFrag:false},
   {t:'FILL',      s:'FILL',ico:'',   bg:'rgba(180,140,255,.8)',tc:'#0a0020',isFrag:false},
+  {t:'GROUND',    s:'GND', ico:'',   bg:'rgba(120,180,120,.92)',tc:'#06200a',isFrag:false},
+  {t:'OVERNIGHT', s:'OVN', ico:'★',  bg:'rgba(255,120,40,.92)', tc:'#fff',   isFrag:false},
+  {t:'EXPRESS',   s:'EXP', ico:'⚡', bg:'rgba(40,140,220,.92)', tc:'#fff',   isFrag:false},
+  {t:'MEDIA MAIL',s:'MEDIA',ico:'',  bg:'rgba(210,200,170,.92)',tc:'#221a08',isFrag:false},
 ];
 function pickLabel(type,isPanic,isNC,isGap){
   if(isGap)return LABELS[14];
@@ -2234,26 +2244,22 @@ function pickLabel(type,isPanic,isNC,isGap){
   if(isPanic)return LABELS[11];
   var fill=G.grid?countFilled()/(GW*GH):0;
   var isEarly=fill<0.25;
+  // v2.10.9 WEIGHTED realistic label mix — STANDARD/service common, FRAGILE rare (was uniform ~25% frag, now ~11%)
+  function byT(n){for(var i=0;i<LABELS.length;i++){if(LABELS[i].t===n)return LABELS[i];}return LABELS[0];}
+  var WL=[];
+  function add(n,w){var L=byT(n);if(L)WL.push({l:L,w:w});}
   if(type==='large'){
-    // DECISION: Exclude TOP LOAD from large pieces entirely — NCs handle that.
-    // Fragile on large pieces only after wall has some foundation (25%+ filled).
-    var pool=LABELS.filter(function(l){
-      if(l.t==='TOP LOAD')return false;
-      if(l.t==='FRAGILE'&&isEarly)return false;
-      if(l.t==='GLASS'&&isEarly)return false;
-      // v2.1.0: hazmat is NC-ONLY. Stripped from belt/large pool.
-      return['HEAVY','DO NOT STACK','FRAGILE','GLASS'].indexOf(l.t)>=0;
-    });
-    if(pool.length&&Math.random()<.55)return pick(pool);
+    add('STANDARD',26);add('DO NOT STACK',12);add('HEAVY',12);add('KEEP DRY',8);add('GROUND',8);
+    if(!isEarly){add('FRAGILE',6);add('GLASS',4);}
+  } else {
+    add('STANDARD',32);add('KEEP DRY',10);add('GROUND',10);add('PRIORITY',7);add('DO NOT STACK',7);
+    add('OVERNIGHT',5);add('EXPRESS',5);add('MEDIA MAIL',5);
+    if(!isEarly){add('FRAGILE',6);add('GLASS',4);}
   }
-  // TOP LOAD only appears on small/regular after wall is 30% built
-  var safeLabels=LABELS.slice(0,8).filter(function(l){
-    if(l.t==='TOP LOAD'&&isEarly)return false;
-    if(l.t==='FRAGILE'&&isEarly)return false;
-    return true;
-  });
-  if(type==='small')return safeLabels[Math.floor(Math.random()*Math.min(3,safeLabels.length))];
-  return pick(safeLabels.length?safeLabels:LABELS.slice(0,4));
+  var tot=0,i;for(i=0;i<WL.length;i++)tot+=WL[i].w;
+  var r=Math.random()*tot;
+  for(i=0;i<WL.length;i++){r-=WL[i].w;if(r<=0)return WL[i].l;}
+  return LABELS[0];
 }
 
 // ── GAME STATE ──
@@ -3021,7 +3027,7 @@ function routeToNC(tmpl){
   var _pal=seedPal(_seed,tmpl.type,tmpl.shape,tmpl.color||null);
   var _lab=pickLabel('large',false,true,false);
   var _cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(cc){return[cc[0],cc[1]];});
-  var _pc={...tmpl,cells:_cells,id:uid('NC'),pal:_pal,labelDef:_lab,label:'NC',seed:_seed,isFrag:false,isNC:true,hazClass:null};
+  var _pc={...tmpl,cells:_cells,id:uid('NC'),pal:_pal,labelDef:_lab,label:'NC',seed:_seed,isFrag:false,isNC:true,hazClass:null,arrow:true};
   assignOrientReq(_pc);
   ncSlots[slot]=_pc;S.ncSpawned=(S.ncSpawned||0)+1;S.stagingActions=(S.stagingActions||0)+1;
   if(typeof buildNCPanel==='function')buildNCPanel();
@@ -3059,7 +3065,7 @@ function genPiece(isPanic,isGap){
   var pal=seedPal(seed,tmpl.type,tmpl.shape,tmpl.color||null);
   var labelDef=pickLabel(tmpl.type,isPanic,false,isGap);
   return{...tmpl,id:'P'+Date.now().toString(36)+Math.random().toString(36).slice(2,4),
-    pal,labelDef,label:labelDef.t,seed,isFrag:labelDef.isFrag||false,isPanic:!!isPanic,isGap:!!isGap};
+    pal,labelDef,label:labelDef.t,seed,isFrag:labelDef.isFrag||false,isPanic:!!isPanic,isGap:!!isGap,arrow:(Math.random()<0.38)};
 }
 
 // ── v2.1.0 NC TAXONOMY + HAZMAT GOVERNOR ──
@@ -3124,7 +3130,7 @@ function spawnNC(){
     var _seed=rnd(100,9999);
     var _pal=seedPal(_seed,tmpl.type,tmpl.shape,tmpl.color);
     var _lab=tmpl._isHaz?hazLabelDef(tmpl._hazClass):pickLabel('large',false,true,false);
-    var _pc={...tmpl,cells:tmpl.cells.map(function(c){return[c[0],c[1]];}),id:uid('NC'),pal:_pal,labelDef:_lab,label:tmpl._isHaz?'HAZ':'NC',seed:_seed,isFrag:false,isNC:true,hazClass:tmpl._hazClass||null};
+    var _pc={...tmpl,cells:tmpl.cells.map(function(c){return[c[0],c[1]];}),id:uid('NC'),pal:_pal,labelDef:_lab,label:tmpl._isHaz?'HAZ':'NC',seed:_seed,isFrag:false,isNC:true,hazClass:tmpl._hazClass||null,arrow:true};
     assignOrientReq(_pc);
     ncSlots[_slot2]=_pc;_staged++;S.ncSpawned=(S.ncSpawned||0)+1;S.stagingActions=(S.stagingActions||0)+1;
     if(!piece)piece=_pc;
@@ -3574,12 +3580,13 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     selNC=-1;
     return false;
   }
-  var cell={box:box,id:box.id,rx:gx,ry:gy,w:d.w,h:d.h,cells:d.cells,isCrushed:false};
+  var cell={box:box,id:box.id,rx:gx,ry:gy,w:d.w,h:d.h,cells:d.cells,isCrushed:false,rot:rot};
   for(var i=0;i<d.cells.length;i++){
     var cx=d.cells[i][0],cy=d.cells[i][1];
     G.grid[gy+cy][gx+cx]=cell;
   }
   var _segA=countSegregationViolations(G.grid),_kA=anyKillerTooClose(G.grid); // v2.1.6
+  if(box.arrow){if((rot||0)===0){S.arrowsUp=(S.arrowsUp||0)+1;}else{S.arrowsMissed=(S.arrowsMissed||0)+1;}} // v2.10.9 this-side-up tally
   if(_kA&&!_kB)logIncident('KILLER',box.hazClass||'');
   else if(_segA>_segB)logIncident('SEGREGATION',box.hazClass||'');
 
@@ -4018,7 +4025,8 @@ function calcScore(segOverride){
   var cogP=Math.round(cogDev*200);
   var preselectP=(G.preselectDepth||0)*PRESELECT_COST; // v2.1.3 cherry-pick cost
   var seamP=countColumnSeams(G.grid)*COLUMN_SEAM_PENALTY; // v2.1.4 running-bond violation
-  var raw=base+shelfB+bulkB+brickB+recovB-crunchP-voidP-cogP-preselectP-seamP;
+  var arrowP=(S.arrowsMissed||0)*16; // v2.10.9 small this-side-up ding (locked-in still holds)
+  var raw=base+shelfB+bulkB+brickB+recovB-crunchP-voidP-cogP-preselectP-seamP-arrowP;
   // HAZMAT: each hazmat currently loaded above the waist line halves the score.
   // Live grid scan, so moving it back down un-penalizes. 1 viol=50%, 2=25%, etc.
   var segViol=(segOverride===undefined||segOverride===null)?countSegregationViolations(G.grid):segOverride;
@@ -4719,27 +4727,42 @@ function drawHazPlacard(c,cx,cy,d,cls,cb){
 }
 
 function drawBoxLabel(c,cell,tl,tr,bl,br,p){
-  var ld=cell.box.labelDef;if(!ld)return;
+  var box=cell.box,ld=box.labelDef;if(!ld)return;
   var cx=(tl.x+tr.x+bl.x+br.x)/4,cy=(tl.y+tr.y+bl.y+br.y)/4;
-  var boxW=Math.hypot(tr.x-tl.x,tr.y-tl.y);
-  var boxH=Math.hypot(bl.x-tl.x,bl.y-tl.y);
+  var boxW=Math.hypot(tr.x-tl.x,tr.y-tl.y),boxH=Math.hypot(bl.x-tl.x,bl.y-tl.y);
   if(boxW<10||boxH<10)return;
-  // v2.1.25 hazmat -> colorblind-safe diamond placard (shape + class number)
   if(ld.isHaz){
-    var hcls=cell.box.hazClass||ld.hazClass||'9';
+    var hcls=box.hazClass||ld.hazClass||'9';
     var pd=Math.max(14,Math.min(boxW,boxH)*0.74);
     drawHazPlacard(c,cx,cy,pd,hcls,(typeof SETTINGS!=='undefined'&&SETTINGS.colorblind&&SETTINGS.colorblind!=='off'));
     return;
   }
-  var lw=Math.max(12,boxW*.68),lh=Math.max(9,boxH*.44);
-  var lx=cx-lw/2,ly=cy-lh/2;
-  c.fillStyle=ld.bg;c.fillRect(lx,ly,lw,lh);
-  c.strokeStyle='rgba(60,40,10,.3)';c.lineWidth=.6;c.strokeRect(lx,ly,lw,lh);
-  // DECISION: minimum 6px on wall labels — must be readable at perspective scale
-  var fs=Math.max(6,Math.min(lh*.42,10));
-  c.fillStyle=ld.tc;c.font='bold '+fs+'px Share Tech Mono';
-  c.textAlign='center';c.textBaseline='middle';
-  c.fillText(ld.ico?(ld.ico+' '+ld.s):(ld.s||ld.t),cx,cy-lh*.08);
+  var seed=(box.seed||1)>>>0,rot=(cell.rot||0),hasArrow=!!box.arrow,minD=Math.min(boxW,boxH);
+  function qp(u,v){var ax=tl.x+(tr.x-tl.x)*u,ay=tl.y+(tr.y-tl.y)*u,bx=bl.x+(br.x-bl.x)*u,by=bl.y+(br.y-bl.y)*u;return{x:ax+(bx-ax)*v,y:ay+(by-ay)*v};}
+  // main handling/service stamp — off-center band (varies by seed); leaves room for the arrow
+  var stV=hasArrow?0.30:(seed%2?0.36:0.60),sp=qp(0.5,stV);
+  var lw=Math.max(12,boxW*.58),lh=Math.max(8,boxH*.24);
+  c.fillStyle=ld.bg;c.fillRect(sp.x-lw/2,sp.y-lh/2,lw,lh);
+  c.strokeStyle='rgba(50,34,8,.34)';c.lineWidth=.6;c.strokeRect(sp.x-lw/2,sp.y-lh/2,lw,lh);
+  var fs=Math.max(6,Math.min(lh*.66,10));
+  c.fillStyle=ld.tc;c.font='bold '+fs+'px Share Tech Mono';c.textAlign='center';c.textBaseline='middle';
+  c.fillText(ld.ico?(ld.ico+' '+ld.s):(ld.s||ld.t),sp.x,sp.y);
+  // procedural barcode tag on bigger boxes
+  if(minD>=28&&(seed%3!==0)){
+    var bp=qp(seed%2?0.32:0.68,0.80),bw=Math.max(16,boxW*.42),bh=Math.max(7,boxH*.16);
+    c.fillStyle='rgba(248,246,240,.95)';c.fillRect(bp.x-bw/2,bp.y-bh/2,bw,bh);
+    c.strokeStyle='rgba(40,30,10,.28)';c.lineWidth=.5;c.strokeRect(bp.x-bw/2,bp.y-bh/2,bw,bh);
+    c.fillStyle='#15110a';var bx2=bp.x-bw/2+2,bend=bp.x+bw/2-2,by2=bp.y-bh/2+1.4,bhh=bh-2.8,s2=seed|1;
+    while(bx2<bend){var ww=1+(s2%3);s2=(s2*1103515245+12345)>>>0;if((s2>>5)%2)c.fillRect(bx2,by2,Math.min(ww,bend-bx2),bhh);bx2+=ww+1;}
+  }
+  // THIS SIDE UP arrows — rotate with placed rot; red if shipped off-vertical
+  if(hasArrow){
+    var ap=qp(0.5,0.70),asz=Math.max(8,minD*0.46),bad=((rot%4)!==0);
+    c.save();c.translate(ap.x,ap.y);c.rotate((rot||0)*Math.PI/2);
+    c.strokeStyle=bad?'rgba(214,60,28,.96)':'rgba(38,34,28,.9)';c.lineWidth=Math.max(1.4,asz*0.13);c.lineCap='round';
+    var k;for(k=0;k<2;k++){var oy=k*asz*0.30+asz*0.02;c.beginPath();c.moveTo(-asz*0.28,oy+asz*0.10);c.lineTo(0,oy-asz*0.16);c.lineTo(asz*0.28,oy+asz*0.10);c.stroke();}
+    c.restore();
+  }
 }
 
 function drawPlacementPreview(c){
@@ -6610,7 +6633,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.8</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.10</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7640,6 +7663,7 @@ function fillTelemetryTiles(){
   set('es-avgpph',avgPPH());
   set('es-tavg',S.bestTrailerAvg||0);
   set('es-gaps',S.lastGaps||0); // v2.10.3 distinct gap-areas, not cube-voids
+  set('es-arrows',(S.arrowsUp||0)+' / '+(S.arrowsMissed||0)); // v2.10.9
   set('es-time',sessionMinsNow()+'m');
   set('es-rejects',S.rejects||0);
   set('es-hazshelf',S.hazShelfLocks||0);
