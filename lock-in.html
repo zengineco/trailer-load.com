@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://static.cloudflareinsights.com; manifest-src 'self' data:; base-uri 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LOCK%C2%B7IN%22%2C%22short_name%22%3A%22LOCK%C2%B7IN%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23140d08%22%2C%22theme_color%22%3A%22%23c8791e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22ring-logo.png%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 <meta name="theme-color" content="#c8791e">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23140d08'/%3E%3Crect x='16' y='16' width='32' height='32' rx='3' fill='%23c8791e'/%3E%3C/svg%3E">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="LOCK·IN">
 <link rel="apple-touch-icon" href="ring-logo.png">
@@ -23,12 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN — LI7 v2.10.10
+   LOCK IN — LI7 v3.0.1
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
-   CHANGE LOG v2.10.10 - CRASH FIX (floating screen). drawOneFloorSlot fed a staged piece's palette into shx() to shade the slot gradient. Regular box palettes are hsl() strings, not hex - and since the conveyability gate now routes regular freight into NC slots, shx() ran parseInt on 'hsl(...)' and produced '#NaNNaN44', which addColorStop rejects. That threw every frame, aborting drawScene mid-paint = the floating half-rendered screen. shx() is now bulletproof: hex shades exactly as before; hsl/rgba/named/garbage return unchanged (valid CSS, no shade, no crash). Fixes all shx callers, not just the floor slot. No other behavior touched.\n   CHANGE LOG v2.10.9 - LABEL OVERHAUL + THIS-SIDE-UP MECHANIC. (1) FRAG FLOOD FIXED: pickLabel was a uniform pick over 8 labels (2 of them fragile) so ~25% of freight read fragile, plus large pieces hit a fragile pool 55% of the time. Now WEIGHTED - STANDARD dominates, fragile+glass ~11%, and real service levels added (GROUND/OVERNIGHT/EXPRESS/MEDIA MAIL). (2) LABELS no longer perfect-centered: stamp sits in a seed-varied band, bigger boxes get a procedural BARCODE tag, all drawn via quad-interpolation so they sit on the box face. (3) THIS-SIDE-UP ARROWS: ~38% of belt freight + every SP/NC carries up-arrows that ROTATE with the piece. Lock it upright (rot 0) = ARROW UP; lock it on its side = ARROW MISSED (arrows turn red), a small score ding (x16) - but locked in, it still holds. Tracked in S as arrowsUp/arrowsMissed and shown on the post-sort report (Arrows Up / Missed). Daily generator untouched (bake later with the determinism reset). No grid/backend change.\n   CHANGE LOG v2.10.8 - SLOP KILL PASS. (1) ROTATION FIX: belt freight wrongly inherited a HEAVY-FREIGHT-CANNOT-ROTATE block that caught ~half the 3x4s. Belt is all-conveyable now, so that block is gone - everything on the belt rotates. (2) BELT IS BLACK: the central conveyor was tan; it's now black rubber with grey rollers/rails. (3) NC and SMALLS grids moved off the belt into the side dead-space (centered in each side band) instead of crammed against the conveyor. (4) HEADER cleaned: dropped the 'LI7' slop from the visible logo (now just v2.10.8) and hid the redundant top-center status line. (5) REMOVED the NEXT-UP panel and the SP/HAZMAT side section from the right HUD - neither earned the space. No scoring/backend/determinism touched. NEXT: label overhaul + arrow-error mechanic, then the chute.
+   CHANGE LOG v3.0.1 - CHUTE BOXES (no more bars) + STD KILLED ON THE WALL + TIRE SKINS. (1) The central belt rendered every piece as a flat wide bar (height force-capped to the slot, aspect clamped) - a 6x6 and a 3x4 both came out as bars you could not grab. Now each chute piece renders at TRUE ASPECT through drawBeltPiece - the same full-quality box used on the preselector strip (gradient, sheen, cardboard texture, tape, label with the retail name) - square stays square, tall stays tall, never a bar. W-by-H grab-tag in the corner; the chute pools up to 8. (2) STD ON THE WALL: the v2.10.9 wall renderer dropped the retail-name swap, so wall boxes still read STD - the wall now shows the real name (SHOEBOX/MICROWAVE/FRIDGE/etc), matching the strip. My miss, fixed at the wall renderer. (3) TIRE SKINS: tire1..tire5.png overlay the procedural tire (by seed, clipped, graceful fallback). Hazmat-into-tire nesting (2x2 haz in a big tire) is the next tire-pass mechanic. No grid/backend/scoring change.\n   CHANGE LOG v3.0.0 - SEASON 1 LAUNCH BASELINE + CONSOLE CLEANUP. All launch blockers are clear (belt root-cause, conveyability, clickable/weighted/wider/black belt, realistic labels + this-side-up arrow mechanic, the shx crash, the premature SP-overload fail + fail menu, clipboard profile, audio pass). CONSOLE PASS: (1) CSP was allowing AdSense (pagead2) but NOT googletagmanager - so the site's own GA4 tag was CSP-blocked. Dropped AdSense entirely (no ads on the game, per decision), added googletagmanager to script-src and the google-analytics + cloudflare beacons to connect-src, so analytics actually reports now. (2) The data-URI PWA manifest had no manifest-src and was blocked - added manifest-src 'self' data:. (3) favicon 404 killed with an inline SVG icon (no network request). (4) deprecated apple-mobile-web-app-capable now paired with the modern mobile-web-app-capable. No AdSense pub-id anywhere. Season 2 feature work (chute redesign, jam/overflow, tires/drums nesting, hazmat stage tray) is next, not a launch blocker.\n   CHANGE LOG v2.11.1 - AUDIO PASS. (1) DEFAULTS OFF: master stays 80 but SFX and Music default to 0 - silent on load, the player opts in via Settings -> Audio (classroom-safe). (2) DISTINCT LOCK SOUNDS NOW FIRE: shelf-lock, double-lock, and hazmat-shelf-lock incremented their counters but played nothing - now wired to lock / doublelock / hazmatlock; piece-place = place; a gap/fill piece plays gaplock; an off-vertical arrow lock plays arrowmiss. (3) FILE-OVERRIDE LAYER: every sfx event will play sfx/<event>.mp3 (or .m4a/.wav/.ogg) from the repo if present, else the built-in synth - lazy-loaded on first use, 404 falls back silently. Drop files in /sfx and they take over, no code change. (4) MUSIC playlist opened to 1.mp3..30.mp3 (auto-advance + skip-missing already handled). See the audio manifest for every event, where it fires, the sound, and the exact filename.\n   CHANGE LOG v2.11.0 - PROFILE = THE CLIPBOARD. The profile card was the old dark amber-bordered panel ('junk'); it's now the trusty clipboard popup - warm paper (#f5f0e8), the metal clip up top, header band and brown ink to match the pre-sort briefing exactly. Stat tiles, by-mode table, hero ID, anon 'open account' state are all the same logic (real lockin_lifetime / cohort fetch) - just re-dressed on paper with a dashed divider. CSS-only; no data, backend, or behavior touched. 3.0 blockers remaining: audio defaults-off + music wiring, console cleanup. Then 3.0.0.\n   CHANGE LOG v2.10.11 - PREMATURE-FAIL FIX + FAIL MENU (3.0 blockers). You weren't crazy: the 'bug' was a real FAILURE CONDITION firing before you placed a piece. The conveyability gate routed non-conveyable freight to NC, and at spawn it filled all 8 SP slots -> triggerNCHazard -> endGame('SP STAGING OVERLOADED') after a 3.2s timer, with no menu, so it read as a crash. FIXES: (1) the gate now stages to NC only if a slot is open; if NC is full it rerolls the piece to conveyable for the belt instead of overflowing. (2) NC-hazard AND smalls-bag-dwell fails can no longer fire before your first placement (placed<1 guard). (3) FAIL MENU: the end screen now has TRY AGAIN / MAIN MENU / SETTINGS / PROFILE / POST-SORT REPORT instead of just two buttons; TRY AGAIN clears gOver and restarts the same mode clean. Remaining 3.0 blockers: profile overhaul, audio defaults-off, console cleanup. Then we cut 3.0.0.\n   CHANGE LOG v2.10.10 - CRASH FIX (floating screen). drawOneFloorSlot fed a staged piece's palette into shx() to shade the slot gradient. Regular box palettes are hsl() strings, not hex - and since the conveyability gate now routes regular freight into NC slots, shx() ran parseInt on 'hsl(...)' and produced '#NaNNaN44', which addColorStop rejects. That threw every frame, aborting drawScene mid-paint = the floating half-rendered screen. shx() is now bulletproof: hex shades exactly as before; hsl/rgba/named/garbage return unchanged (valid CSS, no shade, no crash). Fixes all shx callers, not just the floor slot. No other behavior touched.\n   CHANGE LOG v2.10.9 - LABEL OVERHAUL + THIS-SIDE-UP MECHANIC. (1) FRAG FLOOD FIXED: pickLabel was a uniform pick over 8 labels (2 of them fragile) so ~25% of freight read fragile, plus large pieces hit a fragile pool 55% of the time. Now WEIGHTED - STANDARD dominates, fragile+glass ~11%, and real service levels added (GROUND/OVERNIGHT/EXPRESS/MEDIA MAIL). (2) LABELS no longer perfect-centered: stamp sits in a seed-varied band, bigger boxes get a procedural BARCODE tag, all drawn via quad-interpolation so they sit on the box face. (3) THIS-SIDE-UP ARROWS: ~38% of belt freight + every SP/NC carries up-arrows that ROTATE with the piece. Lock it upright (rot 0) = ARROW UP; lock it on its side = ARROW MISSED (arrows turn red), a small score ding (x16) - but locked in, it still holds. Tracked in S as arrowsUp/arrowsMissed and shown on the post-sort report (Arrows Up / Missed). Daily generator untouched (bake later with the determinism reset). No grid/backend change.\n   CHANGE LOG v2.10.8 - SLOP KILL PASS. (1) ROTATION FIX: belt freight wrongly inherited a HEAVY-FREIGHT-CANNOT-ROTATE block that caught ~half the 3x4s. Belt is all-conveyable now, so that block is gone - everything on the belt rotates. (2) BELT IS BLACK: the central conveyor was tan; it's now black rubber with grey rollers/rails. (3) NC and SMALLS grids moved off the belt into the side dead-space (centered in each side band) instead of crammed against the conveyor. (4) HEADER cleaned: dropped the 'LI7' slop from the visible logo (now just v2.10.8) and hid the redundant top-center status line. (5) REMOVED the NEXT-UP panel and the SP/HAZMAT side section from the right HUD - neither earned the space. No scoring/backend/determinism touched. NEXT: label overhaul + arrow-error mechanic, then the chute.
    CHANGE LOG v2.10.7 - WIDER BELT (less vanish) + VERTICAL STAGING GRIDS. (1) The belt tapered 28% down to 2.8% at the wall, so freight shrank to a point and disappeared into the perspective vanishing point. Base is now 30% and the far end is 13% (was 2.8%) - a gentle trapezoid, so pieces stay readable and grabbable all the way up to the wall instead of vanishing. (2) NC and SMALLS staging moved from 4x2 horizontal blocks to 2x4 VERTICAL column grids stacked up each side floor (per the sketch) - NC hugs the left of the belt and grows leftward/upward, SMALLS hugs the right. Square cells, sized off floor depth. The bottom preselector strip stays (it works). Geometry only - no gameplay/state/determinism touched. Tune live: belt nW/fW are two numbers, grid is cols=2 rows=4.
    CHANGE LOG v2.10.6 - WIDER BELT. The center belt was 16% of screen width - too thin, freight read small and the slots crowded it. Belt base is now 28% (your sketch: fat belt up the middle), so the conveyor graphic AND the freight boxes are bigger and easier to grab, while still tapering to the wall as a trapezoid. The NC (left) and SMALLS (right) floor zones key off the belt width, so they auto-shift outward and stay clear - no collision. Pure geometry change, no gameplay/state touched.
    CHANGE LOG v2.10.5 - THE BELT, FIXED AT THE ROOT. Root cause found: the belt is filled by genBeltPiece, NOT genPiece - so every conveyability gate AND the realistic weighting I added (v2.10.0-2.10.4) lived in a function that never touched the belt. That is why 7x2/8x4 kept coming and the mix stayed wrong. NOW: (1) genBeltPiece picks via pickWeighted (realistic freight frequency actually applies); (2) genBeltPiece gates conveyability - non-conveyable freight routes to NC, panic/gauntlet reroll conveyable. A 7x2 or 8x4 cannot reach the belt anymore (non-daily). (3) CLICKABILITY: belt boxes were overlapping perspective sprites, so clicks hit the wrong one. Rebuilt as evenly-spaced NON-overlapping slots (height capped to the slot gap), no bob, and the hit-test now picks the nearest box. Every piece is its own clean target with its W×H shown.\n   CHANGE LOG v2.10.4 - REALISTIC FREIGHT FREQUENCY. Spawns were uniform - a 5x1 was as likely as a 2x2 - so you saw too many long-thin pieces and too few small squares. Now weighted by realism: square/near-square and small-to-standard boxes are common (1x1, 2x1, 2x2, 2x3, 3x3, and the 3x4 Target/Chewy standard), while long-thin (4x1, 5x1, 6x1) are rare but present. Weight = aspect band x area band; knobs are in pieceWeight() for tuning. Applies to small/regular/large belt spawns (and gauntlet). Daily untouched (own deterministic generator).
@@ -1128,33 +1130,36 @@ body[data-cb="trit"]{
 
 
 /* ── v2.5.0 PROFILE DASHBOARD ── */
-#ov-profile{position:fixed;inset:0;z-index:355;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:30px 12px;}
+/* v2.11.0 PROFILE = trusty clipboard popup (warm paper + metal clip), same stats logic */
+#ov-profile{position:fixed;inset:0;z-index:355;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}
 #ov-profile.vis{display:flex;}
-.pf-card{background:var(--bg2);border:2px solid var(--acc);border-radius:12px;width:100%;max-width:680px;box-shadow:0 22px 64px rgba(0,0,0,.55);overflow:hidden;}
-.pf-top{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:var(--bg3);border-bottom:1px solid var(--acc-dim);}
-.pf-title{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:var(--acc);}
-.pf-x{background:none;border:none;color:var(--t2);font-size:22px;cursor:pointer;line-height:1;}
-.pf-x:hover{color:var(--danger);}
-.pf-body{padding:22px;}
-.pf-loading{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:var(--t2);text-align:center;padding:30px 10px;line-height:1.5;}
+.pf-card{background:#f5f0e8;border:none;border-radius:3px;width:min(540px,94vw);max-width:540px;box-shadow:0 12px 48px rgba(0,0,0,.75);position:relative;display:flex;flex-direction:column;max-height:86vh;}
+.pf-card::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:52px;height:30px;background:#777;border-radius:4px 4px 0 0;z-index:2;}
+.pf-card::after{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:28px;height:16px;background:#444;border-radius:2px;z-index:3;}
+.pf-top{display:flex;align-items:center;justify-content:space-between;padding:30px 24px 12px;background:#ece7d8;border-bottom:2px solid #c8b898;border-radius:3px 3px 0 0;flex-shrink:0;}
+.pf-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#2a1a08;}
+.pf-x{background:none;border:none;color:#8b6a3a;font-size:22px;cursor:pointer;line-height:1;}
+.pf-x:hover{color:#c23a1a;}
+.pf-body{padding:18px 26px 20px;overflow-y:auto;flex:1;}
+.pf-loading{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:#7a6a52;text-align:center;padding:30px 10px;line-height:1.5;}
 .pf-anon{text-align:center;padding:24px 10px;}
-.pf-anon-icon{font-size:44px;color:var(--acc);}
-.pf-anon-h{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1.5px;color:var(--t1);margin:8px 0 6px;}
-.pf-anon-p{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:var(--t2);line-height:1.5;max-width:430px;margin:0 auto 20px;}
-.pf-hero{margin-bottom:18px;}
-.pf-hero-id{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:var(--t1);word-break:break-all;}
-.pf-hero-sub{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--t3);}
-.pf-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
-.pf-tile{background:var(--bg3);border:1px solid var(--acc-dim);border-radius:8px;padding:12px 8px;text-align:center;}
-.pf-tval{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--acc-bright);line-height:1;}
-.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:var(--t2);margin-top:4px;}
-.pf-sec{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1.5px;color:var(--teal);border-bottom:1px solid var(--bg3);padding-bottom:5px;margin:18px 0 10px;}
+.pf-anon-icon{font-size:44px;color:#8b4513;}
+.pf-anon-h{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1.5px;color:#2a1a08;margin:8px 0 6px;}
+.pf-anon-p{font-family:'Barlow Condensed',sans-serif;font-size:18px;color:#6a5a42;line-height:1.5;max-width:430px;margin:0 auto 20px;}
+.pf-hero{margin-bottom:16px;padding-bottom:12px;border-bottom:1px dashed #c8b898;}
+.pf-hero-id{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:#2a1a08;word-break:break-all;}
+.pf-hero-sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:#9a8a6e;}
+.pf-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:18px;}
+.pf-tile{background:#ece7d8;border:1px solid #c8b898;border-radius:4px;padding:11px 6px;text-align:center;}
+.pf-tval{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#8b4513;line-height:1;}
+.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.5px;color:#7a6a52;margin-top:4px;}
+.pf-sec{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;color:#8b4513;border-bottom:1px solid #c8b898;padding-bottom:5px;margin:18px 0 10px;}
 .pf-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:17px;}
-.pf-table th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--t3);text-align:left;padding:6px 8px;border-bottom:1px solid var(--acc-dim);}
-.pf-table td{padding:7px 8px;color:var(--t1);border-bottom:1px solid var(--bg3);}
-.pf-cohort .pf-handle{font-family:'Share Tech Mono',monospace;color:var(--acc);}
-.pf-table td.pf-flag{color:var(--danger);font-weight:bold;}
-.pf-note{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--t3);margin-top:14px;line-height:1.4;}
+.pf-table th{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:#9a8a6e;text-align:left;padding:6px 8px;border-bottom:1px solid #c8b898;}
+.pf-table td{padding:7px 8px;color:#2a1a08;border-bottom:1px solid #ddd3bf;}
+.pf-cohort .pf-handle{font-family:'Share Tech Mono',monospace;color:#8b4513;}
+.pf-table td.pf-flag{color:#c23a1a;font-weight:bold;}
+.pf-note{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#9a8a6e;margin-top:14px;line-height:1.4;}
 @media(max-width:560px){.pf-tiles{grid-template-columns:repeat(2,1fr);}.pf-table{font-size:15px;}}
 /* ── v2.4.10 RECOVERY SCREEN ── */
 #ov-recover{position:fixed;inset:0;z-index:360;display:none;align-items:center;justify-content:center;background:rgba(28,20,16,.9);}
@@ -1244,7 +1249,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN — LI7 v2.10.10</div>
+  <div class="pause-sub">LOCK IN — LI7 v3.0.1</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1375,7 +1380,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v2.10.10 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.0.1 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1486,7 +1491,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v2.10.10 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.0.1 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1673,7 +1678,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v2.10.10</sub></div><!--build LI7 v2.10.10-->
+      <div class="logo">LOCK IN<sub>v3.0.1</sub></div><!--build LI7 v3.0.1-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1801,8 +1806,13 @@ body[data-cb="trit"]{
     <div class="dr-board-h">TODAY’S BOARD</div>
     <div id="dr-board" class="dr-board"></div>
   </div>
-  <button class="btn-p" onclick="openPostSort()">◆ POST-SORT REPORT</button>
-  <button class="btn-p" onclick="returnToMenu()">RELOAD YARD</button>
+  <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;">
+    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="restartGame()">↻ TRY AGAIN</button>
+    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="returnToMenu()">⌂ MAIN MENU</button>
+    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="openSettings()">⚙ SETTINGS</button>
+    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="openProfile()">◊ PROFILE</button>
+    <button class="btn-p" style="flex:1 1 100%" onclick="openPostSort()">◆ POST-SORT REPORT</button>
+  </div>
 </div>
 
 <div id="ov-postsort"><div class="ps-card" id="ps-card"></div></div>
@@ -1844,7 +1854,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN — LI7 v2.10.10
+// LOCK IN — LI7 v3.0.1
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2497,7 +2507,7 @@ function drawParticles(c){
 }
 
 // ── Pass E: SFX (procedural WebAudio — no assets, no deps) ──
-var SND={ctx:null,master:null};
+var SND={ctx:null,master:null,buffers:{}};
 function sndInit(){
   if(SND.ctx)return;
   try{
@@ -2512,11 +2522,29 @@ function sfxVol(){
   var s=(typeof SETTINGS!=='undefined'&&typeof SETTINGS.volSfx==='number')?SETTINGS.volSfx:80;
   return (m/100)*(s/100);
 }
+function sfxFile(name){
+  // v2.11.1 file-override: drop sfx/<event>.mp3|m4a|wav|ogg in the repo and it plays instead of the synth. Lazy + graceful.
+  if(!SND.ctx)return null;
+  if(SND.buffers[name]===undefined){
+    SND.buffers[name]='pending';
+    var exts=['mp3','m4a','wav','ogg'],ei=0;
+    (function tryNext(){
+      if(ei>=exts.length){SND.buffers[name]=false;return;}
+      var ext=exts[ei++];
+      fetch('sfx/'+name+'.'+ext).then(function(r){if(!r.ok)throw 0;return r.arrayBuffer();})
+        .then(function(ab){return SND.ctx.decodeAudioData(ab);})
+        .then(function(buf){SND.buffers[name]=buf;}).catch(function(){tryNext();});
+    })();
+    return null;
+  }
+  return (SND.buffers[name]&&SND.buffers[name]!=='pending')?SND.buffers[name]:null;
+}
 function playSfx(name){
   if(!SND.ctx)return;
   var v=sfxVol();if(v<=0.001)return;
   if(SND.ctx.state==='suspended')SND.ctx.resume();
   var c=SND.ctx,t=c.currentTime;
+  var _bf=sfxFile(name);if(_bf){var _bs=c.createBufferSource();_bs.buffer=_bf;var _bg=c.createGain();_bg.gain.value=v;_bs.connect(_bg);_bg.connect(SND.master);_bs.start(t);return;}
   function tone(type,f0,f1,dur,peak){
     var o=c.createOscillator(),g=c.createGain();
     o.type=type;o.frequency.setValueAtTime(f0,t);
@@ -2561,9 +2589,14 @@ function playSfx(name){
   else if(name==='drink'){tone('sine',320,170,0.13,0.22);noise(0.06,0.09,480);}
   else if(name==='stage'){tone('sine',150,80,0.13,0.32);noise(0.09,0.22,520);tone('sine',110,58,0.17,0.22);}
   else if(name==='dwell'){tone('square',560,560,0.09,0.20);tone('square',440,440,0.12,0.18);tone('square',360,360,0.14,0.16);}
+  else if(name==='lock'){tone('square',440,660,0.10,0.20);tone('sine',660,990,0.16,0.15);}
+  else if(name==='doublelock'){tone('square',523,784,0.12,0.22);tone('sine',784,1175,0.20,0.17);}
+  else if(name==='hazmatlock'){tone('sine',165,120,0.16,0.32);tone('square',300,440,0.10,0.18);noise(0.05,0.12,520);}
+  else if(name==='gaplock'){tone('triangle',560,860,0.06,0.18);tone('sine',860,1120,0.08,0.13);}
+  else if(name==='arrowmiss'){tone('square',400,300,0.07,0.14);tone('square',300,240,0.09,0.12);}
 }
 // ── v2.1.30: BACKGROUND MUSIC (HTML5 audio playlist, files served by path) ──
-var MUSIC={list:['1.mp3','2.mp3','3.mp3','4.mp3','5.mp3','6.mp3','7.mp3','8.mp3','9.mp3','10.mp3','11.mp3','12.mp3','13.mp3','14.mp3','15.mp3','16.mp3'],el:null,idx:0,started:false};
+var MUSIC={list:['1.mp3','2.mp3','3.mp3','4.mp3','5.mp3','6.mp3','7.mp3','8.mp3','9.mp3','10.mp3','11.mp3','12.mp3','13.mp3','14.mp3','15.mp3','16.mp3','17.mp3','18.mp3','19.mp3','20.mp3','21.mp3','22.mp3','23.mp3','24.mp3','25.mp3','26.mp3','27.mp3','28.mp3','29.mp3','30.mp3'],el:null,idx:0,started:false};
 function musicVol(){
   var m=(typeof SETTINGS!=='undefined'&&typeof SETTINGS.volMaster==='number')?SETTINGS.volMaster:80;
   var mu=(typeof SETTINGS!=='undefined'&&typeof SETTINGS.volMusic==='number')?SETTINGS.volMusic:60;
@@ -3206,6 +3239,7 @@ function hydrationOK(){return true;} // v2.6.8 WATER SHELVED to Season 2 - never
 function triggerNCHazard(){
   // BUG FIX: guard re-entry; if player places an NC before the timeout fires, cancel endGame
   if(ncHazardFired)return;
+  if((placed||0)<1)return; // v2.10.11 no fail before first placement
   ncHazardFired=true;
   S.ncDwellWarn=(S.ncDwellWarn||0)+1;if(typeof playSfx==='function')playSfx('dwell'); // v2.4.3 count + audible SP dwell warning
   showBanner('⚠ SP SAFETY HAZARD!<br><span style="font-size:.55em">STAGING AREA BLOCKED — UNSAFE CONDITIONS</span>','danger',3000);
@@ -3221,6 +3255,7 @@ function triggerNCHazard(){
 
 function triggerBagDwell(){
   if(bagDwellFired)return;
+  if((placed||0)<1)return; // v2.10.11 no fail before first placement
   bagDwellFired=true;
   S.smallsDwellWarn=(S.smallsDwellWarn||0)+1;if(typeof playSfx==='function')playSfx('dwell'); // v2.4.3 count + audible smalls dwell warning
   showBanner('⏱ BAG DWELL TIME!<br><span style="font-size:.55em">TOO MANY BAGS SITTING — CLEAR THE LINE</span>','panic',3000);
@@ -3455,7 +3490,11 @@ function genBeltPiece(isPanic){
   // v2.10.5 CONVEYABILITY AT THE REAL SOURCE — genBeltPiece feeds the belt; genPiece never did. THIS is the gate that counts.
   if(!isConveyable(tmpl.w,tmpl.h)){
     if(isPanic||gameMode==='gauntlet'){var _cg=0,_cp=isPanic?P_PANIC:P_REG;while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_cg++<24){tmpl=pickWeighted(_cp);}if(tmpl&&!isConveyable(tmpl.w,tmpl.h))tmpl=pickWeighted(P_SMALL);}
-    else{routeToNC(tmpl);return null;}
+    else{
+      // v2.10.11 don't flood NC at spawn (was overfilling 8 slots -> SP HAZARD fail before first placement)
+      if(G.ncSlots&&G.ncSlots.some(function(s){return!s;})){routeToNC(tmpl);return null;}
+      var _ncg=0;while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_ncg++<24){tmpl=pickWeighted(P_SMALL);}
+    }
   }
   tmpl={...tmpl};
   tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
@@ -3586,7 +3625,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     G.grid[gy+cy][gx+cx]=cell;
   }
   var _segA=countSegregationViolations(G.grid),_kA=anyKillerTooClose(G.grid); // v2.1.6
-  if(box.arrow){if((rot||0)===0){S.arrowsUp=(S.arrowsUp||0)+1;}else{S.arrowsMissed=(S.arrowsMissed||0)+1;}} // v2.10.9 this-side-up tally
+  if(box.arrow){if((rot||0)===0){S.arrowsUp=(S.arrowsUp||0)+1;}else{S.arrowsMissed=(S.arrowsMissed||0)+1;if(typeof playSfx==='function')playSfx('arrowmiss');}} // v2.10.9 this-side-up tally
   if(_kA&&!_kB)logIncident('KILLER',box.hazClass||'');
   else if(_segA>_segB)logIncident('SEGREGATION',box.hazClass||'');
 
@@ -3638,7 +3677,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   else if(source==='bag')selBag=-1;
 
   if(typeof gridToCanvas==='function'){var _jbase=gridToCanvas(gx+d.w/2,gy+d.h),_jarea=d.w*d.h,_jheavy=(box.type==='large'||box.cat==='tire'||box.cat==='pro');spawnBurst(_jbase.x,_jbase.y,Math.min(14,4+Math.round(_jarea*0.7)),'rgba(180,150,110,.9)',_jheavy?95:70,0.34,180);if(_jheavy)addShake(Math.min(6,2+_jarea*0.15));hapt(_jheavy?'lock':'place');}
-  playSfx('place');
+  playSfx((box.isGap||box.isBrokenBag)?'gaplock':'place');
 
   return true;
 }
@@ -3809,7 +3848,7 @@ function checkTetris(){
       G.tetrisPaid=G.tetrisPaid||{};
       if(!G.tetrisPaid[y]){
       G.tetrisPaid[y]=true; // v2.10.2 lock bonus pays once per row per trailer (unseal+relock can't refarm)
-      G.tetrisTotal=(G.tetrisTotal||0)+1;S.shelvesLocked=(S.shelvesLocked||0)+1; // v2.1.8
+      G.tetrisTotal=(G.tetrisTotal||0)+1;S.shelvesLocked=(S.shelvesLocked||0)+1;if(typeof playSfx==='function')playSfx('lock'); // v2.1.8 / v2.11.1 shelf-lock sfx
       var prevInt=G.integrity||100;
       var intBonus=Math.min(30,100-prevInt);
       G.integrity=Math.min(100,prevInt+intBonus);
@@ -3822,7 +3861,7 @@ function checkTetris(){
       }}
       if(_hzc>0){
         G.score=(G.score||0)+HAZMAT_SHELF_BONUS;
-        G.hazShelfLocks=(G.hazShelfLocks||0)+1;S.hazShelfLocks=(S.hazShelfLocks||0)+1;
+        G.hazShelfLocks=(G.hazShelfLocks||0)+1;S.hazShelfLocks=(S.hazShelfLocks||0)+1;if(typeof playSfx==='function')playSfx('hazmatlock');
         showBanner('\u2622 HAZMAT SHELF LOCKED +'+HAZMAT_SHELF_BONUS+'<br><span style="font-size:.52em">LOADED LOW, CAPPED, SECURED \u2014 THE VET MOVE.</span>','ok',3400);
       }
       } // v2.10.2 end lock-pay guard
@@ -3854,7 +3893,7 @@ function checkBulkhead(){
     prevFull=full;
   }
   if(newB>0){
-    G.bulkheadCount=(G.bulkheadCount||0)+newB;S.doubleLocks=(S.doubleLocks||0)+newB; // v2.1.8
+    G.bulkheadCount=(G.bulkheadCount||0)+newB;S.doubleLocks=(S.doubleLocks||0)+newB;if(typeof playSfx==='function')playSfx('doublelock'); // v2.1.8 / v2.11.1 double-lock sfx
     // v2.1.1: duplicate banner/flash removed — the LOCKED IN flash already announces it.
     // Bonus still applies via G.bulkheadCount in calcScore.
   }
@@ -4387,38 +4426,30 @@ function drawBeltFreight(c,ts){
   if(typeof G==='undefined'||!G.belt||!G.belt.length)return;
   var nW=W*.30,fW=W*.13,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
   var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
-  var N=Math.min(G.belt.length,6);
+  var N=Math.min(G.belt.length,8); // v3.0.1 chute pools more pieces
   if(N<1)return;
-  var tex=(typeof loadedBoxTex==='function')?loadedBoxTex():[];
-  // i=0 nearest the player (front/big = the next piece), i=N-1 nearest the wall. Even, NON-overlapping slots.
-  var T0=0.06,T1=0.80,i,pos=[],slotGap=(N>1)?Math.abs((fY-nY)*(T1-T0)/(N-1)):Math.abs(fY-nY)*0.3;
+  var T0=0.05,T1=0.84,i,pos=[],slotGap=(N>1)?Math.abs((fY-nY)*(T1-T0)/(N-1)):Math.abs(fY-nY)*0.3;
   for(i=0;i<N;i++){var tt=(N>1)?(T0+(T1-T0)*(i/(N-1))):T0;pos.push({t:tt,rx:nX+(fX-nX)*tt,ry:nY+(fY-nY)*tt,rhw:(nW/2)+((fW/2)-(nW/2))*tt});}
   c.save();
   c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();c.clip();
-  var piece,P,ar,bw,bh,p,g,im,pk,_flb,_ffs;
+  var piece,P,ar,bw,bh,maxH,maxW,bx,by,_flb,_ffs;
   for(i=N-1;i>=0;i--){
     piece=G.belt[i];if(!piece)continue;
     P=pos[i];
+    // v3.0.1 TRUE-ASPECT box: a 6x6 stays square, a 3x4 stays portrait, a 1x5 stays a tall box - never a flat bar
     ar=piece.h/Math.max(1,piece.w);
-    bw=P.rhw*1.7;
-    bh=Math.min(bw*Math.max(0.5,Math.min(1.0,ar)),slotGap*0.82);
-    if(bh<6)bh=6;
-    p=piece.pal||{l:'#d6b483',b:'#c49a5e',d:'#9a6f3a'};
-    c.save();
-    c.translate(P.rx,P.ry);
-    c.globalAlpha=0.20;c.fillStyle='#000';c.beginPath();c.ellipse(0,bh*0.5+2,Math.max(1,bw*0.5),Math.max(1,bh*0.16),0,0,Math.PI*2);c.fill();c.globalAlpha=1;
-    g=c.createLinearGradient(0,-bh/2,0,bh/2);g.addColorStop(0,p.l);g.addColorStop(.5,p.b);g.addColorStop(1,p.d);
-    c.fillStyle=g;c.fillRect(-bw/2,-bh/2,bw,bh);
-    if(tex.length){im=tex[(((piece.seed)||1)>>>0)%tex.length];if(!c._boxPats)c._boxPats={};pk=im.idx;if(c._boxPats[pk]===undefined){try{c._boxPats[pk]=c.createPattern(im,'repeat');}catch(_e){c._boxPats[pk]=null;}}if(c._boxPats[pk]){c.save();c.beginPath();c.rect(-bw/2,-bh/2,bw,bh);c.clip();c.globalAlpha=.5;c.fillStyle=c._boxPats[pk];c.fillRect(-bw/2,-bh/2,bw,bh);c.globalAlpha=1;c.restore();}}
-    c.fillStyle='rgba(255,255,255,.10)';c.fillRect(-bw/2,-bh/2,bw,bh*0.3);
-    c.strokeStyle='rgba(60,40,18,.6)';c.lineWidth=Math.max(.6,1.6*(1-P.t*.5));c.strokeRect(-bw/2,-bh/2,bw,bh);
-    _flb=piece.w+'×'+piece.h;_ffs=Math.max(9,Math.min(bh*0.5,bw*0.34));
-    c.font='bold '+_ffs+'px "Share Tech Mono",monospace';c.textAlign='center';c.textBaseline='middle';
-    c.lineWidth=Math.max(2,_ffs*0.34);c.strokeStyle='rgba(18,10,2,.95)';c.strokeText(_flb,0,0);
-    c.fillStyle='rgba(255,250,236,.99)';c.fillText(_flb,0,0);
-    if(selBeltIdx===i){c.strokeStyle='rgba(40,255,200,.97)';c.lineWidth=Math.max(2,3.2*(1-P.t*.4));c.strokeRect(-bw/2,-bh/2,bw,bh);}
-    c.restore();
-    BELT_FREIGHT_HITS.push({idx:i,x:P.rx-bw/2,y:P.ry-bh/2,w:bw,h:bh});
+    maxH=slotGap*0.90; maxW=P.rhw*1.75;
+    bw=maxW; bh=bw*ar;
+    if(bh>maxH){bh=maxH;bw=bh/ar;}
+    if(bw<6)bw=6; if(bh<6)bh=6;
+    bx=P.rx-bw/2; by=P.ry-bh/2;
+    c.save();c.globalAlpha=0.18;c.fillStyle='#000';c.beginPath();c.ellipse(P.rx,by+bh+2,Math.max(2,bw*0.5),Math.max(1.5,bh*0.12),0,0,Math.PI*2);c.fill();c.restore();
+    drawBeltPiece(c,piece,bx,by,bw,bh,selBeltIdx===i,i,ts);
+    _flb=piece.w+'×'+piece.h;_ffs=Math.max(8,Math.min(bh*0.30,bw*0.26,11));
+    c.font='bold '+_ffs+'px "Share Tech Mono",monospace';c.textAlign='left';c.textBaseline='top';
+    c.lineWidth=Math.max(2,_ffs*0.4);c.strokeStyle='rgba(18,10,2,.92)';c.strokeText(_flb,bx+2,by+2);
+    c.fillStyle='rgba(255,250,236,.99)';c.fillText(_flb,bx+2,by+2);
+    BELT_FREIGHT_HITS.push({idx:i,x:bx,y:by,w:bw,h:bh});
   }
   c.restore();
 }
@@ -4668,6 +4699,8 @@ function renderWallBox(c,cell){
     c.beginPath();c.ellipse(_txc,_tyc,Math.max(2,_trx*0.40),Math.max(2,_tryy*0.38),0,0,Math.PI*2);
     c.fillStyle='rgba(74,76,82,.96)';c.fill();
     c.strokeStyle='rgba(15,15,15,.9)';c.lineWidth=2;c.stroke();
+    var _tt=loadedTireTex();
+    if(_tt.length){var _ti=_tt[(((cell.box.seed)||1)>>>0)%_tt.length];c.save();c.beginPath();c.ellipse(_txc,_tyc,Math.max(3,_trx*0.92),Math.max(3,_tryy*0.82),0,0,Math.PI*2);c.clip();try{c.drawImage(_ti,_txc-_trx*0.92,_tyc-_tryy*0.82,_trx*1.84,_tryy*1.64);}catch(_te){}c.restore();}
     if(cell.box.nest&&cell.box.nest.length){
       var _nn=cell.box.nest.length,_nk;
       for(_nk=0;_nk<_nn;_nk++){
@@ -4746,7 +4779,8 @@ function drawBoxLabel(c,cell,tl,tr,bl,br,p){
   c.strokeStyle='rgba(50,34,8,.34)';c.lineWidth=.6;c.strokeRect(sp.x-lw/2,sp.y-lh/2,lw,lh);
   var fs=Math.max(6,Math.min(lh*.66,10));
   c.fillStyle=ld.tc;c.font='bold '+fs+'px Share Tech Mono';c.textAlign='center';c.textBaseline='middle';
-  c.fillText(ld.ico?(ld.ico+' '+ld.s):(ld.s||ld.t),sp.x,sp.y);
+  var _wtxt=(ld.s==='STD'&&typeof retailName==='function')?retailName(box):ld.s; // v3.0.1 kill 'STD' on the wall
+  c.fillText(ld.ico?(ld.ico+' '+_wtxt):(_wtxt||ld.t),sp.x,sp.y);
   // procedural barcode tag on bigger boxes
   if(minD>=28&&(seed%3!==0)){
     var bp=qp(seed%2?0.32:0.68,0.80),bw=Math.max(16,boxW*.42),bh=Math.max(7,boxH*.16);
@@ -4967,6 +5001,11 @@ function retailName(piece){
 var BOXTEX=[];
 function makeBoxTex(n){var im=new Image();im.okk=false;im.idx=n;im.onload=function(){im.okk=true;};im.onerror=function(){im.okk=false;};im.src='card'+n+'.png';return im;}
 (function(){var i;for(i=1;i<=8;i++){BOXTEX.push(makeBoxTex(i));}})();
+// v3.0.1 TIRE SKINS — tire1..tire5.png over the procedural tire (graceful fallback if absent)
+var TIRETEX=[];
+function makeTireTex(n){var im=new Image();im.okk=false;im.idx=n;im.onload=function(){im.okk=true;};im.onerror=function(){im.okk=false;};im.src='tire'+n+'.png';return im;}
+(function(){var i;for(i=1;i<=5;i++){TIRETEX.push(makeTireTex(i));}})();
+function loadedTireTex(){var a=[],i;for(i=0;i<TIRETEX.length;i++){if(TIRETEX[i].okk)a.push(TIRETEX[i]);}return a;}
 function loadedBoxTex(){var a=[],i;for(i=0;i<BOXTEX.length;i++){if(BOXTEX[i].okk)a.push(BOXTEX[i]);}return a;}
 function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
   var p=piece.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
@@ -6633,7 +6672,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.10</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">LI7 v3.0.1</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7753,7 +7792,7 @@ function toggleTheme(){
 // ── SETTINGS (v2.1.24) ──
 // Persisted prefs. Audio levels are stored now and ready for the Pass E sound
 // engine (no audio yet). theme / learnGrid / reducedMotion / voice apply live.
-var SETTINGS={volMaster:80,volSfx:80,volMusic:60,theme:'light',learnGrid:false,reducedMotion:false,colorblind:'off',textScale:'normal',boxGrid:false,musicTrack:'auto',haptics:true};
+var SETTINGS={volMaster:80,volSfx:0,volMusic:0,theme:'light',learnGrid:false,reducedMotion:false,colorblind:'off',textScale:'normal',boxGrid:false,musicTrack:'auto',haptics:true};
 function loadSettings(){
   try{
     var raw=sessionStorage.getItem('liSettings');
@@ -7882,6 +7921,7 @@ function initTruck(){
 }
 
 function restartGame(){
+  gOver=false; // v2.10.11 ensure TRY AGAIN clears the fail state
   document.getElementById('ov-end').classList.remove('vis');
   // v2.1.12 FIX: do NOT reset gameMode here — caller (startShift/startRegular) sets it.
   updateShiftBadge();
