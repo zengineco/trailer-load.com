@@ -23,11 +23,13 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN — LI7 v2.10.5
+   LOCK IN — LI7 v2.10.7
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v2.10.7 - WIDER BELT (less vanish) + VERTICAL STAGING GRIDS. (1) The belt tapered 28% down to 2.8% at the wall, so freight shrank to a point and disappeared into the perspective vanishing point. Base is now 30% and the far end is 13% (was 2.8%) - a gentle trapezoid, so pieces stay readable and grabbable all the way up to the wall instead of vanishing. (2) NC and SMALLS staging moved from 4x2 horizontal blocks to 2x4 VERTICAL column grids stacked up each side floor (per the sketch) - NC hugs the left of the belt and grows leftward/upward, SMALLS hugs the right. Square cells, sized off floor depth. The bottom preselector strip stays (it works). Geometry only - no gameplay/state/determinism touched. Tune live: belt nW/fW are two numbers, grid is cols=2 rows=4.
+   CHANGE LOG v2.10.6 - WIDER BELT. The center belt was 16% of screen width - too thin, freight read small and the slots crowded it. Belt base is now 28% (your sketch: fat belt up the middle), so the conveyor graphic AND the freight boxes are bigger and easier to grab, while still tapering to the wall as a trapezoid. The NC (left) and SMALLS (right) floor zones key off the belt width, so they auto-shift outward and stay clear - no collision. Pure geometry change, no gameplay/state touched.
    CHANGE LOG v2.10.5 - THE BELT, FIXED AT THE ROOT. Root cause found: the belt is filled by genBeltPiece, NOT genPiece - so every conveyability gate AND the realistic weighting I added (v2.10.0-2.10.4) lived in a function that never touched the belt. That is why 7x2/8x4 kept coming and the mix stayed wrong. NOW: (1) genBeltPiece picks via pickWeighted (realistic freight frequency actually applies); (2) genBeltPiece gates conveyability - non-conveyable freight routes to NC, panic/gauntlet reroll conveyable. A 7x2 or 8x4 cannot reach the belt anymore (non-daily). (3) CLICKABILITY: belt boxes were overlapping perspective sprites, so clicks hit the wrong one. Rebuilt as evenly-spaced NON-overlapping slots (height capped to the slot gap), no bob, and the hit-test now picks the nearest box. Every piece is its own clean target with its W×H shown.\n   CHANGE LOG v2.10.4 - REALISTIC FREIGHT FREQUENCY. Spawns were uniform - a 5x1 was as likely as a 2x2 - so you saw too many long-thin pieces and too few small squares. Now weighted by realism: square/near-square and small-to-standard boxes are common (1x1, 2x1, 2x2, 2x3, 3x3, and the 3x4 Target/Chewy standard), while long-thin (4x1, 5x1, 6x1) are rare but present. Weight = aspect band x area band; knobs are in pieceWeight() for tuning. Applies to small/regular/large belt spawns (and gauntlet). Daily untouched (own deterministic generator).
    CHANGE LOG v2.10.3 - BELT LABELS + GATE LEAK + GAPS METRIC. (1) Every belt-freight box now shows its size (WxH) so you know what you're grabbing - no more anonymous pick-and-replace. (2) Conveyability now gates ALL belt-bound pieces: P_PANIC long bars (10x1, 14x1) were bypassing it via the panic/gap exclusion - now panic/gap reroll to a conveyable piece (P_SMALL fallback, never a null on the belt), and reg/large still route to NC. A 10x2 will never ride the belt again (daily still excluded - its generator needs the rule baked in with a determinism reset). (3) GAPS on the report was getVoids cube-count; now countGaps() = connected pockets of covered air (distinct areas, fewer than cube voids), captured live each wall and shown as 'Gaps Left'. Live VOIDS stays cube-by-cube.
    CHANGE LOG v2.10.2 - SCORE-FARM EXPLOIT KILLED. Lifting a placed piece and re-placing it re-awarded every bonus (VOID FILLER, CORNER/ANCHOR/CORNERSTONE, and the DOUBLE LOCK +shelf bonus), so a nested tire could be cycled for infinite cubes + pieces-per-wall. Two guards: (1) a piece earns its keystone/void-filler bonus ONCE ever (box._bonusEarned) - re-placement pays nothing and no longer double-counts the piece; (2) a row pays its shelf-lock bonus ONCE per trailer (G.tetrisPaid) - unsealing via lift then re-locking no longer re-pays. tetrisPaid resets with tetrisRows on every trailer. Bulkhead was already guarded (persistent bulkheadRows). Legit first-time scoring unchanged.
@@ -1241,7 +1243,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN — LI7 v2.10.5</div>
+  <div class="pause-sub">LOCK IN — LI7 v2.10.7</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1372,7 +1374,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v2.10.5 · © 2026</div>
+  <div id="sm-footer">LOCK IN v2.10.7 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1483,7 +1485,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v2.10.5 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v2.10.7 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1670,7 +1672,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>LI7 v2.10.5</sub></div>
+      <div class="logo">LOCK IN<sub>LI7 v2.10.7</sub></div>
       <div class="hdr-mid" id="conv-lbl-txt">▶ PRESELECTOR BELT — SELECT A PIECE</div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1852,7 +1854,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN — LI7 v2.10.5
+// LOCK IN — LI7 v2.10.7
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2659,22 +2661,23 @@ function computeGeom(){
 // NC slots left of center conveyor, bag slots right. 4 visible each side.
 // DECISION: slots inside trailer space on canvas floor — not external DOM panels.
 function computeFloorSlots(){
-  // v2.1.16 8-SLOT STAGING: 4 columns x 2 rows per zone (was 4 of 8 ever rendered).
-  var convNX=W/2,convNW=W*.17;
-  var slotH=Math.min(38,Math.max(24,(DB-H*.75)*0.80));
-  var slotW=Math.min(44,Math.max(26,(W/2-convNW/2)/5.5));
+  // v2.10.7 VERTICAL staging grids: 2 columns x 4 rows per side, stacked UP the side floor (was 4x2 horizontal).
+  var convNX=W/2,convNW=W*.30;
+  var floorDepth=Math.max(60,DB-NW.bl.y);
+  var slotH=Math.min(34,Math.max(20,floorDepth*0.205));
+  var slotW=slotH; // square cells
   FLOOR_SLOT_W=slotW;FLOOR_SLOT_H=slotH;
-  var colGap=3,rowGap=3,rowH=slotH+rowGap;
-  FLOOR_SLOT_Y=DB-slotH-3; // bottom row (row 0) baseline
-  var ncZoneRight=convNX-convNW/2-4;
-  var bagZoneLeft=convNX+convNW/2+4;
+  var colGap=4,rowGap=4,rowH=slotH+rowGap,colW=slotW+colGap;
+  FLOOR_SLOT_Y=DB-slotH-4; // bottom row (row 0) baseline
+  var ncZoneRight=convNX-convNW/2-8; // NC grid hugs left of belt, grows leftward
+  var bagZoneLeft=convNX+convNW/2+8; // SMALLS grid hugs right of belt, grows rightward
   FLOOR_NC_SLOTS_X=[];FLOOR_NC_SLOTS_Y=[];FLOOR_BAG_SLOTS_X=[];FLOOR_BAG_SLOTS_Y=[];
   var k,col,row;
   for(k=0;k<8;k++){
-    col=k%4;row=(k<4)?0:1; // 0-3 bottom, 4-7 top
-    FLOOR_NC_SLOTS_X[k]=ncZoneRight-(col+1)*(slotW+colGap);
+    col=k%2;row=Math.floor(k/2); // 2 cols x 4 rows, stacked vertically
+    FLOOR_NC_SLOTS_X[k]=ncZoneRight-(col+1)*colW;
     FLOOR_NC_SLOTS_Y[k]=FLOOR_SLOT_Y-row*rowH;
-    FLOOR_BAG_SLOTS_X[k]=bagZoneLeft+col*(slotW+colGap);
+    FLOOR_BAG_SLOTS_X[k]=bagZoneLeft+col*colW;
     FLOOR_BAG_SLOTS_Y[k]=FLOOR_SLOT_Y-row*rowH;
   }
 }
@@ -4384,7 +4387,7 @@ function drawLights(c,ts){
 function drawBeltFreight(c,ts){
   BELT_FREIGHT_HITS=[];
   if(typeof G==='undefined'||!G.belt||!G.belt.length)return;
-  var nW=W*.16,fW=W*.028,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
+  var nW=W*.30,fW=W*.13,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
   var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
   var N=Math.min(G.belt.length,6);
   if(N<1)return;
@@ -4422,7 +4425,7 @@ function drawBeltFreight(c,ts){
   c.restore();
 }
 function drawConveyorScene(c,ts){
-  var nW=W*.16,fW=W*.028,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
+  var nW=W*.30,fW=W*.13,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
   var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
   c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();
   var cg=c.createLinearGradient(nX,nY,fX,fY);cg.addColorStop(0,'#cabb96');cg.addColorStop(1,'#b8a684');
@@ -6621,7 +6624,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.5</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.7</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
