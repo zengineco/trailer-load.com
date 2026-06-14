@@ -23,11 +23,13 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN — LI7 v2.10.2
+   LOCK IN — LI7 v2.10.5
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v2.10.5 - THE BELT, FIXED AT THE ROOT. Root cause found: the belt is filled by genBeltPiece, NOT genPiece - so every conveyability gate AND the realistic weighting I added (v2.10.0-2.10.4) lived in a function that never touched the belt. That is why 7x2/8x4 kept coming and the mix stayed wrong. NOW: (1) genBeltPiece picks via pickWeighted (realistic freight frequency actually applies); (2) genBeltPiece gates conveyability - non-conveyable freight routes to NC, panic/gauntlet reroll conveyable. A 7x2 or 8x4 cannot reach the belt anymore (non-daily). (3) CLICKABILITY: belt boxes were overlapping perspective sprites, so clicks hit the wrong one. Rebuilt as evenly-spaced NON-overlapping slots (height capped to the slot gap), no bob, and the hit-test now picks the nearest box. Every piece is its own clean target with its W×H shown.\n   CHANGE LOG v2.10.4 - REALISTIC FREIGHT FREQUENCY. Spawns were uniform - a 5x1 was as likely as a 2x2 - so you saw too many long-thin pieces and too few small squares. Now weighted by realism: square/near-square and small-to-standard boxes are common (1x1, 2x1, 2x2, 2x3, 3x3, and the 3x4 Target/Chewy standard), while long-thin (4x1, 5x1, 6x1) are rare but present. Weight = aspect band x area band; knobs are in pieceWeight() for tuning. Applies to small/regular/large belt spawns (and gauntlet). Daily untouched (own deterministic generator).
+   CHANGE LOG v2.10.3 - BELT LABELS + GATE LEAK + GAPS METRIC. (1) Every belt-freight box now shows its size (WxH) so you know what you're grabbing - no more anonymous pick-and-replace. (2) Conveyability now gates ALL belt-bound pieces: P_PANIC long bars (10x1, 14x1) were bypassing it via the panic/gap exclusion - now panic/gap reroll to a conveyable piece (P_SMALL fallback, never a null on the belt), and reg/large still route to NC. A 10x2 will never ride the belt again (daily still excluded - its generator needs the rule baked in with a determinism reset). (3) GAPS on the report was getVoids cube-count; now countGaps() = connected pockets of covered air (distinct areas, fewer than cube voids), captured live each wall and shown as 'Gaps Left'. Live VOIDS stays cube-by-cube.
    CHANGE LOG v2.10.2 - SCORE-FARM EXPLOIT KILLED. Lifting a placed piece and re-placing it re-awarded every bonus (VOID FILLER, CORNER/ANCHOR/CORNERSTONE, and the DOUBLE LOCK +shelf bonus), so a nested tire could be cycled for infinite cubes + pieces-per-wall. Two guards: (1) a piece earns its keystone/void-filler bonus ONCE ever (box._bonusEarned) - re-placement pays nothing and no longer double-counts the piece; (2) a row pays its shelf-lock bonus ONCE per trailer (G.tetrisPaid) - unsealing via lift then re-locking no longer re-pays. tetrisPaid resets with tetrisRows on every trailer. Bulkhead was already guarded (persistent bulkheadRows). Legit first-time scoring unchanged.
    CHANGE LOG v2.10.1 - GRAB OFF THE BELT (the middle belt is now the preselector). The freight boxes riding up the aisle are now CLICKABLE - tap one to pick it up (selected box gets a teal highlight + the wall ghost), then click the wall to place, exactly like the bottom strip but on the real belt. SmallSort-style. drawBeltFreight stores each box's screen rect every frame; the scene pointerup tests those first and sets selBeltIdx. The bottom strip still works as a backstop for THIS build only - confirm the belt grabs clean and the strip gets deleted next (one line).
    CHANGE LOG v2.10.0 - CONVEYABILITY RULE (the belt foundation). Long-thin and bulky freight physically lodges in a conveyor and jams the line, so it is non-conveyable by nature and now routes to NC staging (hand-loaded) instead of riding the belt. Rule: max>=8 OR (max>=7 AND min<=2) => NC. This pulls OVR-LONG 8x3, OVR-WIDE 10x3, PALLET-M 7x2, PALLET-L 9x2, BUNDLE 8x4, FLATSKID 12x2 off the belt and into NC. 6x1 stays conveyable (the limit); 6x6 and 7x3+ convey. Gauntlet (no NC) rerolls to a conveyable piece. Daily is UNTOUCHED (own deterministic generator - reconcile separately with a determinism reset so existing leaderboard scores hold). Belt now only carries conveyable freight - the foundation for grab-off-belt + jam.
@@ -1239,7 +1241,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN — LI7 v2.10.2</div>
+  <div class="pause-sub">LOCK IN — LI7 v2.10.5</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1370,7 +1372,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v2.10.2 · © 2026</div>
+  <div id="sm-footer">LOCK IN v2.10.5 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1481,7 +1483,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v2.10.2 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v2.10.5 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1668,7 +1670,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>LI7 v2.10.2</sub></div>
+      <div class="logo">LOCK IN<sub>LI7 v2.10.5</sub></div>
       <div class="hdr-mid" id="conv-lbl-txt">▶ PRESELECTOR BELT — SELECT A PIECE</div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1850,7 +1852,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN — LI7 v2.10.2
+// LOCK IN — LI7 v2.10.5
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2138,7 +2140,7 @@ var FSPM = {
   },
   stateModifier:function(G){
     var mods={small:0,regular:0,large:0,nc:0,bag:0};
-    var voids=getVoids(G.grid).length;
+    var voids=getVoids(G.grid).length;S.lastGaps=countGaps(G.grid);
     var cols=getColumnRisk(G.grid);
     var h=wallH()/GH;
     if(voids>8){mods.small+=.06;mods.regular-=.04;}
@@ -2171,6 +2173,20 @@ var CB=[
 ];
 function sRand(s){var x=s;return function(){x=(x*9301+49297)%233280;return x/233280;};}
 function pick(a){return a[Math.floor(Math.random()*a.length)];}
+// v2.10.4 realistic freight frequency — square + small/standard boxes common, long-thin rare (matches real shipped freight: 1x1,2x1,2x2,2x3,3x3,3x4 dominate)
+function pieceWeight(w,h){
+  var L=(w>h)?w:h,S=(w>h)?h:w,ar=L/S,area=w*h,arw,aw;
+  arw=(ar<=1.34)?3:(ar<=2)?2.2:(ar<=3)?1:(ar<=4)?0.45:0.25;
+  aw=(area<=4)?2:(area<=9)?1.8:(area<=12)?1.5:(area<=16)?0.8:0.4;
+  return arw*aw;
+}
+function pickWeighted(pool){
+  var tot=0,i,wt,wts=[];
+  for(i=0;i<pool.length;i++){wt=pieceWeight(pool[i].w,pool[i].h);wts.push(wt);tot+=wt;}
+  var r=Math.random()*tot;
+  for(i=0;i<pool.length;i++){r-=wts[i];if(r<=0)return pool[i];}
+  return pool[pool.length-1];
+}
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 
@@ -2799,6 +2815,23 @@ function calcCOG(grid){
   return mass?wx/mass/GW:.5;
 }
 
+function countGaps(grid){
+  // GAPS = connected pockets of covered air (distinct areas), not cube-by-cube voids. Fewer by design.
+  var seen={},regions=0,y,x,ay;
+  for(y=0;y<GH;y++)for(x=0;x<GW;x++){
+    if(!grid[y][x]&&!seen[y+'_'+x]){
+      var stack=[[x,y]],covered=false;seen[y+'_'+x]=true;
+      while(stack.length){
+        var p=stack.pop(),px=p[0],py=p[1];
+        for(ay=0;ay<py;ay++){if(grid[ay][px]){covered=true;break;}}
+        var nb=[[px-1,py],[px+1,py],[px,py-1],[px,py+1]],ni,nx,nyy;
+        for(ni=0;ni<4;ni++){nx=nb[ni][0];nyy=nb[ni][1];if(nx>=0&&nx<GW&&nyy>=0&&nyy<GH&&!grid[nyy][nx]&&!seen[nyy+'_'+nx]){seen[nyy+'_'+nx]=true;stack.push([nx,nyy]);}}
+      }
+      if(covered)regions++;
+    }
+  }
+  return regions;
+}
 function getVoids(grid){
   var v=[];
   for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){
@@ -3007,22 +3040,25 @@ function genPiece(isPanic,isGap){
   else if(isPanic){tmpl=pick(P_PANIC);}
   else{
     var cat=FSPM.pickCategory(G);
-    if(cat==='small')tmpl=pick(P_SMALL);
-    else if(cat==='large')tmpl=pick(P_LARGE);
+    if(cat==='small')tmpl=pickWeighted(P_SMALL);
+    else if(cat==='large')tmpl=pickWeighted(P_LARGE);
     else if(cat==='nc'){
-      if(gameMode==='gauntlet'){tmpl=pick(P_REG);} // v2.9.0 gauntlet: no NC
+      if(gameMode==='gauntlet'){tmpl=pickWeighted(P_REG);} // v2.9.0 gauntlet: no NC
       else{spawnNC();return null;}
     }
     else if(cat==='bag'){
-      if(gameMode==='gauntlet'){tmpl=pick(P_REG);} // v2.9.0 gauntlet: no bags
+      if(gameMode==='gauntlet'){tmpl=pickWeighted(P_REG);} // v2.9.0 gauntlet: no bags
       else{spawnBag();return null;}
     }
-    else tmpl=pick(P_REG);
+    else tmpl=pickWeighted(P_REG);
   }
-  // v2.10.0 conveyability gate (non-daily; daily uses its own deterministic generator)
-  if(tmpl&&!isPanic&&!isGap&&!isConveyable(tmpl.w,tmpl.h)){
-    if(gameMode==='gauntlet'){var _cg=0;while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_cg++<12){tmpl=pick(P_REG);}}
-    else{routeToNC(tmpl);return null;}
+  // v2.10.3 conveyability gate — ALL belt-bound pieces. panic/gap reroll to conveyable (never null); reg/large route to NC. Daily excluded (own generator).
+  if(tmpl&&!isConveyable(tmpl.w,tmpl.h)){
+    if(isPanic||isGap||gameMode==='gauntlet'){
+      var _cg=0,_cpool=isGap?P_GAP:(isPanic?P_PANIC:P_REG);
+      while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_cg++<20){tmpl=pick(_cpool);}
+      if(tmpl&&!isConveyable(tmpl.w,tmpl.h))tmpl=pickWeighted(P_SMALL);
+    } else {routeToNC(tmpl);return null;}
   }
   tmpl={...tmpl};
   if(!tmpl.cells)tmpl.cells=makeRect(tmpl.w,tmpl.h);
@@ -3390,33 +3426,38 @@ function genBeltPiece(isPanic){
       var w=_LV.poolW;
       // Apply fragile chance on top of normal pool selection
       var isFrag=_LV.fragile>0&&Math.random()<_LV.fragile;
-      if(r<w.sml)tmpl={...pick(P_SMALL)};
-      else if(r<w.sml+w.lrg)tmpl={...pick(P_LARGE)};
-      else tmpl={...pick(P_REG)};
+      if(r<w.sml)tmpl={...pickWeighted(P_SMALL)};
+      else if(r<w.sml+w.lrg)tmpl={...pickWeighted(P_LARGE)};
+      else tmpl={...pickWeighted(P_REG)};
       // Override isFrag via labelDef below — flag it on the piece
       if(isFrag&&tmpl)tmpl._forceFrag=true;
     } else {
       var fill=G.grid?countFilled()/(GW*GH):0;
       if(fill<.20){
-        if(r<.15)tmpl={...pick(P_SMALL)};
-        else if(r<.35)tmpl={...pick(P_LARGE)};
-        else tmpl={...pick(P_REG)};
+        if(r<.15)tmpl={...pickWeighted(P_SMALL)};
+        else if(r<.35)tmpl={...pickWeighted(P_LARGE)};
+        else tmpl={...pickWeighted(P_REG)};
       }else if(fill<.70){
-        if(r<.20)tmpl={...pick(P_SMALL)};
-        else if(r<.38)tmpl={...pick(P_LARGE)};
-        else tmpl={...pick(P_REG)};
+        if(r<.20)tmpl={...pickWeighted(P_SMALL)};
+        else if(r<.38)tmpl={...pickWeighted(P_LARGE)};
+        else tmpl={...pickWeighted(P_REG)};
       }else if(fill<PANIC_THRESHOLD){
-        if(r<.32)tmpl={...pick(P_SMALL)};
-        else if(r<.42)tmpl={...pick(P_LARGE)};
-        else tmpl={...pick(P_REG)};
+        if(r<.32)tmpl={...pickWeighted(P_SMALL)};
+        else if(r<.42)tmpl={...pickWeighted(P_LARGE)};
+        else tmpl={...pickWeighted(P_REG)};
       }else{
-        if(r<.52)tmpl={...pick(P_SMALL)};
-        else if(r<.58)tmpl={...pick(P_LARGE)};
-        else tmpl={...pick(P_REG)};
+        if(r<.52)tmpl={...pickWeighted(P_SMALL)};
+        else if(r<.58)tmpl={...pickWeighted(P_LARGE)};
+        else tmpl={...pickWeighted(P_REG)};
       }
     }
   }
   if(!tmpl)return null;
+  // v2.10.5 CONVEYABILITY AT THE REAL SOURCE — genBeltPiece feeds the belt; genPiece never did. THIS is the gate that counts.
+  if(!isConveyable(tmpl.w,tmpl.h)){
+    if(isPanic||gameMode==='gauntlet'){var _cg=0,_cp=isPanic?P_PANIC:P_REG;while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_cg++<24){tmpl=pickWeighted(_cp);}if(tmpl&&!isConveyable(tmpl.w,tmpl.h))tmpl=pickWeighted(P_SMALL);}
+    else{routeToNC(tmpl);return null;}
+  }
   tmpl={...tmpl};
   tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
   var seed=rnd(100,9999);
@@ -3963,7 +4004,7 @@ function calcScore(segOverride){
   var eff=countFilled()/(GW*GH);
   var hp=wallH()/GH;
   var ss=supportScore(G.grid);
-  var voids=getVoids(G.grid).length;
+  var voids=getVoids(G.grid).length;S.lastGaps=countGaps(G.grid);
   var cogDev=Math.abs((G.cog||.5)-.5);
   var integ=(G.integrity||100)/100;
   var base=Math.round(eff*700+hp*500);
@@ -4346,31 +4387,37 @@ function drawBeltFreight(c,ts){
   var nW=W*.16,fW=W*.028,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
   var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
   var N=Math.min(G.belt.length,6);
+  if(N<1)return;
   var tex=(typeof loadedBoxTex==='function')?loadedBoxTex():[];
+  // i=0 nearest the player (front/big = the next piece), i=N-1 nearest the wall. Even, NON-overlapping slots.
+  var T0=0.06,T1=0.80,i,pos=[],slotGap=(N>1)?Math.abs((fY-nY)*(T1-T0)/(N-1)):Math.abs(fY-nY)*0.3;
+  for(i=0;i<N;i++){var tt=(N>1)?(T0+(T1-T0)*(i/(N-1))):T0;pos.push({t:tt,rx:nX+(fX-nX)*tt,ry:nY+(fY-nY)*tt,rhw:(nW/2)+((fW/2)-(nW/2))*tt});}
   c.save();
   c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();c.clip();
-  var i,piece,t,pt,rx,ry,rhw,bob,bw,bh,ar,p,g,im,pk;
+  var piece,P,ar,bw,bh,p,g,im,pk,_flb,_ffs;
   for(i=N-1;i>=0;i--){
     piece=G.belt[i];if(!piece)continue;
-    t=0.80-i*0.135;
-    if(t<0.04)continue;
-    pt=t*t;
-    rx=nX+(fX-nX)*pt;ry=nY+(fY-nY)*pt;rhw=(nW/2)+((fW/2)-(nW/2))*pt;
-    bob=Math.sin((ts||0)*0.0022+i*1.3)*rhw*0.05;
+    P=pos[i];
     ar=piece.h/Math.max(1,piece.w);
-    bw=rhw*1.5;bh=bw*Math.max(0.55,Math.min(1.15,ar));
+    bw=P.rhw*1.7;
+    bh=Math.min(bw*Math.max(0.5,Math.min(1.0,ar)),slotGap*0.82);
+    if(bh<6)bh=6;
     p=piece.pal||{l:'#d6b483',b:'#c49a5e',d:'#9a6f3a'};
     c.save();
-    c.translate(rx,ry+bob);
-    c.globalAlpha=0.22;c.fillStyle='#000';c.beginPath();c.ellipse(0,2,Math.max(1,bw*0.55),Math.max(1,bw*0.16),0,0,Math.PI*2);c.fill();c.globalAlpha=1;
-    g=c.createLinearGradient(0,-bh,0,0);g.addColorStop(0,p.l);g.addColorStop(.5,p.b);g.addColorStop(1,p.d);
-    c.fillStyle=g;c.fillRect(-bw/2,-bh,bw,bh);
-    if(tex.length){im=tex[(((piece.seed)||1)>>>0)%tex.length];if(!c._boxPats)c._boxPats={};pk=im.idx;if(c._boxPats[pk]===undefined){try{c._boxPats[pk]=c.createPattern(im,'repeat');}catch(_e){c._boxPats[pk]=null;}}if(c._boxPats[pk]){c.save();c.beginPath();c.rect(-bw/2,-bh,bw,bh);c.clip();c.globalAlpha=.5;c.fillStyle=c._boxPats[pk];c.fillRect(-bw/2,-bh,bw,bh);c.globalAlpha=1;c.restore();}}
-    c.fillStyle='rgba(255,255,255,.10)';c.fillRect(-bw/2,-bh,bw,bh*0.3);
-    c.strokeStyle='rgba(60,40,18,.55)';c.lineWidth=Math.max(.5,1.5*(1-pt*.6));c.strokeRect(-bw/2,-bh,bw,bh);
-    if(selBeltIdx===i){c.strokeStyle='rgba(40,255,200,.95)';c.lineWidth=Math.max(1.5,3*(1-pt*.5));c.strokeRect(-bw/2,-bh,bw,bh);}
+    c.translate(P.rx,P.ry);
+    c.globalAlpha=0.20;c.fillStyle='#000';c.beginPath();c.ellipse(0,bh*0.5+2,Math.max(1,bw*0.5),Math.max(1,bh*0.16),0,0,Math.PI*2);c.fill();c.globalAlpha=1;
+    g=c.createLinearGradient(0,-bh/2,0,bh/2);g.addColorStop(0,p.l);g.addColorStop(.5,p.b);g.addColorStop(1,p.d);
+    c.fillStyle=g;c.fillRect(-bw/2,-bh/2,bw,bh);
+    if(tex.length){im=tex[(((piece.seed)||1)>>>0)%tex.length];if(!c._boxPats)c._boxPats={};pk=im.idx;if(c._boxPats[pk]===undefined){try{c._boxPats[pk]=c.createPattern(im,'repeat');}catch(_e){c._boxPats[pk]=null;}}if(c._boxPats[pk]){c.save();c.beginPath();c.rect(-bw/2,-bh/2,bw,bh);c.clip();c.globalAlpha=.5;c.fillStyle=c._boxPats[pk];c.fillRect(-bw/2,-bh/2,bw,bh);c.globalAlpha=1;c.restore();}}
+    c.fillStyle='rgba(255,255,255,.10)';c.fillRect(-bw/2,-bh/2,bw,bh*0.3);
+    c.strokeStyle='rgba(60,40,18,.6)';c.lineWidth=Math.max(.6,1.6*(1-P.t*.5));c.strokeRect(-bw/2,-bh/2,bw,bh);
+    _flb=piece.w+'×'+piece.h;_ffs=Math.max(9,Math.min(bh*0.5,bw*0.34));
+    c.font='bold '+_ffs+'px "Share Tech Mono",monospace';c.textAlign='center';c.textBaseline='middle';
+    c.lineWidth=Math.max(2,_ffs*0.34);c.strokeStyle='rgba(18,10,2,.95)';c.strokeText(_flb,0,0);
+    c.fillStyle='rgba(255,250,236,.99)';c.fillText(_flb,0,0);
+    if(selBeltIdx===i){c.strokeStyle='rgba(40,255,200,.97)';c.lineWidth=Math.max(2,3.2*(1-P.t*.4));c.strokeRect(-bw/2,-bh/2,bw,bh);}
     c.restore();
-    BELT_FREIGHT_HITS.push({idx:i,x:rx-bw/2,y:ry+bob-bh,w:bw,h:bh});
+    BELT_FREIGHT_HITS.push({idx:i,x:P.rx-bw/2,y:P.ry-bh/2,w:bw,h:bh});
   }
   c.restore();
 }
@@ -5031,7 +5078,7 @@ function updateHUD(){
   var integ=G.integrity||100;
   var eff=countFilled()/(GW*GH);
   var cog=G.cog||.5,dev=Math.abs(cog-.5);
-  var voids=getVoids(G.grid).length;
+  var voids=getVoids(G.grid).length;S.lastGaps=countGaps(G.grid);
   var ss=supportScore(G.grid);
 
   // ── LEFT STATS PANEL ──
@@ -5310,7 +5357,7 @@ scene.addEventListener('pointerup',function(e){
   // v2.10.1 GRAB OFF THE BELT — click a freight box riding the aisle to pick it up (SmallSort-style)
   if(BELT_FREIGHT_HITS&&BELT_FREIGHT_HITS.length){
     var _fi,_fr,_fhit=-1;
-    for(_fi=0;_fi<BELT_FREIGHT_HITS.length;_fi++){_fr=BELT_FREIGHT_HITS[_fi];if(c2.mx>=_fr.x&&c2.mx<=_fr.x+_fr.w&&c2.my>=_fr.y&&c2.my<=_fr.y+_fr.h){_fhit=_fr.idx;break;}}
+    for(_fi=0;_fi<BELT_FREIGHT_HITS.length;_fi++){_fr=BELT_FREIGHT_HITS[_fi];if(c2.mx>=_fr.x&&c2.mx<=_fr.x+_fr.w&&c2.my>=_fr.y&&c2.my<=_fr.y+_fr.h&&(_fhit<0||_fr.idx<_fhit)){_fhit=_fr.idx;}}
     if(_fhit>=0){selBeltIdx=(selBeltIdx===_fhit)?null:_fhit;selBeltRot=0;selNC=-1;selBag=-1;return;}
   }
 
@@ -6574,7 +6621,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.2</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">LI7 v2.10.5</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7603,7 +7650,7 @@ function fillTelemetryTiles(){
   set('es-bags',(S.bagsBroken||0)+'/'+(S.bagsPlaced||0));
   set('es-avgpph',avgPPH());
   set('es-tavg',S.bestTrailerAvg||0);
-  set('es-gaps',(typeof G!=='undefined'&&G.grid)?getVoids(G.grid).length:0);
+  set('es-gaps',S.lastGaps||0); // v2.10.3 distinct gap-areas, not cube-voids
   set('es-time',sessionMinsNow()+'m');
   set('es-rejects',S.rejects||0);
   set('es-hazshelf',S.hazShelfLocks||0);
