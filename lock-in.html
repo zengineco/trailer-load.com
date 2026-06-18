@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.4
+   LOCK IN v3.5.5
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.5 - ONE MESSAGE HOME (DISPATCH feed). All transient on-screen text - banners, the LOCKED-IN/double-lock flash, commentary, +cube pops, warnings - now routes to a SINGLE top-right DISPATCH feed instead of rendering over the wall mid-drop. pushMsg() is the one sink; showBanner / showPop / showCmtOverlay / fireLockinFlash all feed it (so all 57+ call sites auto-route, no per-call edits). Color-coded (green ok / amber warn / red danger), newest on top, auto-fade. The LOCKED-IN particle burst + shake + SFX stay as the juice - only the center TEXT moved. Verified: 5 channels -> feed, zero text over the wall. Step 1 of the HUD overhaul (scoreboard + coach-to-pause next). No scoring change.
    CHANGE LOG v3.5.4 - SEAL-FARM EXPLOIT FIX (Gelato's find). At wall-complete, KEEP LOADING hid the menu, then checkWin re-fired sealWall and RE-AWARDED the +2500 LOAD SEALED bonus every interval = free cubes for sitting on the menu. FIX: seal payout is awarded ONCE per wall (G.sealed guard); re-summoning the menu never re-awards. KEEP LOADING now works - it sets G.maxPack (suppresses auto-reseal) so you keep placing for max cubes, with a FINISH TRAILER button to re-open the menu; nextTrailer resets the flags. Verified: bonus once, re-seals add 0, FINISH re-opens. No other scoring change.
    CHANGE LOG v3.5.3 - FULLER CHUTE + RENDER-STALL SAFETY. (1) CHUTE renders the FULL 10 pieces (was capped at 8) packed 2-WIDE up the trapezoid instead of single-file up the centre - reads full; bags + broken-smalls pack in. (2) RENDER-STALL: the loop ticked its heartbeat BEFORE drawScene, so if drawScene threw EVERY frame the watchdog saw a healthy heartbeat and the screen sat BLANK while input still worked (gameplay continues, render stops). Now a consecutive render-error streak (>=24 frames) trips a WE'RE SORRY - THE SCREEN STALLED recovery screen with HARD REFRESH instructions, and the error logs to window.__LI_ERR so the cause is named next time. Break-jam works in daily (refillBelt fills the deterministic belt). No scoring change.
    CHANGE LOG v3.5.2 - DAILY BAGS + WALL-COMPLETE MENU. (1) Bags weren't spawning in DAILY (unified spawnBag skips daily) - added a deterministic bag to the daily chute (~1 in 8, same for everyone on the date) via buildDailyPiece. (2) WALL-COMPLETE was a tiny side popup whose POST-SORT REPORT button was UNCLICKABLE (container pointer-events:none, only NEXT TRAILER overrode it). Reworked into a centered COMPLETION MENU - NEXT TRAILER / POST-SORT REPORT / KEEP LOADING (max pack) / MAIN MENU - all clickable, post-sort works WITHOUT advancing (stats preserved). No scoring change.
@@ -1136,6 +1137,14 @@ body[data-cb="trit"]{
 /* ── Pass D: right-side LIVE FLOOR panel ── */
 .rp-sec{padding:11px 14px 9px;border-bottom:1px solid var(--border);}
 .rp-sec-t{font-family:'Share Tech Mono',monospace;font-size:15px;letter-spacing:1.5px;color:var(--acc);font-weight:bold;margin-bottom:5px;}
+/* v3.5.5 DISPATCH feed — the single home for all transient messages (off the wall) */
+#msg-feed{display:flex;flex-direction:column;gap:5px;min-height:118px;}
+.msg-line{font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.28;color:var(--t1);background:rgba(0,0,0,.16);border-left:3px solid var(--acc);padding:5px 8px;border-radius:0 4px 4px 0;animation:msgIn .22s ease-out both;}
+.msg-line.msg-ok{border-left-color:var(--ok);color:#9fe3ba;}
+.msg-line.msg-warn{border-left-color:var(--warn);color:#e8c890;}
+.msg-line.msg-danger{border-left-color:var(--danger);color:#f0a890;}
+.msg-line.msg-out{opacity:0;transform:translateX(10px);transition:opacity .5s ease,transform .5s ease;}
+@keyframes msgIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
 #nextup-list{display:flex;flex-direction:column;gap:3px;}
 .nu-row{display:flex;align-items:baseline;gap:5px;font-family:'Share Tech Mono',monospace;}
 .nu-row.nu-empty{opacity:.38;}
@@ -1298,7 +1307,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.4</div>
+  <div class="pause-sub">LOCK IN v3.5.5</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1429,7 +1438,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.4 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.5 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1540,7 +1549,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.4 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.5 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1727,7 +1736,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v3.5.4</sub></div><!--build v3.5.4-->
+      <div class="logo">LOCK IN<sub>v3.5.5</sub></div><!--build v3.5.5-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1780,6 +1789,10 @@ body[data-cb="trit"]{
   <!-- RIGHT FEEDBACK PANEL -->
   <div id="fb-panel">
     <div class="fp-hdr">◈ LIVE FLOOR</div>
+    <div class="rp-sec" style="padding-bottom:7px;">
+      <div class="rp-sec-t">▸ DISPATCH</div>
+      <div id="msg-feed"></div>
+    </div>
     <div class="rp-sec">
       <div class="rp-sec-t">▸ PERFORMANCE</div>
       <div class="perf-grid">
@@ -1913,7 +1926,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.4
+// LOCK IN v3.5.5
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -5979,21 +5992,19 @@ function updateCoachTip(){
 }
 function flash(id){var e=document.getElementById(id);if(!e)return;e.classList.add('on');setTimeout(function(){e.classList.remove('on');},310);}
 var bannerTO=null;
-function showBanner(html,cls,dur){
-  // Celebration banners ('ok') clear fast so they don't block the build zone.
-  // Warnings (danger/panic) keep their full duration — they must be read.
-  if(cls&&cls.indexOf('ok')>=0)dur=Math.min(dur||2000,1200);
-  var b=document.getElementById('banner');b.innerHTML=html;
-  var _bhp=(typeof wallH==='function')?wallH()/GH:0; // v3.4.4 wall>35% -> drop off the build zone
-  b.className=(cls?('vis '+cls):'vis')+(_bhp>0.35?' low':'');
-  if(bannerTO)clearTimeout(bannerTO);
-  bannerTO=setTimeout(function(){b.classList.remove('vis');b.className='';},dur||2000);
+// v3.5.5 ONE TEXT HOME: every transient string routes to the top-right DISPATCH feed — nothing renders over the wall mid-drop.
+function pushMsg(html,type){
+  var feed=document.getElementById('msg-feed');if(!feed||html==null)return;
+  var el=document.createElement('div');el.className='msg-line'+(type?(' msg-'+type):'');
+  el.innerHTML=''+html;
+  feed.insertBefore(el,feed.firstChild);
+  while(feed.children.length>5){if(feed.lastChild)feed.removeChild(feed.lastChild);else break;}
+  var dwell=(type==='danger'||type==='warn')?4400:2700;
+  setTimeout(function(){el.classList.add('msg-out');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},520);},dwell);
 }
-function showPop(x,y,t,col){
-  var e=document.createElement('div');e.className='spp';
-  e.style.cssText='left:'+x+'px;top:'+y+'px;font-size:14px;color:'+(col||'#f5c400')+';text-shadow:0 0 8px currentColor;';
-  e.textContent=t;document.body.appendChild(e);setTimeout(function(){e.remove();},950);
-}
+function _msgType(cls){if(!cls)return '';if(cls.indexOf('danger')>=0||cls.indexOf('panic')>=0)return 'danger';if(cls.indexOf('warn')>=0)return 'warn';if(cls.indexOf('ok')>=0)return 'ok';return '';}
+function showBanner(html,cls,dur){pushMsg(html,_msgType(cls));}
+function showPop(x,y,t,col){pushMsg(t,(col&&(''+col).indexOf('40,184')>=0)?'ok':'');}
 
 // ══════════════════════════════════════════════════════════════
 // VOICE SYSTEM + BRIEFING — v1.9.5
@@ -6123,16 +6134,8 @@ function fireLockinFlash(isBulkhead,count,pts){
   var line=lines[Math.floor(Math.random()*lines.length)];
   if(count>1)line=(count===2?'DOUBLE ':'TRIPLE ')+line;
 
-  if(word)word.textContent=(isBulkhead?'DOUBLE LOCK!':'LOCKED IN!')+(pts?'  +'+pts:'');
-  if(sub)sub.textContent=line;
-
-  if(word){word.style.animation='none';word.offsetHeight;word.style.animation='';}
-  if(wallH()/GH>0.35)flash.classList.add('low');else flash.classList.remove('low'); // v3.4.4 tall wall -> celebration to bottom
-  flash.classList.add('vis');
-
-  var flashDur=isHub?2400:3000;
-  if(_lockinFlashTO)clearTimeout(_lockinFlashTO);
-  _lockinFlashTO=setTimeout(function(){flash.classList.remove('vis');},flashDur);
+  // v3.5.5 the LOCKED-IN text goes to the DISPATCH feed (no center flash over the wall); the burst + shake + SFX above stay as the juice
+  pushMsg('<b>'+(isBulkhead?'DOUBLE LOCK!':'LOCKED IN!')+(pts?'  +'+pts:'')+'</b><br><span style="opacity:.82">'+pfEsc(line)+'</span>','ok');
 
 }
 
@@ -6143,6 +6146,7 @@ function fireLockinFlash(isBulkhead,count,pts){
 // Hub Mode: larger amber text, 1800ms. Standard: white, 2600ms.
 var _cmtTO=null;
 function showCmtOverlay(text,cls,dur){
+  if(text)pushMsg(text,_msgType(cls));return; // v3.5.5 commentary -> DISPATCH feed (the legacy overlay below is superseded)
   var el=document.getElementById('cmt-overlay');
   if(!el||!text)return;
   var hp=wallH()/GH;
@@ -6984,7 +6988,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.4</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.5</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
