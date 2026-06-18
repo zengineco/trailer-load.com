@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.1
+   LOCK IN v3.5.2
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.2 - DAILY BAGS + WALL-COMPLETE MENU. (1) Bags weren't spawning in DAILY (unified spawnBag skips daily) - added a deterministic bag to the daily chute (~1 in 8, same for everyone on the date) via buildDailyPiece. (2) WALL-COMPLETE was a tiny side popup whose POST-SORT REPORT button was UNCLICKABLE (container pointer-events:none, only NEXT TRAILER overrode it). Reworked into a centered COMPLETION MENU - NEXT TRAILER / POST-SORT REPORT / KEEP LOADING (max pack) / MAIN MENU - all clickable, post-sort works WITHOUT advancing (stats preserved). No scoring change.
    CHANGE LOG v3.5.1 - CHUTE FINISH (step 2): FEED UNIFIED. Bags no longer go to a separate SMALLS lane - they RIDE THE CHUTE like any conveyable piece (3x3, 9 cubes, tan SMALLS look). spawnBag now pushes a bag piece onto the belt, so every caller auto-redirects; the SM pie-light is RETIRED (only NC staging remains - only non-conveyables get hand-staged). DOUBLE-CLICK a bag riding the chute to BREAK IT DOWN -> ~9 cubes of gap-fill smalls spill into the chute. Verified: bags in belt, break spills exactly 9 cubes, SM light hidden. Daily keeps its deterministic belt (its bag deferred to a deterministic-stream follow-up). No scoring change.
    CHANGE LOG v3.5.0 - CHUTE FINISH (step 1): BAGS 3x3 + FULLER CHUTE. (1) Bags are now 3x3 / 9 cubes (was 2x2 / 1) - a real bag of smalls. (2) Chute capacity 6 -> 10 visible selectable pieces (BELT_PIECE_COUNT; jam/refill/daily all scale off it) so the chute reads full. Daily belt fills 10 from the same seeded sequence (just more visible). NEXT: bags spawn IN the chute (retire the separate SMALLS lane), bag-breakdown drops smalls into the chute, then place->drop / jam / 179-240 PPH pace.
    CHANGE LOG v3.4.14 - STAGING DESYNC FIX + BAG BREAKDOWN REWIRED. (1) The v3.4.13 signature gate could leave the wheel on 'lane clear' while the light showed pieces (open empty -> stage in -> no re-render). Now it recomputes every frame but only writes the DOM when the HTML changes - always fresh, no flicker. (2) BAG BREAKDOWN (lost when floor slots were removed) rewired as DOUBLE-CLICK a bag tile -> breakdownBag(). No scoring/state/determinism change.
@@ -779,13 +780,12 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 #banner.low{top:auto;bottom:12%;transform:translate(-50%,0);} /* v3.4.4 wall>35% -> drop celebration to bottom, off the build zone */
 
 /* Next-trailer popup — bottom center of scene, never over active wall cells */
-#next-popup{position:absolute;top:50%;right:8px;left:auto;bottom:auto;transform:translateY(-50%);
-  z-index:30;display:none;flex-direction:column;align-items:center;gap:4px;
-  pointer-events:none;
-  animation:popInSide .3s cubic-bezier(.34,1.56,.64,1) both;
-  background:rgba(5,4,2,.92);border:1px solid rgba(40,184,112,.5);
-  border-radius:5px;padding:9px 8px;min-width:92px;max-width:120px;text-align:center;
-  box-shadow:0 0 24px rgba(40,184,112,.22);}
+#next-popup{position:absolute;top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);
+  z-index:64;display:none;flex-direction:column;align-items:stretch;gap:8px;
+  pointer-events:auto; /* v3.5.2 centered completion menu — was a tiny side nudge with an unclickable post-sort */
+  background:rgba(8,16,10,.97);border:1px solid var(--ok);
+  border-radius:10px;padding:18px 20px;min-width:240px;max-width:300px;text-align:center;
+  box-shadow:0 0 44px rgba(40,184,112,.32);}
 #next-popup.vis{display:flex;}
 @keyframes popIn{from{opacity:0;transform:translateX(-50%) scale(.85) translateY(12px);}
   to{opacity:1;transform:translateX(-50%) scale(1) translateY(0);}}
@@ -1296,7 +1296,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.1</div>
+  <div class="pause-sub">LOCK IN v3.5.2</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1427,7 +1427,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.1 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.2 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1538,7 +1538,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.1 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.2 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1725,7 +1725,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v3.5.1</sub></div><!--build v3.5.1-->
+      <div class="logo">LOCK IN<sub>v3.5.2</sub></div><!--build v3.5.2-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1740,10 +1740,11 @@ body[data-cb="trit"]{
       <div id="scene-wrap">
         <canvas id="scene" tabindex="0" role="img" aria-label="Freight trailer loading wall — stack boxes to build a stable, full wall"></canvas>
         <div id="next-popup">
-          <div id="next-popup-badge">✓ 92% — WALL COMPLETE</div>
+          <div id="next-popup-badge">✓ WALL COMPLETE — LOAD SEALED</div>
           <button id="next-popup-btn" onclick="nextTrailer()">NEXT TRAILER ▶</button>
-          <button class="btn-p" onclick="openPostSort()" style="margin-top:8px;">◆ POST-SORT REPORT</button>
-          <div id="next-popup-sub">OR KEEP LOADING → MAX PACK</div>
+          <button class="btn-p" onclick="openPostSort()">◆ POST-SORT REPORT</button>
+          <button class="btn-p" onclick="npKeepLoading()">↺ KEEP LOADING — MAX PACK</button>
+          <button class="btn-p" onclick="returnToMenu()">⌂ MAIN MENU</button>
         </div>
         <div id="coach-shelf" style="
           position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
@@ -1909,7 +1910,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.1
+// LOCK IN v3.5.2
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3644,6 +3645,9 @@ function dailyPieceAt(seed,idx){
   return {arr:arr,ti:ti,palSeed:palSeed,lab:lab};
 }
 function buildDailyPiece(seed,idx){
+  // v3.5.2 deterministic BAG in the daily chute (~1 in 8) — same for every player on the date
+  var mb=mulberry32((seed^Math.imul(idx+1,0x85EBCA6B))>>>0);
+  if(mb()<0.12){var b=makeBagPiece();b.id='DB'+idx;b.seed=100+Math.floor(mb()*9800);return b;}
   var sp=dailyPieceAt(seed,idx);
   var tmpl={...sp.arr[sp.ti]};
   tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
@@ -6727,6 +6731,7 @@ function updateShiftBadge(){
 }
 
 // Override nextTrailer for shift mode
+function npKeepLoading(){var p=document.getElementById('next-popup');if(p)p.classList.remove('vis');} // v3.5.2 dismiss the completion menu to keep filling for max pack
 function nextTrailer(){
   if(typeof playSfx==='function')playSfx('trailer');
   document.getElementById('next-popup').classList.remove('vis');
@@ -6961,7 +6966,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.1</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.2</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
