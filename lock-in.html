@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.5
+   LOCK IN v3.5.6
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.6 - TOP SCOREBOARD (the side panel is gone). The big left OPS-ASSESSMENT column is REMOVED and reflowed into a full-width TOP SCOREBOARD BAR (CSS grid: bar on top, scene + right panel below) - CUBES, GRADE, the STRUCT/BALANCE/DENSITY/SUPPORT vitals, WALL HT, BALANCE(COG), PACK, PLACED, ELAPSED, TRAILER. The scene reclaimed the left panel width (~640 -> 894px). All stat IDs preserved so updateHUD feeds the bar unchanged. Secondary counts (VOIDS/SHELVES/DOUBLE/SP) + hydration are hidden from the bar (-> pause next). Placement + square cells verified at the new width. NEXT: ELAPSED hero size, counts + coach into pause, PPH onto the bar. No scoring change.
    CHANGE LOG v3.5.5 - ONE MESSAGE HOME (DISPATCH feed). All transient on-screen text - banners, the LOCKED-IN/double-lock flash, commentary, +cube pops, warnings - now routes to a SINGLE top-right DISPATCH feed instead of rendering over the wall mid-drop. pushMsg() is the one sink; showBanner / showPop / showCmtOverlay / fireLockinFlash all feed it (so all 57+ call sites auto-route, no per-call edits). Color-coded (green ok / amber warn / red danger), newest on top, auto-fade. The LOCKED-IN particle burst + shake + SFX stay as the juice - only the center TEXT moved. Verified: 5 channels -> feed, zero text over the wall. Step 1 of the HUD overhaul (scoreboard + coach-to-pause next). No scoring change.
    CHANGE LOG v3.5.4 - SEAL-FARM EXPLOIT FIX (Gelato's find). At wall-complete, KEEP LOADING hid the menu, then checkWin re-fired sealWall and RE-AWARDED the +2500 LOAD SEALED bonus every interval = free cubes for sitting on the menu. FIX: seal payout is awarded ONCE per wall (G.sealed guard); re-summoning the menu never re-awards. KEEP LOADING now works - it sets G.maxPack (suppresses auto-reseal) so you keep placing for max cubes, with a FINISH TRAILER button to re-open the menu; nextTrailer resets the flags. Verified: bonus once, re-seals add 0, FINISH re-opens. No other scoring change.
    CHANGE LOG v3.5.3 - FULLER CHUTE + RENDER-STALL SAFETY. (1) CHUTE renders the FULL 10 pieces (was capped at 8) packed 2-WIDE up the trapezoid instead of single-file up the centre - reads full; bags + broken-smalls pack in. (2) RENDER-STALL: the loop ticked its heartbeat BEFORE drawScene, so if drawScene threw EVERY frame the watchdog saw a healthy heartbeat and the screen sat BLANK while input still worked (gameplay continues, render stops). Now a consecutive render-error streak (>=24 frames) trips a WE'RE SORRY - THE SCREEN STALLED recovery screen with HARD REFRESH instructions, and the error logs to window.__LI_ERR so the cause is named next time. Break-jam works in daily (refillBelt fills the deterministic belt). No scoring change.
@@ -212,14 +213,29 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   font-family:'Barlow Condensed',sans-serif;overflow:hidden;
   user-select:none;-webkit-user-select:none;}
 
-#root{display:flex;height:100dvh;max-width:1120px;margin:0 auto;box-shadow:0 0 60px rgba(20,12,4,.20),0 0 0 1px rgba(70,50,22,.10);}
+#root{display:grid;grid-template-columns:1fr var(--panel-right-w);grid-template-rows:auto minmax(0,1fr);height:100dvh;max-width:1120px;margin:0 auto;box-shadow:0 0 60px rgba(20,12,4,.20),0 0 0 1px rgba(70,50,22,.10);}
+#main-col{grid-column:1;grid-row:2;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
 
 /* ── LEFT STATS PANEL ── */
-#stats-panel{flex-shrink:0;width:var(--panel-left-w);background:var(--bg2);
-  border-right:2px solid var(--border2);display:flex;flex-direction:column;
-  position:relative;overflow:hidden;z-index:8;}
-#stats-panel::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-  background:linear-gradient(180deg,transparent,var(--acc) 25%,var(--acc) 75%,transparent);opacity:.6;}
+/* v3.5.6 TOP SCOREBOARD BAR (was the left column) — boring-terminal readout strip */
+#stats-panel{grid-column:1 / -1;grid-row:1;background:var(--bg2);
+  border-bottom:2px solid var(--border2);display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:0 18px;padding:4px 14px;
+  position:relative;overflow:visible;z-index:8;}
+#stats-panel::before{display:none;}
+#stats-panel .sp-hdr,#stats-panel .sp-water,#stats-panel #fp-counts{display:none;} /* hdr + hydration + secondary counts off the bar (counts -> pause) */
+#stats-panel .sp-row{display:flex;flex-direction:row;gap:18px;margin:0;}
+#stats-panel .sp-block{padding:1px 0;border-bottom:none;margin:0;}
+#stats-panel #fp-subs{display:flex;flex-direction:row;gap:12px;padding:0;border:0;margin:0;}
+#stats-panel .sp-lbl{margin-bottom:0;font-size:9px;letter-spacing:.5px;white-space:nowrap;}
+#stats-panel .sp-big{font-size:27px;line-height:1;}
+#stats-panel .sp-med{font-size:18px;line-height:1;}
+#stats-panel .sp-bar{width:66px;height:5px;}
+#stats-panel #sp-cog-wrap{width:78px;}
+#stats-panel .fp-sg{display:flex;flex-direction:column;align-items:flex-start;gap:1px;margin:0;}
+#stats-panel .fp-sg-lbl{font-size:9px;}
+#stats-panel .fp-sg-bar{width:50px;height:5px;}
+#stats-panel .fp-sg-val{font-size:11px;}
+#stats-panel #sp-time{font-size:30px;color:var(--acc-bright);letter-spacing:1px;} /* ELAPSED = hero */
 .sp-hdr{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;
   color:var(--acc);text-transform:uppercase;text-align:center;
   padding:8px 4px 6px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,.2);}
@@ -724,9 +740,9 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 #scene:focus,#scene:focus-visible{outline:none;}
 
 /* ── RIGHT FEEDBACK PANEL ── */
-#fb-panel{flex-shrink:0;width:var(--panel-right-w);background:var(--bg2);
+#fb-panel{grid-column:2;grid-row:2;background:var(--bg2);
   border-left:2px solid var(--border2);display:flex;flex-direction:column;
-  position:relative;overflow:hidden;z-index:8;}
+  position:relative;overflow:hidden;z-index:8;} /* v3.5.6 right column = DISPATCH + performance */
 #fb-panel::after{content:'';position:absolute;right:0;top:0;bottom:0;width:2px;
   background:linear-gradient(180deg,transparent,var(--acc) 25%,var(--acc) 75%,transparent);opacity:.5;}
 .fp-hdr{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;
@@ -1307,7 +1323,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.5</div>
+  <div class="pause-sub">LOCK IN v3.5.6</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1438,7 +1454,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.5 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.6 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1549,7 +1565,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.5 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.6 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1736,7 +1752,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v3.5.5</sub></div><!--build v3.5.5-->
+      <div class="logo">LOCK IN<sub>v3.5.6</sub></div><!--build v3.5.6-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1926,7 +1942,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.5
+// LOCK IN v3.5.6
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6988,7 +7004,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.5</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.6</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
