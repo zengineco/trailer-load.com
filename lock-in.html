@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.3
+   LOCK IN v3.5.4
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.4 - SEAL-FARM EXPLOIT FIX (Gelato's find). At wall-complete, KEEP LOADING hid the menu, then checkWin re-fired sealWall and RE-AWARDED the +2500 LOAD SEALED bonus every interval = free cubes for sitting on the menu. FIX: seal payout is awarded ONCE per wall (G.sealed guard); re-summoning the menu never re-awards. KEEP LOADING now works - it sets G.maxPack (suppresses auto-reseal) so you keep placing for max cubes, with a FINISH TRAILER button to re-open the menu; nextTrailer resets the flags. Verified: bonus once, re-seals add 0, FINISH re-opens. No other scoring change.
    CHANGE LOG v3.5.3 - FULLER CHUTE + RENDER-STALL SAFETY. (1) CHUTE renders the FULL 10 pieces (was capped at 8) packed 2-WIDE up the trapezoid instead of single-file up the centre - reads full; bags + broken-smalls pack in. (2) RENDER-STALL: the loop ticked its heartbeat BEFORE drawScene, so if drawScene threw EVERY frame the watchdog saw a healthy heartbeat and the screen sat BLANK while input still worked (gameplay continues, render stops). Now a consecutive render-error streak (>=24 frames) trips a WE'RE SORRY - THE SCREEN STALLED recovery screen with HARD REFRESH instructions, and the error logs to window.__LI_ERR so the cause is named next time. Break-jam works in daily (refillBelt fills the deterministic belt). No scoring change.
    CHANGE LOG v3.5.2 - DAILY BAGS + WALL-COMPLETE MENU. (1) Bags weren't spawning in DAILY (unified spawnBag skips daily) - added a deterministic bag to the daily chute (~1 in 8, same for everyone on the date) via buildDailyPiece. (2) WALL-COMPLETE was a tiny side popup whose POST-SORT REPORT button was UNCLICKABLE (container pointer-events:none, only NEXT TRAILER overrode it). Reworked into a centered COMPLETION MENU - NEXT TRAILER / POST-SORT REPORT / KEEP LOADING (max pack) / MAIN MENU - all clickable, post-sort works WITHOUT advancing (stats preserved). No scoring change.
    CHANGE LOG v3.5.1 - CHUTE FINISH (step 2): FEED UNIFIED. Bags no longer go to a separate SMALLS lane - they RIDE THE CHUTE like any conveyable piece (3x3, 9 cubes, tan SMALLS look). spawnBag now pushes a bag piece onto the belt, so every caller auto-redirects; the SM pie-light is RETIRED (only NC staging remains - only non-conveyables get hand-staged). DOUBLE-CLICK a bag riding the chute to BREAK IT DOWN -> ~9 cubes of gap-fill smalls spill into the chute. Verified: bags in belt, break spills exactly 9 cubes, SM light hidden. Daily keeps its deterministic belt (its bag deferred to a deterministic-stream follow-up). No scoring change.
@@ -1297,7 +1298,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.3</div>
+  <div class="pause-sub">LOCK IN v3.5.4</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1428,7 +1429,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.3 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.4 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1539,7 +1540,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.3 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.4 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1726,7 +1727,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v3.5.3</sub></div><!--build v3.5.3-->
+      <div class="logo">LOCK IN<sub>v3.5.4</sub></div><!--build v3.5.4-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1747,6 +1748,7 @@ body[data-cb="trit"]{
           <button class="btn-p" onclick="npKeepLoading()">↺ KEEP LOADING — MAX PACK</button>
           <button class="btn-p" onclick="returnToMenu()">⌂ MAIN MENU</button>
         </div>
+        <button id="maxpack-finish" onclick="npFinish()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
         <div id="coach-shelf" style="
           position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
           font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:.6px;font-weight:bold;
@@ -1911,7 +1913,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.3
+// LOCK IN v3.5.4
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4200,6 +4202,8 @@ function getPPH(){var el=elapsed();return el>0?Math.round(placed/el*3600):0;}
 // checkWin() defined in level system section — uses _LV thresholds in level mode.
 function sealWall(reason){
   if(!hydrationOK())return;
+  if(G.sealed){if(gameMode!=='level'){var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ '+reason;}return;} // v3.5.4 EXPLOIT FIX: seal payout ONCE per wall — re-summoning the menu never re-awards the +2500
+  G.sealed=true;
   if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
   if(typeof playSfx==='function')playSfx('win');
   G.score=(G.score||0)+LOAD_SEALED_BONUS; // v2.1.11 #1 payout
@@ -6743,10 +6747,12 @@ function updateShiftBadge(){
 }
 
 // Override nextTrailer for shift mode
-function npKeepLoading(){var p=document.getElementById('next-popup');if(p)p.classList.remove('vis');} // v3.5.2 dismiss the completion menu to keep filling for max pack
+function npKeepLoading(){if(G)G.maxPack=true;var p=document.getElementById('next-popup');if(p)p.classList.remove('vis');var f=document.getElementById('maxpack-finish');if(f)f.style.display='';} // v3.5.4 keep filling past the seal; FINISH re-opens the menu
+function npFinish(){if(G)G.maxPack=false;var f=document.getElementById('maxpack-finish');if(f)f.style.display='none';var p=document.getElementById('next-popup');if(p)p.classList.add('vis');}
 function nextTrailer(){
   if(typeof playSfx==='function')playSfx('trailer');
   document.getElementById('next-popup').classList.remove('vis');
+  if(G){G.sealed=false;G.maxPack=false;}var _mf=document.getElementById('maxpack-finish');if(_mf)_mf.style.display='none'; // v3.5.4 reset seal/max-pack for the new wall
   S.bestTrailerAvg=Math.max(S.bestTrailerAvg||0,getPPH()); // v2.1.9 best single-trailer rate
   if(gameMode==='shift'){
     // Accumulate session stats
@@ -6978,7 +6984,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.3</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.4</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7344,7 +7350,7 @@ var _LV=null; // current level active config (null = not in a level)
 // ── CHECK WIN — LEVEL MODE ──
 // In level mode, uses _LV thresholds instead of global WIN_H / density 0.35
 function checkWin(){
-  if(!gOver&&!document.getElementById('next-popup').classList.contains('vis')){
+  if(!gOver&&!(G&&G.maxPack)&&!document.getElementById('next-popup').classList.contains('vis')){
     var hp=wallH()/GH;
     var density=countFilled()/(GW*GH);
     var targetH=(_LV&&gameMode==='level')?_LV.winH:WIN_H;
