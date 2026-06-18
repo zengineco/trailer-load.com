@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.2
+   LOCK IN v3.5.3
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.3 - FULLER CHUTE + RENDER-STALL SAFETY. (1) CHUTE renders the FULL 10 pieces (was capped at 8) packed 2-WIDE up the trapezoid instead of single-file up the centre - reads full; bags + broken-smalls pack in. (2) RENDER-STALL: the loop ticked its heartbeat BEFORE drawScene, so if drawScene threw EVERY frame the watchdog saw a healthy heartbeat and the screen sat BLANK while input still worked (gameplay continues, render stops). Now a consecutive render-error streak (>=24 frames) trips a WE'RE SORRY - THE SCREEN STALLED recovery screen with HARD REFRESH instructions, and the error logs to window.__LI_ERR so the cause is named next time. Break-jam works in daily (refillBelt fills the deterministic belt). No scoring change.
    CHANGE LOG v3.5.2 - DAILY BAGS + WALL-COMPLETE MENU. (1) Bags weren't spawning in DAILY (unified spawnBag skips daily) - added a deterministic bag to the daily chute (~1 in 8, same for everyone on the date) via buildDailyPiece. (2) WALL-COMPLETE was a tiny side popup whose POST-SORT REPORT button was UNCLICKABLE (container pointer-events:none, only NEXT TRAILER overrode it). Reworked into a centered COMPLETION MENU - NEXT TRAILER / POST-SORT REPORT / KEEP LOADING (max pack) / MAIN MENU - all clickable, post-sort works WITHOUT advancing (stats preserved). No scoring change.
    CHANGE LOG v3.5.1 - CHUTE FINISH (step 2): FEED UNIFIED. Bags no longer go to a separate SMALLS lane - they RIDE THE CHUTE like any conveyable piece (3x3, 9 cubes, tan SMALLS look). spawnBag now pushes a bag piece onto the belt, so every caller auto-redirects; the SM pie-light is RETIRED (only NC staging remains - only non-conveyables get hand-staged). DOUBLE-CLICK a bag riding the chute to BREAK IT DOWN -> ~9 cubes of gap-fill smalls spill into the chute. Verified: bags in belt, break spills exactly 9 cubes, SM light hidden. Daily keeps its deterministic belt (its bag deferred to a deterministic-stream follow-up). No scoring change.
    CHANGE LOG v3.5.0 - CHUTE FINISH (step 1): BAGS 3x3 + FULLER CHUTE. (1) Bags are now 3x3 / 9 cubes (was 2x2 / 1) - a real bag of smalls. (2) Chute capacity 6 -> 10 visible selectable pieces (BELT_PIECE_COUNT; jam/refill/daily all scale off it) so the chute reads full. Daily belt fills 10 from the same seeded sequence (just more visible). NEXT: bags spawn IN the chute (retire the separate SMALLS lane), bag-breakdown drops smalls into the chute, then place->drop / jam / 179-240 PPH pace.
@@ -1296,7 +1297,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.2</div>
+  <div class="pause-sub">LOCK IN v3.5.3</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1427,7 +1428,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.2 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.3 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1538,7 +1539,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.2 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.3 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1725,7 +1726,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v3.5.2</sub></div><!--build v3.5.2-->
+      <div class="logo">LOCK IN<sub>v3.5.3</sub></div><!--build v3.5.3-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1872,7 +1873,7 @@ body[data-cb="trit"]{
 </div>
 
 <div id="ov-postsort"><div class="ps-card" id="ps-card"></div></div>
-<div id="ov-recover"><div class="rec-card"><div class="rec-icon">⚠</div><div class="rec-title">THE LINE HICCUPED</div><div class="rec-sub">The loader paused and couldn't pick itself back up on its own. Your session is safe — resume to keep loading, jump back to mode select, or fully reload the yard.</div><div class="rec-btns"><button class="btn-p" onclick="recoverResume()">▶ RESUME</button><button class="btn-p" onclick="recoverMenu()">CHOOSE MODE</button><button class="btn-p" onclick="location.reload()">⟳ RELOAD</button></div><div class="rec-dbg" id="rec-dbg"></div></div></div>
+<div id="ov-recover"><div class="rec-card"><div class="rec-icon">⚠</div><div class="rec-title">WE'RE SORRY — THE SCREEN STALLED</div><div class="rec-sub">The display stopped updating. Your session is safe. Tap RESUME to retry — and if it stays stuck, do a HARD REFRESH (Ctrl+Shift+R, or Cmd+Shift+R on Mac) for a clean reset.</div><div class="rec-btns"><button class="btn-p" onclick="recoverResume()">▶ RESUME</button><button class="btn-p" onclick="recoverMenu()">CHOOSE MODE</button><button class="btn-p" onclick="location.reload()">⟳ HARD REFRESH</button></div><div class="rec-dbg" id="rec-dbg"></div></div></div>
 <div id="ov-profile"><div class="pf-card"><div class="pf-top"><div class="pf-title" id="pf-title">PROFILE</div><button class="pf-x" onclick="closeProfile()">✕</button></div><div class="pf-body" id="pf-body"></div></div></div>
 
 <div id="zw">© 2026</div>
@@ -1910,7 +1911,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.2
+// LOCK IN v3.5.3
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2513,6 +2514,7 @@ var BELT_FREIGHT_HITS=[]; // v2.10.1 clickable belt-freight hit rects (screen co
 var selNC=-1, selBag=-1;
 var gOver=false, paused=false;
 var _loopErrN=0; // v2.4.0 caught-frame-error counter (throttles logging)
+var _loopErrStreak=0; // v3.5.3 CONSECUTIVE render-error streak — trips the recovery if drawScene throws every frame (blank screen while input still works)
 var _hb=0,_hbLast=-1,_wdog=null,_stallShown=false,_reviveN=0,_recoverShown=false; // v2.4.6 loop watchdog / v2.4.10 cap+recover
 var placed=0, startT=null, lastLoopT=0;
 var pphLowSec=0, lgDangerSec=0, winHintT=0;
@@ -4309,8 +4311,11 @@ function loop(ts){
         else if(_M.type==='trainer')tickTrainer();
       }
     }
+    _loopErrStreak=0; // v3.5.3 a clean frame resets the render-error streak
   }catch(_e){
-    _loopErrN++;
+    _loopErrN++;_loopErrStreak++;
+    // v3.5.3 persistent render failure (drawScene throws every frame -> blank screen, input still alive): trip the recovery so it can't sit silently blank
+    if(_loopErrStreak>=24&&!_recoverShown){_recoverShown=true;if(typeof showRecover==='function')showRecover('RENDER STALLED x'+_loopErrStreak+' :: '+((_e&&_e.message)||(''+_e)));}
     if(_loopErrN<=5){try{console.error('[LOCK IN] frame error #'+_loopErrN+':',_e);}catch(_x){}}
     try{window.__LI_ERR={n:_loopErrN,msg:(_e&&_e.message)||(''+_e),stack:(_e&&_e.stack)||'',mode:gameMode,placed:placed};}catch(_x2){}
     try{liShowErr('frame',_e);}catch(_x3){}
@@ -4645,10 +4650,17 @@ function drawBeltFreight(c,ts){
   if(typeof G==='undefined'||!G.belt||!G.belt.length)return;
   var nW=W*.30,fW=W*.13,nX=W/2,fX=VPX,nY=DB,fY=NW.bl.y+(NW.br.y-NW.bl.y)*.5;
   var nL=nX-nW/2,nR=nX+nW/2,fL=fX-fW/2,fR=fX+fW/2;
-  var N=Math.min(G.belt.length,8); // v3.0.1 chute pools more pieces
+  var N=Math.min(G.belt.length,BELT_PIECE_COUNT); // v3.5.3 render the FULL chute (was capped at 8)
   if(N<1)return;
-  var T0=0.05,T1=0.84,i,pos=[],slotGap=(N>1)?Math.abs((fY-nY)*(T1-T0)/(N-1)):Math.abs(fY-nY)*0.3;
-  for(i=0;i<N;i++){var tt=(N>1)?(T0+(T1-T0)*(i/(N-1))):T0;pos.push({t:tt,rx:nX+(fX-nX)*tt,ry:nY+(fY-nY)*tt,rhw:(nW/2)+((fW/2)-(nW/2))*tt});}
+  // v3.5.3 FULLER CHUTE: pack pieces 2-wide up the trapezoid (was single-file up the centre)
+  var T0=0.04,T1=0.88,i,pos=[],rows=Math.ceil(N/2),slotGap=(rows>1)?Math.abs((fY-nY)*(T1-T0)/(rows-1)):Math.abs(fY-nY)*0.4;
+  for(i=0;i<N;i++){
+    var _row=Math.floor(i/2),_col=i%2,_rp=Math.min(2,N-_row*2);
+    var _tt=(rows>1)?(T0+(T1-T0)*(_row/(rows-1))):T0;
+    var _cx=nX+(fX-nX)*_tt,_rhw=(nW/2)+((fW/2)-(nW/2))*_tt;
+    var _xo=(_rp===1)?0:(_col===0?-_rhw*0.5:_rhw*0.5);
+    pos.push({t:_tt,rx:_cx+_xo,ry:nY+(fY-nY)*_tt,rhw:_rhw,rp:_rp});
+  }
   c.save();
   c.beginPath();c.moveTo(nL,nY);c.lineTo(nR,nY);c.lineTo(fR,fY);c.lineTo(fL,fY);c.closePath();c.clip();
   var piece,P,ar,bw,bh,maxH,maxW,bx,by,_flb,_ffs;
@@ -4657,7 +4669,7 @@ function drawBeltFreight(c,ts){
     P=pos[i];
     // v3.0.1 TRUE-ASPECT box: a 6x6 stays square, a 3x4 stays portrait, a 1x5 stays a tall box - never a flat bar
     ar=piece.h/Math.max(1,piece.w);
-    maxH=slotGap*0.90; maxW=P.rhw*1.75;
+    maxH=slotGap*1.02; maxW=(P.rp===2)?P.rhw*0.9:P.rhw*1.7; // v3.5.3 paired -> ~half-row width so two fit side by side
     bw=maxW; bh=bw*ar;
     if(bh>maxH){bh=maxH;bw=bh/ar;}
     if(bw<6)bw=6; if(bh<6)bh=6;
@@ -6966,7 +6978,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.2</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.3</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
