@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.7
+   LOCK IN v3.5.8
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.8 - ONE COLUMN, LEGIBLE BOARD, NO DEAD PANEL. Removed the right LIVE FLOOR column entirely and the in-game header strip (logo/version slop) - the play window now spans the full width. Scoreboard rebuilt in order MODE | TRAILER | SCORE | LOAD RATE | BALANCE | ELAPSED | WALL HEIGHT | PACK | PLACED, big legible terminal cells (no tiny cram); CUBES renamed SCORE, PPH renamed LOAD RATE; dropped GRADE/PEAK/PCS/SHLF from the bar. PAUSE folded into the scoreboard. DISPATCH moved to a single legible line in the footer directly above ROT. Hidden carrier spans keep every legacy updater null-safe. KNOWN/NEXT: the trailer renders portrait so side margins are wide - canvas-size pass is its own next iteration. No scoring change.
    CHANGE LOG v3.5.7 - PERFORMANCE ON THE BOARD, COACH OFF THE FLOOR. The scoreboard no longer shows STRUCT/BALANCE/DENSITY/SUPPORT vitals - those slots now read the four PERFORMANCE categories: PPH, PEAK PPH, PCS/SEC, SHLF/MIN (moved up from the right panel). COACH is retired from in-game entirely: the right-panel COACH section and the floating coach-shelf tip over the wall are both gone; the COACH readout now lives ONLY in the pause menu (coach barks may still hit the DISPATCH feed). Vitals updater kept harmless via hidden carrier spans. No scoring change.
    CHANGE LOG v3.5.6 - TOP SCOREBOARD (the side panel is gone). The big left OPS-ASSESSMENT column is REMOVED and reflowed into a full-width TOP SCOREBOARD BAR (CSS grid: bar on top, scene + right panel below) - CUBES, GRADE, the STRUCT/BALANCE/DENSITY/SUPPORT vitals, WALL HT, BALANCE(COG), PACK, PLACED, ELAPSED, TRAILER. The scene reclaimed the left panel width (~640 -> 894px). All stat IDs preserved so updateHUD feeds the bar unchanged. Secondary counts (VOIDS/SHELVES/DOUBLE/SP) + hydration are hidden from the bar (-> pause next). Placement + square cells verified at the new width. NEXT: ELAPSED hero size, counts + coach into pause, PPH onto the bar. No scoring change.
    CHANGE LOG v3.5.5 - ONE MESSAGE HOME (DISPATCH feed). All transient on-screen text - banners, the LOCKED-IN/double-lock flash, commentary, +cube pops, warnings - now routes to a SINGLE top-right DISPATCH feed instead of rendering over the wall mid-drop. pushMsg() is the one sink; showBanner / showPop / showCmtOverlay / fireLockinFlash all feed it (so all 57+ call sites auto-route, no per-call edits). Color-coded (green ok / amber warn / red danger), newest on top, auto-fade. The LOCKED-IN particle burst + shake + SFX stay as the juice - only the center TEXT moved. Verified: 5 channels -> feed, zero text over the wall. Step 1 of the HUD overhaul (scoreboard + coach-to-pause next). No scoring change.
@@ -214,29 +215,32 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   font-family:'Barlow Condensed',sans-serif;overflow:hidden;
   user-select:none;-webkit-user-select:none;}
 
-#root{display:grid;grid-template-columns:1fr var(--panel-right-w);grid-template-rows:auto minmax(0,1fr);height:100dvh;max-width:1120px;margin:0 auto;box-shadow:0 0 60px rgba(20,12,4,.20),0 0 0 1px rgba(70,50,22,.10);}
+/* v3.5.8: ONE column — right panel removed, play window gets the full width */
+#root{display:grid;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);height:100dvh;max-width:1120px;margin:0 auto;box-shadow:0 0 60px rgba(20,12,4,.20),0 0 0 1px rgba(70,50,22,.10);}
 #main-col{grid-column:1;grid-row:2;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;}
 
-/* ── LEFT STATS PANEL ── */
-/* v3.5.6 TOP SCOREBOARD BAR (was the left column) — boring-terminal readout strip */
+/* ── TOP SCOREBOARD ── */
+/* v3.5.8 boring-terminal readout strip — legible cells, no tiny cram */
 #stats-panel{grid-column:1 / -1;grid-row:1;background:var(--bg2);
-  border-bottom:2px solid var(--border2);display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:0 18px;padding:4px 14px;
-  position:relative;overflow:visible;z-index:8;}
+  border-bottom:2px solid var(--border2);display:flex;flex-direction:row;align-items:stretch;
+  gap:0;padding:0;position:relative;overflow:hidden;z-index:8;}
 #stats-panel::before{display:none;}
-#stats-panel .sp-hdr,#stats-panel .sp-water,#stats-panel #fp-counts{display:none;} /* hdr + hydration + secondary counts off the bar (counts -> pause) */
-#stats-panel .sp-row{display:flex;flex-direction:row;gap:18px;margin:0;}
-#stats-panel .sp-block{padding:1px 0;border-bottom:none;margin:0;}
-#stats-panel #fp-subs{display:flex;flex-direction:row;gap:12px;padding:0;border:0;margin:0;}
-#stats-panel .sp-lbl{margin-bottom:0;font-size:9px;letter-spacing:.5px;white-space:nowrap;}
-#stats-panel .sp-big{font-size:27px;line-height:1;}
-#stats-panel .sp-med{font-size:18px;line-height:1;}
-#stats-panel .sp-bar{width:66px;height:5px;}
-#stats-panel #sp-cog-wrap{width:78px;}
-#stats-panel .fp-sg{display:flex;flex-direction:column;align-items:flex-start;gap:1px;margin:0;}
-#stats-panel .fp-sg-lbl{font-size:9px;}
-#stats-panel .fp-sg-bar{width:50px;height:5px;}
-#stats-panel .fp-sg-val{font-size:11px;}
-#stats-panel #sp-time{font-size:30px;color:var(--acc-bright);letter-spacing:1px;} /* ELAPSED = hero */
+.sb-cell{display:flex;flex-direction:column;justify-content:center;gap:3px;
+  padding:7px 15px;border-right:1px solid var(--border);min-width:0;}
+.sb-cell .sp-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
+  color:var(--t2);text-transform:uppercase;font-weight:bold;margin:0;white-space:nowrap;line-height:1;}
+.sb-cell .sp-med{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:bold;color:var(--t1);line-height:1;display:block;white-space:nowrap;}
+.sb-cell .sp-big{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:1px;color:var(--acc);line-height:.85;display:block;}
+#stats-panel #sp-time{color:var(--acc-bright);letter-spacing:1px;}   /* ELAPSED — hero */
+#stats-panel #sp-score{color:var(--acc);}
+.sb-cog{min-width:118px;}
+#stats-panel #sp-cog-wrap{width:100%;min-width:92px;margin-top:4px;}
+#stats-panel #sp-cog-s{font-size:13px;margin-top:3px;}
+#stats-panel .sp-bar{width:100%;min-width:74px;height:6px;margin-top:5px;}
+#sb-pause{margin-left:auto;align-self:center;margin-right:14px;background:transparent;
+  border:1px solid var(--border2);color:var(--t2);font-family:'Bebas Neue',cursive;
+  font-size:19px;letter-spacing:2px;padding:7px 17px;border-radius:4px;cursor:pointer;flex:none;}
+#sb-pause:hover{border-color:var(--acc);color:var(--acc);}
 .sp-hdr{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;
   color:var(--acc);text-transform:uppercase;text-align:center;
   padding:8px 4px 6px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,.2);}
@@ -1166,6 +1170,12 @@ body[data-cb="trit"]{
 .msg-line.msg-warn{border-left-color:var(--warn);color:#e8c890;}
 .msg-line.msg-danger{border-left-color:var(--danger);color:#f0a890;}
 .msg-line.msg-out{opacity:0;transform:translateX(10px);transition:opacity .5s ease,transform .5s ease;}
+/* v3.5.8 DISPATCH moved to the footer — one legible horizontal line above the controls */
+#dispatch-bar{display:flex;align-items:center;gap:10px;padding:4px 6px 5px;border-bottom:1px solid var(--border);min-height:26px;}
+.dispatch-tag{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1.5px;color:var(--acc);font-weight:bold;flex:none;white-space:nowrap;}
+#footer #msg-feed{flex:1;flex-direction:row;align-items:center;gap:10px;min-height:0;height:24px;overflow:hidden;}
+#footer .msg-line{font-size:13px;line-height:1.1;padding:3px 9px;white-space:nowrap;flex:none;}
+#footer .msg-line:not(:first-child){opacity:.45;}   /* newest message (leftmost) stays brightest */
 @keyframes msgIn{from{opacity:0;transform:translateX(12px);}to{opacity:1;transform:translateX(0);}}
 #nextup-list{display:flex;flex-direction:column;gap:3px;}
 .nu-row{display:flex;align-items:baseline;gap:5px;font-family:'Share Tech Mono',monospace;}
@@ -1329,7 +1339,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.7</div>
+  <div class="pause-sub">LOCK IN v3.5.8</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1466,7 +1476,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.7 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.8 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1577,7 +1587,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.7 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.8 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1716,71 +1726,34 @@ body[data-cb="trit"]{
 
 <div id="root">
 
-  <!-- LEFT STATS PANEL -->
+  <!-- TOP SCOREBOARD — v3.5.8 order: MODE · TRAILER · SCORE · LOAD RATE · BALANCE · ELAPSED · WALL HEIGHT · PACK · PLACED -->
   <div id="stats-panel">
-    <div class="sp-hdr">◈ OPS · ASSESSMENT</div>
-    <div class="sp-row">
-      <div class="sp-half sp-block"><div class="sp-lbl">CUBES</div><span class="sp-big" id="sp-score">0</span></div>
-      <div class="sp-half sp-block"><div class="sp-lbl">GRADE</div><span class="sp-big" id="fp-grade" style="color:var(--ok)">A</span></div>
-    </div>
-    <!-- v3.5.7: the four PERFORMANCE categories live on the scoreboard now (vitals retired from the bar) -->
-    <div class="sp-row">
-      <div class="sp-half sp-block"><div class="sp-lbl">PPH</div><span class="sp-med" id="perf-pph">—</span></div>
-      <div class="sp-half sp-block"><div class="sp-lbl">PEAK PPH</div><span class="sp-med" id="perf-peak">0</span></div>
-    </div>
-    <div class="sp-row">
-      <div class="sp-half sp-block"><div class="sp-lbl">PCS / SEC</div><span class="sp-med" id="perf-pcs">0.0</span></div>
-      <div class="sp-half sp-block"><div class="sp-lbl">SHLF / MIN</div><span class="sp-med" id="perf-spm">0.0</span></div>
-    </div>
-    <!-- hidden carriers so the vitals updater (struct/bal/dens/sup) keeps writing without erroring -->
-    <div id="fp-subs" style="display:none">
-      <span id="fp-sg-struct"></span><span id="fp-sg-struct-v"></span>
-      <span id="fp-sg-bal"></span><span id="fp-sg-bal-v"></span>
-      <span id="fp-sg-dens"></span><span id="fp-sg-dens-v"></span>
-      <span id="fp-sg-sup"></span><span id="fp-sg-sup-v"></span>
-    </div>
-    <div class="sp-block">
-      <div class="sp-lbl">WALL HT</div>
-      <span class="sp-med" id="sp-h-val">0%</span>
-      <div class="sp-bar"><div class="sp-bar-fill" id="sp-h-fill" style="width:0%"></div></div>
-    </div>
-    <div class="sp-block">
-      <div class="sp-lbl">BALANCE (COG)</div>
-      <div id="sp-cog-wrap"><div id="sp-cog-g"></div><div id="sp-cog-d"></div></div>
-      <span id="sp-cog-s" style="color:var(--ok)">STABLE</span>
-    </div>
-    <div class="sp-row">
-      <div class="sp-half sp-block"><div class="sp-lbl">PACK</div><span class="sp-med" id="sp-eff">0%</span></div>
-      <div class="sp-half sp-block"><div class="sp-lbl">PLACED</div><span class="sp-med" id="sp-placed">0</span></div>
-    </div>
-    <div id="fp-counts">
-      <div class="fp-ct"><div class="fp-ct-lbl">VOIDS</div><div class="fp-ct-val" id="fp-voids">0</div></div>
-      <div class="fp-ct"><div class="fp-ct-lbl">SHELVES LOCKED</div><div class="fp-ct-val ok" id="fp-shelves">0</div></div>
-      <div class="fp-ct"><div class="fp-ct-lbl">DOUBLE LOCKS</div><div class="fp-ct-val ok" id="fp-bulkheads">0</div></div>
-      <div class="fp-ct"><div class="fp-ct-lbl">SP ON WALL</div><div class="fp-ct-val" id="fp-nc">0</div></div>
-      <div class="fp-ct"><div class="fp-ct-lbl">CRUNCHES</div><div class="fp-ct-val" id="fp-crunches">0</div></div>
-    </div>
-    <div class="sp-block sp-water">
-      <button id="water-btn" class="water-btn" onclick="takeDrink()">💧 WATER</button>
-      <div class="water-meter"><div id="water-fill" class="water-fill"></div></div>
-      <div class="water-lbl" id="water-lbl">HYDRATION</div>
-    </div>
-    <div class="sp-row" style="margin-top:auto;">
-      <div class="sp-half sp-block"><div class="sp-lbl">ELAPSED</div><span class="sp-med" id="sp-time">00:00</span></div>
-      <div class="sp-half sp-block"><div class="sp-lbl">TRAILER</div><span class="sp-med" id="sp-truck">#1</span></div>
+    <div class="sb-cell"><div class="sp-lbl">MODE</div><span class="sp-med" id="sp-mode">SHIFT</span></div>
+    <div class="sb-cell"><div class="sp-lbl">TRAILER</div><span class="sp-med" id="sp-truck">#1</span></div>
+    <div class="sb-cell"><div class="sp-lbl">SCORE</div><span class="sp-big" id="sp-score">0</span></div>
+    <div class="sb-cell"><div class="sp-lbl">LOAD RATE</div><span class="sp-med" id="sp-pph">—</span></div>
+    <div class="sb-cell sb-cog"><div class="sp-lbl">BALANCE</div><div id="sp-cog-wrap"><div id="sp-cog-g"></div><div id="sp-cog-d"></div></div><span id="sp-cog-s" style="color:var(--ok)">STABLE</span></div>
+    <div class="sb-cell"><div class="sp-lbl">ELAPSED</div><span class="sp-big" id="sp-time">00:00</span></div>
+    <div class="sb-cell"><div class="sp-lbl">WALL HEIGHT</div><span class="sp-med" id="sp-h-val">0%</span><div class="sp-bar"><div class="sp-bar-fill" id="sp-h-fill" style="width:0%"></div></div></div>
+    <div class="sb-cell"><div class="sp-lbl">PACK</div><span class="sp-med" id="sp-eff">0%</span></div>
+    <div class="sb-cell"><div class="sp-lbl">PLACED</div><span class="sp-med" id="sp-placed">0</span></div>
+    <button id="sb-pause" onclick="togglePause()">⏸ PAUSE</button>
+    <!-- hidden carriers: legacy updaters keep writing without null-crashing (data lives in pause / post-sort) -->
+    <div style="display:none" aria-hidden="true">
+      <span id="fp-grade"></span>
+      <span id="fp-sg-struct"></span><span id="fp-sg-struct-v"></span><span id="fp-sg-bal"></span><span id="fp-sg-bal-v"></span><span id="fp-sg-dens"></span><span id="fp-sg-dens-v"></span><span id="fp-sg-sup"></span><span id="fp-sg-sup-v"></span>
+      <span id="fp-voids"></span><span id="fp-shelves"></span><span id="fp-bulkheads"></span><span id="fp-nc"></span><span id="fp-crunches"></span>
+      <button id="water-btn"></button><span id="water-fill"></span><span id="water-lbl"></span>
+      <span id="perf-pph"></span><span id="perf-peak"></span><span id="perf-pcs"></span><span id="perf-spm"></span>
     </div>
   </div>
 
   <!-- MAIN COLUMN -->
   <div id="main-col">
-    <div id="hdr">
-      <div class="logo">LOCK IN<sub>v3.5.7</sub></div><!--build v3.5.7-->
-      <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span id="shift-badge"></span>
-        <button id="pause-btn" onclick="togglePause()">⏸ PAUSE</button>
-      </div>
-    </div>
+    <!-- v3.5.8: in-game header strip ("pause shelf") removed — logo/version slop gone, PAUSE folded into the scoreboard, height given to the play window. Hidden carriers keep legacy code safe. -->
+    <span id="shift-badge" style="display:none"></span>
+    <span id="conv-lbl-txt" style="display:none"></span>
+    <button id="pause-btn" onclick="togglePause()" style="display:none"></button>
     <div id="panic-wrap">
       <div id="panic-bg"><div id="panic-fill" style="width:100%"></div></div>
       <div id="panic-lbl">DISPATCH IN —s</div>
@@ -1800,6 +1773,11 @@ body[data-cb="trit"]{
       </div>
     </div>
     <div id="footer">
+      <!-- v3.5.8: DISPATCH lives here now — one legible line directly above the controls (was a separate right column) -->
+      <div id="dispatch-bar">
+        <span class="dispatch-tag">▸ DISPATCH</span>
+        <div id="msg-feed"></div>
+      </div>
       <div id="conv-header">
         <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">⚡ BREAK JAM</button></div>
@@ -1817,26 +1795,9 @@ body[data-cb="trit"]{
   <!-- v3.4.11 NC/SMALLS staging popup (selector replaces the floor-corner slots) -->
   <div id="ov-staging"><div class="stg-wheel"><div class="stg-tiles" id="stg-tiles"></div></div></div>
 
-  <!-- RIGHT FEEDBACK PANEL -->
-  <div id="fb-panel">
-    <div class="fp-hdr">◈ LIVE FLOOR</div>
-    <div class="rp-sec" style="padding-bottom:7px;">
-      <div class="rp-sec-t">▸ DISPATCH</div>
-      <div id="msg-feed"></div>
-    </div>
-    <!-- v3.5.7: PERFORMANCE moved to the top scoreboard -->
-
-    <div class="rp-sec" style="display:none">
-      <div class="rp-sec-t">▸ SAFETY</div>
-      <div class="safety-row">
-        <span id="safety-dot"></span>
-        <div class="safety-txt">
-          <div><b id="safety-inc">0</b> <span class="safety-l">INCIDENTS</span></div>
-          <div><b id="safety-haz">0</b> <span class="safety-l">HAZ FLAGS</span></div>
-        </div>
-      </div>
-    </div>
-    <!-- v3.5.7: COACH retired from in-game — now lives only in the pause menu -->
+  <!-- v3.5.8: RIGHT FEEDBACK PANEL removed entirely — DISPATCH moved into the footer, play window gets the width back. Hidden safety carriers keep the updater null-safe. -->
+  <div style="display:none" aria-hidden="true">
+    <span id="safety-dot"></span><b id="safety-inc">0</b><b id="safety-haz">0</b>
   </div>
 
 </div>
@@ -1946,7 +1907,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.7
+// LOCK IN v3.5.8
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -5439,6 +5400,15 @@ function updateHUD(){
 
   var scoreEl=document.getElementById('sp-score');
   if(scoreEl){scoreEl.textContent=G.score||0;scoreEl.className='sp-big';}
+  // v3.5.8: MODE cell on the scoreboard
+  var _gm=(typeof gameMode!=='undefined')?gameMode:'shift';
+  var _modeLbl=_gm==='shift'?('SHIFT · W'+((typeof shiftState!=='undefined'&&shiftState.walls)||1))
+    :_gm==='daily'?'DAILY'
+    :_gm==='level'?'LEVELS'
+    :_gm==='practice'?'PRACTICE'
+    :_gm==='training'?'TRAINING'
+    :(''+_gm).toUpperCase();
+  setEl('sp-mode',_modeLbl);
   updateWaterHUD();
   var pphEl=document.getElementById('sp-pph');
   if(pphEl){
@@ -7008,7 +6978,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.7</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.8</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
