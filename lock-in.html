@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.6
+   LOCK IN v3.5.7
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.7 - PERFORMANCE ON THE BOARD, COACH OFF THE FLOOR. The scoreboard no longer shows STRUCT/BALANCE/DENSITY/SUPPORT vitals - those slots now read the four PERFORMANCE categories: PPH, PEAK PPH, PCS/SEC, SHLF/MIN (moved up from the right panel). COACH is retired from in-game entirely: the right-panel COACH section and the floating coach-shelf tip over the wall are both gone; the COACH readout now lives ONLY in the pause menu (coach barks may still hit the DISPATCH feed). Vitals updater kept harmless via hidden carrier spans. No scoring change.
    CHANGE LOG v3.5.6 - TOP SCOREBOARD (the side panel is gone). The big left OPS-ASSESSMENT column is REMOVED and reflowed into a full-width TOP SCOREBOARD BAR (CSS grid: bar on top, scene + right panel below) - CUBES, GRADE, the STRUCT/BALANCE/DENSITY/SUPPORT vitals, WALL HT, BALANCE(COG), PACK, PLACED, ELAPSED, TRAILER. The scene reclaimed the left panel width (~640 -> 894px). All stat IDs preserved so updateHUD feeds the bar unchanged. Secondary counts (VOIDS/SHELVES/DOUBLE/SP) + hydration are hidden from the bar (-> pause next). Placement + square cells verified at the new width. NEXT: ELAPSED hero size, counts + coach into pause, PPH onto the bar. No scoring change.
    CHANGE LOG v3.5.5 - ONE MESSAGE HOME (DISPATCH feed). All transient on-screen text - banners, the LOCKED-IN/double-lock flash, commentary, +cube pops, warnings - now routes to a SINGLE top-right DISPATCH feed instead of rendering over the wall mid-drop. pushMsg() is the one sink; showBanner / showPop / showCmtOverlay / fireLockinFlash all feed it (so all 57+ call sites auto-route, no per-call edits). Color-coded (green ok / amber warn / red danger), newest on top, auto-fade. The LOCKED-IN particle burst + shake + SFX stay as the juice - only the center TEXT moved. Verified: 5 channels -> feed, zero text over the wall. Step 1 of the HUD overhaul (scoreboard + coach-to-pause next). No scoring change.
    CHANGE LOG v3.5.4 - SEAL-FARM EXPLOIT FIX (Gelato's find). At wall-complete, KEEP LOADING hid the menu, then checkWin re-fired sealWall and RE-AWARDED the +2500 LOAD SEALED bonus every interval = free cubes for sitting on the menu. FIX: seal payout is awarded ONCE per wall (G.sealed guard); re-summoning the menu never re-awards. KEEP LOADING now works - it sets G.maxPack (suppresses auto-reseal) so you keep placing for max cubes, with a FINISH TRAILER button to re-open the menu; nextTrailer resets the flags. Verified: bonus once, re-seals add 0, FINISH re-opens. No other scoring change.
@@ -880,6 +881,11 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pmb-theme:hover{border-color:var(--t2);color:var(--t1);}
 .pause-hint{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;
   color:var(--t3);text-align:center;margin-top:4px;}
+/* v3.5.7: COACH card inside the pause overlay (overrides the old right-panel flex:1 layout) */
+#ov-pause #fp-tip{flex:none;width:100%;max-width:340px;margin-top:14px;padding:12px 16px;
+  background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--acc);
+  border-radius:4px;display:flex;flex-direction:column;gap:5px;text-align:left;}
+#ov-pause .fp-tip-hdr{margin-bottom:2px;}
 
 /* ── PAUSE BUTTON ── */
 #pause-btn{background:rgba(200,121,30,.1);border:1px solid rgba(200,121,30,.25);
@@ -1323,7 +1329,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.6</div>
+  <div class="pause-sub">LOCK IN v3.5.7</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1331,6 +1337,12 @@ body[data-cb="trit"]{
     <button class="pmb" onclick="pauseToMenu()">⌂ MAIN MENU — SWITCH MODE</button>
     <button class="pmb" onclick="clockOut()">⏏ CLOCK OUT — END &amp; SEE STATS</button>
     <button class="pmb pmb-restart" onclick="pauseRestart()">↺ RESTART</button>
+  </div>
+  <!-- v3.5.7: COACH lives here now — read it on a break, not over the wall -->
+  <div id="fp-tip">
+    <div class="fp-tip-hdr">▸ COACH</div>
+    <div id="fp-tip-h">Load your floor first.</div>
+    <div id="fp-tip-s">Place SP freight along the floor before stacking regular freight — it anchors your wall.</div>
   </div>
   <div class="pause-hint">ESC or ⏸ to resume · R to rotate pieces</div>
 </div>
@@ -1454,7 +1466,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.6 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.7 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1565,7 +1577,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.6 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.7 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1711,11 +1723,21 @@ body[data-cb="trit"]{
       <div class="sp-half sp-block"><div class="sp-lbl">CUBES</div><span class="sp-big" id="sp-score">0</span></div>
       <div class="sp-half sp-block"><div class="sp-lbl">GRADE</div><span class="sp-big" id="fp-grade" style="color:var(--ok)">A</span></div>
     </div>
-    <div id="fp-subs">
-      <div class="fp-sg"><div class="fp-sg-lbl">STRUCT</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-struct" style="width:100%;background:var(--ok)"></div></div><div class="fp-sg-val ok" id="fp-sg-struct-v">100</div></div>
-      <div class="fp-sg"><div class="fp-sg-lbl">BALANCE</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-bal" style="width:100%;background:var(--ok)"></div></div><div class="fp-sg-val ok" id="fp-sg-bal-v">100</div></div>
-      <div class="fp-sg"><div class="fp-sg-lbl">DENSITY</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-dens" style="width:0%;background:var(--t3)"></div></div><div class="fp-sg-val" id="fp-sg-dens-v">0</div></div>
-      <div class="fp-sg"><div class="fp-sg-lbl">SUPPORT</div><div class="fp-sg-bar"><div class="fp-sg-fill" id="fp-sg-sup" style="width:100%;background:var(--ok)"></div></div><div class="fp-sg-val ok" id="fp-sg-sup-v">100</div></div>
+    <!-- v3.5.7: the four PERFORMANCE categories live on the scoreboard now (vitals retired from the bar) -->
+    <div class="sp-row">
+      <div class="sp-half sp-block"><div class="sp-lbl">PPH</div><span class="sp-med" id="perf-pph">—</span></div>
+      <div class="sp-half sp-block"><div class="sp-lbl">PEAK PPH</div><span class="sp-med" id="perf-peak">0</span></div>
+    </div>
+    <div class="sp-row">
+      <div class="sp-half sp-block"><div class="sp-lbl">PCS / SEC</div><span class="sp-med" id="perf-pcs">0.0</span></div>
+      <div class="sp-half sp-block"><div class="sp-lbl">SHLF / MIN</div><span class="sp-med" id="perf-spm">0.0</span></div>
+    </div>
+    <!-- hidden carriers so the vitals updater (struct/bal/dens/sup) keeps writing without erroring -->
+    <div id="fp-subs" style="display:none">
+      <span id="fp-sg-struct"></span><span id="fp-sg-struct-v"></span>
+      <span id="fp-sg-bal"></span><span id="fp-sg-bal-v"></span>
+      <span id="fp-sg-dens"></span><span id="fp-sg-dens-v"></span>
+      <span id="fp-sg-sup"></span><span id="fp-sg-sup-v"></span>
     </div>
     <div class="sp-block">
       <div class="sp-lbl">WALL HT</div>
@@ -1752,7 +1774,7 @@ body[data-cb="trit"]{
   <!-- MAIN COLUMN -->
   <div id="main-col">
     <div id="hdr">
-      <div class="logo">LOCK IN<sub>v3.5.6</sub></div><!--build v3.5.6-->
+      <div class="logo">LOCK IN<sub>v3.5.7</sub></div><!--build v3.5.7-->
       <div class="hdr-mid" id="conv-lbl-txt" style="display:none"></div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="shift-badge"></span>
@@ -1774,14 +1796,7 @@ body[data-cb="trit"]{
           <button class="btn-p" onclick="returnToMenu()">⌂ MAIN MENU</button>
         </div>
         <button id="maxpack-finish" onclick="npFinish()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
-        <div id="coach-shelf" style="
-          position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-          font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:.6px;font-weight:bold;
-          color:rgba(232,158,52,.98);background:rgba(4,3,2,.9);
-          border:1px solid rgba(200,121,30,.22);border-radius:3px;
-          padding:4px 12px;pointer-events:none;z-index:10;
-          text-align:center;white-space:nowrap;transition:opacity .5s;margin-bottom:52px;">
-          💡 BUILD FLOOR SHELF WITH SP'S FIRST — SETS THE FOUNDATION</div>
+        <!-- v3.5.7: floating in-game coach tip removed — coach is pause-only now -->
       </div>
     </div>
     <div id="footer">
@@ -1809,15 +1824,8 @@ body[data-cb="trit"]{
       <div class="rp-sec-t">▸ DISPATCH</div>
       <div id="msg-feed"></div>
     </div>
-    <div class="rp-sec">
-      <div class="rp-sec-t">▸ PERFORMANCE</div>
-      <div class="perf-grid">
-        <div class="perf-cell"><span class="perf-v" id="perf-pph">—</span><span class="perf-l">PPH</span></div>
-        <div class="perf-cell"><span class="perf-v" id="perf-peak">0</span><span class="perf-l">PEAK</span></div>
-        <div class="perf-cell"><span class="perf-v" id="perf-pcs">0.0</span><span class="perf-l">PCS / SEC</span></div>
-        <div class="perf-cell"><span class="perf-v" id="perf-spm">0.0</span><span class="perf-l">SHLF / MIN</span></div>
-      </div>
-    </div>
+    <!-- v3.5.7: PERFORMANCE moved to the top scoreboard -->
+
     <div class="rp-sec" style="display:none">
       <div class="rp-sec-t">▸ SAFETY</div>
       <div class="safety-row">
@@ -1828,11 +1836,7 @@ body[data-cb="trit"]{
         </div>
       </div>
     </div>
-    <div id="fp-tip">
-      <div class="fp-tip-hdr">▸ COACH</div>
-      <div id="fp-tip-h">Load your floor first.</div>
-      <div id="fp-tip-s">Place SP freight along the floor before stacking regular freight — it anchors your wall.</div>
-    </div>
+    <!-- v3.5.7: COACH retired from in-game — now lives only in the pause menu -->
   </div>
 
 </div>
@@ -1942,7 +1946,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.6
+// LOCK IN v3.5.7
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7004,7 +7008,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.6</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.7</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
