@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.8
+   LOCK IN v3.5.9
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.9 - NESTED-SMALLS COUNT FIX. tryNest() (seating a small/bag into a placed tire hollow) only incremented S.nests, so every nested small was invisible to the post-sort report throughput + smalls totals. Now a nest also bumps placed, S.totalPieces and S.bagsPlaced -> Pieces, PPH, Pieces/sec, Avg pieces/wall, and Smalls-utility all count nested smalls. Cube-fill % intentionally unchanged (a nest reclaims dead air inside an already-filled grid cell). No layout change.
    CHANGE LOG v3.5.8 - ONE COLUMN, LEGIBLE BOARD, NO DEAD PANEL. Removed the right LIVE FLOOR column entirely and the in-game header strip (logo/version slop) - the play window now spans the full width. Scoreboard rebuilt in order MODE | TRAILER | SCORE | LOAD RATE | BALANCE | ELAPSED | WALL HEIGHT | PACK | PLACED, big legible terminal cells (no tiny cram); CUBES renamed SCORE, PPH renamed LOAD RATE; dropped GRADE/PEAK/PCS/SHLF from the bar. PAUSE folded into the scoreboard. DISPATCH moved to a single legible line in the footer directly above ROT. Hidden carrier spans keep every legacy updater null-safe. KNOWN/NEXT: the trailer renders portrait so side margins are wide - canvas-size pass is its own next iteration. No scoring change.
    CHANGE LOG v3.5.7 - PERFORMANCE ON THE BOARD, COACH OFF THE FLOOR. The scoreboard no longer shows STRUCT/BALANCE/DENSITY/SUPPORT vitals - those slots now read the four PERFORMANCE categories: PPH, PEAK PPH, PCS/SEC, SHLF/MIN (moved up from the right panel). COACH is retired from in-game entirely: the right-panel COACH section and the floating coach-shelf tip over the wall are both gone; the COACH readout now lives ONLY in the pause menu (coach barks may still hit the DISPATCH feed). Vitals updater kept harmless via hidden carrier spans. No scoring change.
    CHANGE LOG v3.5.6 - TOP SCOREBOARD (the side panel is gone). The big left OPS-ASSESSMENT column is REMOVED and reflowed into a full-width TOP SCOREBOARD BAR (CSS grid: bar on top, scene + right panel below) - CUBES, GRADE, the STRUCT/BALANCE/DENSITY/SUPPORT vitals, WALL HT, BALANCE(COG), PACK, PLACED, ELAPSED, TRAILER. The scene reclaimed the left panel width (~640 -> 894px). All stat IDs preserved so updateHUD feeds the bar unchanged. Secondary counts (VOIDS/SHELVES/DOUBLE/SP) + hydration are hidden from the bar (-> pause next). Placement + square cells verified at the new width. NEXT: ELAPSED hero size, counts + coach into pause, PPH onto the bar. No scoring change.
@@ -1339,7 +1340,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.8</div>
+  <div class="pause-sub">LOCK IN v3.5.9</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1476,7 +1477,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.8 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.9 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1587,7 +1588,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.8 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.9 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1907,7 +1908,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.8
+// LOCK IN v3.5.9
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3455,6 +3456,11 @@ function tryNest(src,idx,tcell){
   var bonus=70+30*cost+(isHaz?120:0);
   G.score=(G.score||0)+bonus;
   S.nests=(S.nests||0)+1;
+  // v3.5.9: a nest IS a placed small — count it toward throughput + smalls totals. Was logged ONLY as a "nest",
+  // so the post-sort report undercounted Pieces, PPH, Avg pieces/wall, and Smalls-utility for every nested small.
+  placed++;
+  S.totalPieces=(S.totalPieces||0)+1;
+  S.bagsPlaced=(S.bagsPlaced||0)+1;
   if(typeof playSfx==='function')playSfx(isHaz?'bonus':'nest');
   if(!G._nestTaught){
     G._nestTaught=true;
@@ -6978,7 +6984,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.8</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.9</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
