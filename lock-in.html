@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.9
+   LOCK IN v3.5.10
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.10 - STUCK-STATE FIX (no-escape on dispatch timeout). endGame() sets gOver=true then delegates to endGameShift(), whose own `if(gOver)return` made it bail every time -> SHIFT COMPLETE end screen never showed, pause stayed dead (togglePause guards on gOver), render watchdog kept drawing = wall visible but NO way out. Removed the redundant guard (endGame owns re-entry). Also a buzzer-beater fairness fix: if the dispatch clock hits 0 on an actually-complete wall, seal it (NEXT TRAILER + payout) instead of failing it with TRAILER LEFT WITHOUT FULL WALL. Both verified live. No layout change.
    CHANGE LOG v3.5.9 - NESTED-SMALLS COUNT FIX. tryNest() (seating a small/bag into a placed tire hollow) only incremented S.nests, so every nested small was invisible to the post-sort report throughput + smalls totals. Now a nest also bumps placed, S.totalPieces and S.bagsPlaced -> Pieces, PPH, Pieces/sec, Avg pieces/wall, and Smalls-utility all count nested smalls. Cube-fill % intentionally unchanged (a nest reclaims dead air inside an already-filled grid cell). No layout change.
    CHANGE LOG v3.5.8 - ONE COLUMN, LEGIBLE BOARD, NO DEAD PANEL. Removed the right LIVE FLOOR column entirely and the in-game header strip (logo/version slop) - the play window now spans the full width. Scoreboard rebuilt in order MODE | TRAILER | SCORE | LOAD RATE | BALANCE | ELAPSED | WALL HEIGHT | PACK | PLACED, big legible terminal cells (no tiny cram); CUBES renamed SCORE, PPH renamed LOAD RATE; dropped GRADE/PEAK/PCS/SHLF from the bar. PAUSE folded into the scoreboard. DISPATCH moved to a single legible line in the footer directly above ROT. Hidden carrier spans keep every legacy updater null-safe. KNOWN/NEXT: the trailer renders portrait so side margins are wide - canvas-size pass is its own next iteration. No scoring change.
    CHANGE LOG v3.5.7 - PERFORMANCE ON THE BOARD, COACH OFF THE FLOOR. The scoreboard no longer shows STRUCT/BALANCE/DENSITY/SUPPORT vitals - those slots now read the four PERFORMANCE categories: PPH, PEAK PPH, PCS/SEC, SHLF/MIN (moved up from the right panel). COACH is retired from in-game entirely: the right-panel COACH section and the floating coach-shelf tip over the wall are both gone; the COACH readout now lives ONLY in the pause menu (coach barks may still hit the DISPATCH feed). Vitals updater kept harmless via hidden carrier spans. No scoring change.
@@ -1340,7 +1341,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.9</div>
+  <div class="pause-sub">LOCK IN v3.5.10</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1477,7 +1478,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.9 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.10 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1588,7 +1589,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.9 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.10 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1908,7 +1909,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.9
+// LOCK IN v3.5.10
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4115,7 +4116,7 @@ function checkPanic(){
     var pct=(rem/PANIC_DURATION)*100;
     document.getElementById('panic-fill').style.width=pct+'%';
     document.getElementById('panic-lbl').textContent='DISPATCH IN '+Math.ceil(rem)+'s — LOCK IT IN!';
-    if(rem<=0){if(isForgiving()){panicActive=false;panicStartT=null;var _pw=document.getElementById('panic-wrap');if(_pw)_pw.classList.remove('vis');}else endGame('DISPATCH TIMEOUT — TRAILER LEFT WITHOUT FULL WALL',false);} // v2.1.10
+    if(rem<=0){if(isForgiving()){panicActive=false;panicStartT=null;var _pw=document.getElementById('panic-wrap');if(_pw)_pw.classList.remove('vis');}else{checkWin();if(!(G&&G.sealed))endGame('DISPATCH TIMEOUT — TRAILER LEFT WITHOUT FULL WALL',false);}} // v2.1.10 + v3.5.10 buzzer-beater: seal a complete wall instead of failing it at 0s
   }
 }
 
@@ -6806,7 +6807,10 @@ function nextTrailer(){
 
 // endGame in shift mode — show end screen with session stats
 function endGameShift(reason){
-  if(gOver)return;gOver=true;_drHide();
+  // v3.5.10 STUCK-STATE FIX: endGame() already set gOver=true before delegating here, so the old
+  // `if(gOver)return` made this bail every time — end screen never showed, pause stayed dead, watchdog
+  // kept rendering = no escape. endGame owns the re-entry guard; we just keep gOver set and proceed.
+  gOver=true;_drHide();
   if(animF)cancelAnimationFrame(animF);
   try{
     shiftState.totalBoxes+=placed;
@@ -6984,7 +6988,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.9</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.10</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
