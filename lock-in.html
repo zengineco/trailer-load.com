@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.12
+   LOCK IN v3.5.13
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.13 - STANDALONE LEADERBOARD. New LEADERBOARD button on the home menu opens a clipboard-style overlay wired to the public daily board (lockin_daily_board view, RLS public-read). Graceful empty state, you-highlight, today's UTC puzzle date. All-time Wall of Fame + friends boards flagged as coming (need new backend + a privacy basis). No scoring change.
    CHANGE LOG v3.5.12 - CLIPBOARD UPGRADE + IN-CHUTE BAG BREAKDOWN. Staged-bag breakdown (breakdownBag) now spills smalls INTO THE CHUTE like a chute-bag breakdown, instead of back into bag slots - one unified feed. Briefing is now a SINGLE clipboard: HUB tab removed, voice std/hub toggle lives in Settings only (quiet bonus, no clipboard choice, no "voice carries" note). Rules reworded practical/direct/mechanical; SP renamed user-friendly "Heavy & oversized freight (red-tagged) - click to stage." acknowledgeBriefing no longer derives voice from removed tabs. Verified live. No scoring change.
    CHANGE LOG v3.5.11 - CLIPBOARD LEGIBILITY + REPORT CLEANUP. Briefing (both STANDARD + HUB tabs) cut from 8 dense rules to 7 tight ones (~60% fewer words), font bumped 13px->17px for legibility. Dropped the two perma-"—" post-sort rows (Slot occupancy %, Pack-fill %) that were never implemented and read as slop. No mechanic change.
    CHANGE LOG v3.5.10 - STUCK-STATE FIX (no-escape on dispatch timeout). endGame() sets gOver=true then delegates to endGameShift(), whose own `if(gOver)return` made it bail every time -> SHIFT COMPLETE end screen never showed, pause stayed dead (togglePause guards on gOver), render watchdog kept drawing = wall visible but NO way out. Removed the redundant guard (endGame owns re-entry). Also a buzzer-beater fairness fix: if the dispatch clock hits 0 on an actually-complete wall, seal it (NEXT TRAILER + payout) instead of failing it with TRAILER LEFT WITHOUT FULL WALL. Both verified live. No layout change.
@@ -1209,8 +1210,18 @@ body[data-cb="trit"]{
 
 /* ── v2.5.0 PROFILE DASHBOARD ── */
 /* v2.11.0 PROFILE = trusty clipboard popup (warm paper + metal clip), same stats logic */
-#ov-profile{position:fixed;inset:0;z-index:355;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}
-#ov-profile.vis{display:flex;}
+#ov-profile,#ov-leaderboard{position:fixed;inset:0;z-index:355;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}
+#ov-profile.vis,#ov-leaderboard.vis{display:flex;}
+/* v3.5.13 LEADERBOARD board rows — dark on the cream clipboard card */
+.lb-tabline{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:#8b6a3a;margin:0 0 6px;font-weight:bold;}
+.lb-board{font-family:'Share Tech Mono',monospace;font-size:14px;margin-bottom:14px;}
+.lb-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-bottom:1px solid #ddd2bc;}
+.lb-row span:first-child{color:#a08b6a;width:34px;font-weight:bold;}
+.lb-row span:nth-child(2){flex:1;color:#2a1a08;text-align:left;padding-left:10px;font-weight:bold;}
+.lb-row span:last-child{color:#8b4513;font-weight:bold;}
+.lb-row.lb-me{background:rgba(200,121,30,.14);border-radius:3px;}
+.lb-empty{color:#a08b6a;font-style:italic;padding:10px 4px;}
+.lb-note{font-family:'Share Tech Mono',monospace;font-size:10.5px;color:#a08b6a;line-height:1.5;margin-top:6px;border-top:1px dashed #d8cdb4;padding-top:8px;}
 .pf-card{background:#f5f0e8;border:none;border-radius:3px;width:min(540px,94vw);max-width:540px;box-shadow:0 12px 48px rgba(0,0,0,.75);position:relative;display:flex;flex-direction:column;max-height:86vh;}
 .pf-card::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:52px;height:30px;background:#777;border-radius:4px 4px 0 0;z-index:2;}
 .pf-card::after{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:28px;height:16px;background:#444;border-radius:2px;z-index:3;}
@@ -1344,7 +1355,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.12</div>
+  <div class="pause-sub">LOCK IN v3.5.13</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1415,6 +1426,7 @@ body[data-cb="trit"]{
 <!-- ═══════════════════ START MENU ═══════════════════ -->
 <div id="start-menu" style="display:none;">
   <div id="sm-topright">
+    <button class="sm-loginbtn" title="Leaderboard" onclick="openLeaderboard()">◆ LEADERBOARD</button>
     <button class="sm-loginbtn" title="Your profile / record" onclick="openProfile()">◆ PROFILE</button>
     <button class="sm-iconbtn" title="Settings" onclick="openSettings()">⚙</button>
   </div>
@@ -1462,7 +1474,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.12 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.13 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1573,7 +1585,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.12 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.13 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1857,6 +1869,12 @@ body[data-cb="trit"]{
 <div id="ov-postsort"><div class="ps-card" id="ps-card"></div></div>
 <div id="ov-recover"><div class="rec-card"><div class="rec-icon">⚠</div><div class="rec-title">WE'RE SORRY — THE SCREEN STALLED</div><div class="rec-sub">The display stopped updating. Your session is safe. Tap RESUME to retry — and if it stays stuck, do a HARD REFRESH (Ctrl+Shift+R, or Cmd+Shift+R on Mac) for a clean reset.</div><div class="rec-btns"><button class="btn-p" onclick="recoverResume()">▶ RESUME</button><button class="btn-p" onclick="recoverMenu()">CHOOSE MODE</button><button class="btn-p" onclick="location.reload()">⟳ HARD REFRESH</button></div><div class="rec-dbg" id="rec-dbg"></div></div></div>
 <div id="ov-profile"><div class="pf-card"><div class="pf-top"><div class="pf-title" id="pf-title">PROFILE</div><button class="pf-x" onclick="closeProfile()">✕</button></div><div class="pf-body" id="pf-body"></div></div></div>
+<!-- v3.5.13 LEADERBOARD -->
+<div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">LEADERBOARD</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
+  <div class="lb-tabline" id="lb-daily-date">◈ DAILY · —</div>
+  <div class="lb-board" id="lb-daily-board"><div class="lb-empty">Loading…</div></div>
+  <div class="lb-note" id="lb-note">Play <b>DAILY</b> while logged in to post your score to the world board. Same pieces for everyone, 00:00–23:59 UTC.<br>◆ All-time Wall of Fame &amp; friends boards — coming next.</div>
+</div></div></div>
 
 <div id="zw">© 2026</div>
 <!-- v2.1.14 custom glove cursor — references /mouse.png by PATH. NEVER base64. -->
@@ -1893,7 +1911,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.12
+// LOCK IN v3.5.13
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6832,6 +6850,22 @@ function openPostSort(){
 }
 function closePostSort(){var ov=document.getElementById('ov-postsort');if(ov)ov.classList.remove('vis');}
 function closeProfile(){var ov=document.getElementById('ov-profile');if(ov)ov.classList.remove('vis');}
+// ── v3.5.13 LEADERBOARD (standalone screen; daily board is public-read) ──
+function closeLeaderboard(){var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.remove('vis');}
+function lbRenderInto(id,rows){
+  var el=document.getElementById(id);if(!el)return;
+  if(!rows||!rows.length){el.innerHTML='<div class="lb-empty">No scores posted yet today — be the first.</div>';return;}
+  var me=(ZDATA.session&&ZDATA.session.email&&(''+ZDATA.session.email).split('@')[0])||(ZDATA.session&&ZDATA.session.handle)||'';
+  var h='',i;for(i=0;i<rows.length;i++){var r=rows[i];var mine=(me&&r.username===me)?' lb-me':'';h+='<div class="lb-row'+mine+'"><span>'+(r.rank||(i+1))+'</span><span>'+drEsc(r.username)+'</span><span>'+(r.score||0)+'</span></div>';}
+  el.innerHTML=h;
+}
+function openLeaderboard(){
+  var ov=document.getElementById('ov-leaderboard');if(!ov)return;ov.classList.add('vis');
+  var d=document.getElementById('lb-daily-date');if(d)d.textContent='◈ DAILY · '+dailyKey();
+  var b=document.getElementById('lb-daily-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
+  if(typeof zLoadDailyBoard==='function')zLoadDailyBoard(function(rows){lbRenderInto('lb-daily-board',rows);});
+  if(typeof gaEvent==='function')gaEvent('leaderboard_open',{});
+}
 function pfEsc(x){x=(x==null?'':''+x);return x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function pfNum(n){return (n==null||isNaN(+n))?'\u2014':Math.round(+n);}
 function pfDate(t){if(!t)return '\u2014';try{var d=new Date(t);return (d.getMonth()+1)+'/'+d.getDate()+'/'+(''+d.getFullYear()).slice(2);}catch(e){return '\u2014';}}
@@ -6964,7 +6998,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.12</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.13</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
