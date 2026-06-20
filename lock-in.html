@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.11
+   LOCK IN v3.5.12
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.12 - CLIPBOARD UPGRADE + IN-CHUTE BAG BREAKDOWN. Staged-bag breakdown (breakdownBag) now spills smalls INTO THE CHUTE like a chute-bag breakdown, instead of back into bag slots - one unified feed. Briefing is now a SINGLE clipboard: HUB tab removed, voice std/hub toggle lives in Settings only (quiet bonus, no clipboard choice, no "voice carries" note). Rules reworded practical/direct/mechanical; SP renamed user-friendly "Heavy & oversized freight (red-tagged) - click to stage." acknowledgeBriefing no longer derives voice from removed tabs. Verified live. No scoring change.
    CHANGE LOG v3.5.11 - CLIPBOARD LEGIBILITY + REPORT CLEANUP. Briefing (both STANDARD + HUB tabs) cut from 8 dense rules to 7 tight ones (~60% fewer words), font bumped 13px->17px for legibility. Dropped the two perma-"—" post-sort rows (Slot occupancy %, Pack-fill %) that were never implemented and read as slop. No mechanic change.
    CHANGE LOG v3.5.10 - STUCK-STATE FIX (no-escape on dispatch timeout). endGame() sets gOver=true then delegates to endGameShift(), whose own `if(gOver)return` made it bail every time -> SHIFT COMPLETE end screen never showed, pause stayed dead (togglePause guards on gOver), render watchdog kept drawing = wall visible but NO way out. Removed the redundant guard (endGame owns re-entry). Also a buzzer-beater fairness fix: if the dispatch clock hits 0 on an actually-complete wall, seal it (NEXT TRAILER + payout) instead of failing it with TRAILER LEFT WITHOUT FULL WALL. Both verified live. No layout change.
    CHANGE LOG v3.5.9 - NESTED-SMALLS COUNT FIX. tryNest() (seating a small/bag into a placed tire hollow) only incremented S.nests, so every nested small was invisible to the post-sort report throughput + smalls totals. Now a nest also bumps placed, S.totalPieces and S.bagsPlaced -> Pieces, PPH, Pieces/sec, Avg pieces/wall, and Smalls-utility all count nested smalls. Cube-fill % intentionally unchanged (a nest reclaims dead air inside an already-filled grid cell). No layout change.
@@ -998,7 +999,7 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   font-weight:bold;color:#999;border-bottom:3px solid transparent;margin-bottom:-2px;
   transition:color .15s,border-color .15s;}
 .brief-tab.active{color:#2a1a08;border-bottom-color:#8b4513;}
-#brief-body{padding:18px 26px 12px;overflow-y:auto;flex:1;}
+#brief-body{padding:36px 26px 14px;overflow-y:auto;flex:1;}/* v3.5.12 top pad clears the clip (tab bar removed) */
 .brief-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:4px;
   color:#2a1a08;display:block;margin-bottom:2px;}
 .brief-sub{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;
@@ -1343,7 +1344,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.11</div>
+  <div class="pause-sub">LOCK IN v3.5.12</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1365,39 +1366,22 @@ body[data-cb="trit"]{
 <!-- Shows on first load. Acknowledged → start menu. -->
 <div id="briefing">
 <div id="clipboard">
-  <div id="brief-tabs">
-    <div class="brief-tab active" onclick="briefTab('std')">📋 STANDARD</div>
-    <div class="brief-tab" onclick="briefTab('hub')">🚚 HUB MODE</div>
-  </div>
   <div id="brief-body">
-    <!-- STANDARD TAB -->
+    <!-- v3.5.12: single briefing — HUB voice moved to Settings (quiet bonus), not a clipboard choice -->
     <div id="brief-std">
       <span class="brief-title">PRE-SORT MEETING</span>
       <span class="brief-sub">Freight Loading Simulator · www.trailer-load.com</span>
-      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt">Pick a piece, click the wall to place it. <b>R</b> rotates.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Floor first.</b> Build up — every piece needs support under it.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt">Fill a full row and it <b>LOCKS IN</b> — a shelf, your anchor.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>SP</b> freight (red badge) stages on the floor. Get it on the wall.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile on top.</b> Heavy on a fragile = crunch, lost score.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Smalls bags:</b> double-click to break into gap-fillers.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>92%</b> seals it. <b>85%</b> starts the dispatch clock — beat it for bonus.</div></div>
-    </div>
-    <!-- HUB MODE TAB -->
-    <div id="brief-hub" style="display:none;">
-      <span class="brief-title">PRE-SORT MEETING</span>
-      <span class="brief-sub">Hub Mode · Management Not Present</span>
-      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt">Belt's down there. Grab something, put it on the wall. <b>R</b> spins it.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Floor first.</b> Always. Support under every piece.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt">Fill a row, it <b>LOCKS IN</b> — a shelf. Nobody teaches the new kids that.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>SP</b> (red badge): heavy, awkward. Stage it, then wall it. Don't leave it sitting.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile on top.</b> Not the middle. Not the bottom. Top.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Smalls bags?</b> Double-click. Five gap-fillers. Use them.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>92%</b> seals it. At <b>85%</b> the clock starts. The trailer doesn't wait.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt"><b>Pick a box</b> from the chute, then <b>click the wall</b> to place it. Press <b>R</b> to rotate.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Build from the floor up.</b> Every box needs something solid under it — nothing floats.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt">Fill a whole row and it <b>locks in</b> as a shelf — that's what holds the load together.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>Heavy &amp; oversized freight</b> (red-tagged) won't ride the chute — <b>click it to stage it</b>, then place it on the wall.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile boxes go on top.</b> Drop something heavy on one and it crunches — you lose points.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Bags of smalls</b> break into gap-fillers — <b>double-click a bag</b> to spill them into the chute for tight spots.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt">Reach <b>92%</b> full to <b>seal the trailer.</b> Past <b>85%</b> a dispatch clock starts — seal before it runs out for a bonus.</div></div>
     </div>
   </div>
   <div id="brief-cta-row">
     <button id="brief-cta" onclick="acknowledgeBriefing()">I'M READY — OPEN THE DOOR</button>
-    <div id="brief-voice-note">Voice mode selection<br>carries into the game</div>
   </div>
   <!-- Legal / compliance footer on the clipboard -->
   <div style="padding:8px 26px 14px;background:#ece7d8;border-top:1px solid #d8d0c0;">
@@ -1478,7 +1462,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.11 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.12 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1589,7 +1573,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.11 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.12 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1909,7 +1893,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.11
+// LOCK IN v3.5.12
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3394,18 +3378,11 @@ function breakdownBag(idx){
   S.bagsBroken=(S.bagsBroken||0)+1;if(typeof playSfx==='function')playSfx('bagbreak'); // v2.1.7
   // Remove bag
   G.bagSlots[idx]=null;
-  // Spawn 5 gap-fill pieces into remaining bag slots
-  var spawned=0;
-  for(var i=0;i<MAX_BAG_SLOTS&&spawned<5;i++){
-    if(!G.bagSlots[i]){
-      var gp=genPieceRaw(true);
-      gp.isBrokenBag=true;
-      G.bagSlots[i]=gp;
-      spawned++;
-    }
-  }
-  if(spawned>0){
-    showBanner('BAG BROKEN DOWN! 🎁<br><span style="font-size:.52em">'+spawned+' GAP-FILL PIECES — FILL THOSE VOIDS!</span>','ok',2500);
+  // v3.5.12: spill the smalls INTO THE CHUTE (unified feed) — same as a chute-bag breakdown, not back into the slots
+  var cubes=0,guard=0;
+  while(cubes<9&&guard++<24&&G.belt.length<BELT_PIECE_COUNT+8){var sp=genPieceRaw(true);sp.isBrokenBag=true;G.belt.push(sp);cubes+=(sp.wc||1);}
+  if(cubes>0){
+    showBanner('BAG BROKEN DOWN! 🎁<br><span style="font-size:.52em">SMALLS SPILLED INTO THE CHUTE — FILL THOSE VOIDS!</span>','ok',2500);
     flash('fl-ok');
   }
   buildBagPanel();
@@ -6043,9 +6020,8 @@ function briefTab(t){
 }
 
 function acknowledgeBriefing(){
-  // Sync voice from whichever tab is active
-  var hubTab=document.querySelectorAll('.brief-tab')[1];
-  activeVoice=(hubTab&&hubTab.classList.contains('active'))?'hub':'std';
+  // v3.5.12: voice is set in Settings now (persisted in liVoice), not picked on the clipboard.
+  // Keep whatever activeVoice already is — don't derive it from removed tabs.
   // BUGFIX: wrap ALL sessionStorage calls in try/catch.
   // Private browsing in Safari/Firefox can throw on sessionStorage.setItem()
   // even when sessionStorage appears accessible. Without this, the briefing
@@ -6988,7 +6964,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.11</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.12</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
