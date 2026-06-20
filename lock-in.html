@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.14
+   LOCK IN v3.5.15
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.15 - FRIENDS (one-way follow). Leaderboard gets a 3rd tab: FRIENDS. New lockin_follows table + SECURITY DEFINER RPCs lockin_follow / lockin_unfollow / lockin_friends_board (resolve by username, self can never follow self, board = you + everyone you follow ranked by best score). Logged-out shows a log-in prompt; logged-in gets a follow-by-username box + your circle with tap-to-unfollow. One-way (no accept). No scoring change.
    CHANGE LOG v3.5.14 - ALL-TIME WALL OF FAME. Leaderboard now has DAILY + ALL-TIME tabs. All-time reads a new SECURITY DEFINER RPC lockin_alltime_board() that ranks logged-in handles by personal-best score (bypasses the self-only RLS on lockin_sessions; exposes only handle + score, consistent with the public daily board). Graceful empty states on both. Friends boards next. No scoring change.
    CHANGE LOG v3.5.13 - STANDALONE LEADERBOARD. New LEADERBOARD button on the home menu opens a clipboard-style overlay wired to the public daily board (lockin_daily_board view, RLS public-read). Graceful empty state, you-highlight, today's UTC puzzle date. All-time Wall of Fame + friends boards flagged as coming (need new backend + a privacy basis). No scoring change.
    CHANGE LOG v3.5.12 - CLIPBOARD UPGRADE + IN-CHUTE BAG BREAKDOWN. Staged-bag breakdown (breakdownBag) now spills smalls INTO THE CHUTE like a chute-bag breakdown, instead of back into bag slots - one unified feed. Briefing is now a SINGLE clipboard: HUB tab removed, voice std/hub toggle lives in Settings only (quiet bonus, no clipboard choice, no "voice carries" note). Rules reworded practical/direct/mechanical; SP renamed user-friendly "Heavy & oversized freight (red-tagged) - click to stage." acknowledgeBriefing no longer derives voice from removed tabs. Verified live. No scoring change.
@@ -1227,6 +1228,14 @@ body[data-cb="trit"]{
 .lb-tab{flex:1;padding:8px 0;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:#a08b6a;background:#ece7d8;border:1px solid #d8cdb4;border-radius:4px;cursor:pointer;}
 .lb-tab.active{color:#2a1a08;background:#fff;border-color:#8b4513;box-shadow:inset 0 -2px 0 #8b4513;}
 .lb-tab:hover{color:#2a1a08;}
+.lb-follow-row{display:flex;gap:6px;margin-bottom:12px;}
+#lb-follow-input{flex:1;min-width:0;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:14px;color:#2a1a08;background:#fff;border:1px solid #c8b898;border-radius:4px;}
+#lb-follow-input:focus{outline:none;border-color:#8b4513;}
+#lb-follow-btn{padding:8px 16px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:#fff;background:#8b4513;border:none;border-radius:4px;cursor:pointer;}
+#lb-follow-btn:hover{background:#a0531a;}
+.lb-unfollow{background:none;border:none;color:#c08b6a;font-size:15px;cursor:pointer;padding:0 2px;line-height:1;margin-left:8px;}
+.lb-unfollow:hover{color:#c23a1a;}
+.lb-row .lb-uwrap{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:0;}
 .pf-card{background:#f5f0e8;border:none;border-radius:3px;width:min(540px,94vw);max-width:540px;box-shadow:0 12px 48px rgba(0,0,0,.75);position:relative;display:flex;flex-direction:column;max-height:86vh;}
 .pf-card::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:52px;height:30px;background:#777;border-radius:4px 4px 0 0;z-index:2;}
 .pf-card::after{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:28px;height:16px;background:#444;border-radius:2px;z-index:3;}
@@ -1360,7 +1369,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.14</div>
+  <div class="pause-sub">LOCK IN v3.5.15</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1479,7 +1488,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.14 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.15 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1590,7 +1599,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.14 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.15 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1879,6 +1888,7 @@ body[data-cb="trit"]{
   <div class="lb-tabs">
     <button class="lb-tab active" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
     <button class="lb-tab" id="lb-tab-all" onclick="lbTab('all')">★ ALL-TIME</button>
+    <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">♦ FRIENDS</button>
   </div>
   <div id="lb-pane-daily">
     <div class="lb-tabline" id="lb-daily-date">◈ DAILY · —</div>
@@ -1888,7 +1898,19 @@ body[data-cb="trit"]{
   <div id="lb-pane-all" style="display:none">
     <div class="lb-tabline">★ WALL OF FAME · personal best, all-time</div>
     <div class="lb-board" id="lb-all-board"><div class="lb-empty">Loading…</div></div>
-    <div class="lb-note">Every logged-in loader's best score. ◆ Friends boards — coming next.</div>
+    <div class="lb-note">Every logged-in loader's best score.</div>
+  </div>
+  <div id="lb-pane-friends" style="display:none">
+    <div id="lb-friends-auth" class="lb-empty" style="display:none">Log in from <b>◆ PROFILE</b> to follow loaders and track their boards.</div>
+    <div id="lb-friends-main">
+      <div class="lb-follow-row">
+        <input id="lb-follow-input" type="text" maxlength="24" placeholder="follow a username…" autocomplete="off">
+        <button id="lb-follow-btn" onclick="lbFollow()">FOLLOW</button>
+      </div>
+      <div class="lb-tabline">♦ YOUR CIRCLE · you + who you follow</div>
+      <div class="lb-board" id="lb-friends-board"><div class="lb-empty">Loading…</div></div>
+      <div class="lb-note">Follow by username to add a loader. Tap ✕ to unfollow. One-way — they don't have to follow back.</div>
+    </div>
   </div>
 </div></div></div>
 
@@ -1927,7 +1949,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.14
+// LOCK IN v3.5.15
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6876,12 +6898,11 @@ function lbRenderInto(id,rows,emptyMsg){
   el.innerHTML=h;
 }
 function lbTab(which){
-  var pd=document.getElementById('lb-pane-daily'),pa=document.getElementById('lb-pane-all');
-  var td=document.getElementById('lb-tab-daily'),ta=document.getElementById('lb-tab-all');
-  var all=(which==='all');
-  if(pd)pd.style.display=all?'none':'';if(pa)pa.style.display=all?'':'none';
-  if(td)td.classList.toggle('active',!all);if(ta)ta.classList.toggle('active',all);
-  if(all&&!lbTab._allLoaded){lbTab._allLoaded=true;lbLoadAlltime();}
+  var panes={daily:'lb-pane-daily',all:'lb-pane-all',friends:'lb-pane-friends'};
+  var tabs={daily:'lb-tab-daily',all:'lb-tab-all',friends:'lb-tab-friends'};
+  for(var k in panes){var p=document.getElementById(panes[k]);if(p)p.style.display=(k===which)?'':'none';var t=document.getElementById(tabs[k]);if(t)t.classList.toggle('active',k===which);}
+  if(which==='all'&&!lbTab._allLoaded){lbTab._allLoaded=true;lbLoadAlltime();}
+  if(which==='friends')lbLoadFriends();
 }
 function lbLoadAlltime(){
   var b=document.getElementById('lb-all-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
@@ -6891,6 +6912,52 @@ function lbLoadAlltime(){
       .then(function(j){lbRenderInto('lb-all-board',Array.isArray(j)?j:[],'No ranked loaders yet — log in, play, and claim the top spot.');})
       .catch(function(e){console.error('alltimeBoard:',e);lbRenderInto('lb-all-board',[],'Could not load the board.');});
   }catch(e){lbRenderInto('lb-all-board',[],'Could not load the board.');}
+}
+// ── v3.5.15 FRIENDS (one-way follow) ──
+function lbLoadFriends(){
+  var auth=document.getElementById('lb-friends-auth'),main=document.getElementById('lb-friends-main');
+  var loggedIn=!!(ZDATA.session&&ZDATA.session.uid);
+  if(auth)auth.style.display=loggedIn?'none':'';
+  if(main)main.style.display=loggedIn?'':'none';
+  if(!loggedIn)return;
+  var b=document.getElementById('lb-friends-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
+  try{
+    fetch(ZDATA.endpoint+'/rpc/lockin_friends_board',{method:'POST',headers:zAuthHeaders(),body:'{}'})
+      .then(function(r){return r.json();})
+      .then(function(j){lbRenderFriends(Array.isArray(j)?j:[]);})
+      .catch(function(e){console.error('friendsBoard:',e);lbRenderFriends([]);});
+  }catch(e){lbRenderFriends([]);}
+}
+function lbRenderFriends(rows){
+  var el=document.getElementById('lb-friends-board');if(!el)return;
+  if(!rows||!rows.length){el.innerHTML='<div class="lb-empty">Just you so far — follow a loader above.</div>';return;}
+  var h='',i;for(i=0;i<rows.length;i++){var r=rows[i];
+    var uname=drEsc(r.username);
+    var unf=r.is_self?'':'<button class="lb-unfollow" title="Unfollow" onclick="lbUnfollow(\''+(''+r.username).replace(/[^A-Za-z0-9_\-]/g,'')+'\')">✕</button>';
+    h+='<div class="lb-row'+(r.is_self?' lb-me':'')+'"><span>'+(r.rank||(i+1))+'</span><span>'+uname+(r.is_self?' (you)':'')+'</span><span>'+(r.best_score||0)+unf+'</span></div>';
+  }
+  el.innerHTML=h;
+}
+function lbFollow(){
+  var inp=document.getElementById('lb-follow-input');if(!inp)return;var u=(inp.value||'').trim();if(!u)return;
+  if(!(ZDATA.session&&ZDATA.session.uid)){if(typeof showBanner==='function')showBanner('Log in from PROFILE to follow loaders.','warn',2200);return;}
+  try{
+    fetch(ZDATA.endpoint+'/rpc/lockin_follow',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({p_username:u})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(j&&j.ok){inp.value='';lbLoadFriends();}
+        else{var m=(j&&j.err==='no_such_user')?'No loader by that name.':(j&&j.err==='cannot_follow_self')?'That’s you.':(j&&j.err==='not_logged_in')?'Log in first.':'Could not follow.';if(typeof showBanner==='function')showBanner(m,'warn',2000);}
+      })
+      .catch(function(e){console.error('follow:',e);});
+  }catch(e){}
+}
+function lbUnfollow(u){
+  if(!u||!(ZDATA.session&&ZDATA.session.uid))return;
+  try{
+    fetch(ZDATA.endpoint+'/rpc/lockin_unfollow',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({p_username:u})})
+      .then(function(r){return r.json();}).then(function(){lbLoadFriends();})
+      .catch(function(e){console.error('unfollow:',e);});
+  }catch(e){}
 }
 function openLeaderboard(){
   var ov=document.getElementById('ov-leaderboard');if(!ov)return;ov.classList.add('vis');
@@ -7032,7 +7099,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.14</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.15</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
