@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.10
+   LOCK IN v3.5.11
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.11 - CLIPBOARD LEGIBILITY + REPORT CLEANUP. Briefing (both STANDARD + HUB tabs) cut from 8 dense rules to 7 tight ones (~60% fewer words), font bumped 13px->17px for legibility. Dropped the two perma-"—" post-sort rows (Slot occupancy %, Pack-fill %) that were never implemented and read as slop. No mechanic change.
    CHANGE LOG v3.5.10 - STUCK-STATE FIX (no-escape on dispatch timeout). endGame() sets gOver=true then delegates to endGameShift(), whose own `if(gOver)return` made it bail every time -> SHIFT COMPLETE end screen never showed, pause stayed dead (togglePause guards on gOver), render watchdog kept drawing = wall visible but NO way out. Removed the redundant guard (endGame owns re-entry). Also a buzzer-beater fairness fix: if the dispatch clock hits 0 on an actually-complete wall, seal it (NEXT TRAILER + payout) instead of failing it with TRAILER LEFT WITHOUT FULL WALL. Both verified live. No layout change.
    CHANGE LOG v3.5.9 - NESTED-SMALLS COUNT FIX. tryNest() (seating a small/bag into a placed tire hollow) only incremented S.nests, so every nested small was invisible to the post-sort report throughput + smalls totals. Now a nest also bumps placed, S.totalPieces and S.bagsPlaced -> Pieces, PPH, Pieces/sec, Avg pieces/wall, and Smalls-utility all count nested smalls. Cube-fill % intentionally unchanged (a nest reclaims dead air inside an already-filled grid cell). No layout change.
    CHANGE LOG v3.5.8 - ONE COLUMN, LEGIBLE BOARD, NO DEAD PANEL. Removed the right LIVE FLOOR column entirely and the in-game header strip (logo/version slop) - the play window now spans the full width. Scoreboard rebuilt in order MODE | TRAILER | SCORE | LOAD RATE | BALANCE | ELAPSED | WALL HEIGHT | PACK | PLACED, big legible terminal cells (no tiny cram); CUBES renamed SCORE, PPH renamed LOAD RATE; dropped GRADE/PEAK/PCS/SHLF from the bar. PAUSE folded into the scoreboard. DISPATCH moved to a single legible line in the footer directly above ROT. Hidden carrier spans keep every legacy updater null-safe. KNOWN/NEXT: the trailer renders portrait so side margins are wide - canvas-size pass is its own next iteration. No scoring change.
@@ -1002,11 +1003,12 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   color:#2a1a08;display:block;margin-bottom:2px;}
 .brief-sub{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;
   color:#8b4513;text-transform:uppercase;display:block;margin-bottom:14px;}
-.brief-rule{display:flex;gap:8px;margin-bottom:9px;align-items:flex-start;}
-.brief-rule-num{font-family:'Bebas Neue',cursive;font-size:15px;color:#8b4513;
-  line-height:1.1;flex-shrink:0;min-width:18px;}
-.brief-rule-txt{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;
-  color:#2a1a08;line-height:1.45;}
+.brief-rule{display:flex;gap:10px;margin-bottom:13px;align-items:flex-start;}
+.brief-rule-num{font-family:'Bebas Neue',cursive;font-size:19px;color:#8b4513;
+  line-height:1.05;flex-shrink:0;min-width:20px;}
+/* v3.5.11 LEGIBILITY: fewer words + bigger type on the clipboard */
+.brief-rule-txt{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;
+  color:#241608;line-height:1.4;}
 .brief-rule-txt b{color:#8b4513;}
 #brief-cta-row{padding:12px 26px 18px;background:#ece7d8;border-top:1px solid #d0c8b8;
   display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
@@ -1341,7 +1343,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.10</div>
+  <div class="pause-sub">LOCK IN v3.5.11</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1372,27 +1374,25 @@ body[data-cb="trit"]{
     <div id="brief-std">
       <span class="brief-title">PRE-SORT MEETING</span>
       <span class="brief-sub">Freight Loading Simulator · www.trailer-load.com</span>
-      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt">You're loading a trailer. <b>Select a piece from the belt</b> below, then click the wall to place it. Press <b>R</b> to rotate.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Special-Handling freight (SP)</b> — heavy or awkward items a belt can't carry, flagged with red SP badges (you'll hear NCs, ICs, irregs, non-cons — all special handling) — stage in slots on the floor. They must be placed on the wall or you'll trigger a safety hazard.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt"><b>Fill the floor first.</b> Build from the bottom up. Every piece needs support underneath — a piece floating in midair will fail the legality check.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt">When you complete a <b>full horizontal row</b> — every cell filled — it LOCKS IN. That's a shelf. That's your structural anchor. That's how real walls get built.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>FRAGILE</b> pieces must go on top. Never place heavy freight directly above a fragile piece — it crunches and costs you score.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt">At <b>85% wall height</b>, the dispatch clock starts. Seal the wall before time runs out for a bonus. Hit <b>92%</b> to complete the load.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Smalls bags</b> on the floor — double-click or long-press to break them into 5 gap-fill pieces. Essential for tight voids near the top.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt">Watch your <b>Balance</b> (COG) indicator. Alternating heavy pieces left and right keeps the wall stable and earns a better grade.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt">Pick a piece, click the wall to place it. <b>R</b> rotates.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Floor first.</b> Build up — every piece needs support under it.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt">Fill a full row and it <b>LOCKS IN</b> — a shelf, your anchor.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>SP</b> freight (red badge) stages on the floor. Get it on the wall.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile on top.</b> Heavy on a fragile = crunch, lost score.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Smalls bags:</b> double-click to break into gap-fillers.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>92%</b> seals it. <b>85%</b> starts the dispatch clock — beat it for bonus.</div></div>
     </div>
     <!-- HUB MODE TAB -->
     <div id="brief-hub" style="display:none;">
       <span class="brief-title">PRE-SORT MEETING</span>
       <span class="brief-sub">Hub Mode · Management Not Present</span>
-      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt">You're loading a trailer. <b>Belt's down there. Click something. Place it on the wall.</b> Hit R to spin it. You know what rotating means.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt">Those <b>red SP badges</b>? Special handling. NCs, ICs, irregs, non-cons — same animal. Heavy. Awkward. Stage them on the floor, get them on the wall. Leave them sitting and the whole shift goes sideways.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt"><b>Floor first.</b> Always floor first. Every 22-year veteran who says otherwise has been off the docks for 10 years and counting.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt">Fill a <b>complete row</b> and it LOCKS IN. That's a shelf. That's a LOCKED IN. That's the one thing they never teach new hires and wonder why walls fall apart.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>FRAGILE goes on top.</b> Not on the bottom. Not in the middle. On. Top. You've done this before? Act like it.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt">At <b>85%</b> the clock starts. The trailer doesn't wait. Neither does dispatch. Neither does the flight. Seal it.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt">Those <b>smalls bags</b>? Double-click them. Five gap-fillers come out. Use them. Don't leave holes you could've filled.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt">The <b>COG bar</b>. Left side heavy? Put something on the right. This isn't physics class. It's common sense. Go.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt">Belt's down there. Grab something, put it on the wall. <b>R</b> spins it.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Floor first.</b> Always. Support under every piece.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt">Fill a row, it <b>LOCKS IN</b> — a shelf. Nobody teaches the new kids that.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>SP</b> (red badge): heavy, awkward. Stage it, then wall it. Don't leave it sitting.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile on top.</b> Not the middle. Not the bottom. Top.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Smalls bags?</b> Double-click. Five gap-fillers. Use them.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>92%</b> seals it. At <b>85%</b> the clock starts. The trailer doesn't wait.</div></div>
     </div>
   </div>
   <div id="brief-cta-row">
@@ -1478,7 +1478,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.10 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.11 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1589,7 +1589,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.10 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.11 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1909,7 +1909,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.10
+// LOCK IN v3.5.11
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6988,7 +6988,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.10</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.11</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7036,9 +7036,7 @@ function psBuild(lifeState,life){
       row('Staging actions',null,S.stagingActions||0,null)+
       row('Hazmat locks',null,S.hazShelfLocks||0,null)+
       row('Bonuses received',null,S.bonuses||((S.recoveries||0)+(S.doubleLocks||0)+(S.hazShelfLocks||0)+(S.nests||0)),'bonuses')+
-      row('Bags broken / placed',null,(S.bagsBroken||0)+'/'+(S.bagsPlaced||0),null)+
-      row('Slot occupancy %',null,'\u2014',null)+
-      row('Pack-fill %',null,'\u2014',null)+'</div>';
+      row('Bags broken / placed',null,(S.bagsBroken||0)+'/'+(S.bagsPlaced||0),null)+'</div>'; // v3.5.11 dropped the two perma-"\u2014" rows (Slot occupancy / Pack-fill) \u2014 never implemented, read as slop
 
     H+='</div>'; // end blocks
 
