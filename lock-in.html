@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.27
+   LOCK IN v3.5.28
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.28 - ROOT FIX: bag shadow bug. The v3.5.21 spill helper was ALSO named makeBagPiece(w,h), SHADOWING the real makeBagPiece() (the 3x3 SMALLS bag generator). So spawnBag() + the daily bag pushed garbage (no w/h, empty cells) since v3.5.21 — the hallmark bags never actually spawned, and that garbage is what stalled the render. Renamed the spill helper to makeSpillPiece(); bags now spawn correctly (and bag.png finally renders). Crash guard from v3.5.27 kept as belt-and-suspenders. No scoring change.
    CHANGE LOG v3.5.27 - CRASH HOTFIX (render stall). A malformed belt piece (missing/zero w-h or empty cells — a broken-bag gap remnant) NaN-d createLinearGradient in drawBeltPiece -> full render stall ("WE'RE SORRY"). Hardened drawBeltFreight to fully REPAIR any malformed chute piece before render: recover dims from cells, rebuild cells from dims, default to a valid 1x1, ar can never be non-finite. The chute can no longer crash the render. (genPieceRaw confirmed dead code — 0 callers.) No scoring change.
    CHANGE LOG v3.5.26 - TAPE SYSTEM (chute pass). All 20 tape PNGs wired: seed-stable per-box mapping (boxTapes) by service/type/flags/dims — fragile+toponly/donotstack, heavy+teamlift on NCs, oversize on big NCs, freight+norotate on FRT/large, bulk on ~50% GND, aircargo on AIR/OVN/EXP, thissideup on oriented + long boxes, liveplants on ~44% of longs, liveanimals on rare 2x2, refrigerated/securityseal/highvalue rare. Multi-tape per box (cap 3), tiled like rolled tape at the box edges so the label stays readable; haztape candy-stripe behind the label (slightly larger = the hazmat outline). Chute render only this pass; wall (perspective) next. No scoring change.
    CHANGE LOG v3.5.25 - BLACK-PEN VOICE PASS (Goyim editorial). HUB celebration pool fully rewritten (16 lines, observation/consequence/instruction; killed FART/MORE-BOXES/etc). NH banners rewritten (10 lines; killed "ENTERED THE CHAT"). Grade-ladder verdicts rewritten (YARD LEGEND..RE-TRAIN). "FULL ROW" -> "LOCKED SHELF" (identity over geometry) in the shelf-lock pool + briefing. Manager intro line "Start fast, finish strong!" reserved for the coming Linehaul window. No scoring change.
@@ -1402,7 +1403,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.27</div>
+  <div class="pause-sub">LOCK IN v3.5.28</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1516,7 +1517,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.27 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.28 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1627,7 +1628,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.27 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.28 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1982,7 +1983,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.27
+// LOCK IN v3.5.28
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3385,13 +3386,14 @@ function spawnBag(){
   S.smallsSpawned=(S.smallsSpawned||0)+1;
 }
 // v3.5.21 a bag breaks into a tidy set — 3x (2x1) + 3x (1x1) = 9 cubes — not 9 loose singles (keeps smalls from dominating early)
-function makeBagPiece(w,h){
+// v3.5.28 RENAMED from makeBagPiece -> makeSpillPiece: it was SHADOWING the real bag maker makeBagPiece() above, so spawnBag/daily-bag spawned garbage
+function makeSpillPiece(w,h){
   return {type:'small',w:w,h:h,wc:w*h,cells:makeRect(w,h).map(function(c){return[c[0],c[1]];}),
     id:uid('GP'),seed:rnd(100,9999),pal:{b:'#9060cc',l:'#b080ec',d:'#602090',t:'rgba(140,80,200,.55)'},
     labelDef:LABELS[14],label:'FILL',isFrag:false,isGap:true,isBrokenBag:true};
 }
 var BAG_SPILL=[[2,1],[2,1],[2,1],[1,1],[1,1],[1,1]];
-function spillBag(){var si,c=0;for(si=0;si<BAG_SPILL.length&&G.belt.length<BELT_PIECE_COUNT+8;si++){var p=makeBagPiece(BAG_SPILL[si][0],BAG_SPILL[si][1]);G.belt.push(p);c+=p.wc;}return c;}
+function spillBag(){var si,c=0;for(si=0;si<BAG_SPILL.length&&G.belt.length<BELT_PIECE_COUNT+8;si++){var p=makeSpillPiece(BAG_SPILL[si][0],BAG_SPILL[si][1]);G.belt.push(p);c+=p.wc;}return c;}
 function breakdownBeltBag(idx){
   var b=G.belt[idx];if(!b||!b.isBag)return;
   G.belt.splice(idx,1);
@@ -7270,7 +7272,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.27</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.28</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
