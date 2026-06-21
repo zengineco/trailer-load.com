@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.23
+   LOCK IN v3.5.24
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.24 - PERFECT-LOAD LOCK + BURST PASS. A perfect load (100%, zero voids) now LOCKS the wall: placeBox/liftBox blocked, KEEP LOADING hidden + no-op, green celebratory burst + shake; it is next-trailer-or-go-home (resets next wall). Burst pass: added a red-shards burst on a misplace (illegal drop) + the perfect-load burst, alongside the existing place-dust / shelf-lock / double-lock / collapse bursts. No scoring change.
    CHANGE LOG v3.5.23 - BAG ART + PERFECT LOAD + WIDER WALL. (1) Smalls bags now render with bag.png (the FedEx/UPS-recognizable bag) in the chute AND floor slots, replacing the box gradient / emoji. (2) DETERMINISTIC PERFECT LOAD: a 100%-full wall (zero empty cells) always completes + pops the menu + finish-glove, even mid keep-loading/maxPack. (3) Wall widened ~0.85 cube more on background.png (grows symmetrically, cells stay square). No scoring change.
    CHANGE LOG v3.5.22 - POLISH BATCH. (1) NC/SMALLS staging popup auto-closes the moment the lane is cleared. (2) A bag now breaks into a tidy 3x(2x1)+3x(1x1)=9-cube set (was 9 loose singles - kept smalls from dominating early). (3) Wall widened ~1.2 cubes + lifted on background.png (BACKDROP_WALL, cells stay square - eyeball/tune). (4) Three new event cursors wired: badmouse (illegal placement), nestmouse (tire nest), finishmouse (wall seal). NEXT: DISPATCH countdown visual on the wall bottom-1/3; bag.png pending sync. No scoring change.
    CHANGE LOG v3.5.21 - WIDER BACKDROP. Swapped the trailer backdrop to background.png (674x926, wider trailer interior) so the 17:20 wall stops overhanging the thinner old image; fallback chain background -> lockbackdrop -> backdrop. BACKDROP_WALL set to a FIRST-PASS region {l:.09,t:.12,r:.91,b:.77} - cells verified still square; exact per-edge fit pending eyeball. No scoring change.
@@ -1398,7 +1399,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.23</div>
+  <div class="pause-sub">LOCK IN v3.5.24</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1512,7 +1513,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.23 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.24 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1623,7 +1624,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.23 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.24 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1978,7 +1979,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.23
+// LOCK IN v3.5.24
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3551,6 +3552,7 @@ function isLoadBearing(cell){
   return false;
 }
 function liftBox(cell){
+  if(G&&G.wallDone)return; // v3.5.24 perfect load = wall locked
   if(typeof playSfx==='function')playSfx('lift');
   S.lifts=(S.lifts||0)+1; // v2.1.7
   // v2.1.34: lifting a piece OUT of a locked shelf unseals it = penalty
@@ -3772,13 +3774,14 @@ function startDaily(){
 
 // ── PLACE BOX ──
 function placeBox(source,sourceIdx,gx,gy,rot){
+  if(G&&G.wallDone)return false; // v3.5.24 perfect load = wall is over; no more manipulation
   // source: 'belt' | 'nc' | 'bag'
   var box;
   if(source==='belt')box=G.belt[sourceIdx];
   else if(source==='nc')box=G.ncSlots[sourceIdx];
   else if(source==='bag')box=G.bagSlots[sourceIdx];
   if(!box)return false;
-  if(!isLegal(G.grid,box,gx,gy,rot)){S.rejects=(S.rejects||0)+1;if(typeof gcurFlash==='function')gcurFlash('bad',420);if(typeof playSfx==='function')playSfx('error');if(typeof addShake==='function')addShake(5);hapt('error');if(typeof showBanner==='function'&&(!G._rejWarn||Date.now()-G._rejWarn>2500)){G._rejWarn=Date.now();showBanner('\u2715 NO SUPPORT THERE \u2014 every box needs something solid under it.','warn',1800);}return false;} // v2.1.9 / v2.1.33 reject feedback
+  if(!isLegal(G.grid,box,gx,gy,rot)){S.rejects=(S.rejects||0)+1;if(typeof gcurFlash==='function')gcurFlash('bad',420);if(typeof playSfx==='function')playSfx('error');if(typeof addShake==='function')addShake(7);if(typeof spawnBurst==='function'&&typeof gridToCanvas==='function'){var _rj=gridToCanvas(gx+0.5,gy+0.5);spawnBurst(_rj.x,_rj.y,14,'rgba(214,64,40,.92)',150,0.5,60);} /* v3.5.24 misplace red shards */hapt('error');if(typeof showBanner==='function'&&(!G._rejWarn||Date.now()-G._rejWarn>2500)){G._rejWarn=Date.now();showBanner('\u2715 NO SUPPORT THERE \u2014 every box needs something solid under it.','warn',1800);}return false;} // v2.1.9 / v2.1.33 reject feedback
   var _segB=countSegregationViolations(G.grid),_kB=anyKillerTooClose(G.grid); // v2.1.6 pre-commit state
 
   // Fragile crush check — only fires for wc>=5, locked rows protect boxes
@@ -6886,12 +6889,13 @@ function updateShiftBadge(){
 }
 
 // Override nextTrailer for shift mode
-function npKeepLoading(){if(G)G.maxPack=true;var p=document.getElementById('next-popup');if(p)p.classList.remove('vis');var f=document.getElementById('maxpack-finish');if(f)f.style.display='';} // v3.5.4 keep filling past the seal; FINISH re-opens the menu
+function npKeepLoading(){if(G&&G.wallDone)return;if(G)G.maxPack=true;var p=document.getElementById('next-popup');if(p)p.classList.remove('vis');var f=document.getElementById('maxpack-finish');if(f)f.style.display='';} // v3.5.4 keep filling past the seal; FINISH re-opens the menu
 function npFinish(){if(G)G.maxPack=false;var f=document.getElementById('maxpack-finish');if(f)f.style.display='none';var p=document.getElementById('next-popup');if(p)p.classList.add('vis');}
 function nextTrailer(){
   if(typeof playSfx==='function')playSfx('trailer');
   document.getElementById('next-popup').classList.remove('vis');
-  if(G){G.sealed=false;G.maxPack=false;}var _mf=document.getElementById('maxpack-finish');if(_mf)_mf.style.display='none'; // v3.5.4 reset seal/max-pack for the new wall
+  if(G){G.sealed=false;G.maxPack=false;G.wallDone=false;}var _mf=document.getElementById('maxpack-finish');if(_mf)_mf.style.display='none'; // v3.5.4 reset seal/max-pack for the new wall
+  var _kl2=document.querySelector('#next-popup button[onclick="npKeepLoading()"]');if(_kl2)_kl2.style.display=''; // v3.5.24 restore keep-loading for the next wall
   S.bestTrailerAvg=Math.max(S.bestTrailerAvg||0,getPPH()); // v2.1.9 best single-trailer rate
   if(gameMode==='shift'){
     // Accumulate session stats
@@ -7205,7 +7209,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.23</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.24</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7572,7 +7576,11 @@ function checkWin(){
   // v3.5.23 DETERMINISTIC PERFECT LOAD: a 100%-full wall (zero empty cells) always completes — even mid keep-loading
   if(!gOver&&G&&G.grid&&countFilled()>=GW*GH&&!document.getElementById('next-popup').classList.contains('vis')){
     if(G.maxPack){G.maxPack=false;var _mf=document.getElementById('maxpack-finish');if(_mf)_mf.style.display='none';}
+    G.wallDone=true; // v3.5.24 perfect load: lock the wall — next trailer or go home
+    if(typeof spawnBurst==='function'&&typeof gridToCanvas==='function'){var _pc=gridToCanvas(GW/2,GH*0.5);spawnBurst(_pc.x,_pc.y,46,'rgba(120,224,144,.95)',200,0.8,120);}
+    if(typeof addShake==='function')addShake(10);
     sealWall('PERFECT LOAD — 100% PACKED, ZERO VOIDS');
+    var _kl=document.querySelector('#next-popup button[onclick="npKeepLoading()"]');if(_kl)_kl.style.display='none'; // no keep-loading on a full wall
     return;
   }
   if(!gOver&&!(G&&G.maxPack)&&!document.getElementById('next-popup').classList.contains('vis')){
