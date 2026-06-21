@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.25
+   LOCK IN v3.5.26
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.26 - TAPE SYSTEM (chute pass). All 20 tape PNGs wired: seed-stable per-box mapping (boxTapes) by service/type/flags/dims — fragile+toponly/donotstack, heavy+teamlift on NCs, oversize on big NCs, freight+norotate on FRT/large, bulk on ~50% GND, aircargo on AIR/OVN/EXP, thissideup on oriented + long boxes, liveplants on ~44% of longs, liveanimals on rare 2x2, refrigerated/securityseal/highvalue rare. Multi-tape per box (cap 3), tiled like rolled tape at the box edges so the label stays readable; haztape candy-stripe behind the label (slightly larger = the hazmat outline). Chute render only this pass; wall (perspective) next. No scoring change.
    CHANGE LOG v3.5.25 - BLACK-PEN VOICE PASS (Goyim editorial). HUB celebration pool fully rewritten (16 lines, observation/consequence/instruction; killed FART/MORE-BOXES/etc). NH banners rewritten (10 lines; killed "ENTERED THE CHAT"). Grade-ladder verdicts rewritten (YARD LEGEND..RE-TRAIN). "FULL ROW" -> "LOCKED SHELF" (identity over geometry) in the shelf-lock pool + briefing. Manager intro line "Start fast, finish strong!" reserved for the coming Linehaul window. No scoring change.
    CHANGE LOG v3.5.24 - PERFECT-LOAD LOCK + BURST PASS. A perfect load (100%, zero voids) now LOCKS the wall: placeBox/liftBox blocked, KEEP LOADING hidden + no-op, green celebratory burst + shake; it is next-trailer-or-go-home (resets next wall). Burst pass: added a red-shards burst on a misplace (illegal drop) + the perfect-load burst, alongside the existing place-dust / shelf-lock / double-lock / collapse bursts. No scoring change.
    CHANGE LOG v3.5.23 - BAG ART + PERFECT LOAD + WIDER WALL. (1) Smalls bags now render with bag.png (the FedEx/UPS-recognizable bag) in the chute AND floor slots, replacing the box gradient / emoji. (2) DETERMINISTIC PERFECT LOAD: a 100%-full wall (zero empty cells) always completes + pops the menu + finish-glove, even mid keep-loading/maxPack. (3) Wall widened ~0.85 cube more on background.png (grows symmetrically, cells stay square). No scoring change.
@@ -1400,7 +1401,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.25</div>
+  <div class="pause-sub">LOCK IN v3.5.26</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1514,7 +1515,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.25 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.26 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1625,7 +1626,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.25 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.26 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1980,7 +1981,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.25
+// LOCK IN v3.5.26
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -5358,6 +5359,53 @@ function drawShippingLabel(c,x,y,w,h,txt,accent,seed,sub){
     }
   }
 }
+// ── v3.5.26 TAPE SYSTEM — stickers on boxes (the FedEx/UPS-recognizable hallmark) ──
+var TAPE_IMGS={};
+function tapeImg(name){
+  var im=TAPE_IMGS[name];
+  if(im===undefined){im=new Image();im.src=(name==='haztape'?'haztape.png':'tape_'+name+'.png');TAPE_IMGS[name]=im;}
+  return (im&&im.complete&&im.naturalWidth>0)?im:null;
+}
+function tapePreload(){var ns=['fragile','toponly','donotstack','heavy','teamlift','oversize','freight','norotate','bulk','aircargo','thissideup','liveplants','liveanimals','refrigerated','securityseal','highvalue','keepdry','perishable','haztape'],i;for(i=0;i<ns.length;i++)tapeImg(ns[i]);}
+// deterministic per-box tape assignment (stable through rotation / daily)
+function boxTapes(p){
+  if(!p)return [];
+  if(p._tapes)return p._tapes;
+  var s=((p.seed||1)>>>0),t=[];
+  function rr(n){return (((s*9301+(n+1)*49297)%233280)>>>0)/233280;}
+  var svc=(typeof svcCode==='function')?(''+svcCode(p)):'';
+  var frag=!!(p.isFrag||(p.labelDef&&p.labelDef.isFrag)), nc=!!p.isNC;
+  var w=p.w||1,h=p.h||1,mx=Math.max(w,h),mn=Math.min(w,h),isLong=(mx>=6&&mn<=2);
+  if(frag){t.push('fragile'); if(rr(1)<0.6)t.push('toponly'); if(rr(2)<0.35)t.push('donotstack');}
+  if(nc){t.push('heavy'); if(rr(3)<0.5)t.push('teamlift'); if(mx>=5)t.push('oversize');}
+  if(svc==='FRT'||p.type==='large'){if(t.indexOf('freight')<0)t.push('freight'); if(rr(4)<0.45)t.push('norotate');}
+  if(svc==='GND'){if(rr(5)<0.5)t.push('bulk');}
+  else if(svc==='AIR'||svc==='OVN'||svc==='EXP'||svc==='1DAY'){t.push('aircargo');}
+  if(isLong){if(t.indexOf('thissideup')<0)t.push('thissideup'); if(rr(6)<0.44)t.push('liveplants');}
+  else if(h>w&&w>=2&&h<=6&&rr(7)<0.45){t.push('thissideup');}
+  if(w===2&&h===2&&rr(8)<0.18)t.push('liveanimals');
+  if(rr(9)<0.06)t.push('refrigerated');
+  if(rr(10)<0.04)t.push('securityseal');
+  if(rr(11)<0.03)t.push('highvalue');
+  if(t.length>3)t=t.slice(0,3);
+  p._tapes=t;
+  return t;
+}
+function tapeHaz(p){return !!(p&&(p.hazClass||(p.labelDef&&p.labelDef.isHaz)||p.isHaz));}
+function drawOneTape(c,img,x,y,w,bh){
+  if(!img||w<6||bh<2)return;
+  c.save();c.beginPath();c.rect(x,y,w,bh);c.clip();
+  var ar=img.naturalWidth/Math.max(1,img.naturalHeight),tileW=Math.max(8,bh*ar),tx;
+  for(tx=x;tx<x+w;tx+=tileW)c.drawImage(img,tx,y,tileW,bh);
+  c.restore();
+}
+// strips at top/bottom/upper edges so the centered shipping label stays readable
+function drawTapeBands(c,p,x,y,w,h){
+  if(w<16||h<16)return;
+  var tapes=boxTapes(p);if(!tapes.length)return;
+  var bandH=Math.max(3,h*0.13),ys=[y+h*0.05,y+h-bandH-h*0.05,y+h*0.225],i,img;
+  for(i=0;i<Math.min(tapes.length,3);i++){img=tapeImg(tapes[i]);if(img)drawOneTape(c,img,x+1,ys[i],w-2,bandH);}
+}
 function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
   var p=piece.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
   var R=Math.max(2,Math.min(w,h)*.1);
@@ -5419,12 +5467,17 @@ function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
 
   if(isSel)c.restore();
 
+  // v3.5.26 TAPES (over the box, under the label)
+  drawTapeBands(c,piece,x,y,w,h);
+
   // Label badge
   var ld=piece.labelDef;
   if(ld&&w>14&&h>12){
     // v3.0.3 real shipping label (taller white tag + name + barcode)
     var lw=Math.max(14,Math.min(w*.80,w-3)),lh=Math.max(11,Math.min(h*.62,h-3));
     var lx=x+(w-lw)*.5,ly2=y+(h-lh)*.52;
+    // v3.5.26 haztape candy-stripe behind the label, slightly larger = the hazmat outline
+    if(tapeHaz(piece)){var _hz=tapeImg('haztape');if(_hz){var _hp=Math.max(2,lh*0.17);drawOneTape(c,_hz,lx-_hp,ly2-_hp,lw+_hp*2,lh+_hp*2);}}
     var _isPlain=(ld.s==='STD'||ld.s==='SP');
     var _sTxt=_isPlain?svcCode(piece):(ld.ico?ld.ico+' '+ld.s:ld.s);
     drawShippingLabel(c,lx,ly2,lw,lh,_sTxt,_isPlain?null:ld.bg,piece.seed,destCode(piece));
@@ -7208,7 +7261,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.25</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.26</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8583,6 +8636,8 @@ setTimeout(function(){try{resize();}catch(_re){}},150);
 requestAnimationFrame(function(){try{resize();}catch(_re){}});
 // v3.5.20 event-cursor boot: preload the glove poses + tick the hold/idle state
 try{gcurPreload();setInterval(gcurTick,90);}catch(_gce){}
+// v3.5.26 preload the tape art
+try{tapePreload();}catch(_tpe){}
 // v2.6.1 portrait/touch board — strip side HUD on narrow screens + recompute geometry
 function applyPortrait(){
   var m=!!(window.matchMedia&&window.matchMedia('(max-width:680px)').matches);
