@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.32
+   LOCK IN v3.5.33
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.33 - NEW BAG TILE. Goyim uploaded a new finished SQUARE bag tile (bag (1).png, 1254x1254 -> swapped in as bag.png, redundant (1) removed). drawBagSkin now draws it FULL (no crop) since it is a complete tile. Re-enabled the bag skin path on chute + wall + floor-slot (the v3.5.32 black box is now the !BAGIMG_OK fallback). No scoring change.
    CHANGE LOG v3.5.32 - BAG/SMALLS RESHADE + LEGIBILITY (color pass start). bag.png skin RETIRED (Goyim: "so terrible") — bags now render as a normal cardboard box BLACK-shaded via pal (like smalls were purple); chute/wall/floor all reverted to the box render. Smalls reshaded PURPLE -> WHITE (pal + glow). Completion badge ("WALL COMPLETE - 95% TARGET HIT") was 9px slop -> 18px Bebas, legible. Color/legibility pass continues. No scoring change.
    CHANGE LOG v3.5.31 - MENU OVERLAY Z-FIX + BAG CROP. Leaderboard/Profile/Linehaul overlays were z-index 355-360, BELOW the start menu (400), so opening them from the menu buried them behind the mode cards (not interactive). Bumped to 560 (above the menu, matching Settings) — verified the tabs + close are now topmost/clickable from the menu. Bag crop moved up + zoomed to fill the top (BAG_CROP sy 235->140, ss->602). NOTED: Goyim wants (1) a colorful text/UI theme across the game to match the menu, (2) social as a bottom tab -> a dashboard (own stats + leaderboard + friends). No scoring change.
    CHANGE LOG v3.5.30 - BAG SKIN CROP + CROOKED TAPES. Bag skin now uses only the INNER QUILTED SQUARE of bag.png (BAG_CROP) as the 3x3 skin (chute+wall+floor), cropping the bulging poly excess. Tapes reworked into crooked "indicator tape": seed-stable random position+angle (never spins with the piece; labels stay upright), capped at 2 (less crowded). SMALLS now wear the frontload sticker. haztape is a prominent crooked strip on all hazmats (was a subtle behind-label outline). Menu top-right buttons z-index bumped (defensive). No scoring change.
@@ -1407,7 +1408,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.32</div>
+  <div class="pause-sub">LOCK IN v3.5.33</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1521,7 +1522,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.32 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.33 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1632,7 +1633,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.32 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.33 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1987,7 +1988,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.32
+// LOCK IN v3.5.33
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4423,9 +4424,8 @@ var CHUTE_IMG=null,CHUTE_OK=false;
 (function(){try{BACKDROP=new Image();BACKDROP.onload=function(){BACKDROP_OK=true;if(typeof resize==='function')resize();};BACKDROP.onerror=function(){if(BACKDROP.src.indexOf('background')>=0){BACKDROP.src='lockbackdrop.png';}else if(BACKDROP.src.indexOf('lockbackdrop')>=0){BACKDROP.src='backdrop.png';}else{BACKDROP_OK=false;}};BACKDROP.src='background.png';}catch(e){BACKDROP_OK=false;}})();/* v3.5.21 wider backdrop */
 // v3.5.23 smalls-bag art — the FedEx/UPS-recognizable bag
 var BAGIMG=null,BAGIMG_OK=false;(function(){try{BAGIMG=new Image();BAGIMG.onload=function(){BAGIMG_OK=true;};BAGIMG.onerror=function(){BAGIMG_OK=false;};BAGIMG.src='bag.png';}catch(e){BAGIMG_OK=false;}})();
-// v3.5.30 use only the quilted INNER SQUARE of bag.png as the 3x3 skin (crop off the bulging poly excess). TUNABLE.
-var BAG_CROP={sx:148,sy:140,ss:602};/* v3.5.31 moved up + zoomed to fill the top */
-function drawBagSkin(c,dx,dy,dw,dh){if(!BAGIMG_OK)return false;try{c.drawImage(BAGIMG,BAG_CROP.sx,BAG_CROP.sy,BAG_CROP.ss,BAG_CROP.ss,dx,dy,dw,dh);return true;}catch(e){return false;}}
+// v3.5.33 new bag.png (1254x1254) is a finished SQUARE bag tile — draw it full into the cell, no crop
+function drawBagSkin(c,dx,dy,dw,dh){if(!BAGIMG_OK)return false;try{c.drawImage(BAGIMG,dx,dy,dw,dh);return true;}catch(e){return false;}}
 function drawBackdropImg(c){try{c.fillStyle='#16100a';c.fillRect(DL,DT,DR-DL,DB-DT);c.save();c.beginPath();c.rect(DL,DT,DR-DL,DB-DT);c.clip();c.drawImage(BACKDROP,IL,IT,IR-IL,IB-IT);c.restore();}catch(e){BACKDROP_OK=false;}}
 function jamCheck(){if(CHUTE_JAM&&G&&G.belt&&G.belt.length<=0&&!jamStarvedT)jamStarvedT=Date.now();if(typeof updateChuteUI==='function')updateChuteUI();}
 function breakJam(){
@@ -4637,8 +4637,9 @@ function drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,type,idx){
     c.font='bold 9px Share Tech Mono';c.fillStyle='rgba(25,165,148,.98)';
     c.textAlign='right';c.textBaseline='top';c.fillText('↻90°',sx+sw-2,sy+2);
   }
-  if(slot.isBag){ // v3.5.32 simple bag marker in the floor slot (bag.png retired)
-    {c.font=(sh*.34)+'px serif';c.textBaseline='middle';c.fillText('🎒',sx+sw/2,sy+sh*.5+1);}
+  if(slot.isBag){ // v3.5.33 new square bag.png tile in the floor slot
+    if(BAGIMG_OK){drawBagSkin(c,sx+sw*0.04,sy+sh*0.04,sw*0.92,sh*0.92);}
+    else{c.font=(sh*.34)+'px serif';c.textBaseline='middle';c.fillText('🎒',sx+sw/2,sy+sh*.5+1);}
   }
   if(type==='nc'||slot.isNC){
     c.font='bold 8px Share Tech Mono';c.fillStyle='rgba(255,60,40,.95)';
@@ -4940,7 +4941,17 @@ function renderWallBox(c,cell){
   var tr=gridToCanvas(cell.rx+cell.w,cell.ry);
   var bl=gridToCanvas(cell.rx,cell.ry+cell.h);
   var br=gridToCanvas(cell.rx+cell.w,cell.ry+cell.h);
-  // v3.5.32 bags render as a normal black-shaded cardboard box on the wall (bag.png skin retired)
+  // v3.5.33 BAG SKIN on the wall — new square bag.png tile, tiny overlap for the stuffed-bag bulge
+  if(cell.box&&cell.box.isBag&&BAGIMG_OK&&!cell.isCrushed){
+    var _bminx=Math.min(tl.x,bl.x),_bmaxx=Math.max(tr.x,br.x),_bminy=Math.min(tl.y,tr.y),_bmaxy=Math.max(bl.y,br.y);
+    var _bgw=_bmaxx-_bminx,_bgh=_bmaxy-_bminy,_bov=Math.max(_bgw,_bgh)*0.04;
+    c.save();
+    c.shadowColor='rgba(0,0,0,.4)';c.shadowBlur=6;c.shadowOffsetY=3;
+    drawBagSkin(c,_bminx-_bov,_bminy-_bov,_bgw+_bov*2,_bgh+_bov*2);
+    c.restore();
+    drawBoxLabel(c,cell,tl,tr,bl,br,p);
+    return;
+  }
 
   // DEFINE THE PIECE PATH ONCE — reused for fill, clip, and stroke.
   // v2.0.7 ROOT FIX: trace the TRUE cell footprint from cell.cells, one sub-quad
@@ -5455,7 +5466,14 @@ function drawTapes(c,p,x,y,w,h){
 function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
   var p=piece.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
   var R=Math.max(2,Math.min(w,h)*.1);
-  // v3.5.32 bags render as a normal cardboard box, black-shaded via their pal (bag.png skin retired)
+  // v3.5.33 a smalls bag draws as the new square bag.png tile (black box pal is the fallback)
+  if(piece&&piece.isBag&&BAGIMG_OK){
+    c.save();
+    if(isSel){c.shadowColor='rgba(200,121,30,.65)';c.shadowBlur=12;}
+    drawBagSkin(c,x,y,w,h);
+    c.restore();
+    return;
+  }
 
   if(isSel){
     c.save();c.shadowColor='rgba(200,121,30,.6)';c.shadowBlur=12;
@@ -7296,7 +7314,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.32</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.33</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
