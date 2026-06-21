@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.19
+   LOCK IN v3.5.20
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.20 - EVENT CURSOR. The existing follow-mouse glove (#cursor-glove) now swaps POSE on game events: open hand while holding a selected piece (mousehold), drop-hand on a successful place (dropmouse, ~420ms), lock-hand on a shelf lock-in (lockmouse, ~650ms), and the L-hand on a fail/timeout (endconditionmouse, ~1500ms), reverting to the idle pointer (mouse.png). Poses preloaded; hold/idle ticked every 90ms. Logic verified. Size/hotspot (46px, 4/12) are tunable to taste. No scoring change.
    CHANGE LOG v3.5.19 - LINEHAUL BOARD + 3 VOICES. Dispatch voices renamed: COWORKER praises (ok), MANAGER handles rules/dispatch/cant-do-that (all corrective), TRAINER coaches (commentary). TRAINER shutdown: once session score clears TRAINER_CUTOFF (9000) the trainer stops the routine check-ins (you have proven you load safe) - MANAGER still enforces. NEW LINEHAUL board: persistent dispatch record, opens from the footer "▸ LINEHAUL" tag, holds the loop while open, same source-badge + outlined style as the ticker. Records every line (last 80). No scoring change.
    CHANGE LOG v3.5.18 - STABLE CHUTE + PRO DISPATCH. Chute box-size bug FIXED: the slot grid was sized from the live piece count (rows=ceil(N/2)), so placing/spawning reflowed + resized every box. Pinned the grid to chute capacity (ceil(BELT_PIECE_COUNT/2)) + every piece now uses the paired slot width — box size is constant regardless of count (verified N-independent). DISPATCH reworked pro: each line carries a SOURCE badge (ANNOUNCER / COACH / SAFETY / DISPATCH, derived from type + explicit COACH tag on commentary) and OUTLINED body text (text-stroke, paint-order stroke fill), single legible line. No scoring change.
    CHANGE LOG v3.5.17 - POLISH SWEEP. Removed the AI "THE LOAD, IN PLAIN ENGLISH" sub-line + bumped PRE-SORT MEETING down. DISPATCH legibility: newest message only, 15.5px bold, high-contrast (full Linehaul board is next). DATA button raised above the footer so it stops covering the chute green light. Added assets to repo: 4 event cursors (endcondition/lock/hold/drop mouse), background.png (674x926), updated transparent clipboard.png + card5.png. Cursors not wired yet (need a follow-mouse overlay — large PNGs). No scoring change.
@@ -1394,7 +1395,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.19</div>
+  <div class="pause-sub">LOCK IN v3.5.20</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1508,7 +1509,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.19 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.20 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1619,7 +1620,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.19 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.20 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1974,7 +1975,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.19
+// LOCK IN v3.5.20
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3820,6 +3821,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   else if(source==='bag'){G.bagSlots[sourceIdx]=null;buildBagPanel();}
 
   placed++;
+  if(typeof gcurFlash==='function')gcurFlash('drop',420); // v3.5.20 drop-glove on a successful place
   S.totalPieces=(S.totalPieces||0)+1; if(source==='bag')S.bagsPlaced=(S.bagsPlaced||0)+1; // v2.1.7
   if(typeof zLog==='function')zLog('place',{x:gx,y:gy,n:box.n||box.label||'?',r:rot||0,src:source});
   if(!S.sessionStartT)S.sessionStartT=startT||Date.now(); // v2.1.9 session clock
@@ -6090,6 +6092,23 @@ function closeLinehaul(){
   _linehaulOpen=false;
   if(_lhPausedLoop&&!gOver&&!paused){_lhPausedLoop=false;lastLoopT=0;animF=requestAnimationFrame(loop);}
 }
+// ── v3.5.20 EVENT CURSOR: swap the glove pose on game events (the follow-mouse element is #cursor-glove) ──
+var GCUR={base:'mouse.png',tempUntil:0,tempSrc:'',hold:false};
+var GCUR_IMG={hold:'mousehold.png',drop:'dropmouse.png',lock:'lockmouse.png',end:'endconditionmouse.png'};
+function gcurPreload(){var k;for(k in GCUR_IMG){var im=new Image();im.src=GCUR_IMG[k];}}
+function gcurApply(){
+  var img=document.getElementById('cursor-glove');if(!img)return;
+  var src;
+  if(GCUR.tempUntil&&Date.now()<GCUR.tempUntil)src=GCUR.tempSrc;
+  else{GCUR.tempUntil=0;src=GCUR.hold?GCUR_IMG.hold:GCUR.base;}
+  if(img.getAttribute('src')!==src)img.setAttribute('src',src);
+}
+function gcurFlash(state,ms){if(!GCUR_IMG[state])return;GCUR.tempSrc=GCUR_IMG[state];GCUR.tempUntil=Date.now()+(ms||450);gcurApply();setTimeout(gcurApply,(ms||450)+40);}
+function gcurTick(){
+  var ig=(typeof G!=='undefined'&&G&&typeof gOver!=='undefined'&&!gOver);
+  GCUR.hold=!!(ig&&((typeof selBeltIdx!=='undefined'&&selBeltIdx!=null)||(typeof selNC!=='undefined'&&selNC>=0)||(typeof selBag!=='undefined'&&selBag>=0)));
+  gcurApply();
+}
 
 // ══════════════════════════════════════════════════════════════
 // VOICE SYSTEM + BRIEFING — v1.9.5
@@ -6195,6 +6214,7 @@ var BULKHEAD_LINES_HUB=[
 var _lockinFlashTO=null;
 
 function fireLockinFlash(isBulkhead,count,pts){
+  if(typeof gcurFlash==='function')gcurFlash('lock',650); // v3.5.20 lock-glove on a shelf lock-in
   gaEvent('shelf_locked',{is_bulkhead:isBulkhead,count:count,
     total_shelves:G.tetrisTotal||0,voice:activeVoice,
     wall_pct:Math.round(wallH()/GH*100)});
@@ -7158,7 +7178,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.19</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.20</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8474,6 +8494,7 @@ function endGame(reason,win){
   if(gOver)return;
   if(typeof stgClose==='function')stgClose(); // v3.4.13 close the staging wheel so it can't float over the end screen
   gOver=true;if(win){sealWall(reason);return;}
+  if(typeof gcurFlash==='function')gcurFlash('end',1500); // v3.5.20 end-condition glove (the L) on a fail/timeout
   if(typeof playSfx==='function')playSfx('lose');
   if(animF)cancelAnimationFrame(animF);
   if(gameMode==='shift'){endGameShift(reason);return;}
@@ -8520,6 +8541,8 @@ window.addEventListener('load',function(){try{resize();}catch(_re){}});
 if(document.fonts&&document.fonts.ready&&document.fonts.ready.then){document.fonts.ready.then(function(){try{resize();}catch(_re){}});}
 setTimeout(function(){try{resize();}catch(_re){}},150);
 requestAnimationFrame(function(){try{resize();}catch(_re){}});
+// v3.5.20 event-cursor boot: preload the glove poses + tick the hold/idle state
+try{gcurPreload();setInterval(gcurTick,90);}catch(_gce){}
 // v2.6.1 portrait/touch board — strip side HUD on narrow screens + recompute geometry
 function applyPortrait(){
   var m=!!(window.matchMedia&&window.matchMedia('(max-width:680px)').matches);
