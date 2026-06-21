@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.28
+   LOCK IN v3.5.29
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.29 - TAPES + BAGS ON THE WALL. Placed boxes now render tapes (same seed-stable mapping, clipped to footprint) and hazmats get a haztape candy-stripe top+bottom. Bags wear the bag.png skin drawn ~15% oversized with a drop shadow — the stuffed-bag bulge/overlap is intentional + realistic. Smalls render as placed boxes as before. Verified no render throw across bag/fragile/NC/small/hazmat. No scoring change.
    CHANGE LOG v3.5.28 - ROOT FIX: bag shadow bug. The v3.5.21 spill helper was ALSO named makeBagPiece(w,h), SHADOWING the real makeBagPiece() (the 3x3 SMALLS bag generator). So spawnBag() + the daily bag pushed garbage (no w/h, empty cells) since v3.5.21 — the hallmark bags never actually spawned, and that garbage is what stalled the render. Renamed the spill helper to makeSpillPiece(); bags now spawn correctly (and bag.png finally renders). Crash guard from v3.5.27 kept as belt-and-suspenders. No scoring change.
    CHANGE LOG v3.5.27 - CRASH HOTFIX (render stall). A malformed belt piece (missing/zero w-h or empty cells — a broken-bag gap remnant) NaN-d createLinearGradient in drawBeltPiece -> full render stall ("WE'RE SORRY"). Hardened drawBeltFreight to fully REPAIR any malformed chute piece before render: recover dims from cells, rebuild cells from dims, default to a valid 1x1, ar can never be non-finite. The chute can no longer crash the render. (genPieceRaw confirmed dead code — 0 callers.) No scoring change.
    CHANGE LOG v3.5.26 - TAPE SYSTEM (chute pass). All 20 tape PNGs wired: seed-stable per-box mapping (boxTapes) by service/type/flags/dims — fragile+toponly/donotstack, heavy+teamlift on NCs, oversize on big NCs, freight+norotate on FRT/large, bulk on ~50% GND, aircargo on AIR/OVN/EXP, thissideup on oriented + long boxes, liveplants on ~44% of longs, liveanimals on rare 2x2, refrigerated/securityseal/highvalue rare. Multi-tape per box (cap 3), tiled like rolled tape at the box edges so the label stays readable; haztape candy-stripe behind the label (slightly larger = the hazmat outline). Chute render only this pass; wall (perspective) next. No scoring change.
@@ -1403,7 +1404,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.28</div>
+  <div class="pause-sub">LOCK IN v3.5.29</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1517,7 +1518,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.28 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.29 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1628,7 +1629,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.28 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.29 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1983,7 +1984,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.28
+// LOCK IN v3.5.29
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4934,6 +4935,17 @@ function renderWallBox(c,cell){
   var tr=gridToCanvas(cell.rx+cell.w,cell.ry);
   var bl=gridToCanvas(cell.rx,cell.ry+cell.h);
   var br=gridToCanvas(cell.rx+cell.w,cell.ry+cell.h);
+  // v3.5.29 BAG SKIN on the wall — a stuffed bag form-fits + bulges, so draw bag.png oversized (overlap is realistic — don't be shy)
+  if(cell.box&&cell.box.isBag&&typeof BAGIMG_OK!=='undefined'&&BAGIMG_OK&&!cell.isCrushed){
+    var _bminx=Math.min(tl.x,bl.x),_bmaxx=Math.max(tr.x,br.x),_bminy=Math.min(tl.y,tr.y),_bmaxy=Math.max(bl.y,br.y);
+    var _bgw=_bmaxx-_bminx,_bgh=_bmaxy-_bminy,_bov=Math.max(_bgw,_bgh)*0.15;
+    c.save();
+    c.shadowColor='rgba(0,0,0,.4)';c.shadowBlur=6;c.shadowOffsetY=3;
+    try{c.drawImage(BAGIMG,_bminx-_bov,_bminy-_bov,_bgw+_bov*2,_bgh+_bov*2);}catch(_be){}
+    c.restore();
+    drawBoxLabel(c,cell,tl,tr,bl,br,p);
+    return;
+  }
 
   // DEFINE THE PIECE PATH ONCE — reused for fill, clip, and stroke.
   // v2.0.7 ROOT FIX: trace the TRUE cell footprint from cell.cells, one sub-quad
@@ -5012,6 +5024,16 @@ function renderWallBox(c,cell){
   c.stroke();
 
   c.restore(); // end fill+stroke clip
+
+  // v3.5.29 TAPES on placed boxes (clipped to the footprint; tires/bags handled separately)
+  if(cell.box&&cell.box.shape!=='tire'&&!cell.box.isBag){
+    var _wtxmin=Math.min(tl.x,bl.x),_wtxmax=Math.max(tr.x,br.x),_wtymin=Math.min(tl.y,tr.y),_wtymax=Math.max(bl.y,br.y);
+    var _wtw=_wtxmax-_wtxmin,_wth=_wtymax-_wtymin;
+    c.save();piecePath();c.clip();
+    drawTapeBands(c,cell.box,_wtxmin,_wtymin,_wtw,_wth);
+    if(typeof tapeHaz==='function'&&tapeHaz(cell.box)){var _whz=tapeImg('haztape');if(_whz){var _wbh=Math.max(3,_wth*0.13);drawOneTape(c,_whz,_wtxmin,_wtymin,_wtw,_wbh);drawOneTape(c,_whz,_wtxmin,_wtymax-_wbh,_wtw,_wbh);}}
+    c.restore();
+  }
 
   // v2.1.35 — TIRES render rounded: rubber tread ring + hollow centre (the nest target, Pass 2).
   if(cell.box.shape==='tire'){
@@ -7272,7 +7294,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.28</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.29</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
