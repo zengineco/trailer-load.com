@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.20
+   LOCK IN v3.5.21
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.21 - WIDER BACKDROP. Swapped the trailer backdrop to background.png (674x926, wider trailer interior) so the 17:20 wall stops overhanging the thinner old image; fallback chain background -> lockbackdrop -> backdrop. BACKDROP_WALL set to a FIRST-PASS region {l:.09,t:.12,r:.91,b:.77} - cells verified still square; exact per-edge fit pending eyeball. No scoring change.
    CHANGE LOG v3.5.20 - EVENT CURSOR. The existing follow-mouse glove (#cursor-glove) now swaps POSE on game events: open hand while holding a selected piece (mousehold), drop-hand on a successful place (dropmouse, ~420ms), lock-hand on a shelf lock-in (lockmouse, ~650ms), and the L-hand on a fail/timeout (endconditionmouse, ~1500ms), reverting to the idle pointer (mouse.png). Poses preloaded; hold/idle ticked every 90ms. Logic verified. Size/hotspot (46px, 4/12) are tunable to taste. No scoring change.
    CHANGE LOG v3.5.19 - LINEHAUL BOARD + 3 VOICES. Dispatch voices renamed: COWORKER praises (ok), MANAGER handles rules/dispatch/cant-do-that (all corrective), TRAINER coaches (commentary). TRAINER shutdown: once session score clears TRAINER_CUTOFF (9000) the trainer stops the routine check-ins (you have proven you load safe) - MANAGER still enforces. NEW LINEHAUL board: persistent dispatch record, opens from the footer "▸ LINEHAUL" tag, holds the loop while open, same source-badge + outlined style as the ticker. Records every line (last 80). No scoring change.
    CHANGE LOG v3.5.18 - STABLE CHUTE + PRO DISPATCH. Chute box-size bug FIXED: the slot grid was sized from the live piece count (rows=ceil(N/2)), so placing/spawning reflowed + resized every box. Pinned the grid to chute capacity (ceil(BELT_PIECE_COUNT/2)) + every piece now uses the paired slot width — box size is constant regardless of count (verified N-independent). DISPATCH reworked pro: each line carries a SOURCE badge (ANNOUNCER / COACH / SAFETY / DISPATCH, derived from type + explicit COACH tag on commentary) and OUTLINED body text (text-stroke, paint-order stroke fill), single legible line. No scoring change.
@@ -1395,7 +1396,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.20</div>
+  <div class="pause-sub">LOCK IN v3.5.21</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1509,7 +1510,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.20 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.21 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1620,7 +1621,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.20 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.21 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1975,7 +1976,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.20
+// LOCK IN v3.5.21
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4392,12 +4393,12 @@ function loop(ts){
 // v2.9.1 PHOTO BACKDROP — drops backdrop.png (repo) in as the trailer interior; falls
 // back to the procedural walls if the image is missing. Boxes still stack on the nose-wall grid.
 var BACKDROP=null,BACKDROP_OK=false;
-var BACKDROP_WALL={l:0.035,t:0.04,r:0.965,b:0.80}; // v3.4.10 widened so the square-cell wall fills the trailer top-to-floor (reaches above the vent). TUNABLE.
+var BACKDROP_WALL={l:0.09,t:0.12,r:0.91,b:0.77}; // v3.5.21 FIRST-PASS for background.png (wider trailer). TUNABLE per edge — eyeball + adjust.
 var SQUARE_CELLS=true; // v3.3.0 lock the stack grid to true squares (17:20); design the bg wall opening to 17:20 so there is no letterbox
 var CHUTE_JAM=true,jamStarvedT=0,jamWarnLevel=0,chuteJiggleT=0; // v3.4.0 chute jam / break-jam
 var CHUTE_IMG=null,CHUTE_OK=false;
 (function(){try{CHUTE_IMG=new Image();CHUTE_IMG.onload=function(){CHUTE_OK=true;};CHUTE_IMG.onerror=function(){CHUTE_OK=false;};CHUTE_IMG.src='chute.png';}catch(e){CHUTE_OK=false;}})();
-(function(){try{BACKDROP=new Image();BACKDROP.onload=function(){BACKDROP_OK=true;if(typeof resize==='function')resize();};BACKDROP.onerror=function(){if(BACKDROP.src.indexOf('lockbackdrop')>=0){BACKDROP.src='backdrop.png';}else{BACKDROP_OK=false;}};BACKDROP.src='lockbackdrop.png';}catch(e){BACKDROP_OK=false;}})();
+(function(){try{BACKDROP=new Image();BACKDROP.onload=function(){BACKDROP_OK=true;if(typeof resize==='function')resize();};BACKDROP.onerror=function(){if(BACKDROP.src.indexOf('background')>=0){BACKDROP.src='lockbackdrop.png';}else if(BACKDROP.src.indexOf('lockbackdrop')>=0){BACKDROP.src='backdrop.png';}else{BACKDROP_OK=false;}};BACKDROP.src='background.png';}catch(e){BACKDROP_OK=false;}})();/* v3.5.21 wider backdrop */
 function drawBackdropImg(c){try{c.fillStyle='#16100a';c.fillRect(DL,DT,DR-DL,DB-DT);c.save();c.beginPath();c.rect(DL,DT,DR-DL,DB-DT);c.clip();c.drawImage(BACKDROP,IL,IT,IR-IL,IB-IT);c.restore();}catch(e){BACKDROP_OK=false;}}
 function jamCheck(){if(CHUTE_JAM&&G&&G.belt&&G.belt.length<=0&&!jamStarvedT)jamStarvedT=Date.now();if(typeof updateChuteUI==='function')updateChuteUI();}
 function breakJam(){
@@ -7178,7 +7179,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.20</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.21</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
