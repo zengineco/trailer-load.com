@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.30
+   LOCK IN v3.5.31
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.31 - MENU OVERLAY Z-FIX + BAG CROP. Leaderboard/Profile/Linehaul overlays were z-index 355-360, BELOW the start menu (400), so opening them from the menu buried them behind the mode cards (not interactive). Bumped to 560 (above the menu, matching Settings) — verified the tabs + close are now topmost/clickable from the menu. Bag crop moved up + zoomed to fill the top (BAG_CROP sy 235->140, ss->602). NOTED: Goyim wants (1) a colorful text/UI theme across the game to match the menu, (2) social as a bottom tab -> a dashboard (own stats + leaderboard + friends). No scoring change.
    CHANGE LOG v3.5.30 - BAG SKIN CROP + CROOKED TAPES. Bag skin now uses only the INNER QUILTED SQUARE of bag.png (BAG_CROP) as the 3x3 skin (chute+wall+floor), cropping the bulging poly excess. Tapes reworked into crooked "indicator tape": seed-stable random position+angle (never spins with the piece; labels stay upright), capped at 2 (less crowded). SMALLS now wear the frontload sticker. haztape is a prominent crooked strip on all hazmats (was a subtle behind-label outline). Menu top-right buttons z-index bumped (defensive). No scoring change.
    CHANGE LOG v3.5.29 - TAPES + BAGS ON THE WALL. Placed boxes now render tapes (same seed-stable mapping, clipped to footprint) and hazmats get a haztape candy-stripe top+bottom. Bags wear the bag.png skin drawn ~15% oversized with a drop shadow — the stuffed-bag bulge/overlap is intentional + realistic. Smalls render as placed boxes as before. Verified no render throw across bag/fragile/NC/small/hazmat. No scoring change.
    CHANGE LOG v3.5.28 - ROOT FIX: bag shadow bug. The v3.5.21 spill helper was ALSO named makeBagPiece(w,h), SHADOWING the real makeBagPiece() (the 3x3 SMALLS bag generator). So spawnBag() + the daily bag pushed garbage (no w/h, empty cells) since v3.5.21 — the hallmark bags never actually spawned, and that garbage is what stalled the render. Renamed the spill helper to makeSpillPiece(); bags now spawn correctly (and bag.png finally renders). Crash guard from v3.5.27 kept as belt-and-suspenders. No scoring change.
@@ -1204,7 +1205,7 @@ body[data-cb="trit"]{
 #footer .msg-line:not(:first-child){display:none;}   /* only the newest shows — legible, not a crammed row */
 .dispatch-tag{cursor:pointer;}.dispatch-tag:hover{color:#fff;}
 /* v3.5.19 LINEHAUL board — persistent dispatch record */
-#ov-linehaul{position:fixed;inset:0;z-index:360;display:none;align-items:center;justify-content:center;background:rgba(8,5,2,.86);padding:24px 12px;}
+#ov-linehaul{position:fixed;inset:0;z-index:560;display:none;align-items:center;justify-content:center;background:rgba(8,5,2,.86);padding:24px 12px;}
 #ov-linehaul.vis{display:flex;}
 .lh-card{width:min(620px,96vw);max-height:84vh;background:linear-gradient(180deg,#16110b,#0c0905);border:1px solid var(--border2);border-radius:6px;display:flex;flex-direction:column;box-shadow:0 16px 50px rgba(0,0,0,.72);overflow:hidden;}
 .lh-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,.3);flex:none;}
@@ -1248,7 +1249,7 @@ body[data-cb="trit"]{
 
 /* ── v2.5.0 PROFILE DASHBOARD ── */
 /* v2.11.0 PROFILE = trusty clipboard popup (warm paper + metal clip), same stats logic */
-#ov-profile,#ov-leaderboard{position:fixed;inset:0;z-index:355;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}
+#ov-profile,#ov-leaderboard{position:fixed;inset:0;z-index:560;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}/* v3.5.31 above the start menu (400) so they're interactive from the menu */
 #ov-profile.vis,#ov-leaderboard.vis{display:flex;}
 /* v3.5.13 LEADERBOARD board rows — dark on the cream clipboard card */
 .lb-tabline{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:#8b6a3a;margin:0 0 6px;font-weight:bold;}
@@ -1405,7 +1406,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.30</div>
+  <div class="pause-sub">LOCK IN v3.5.31</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1519,7 +1520,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.30 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.31 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1630,7 +1631,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.30 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.31 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1985,7 +1986,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.30
+// LOCK IN v3.5.31
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4422,7 +4423,7 @@ var CHUTE_IMG=null,CHUTE_OK=false;
 // v3.5.23 smalls-bag art — the FedEx/UPS-recognizable bag
 var BAGIMG=null,BAGIMG_OK=false;(function(){try{BAGIMG=new Image();BAGIMG.onload=function(){BAGIMG_OK=true;};BAGIMG.onerror=function(){BAGIMG_OK=false;};BAGIMG.src='bag.png';}catch(e){BAGIMG_OK=false;}})();
 // v3.5.30 use only the quilted INNER SQUARE of bag.png as the 3x3 skin (crop off the bulging poly excess). TUNABLE.
-var BAG_CROP={sx:150,sy:235,ss:592};
+var BAG_CROP={sx:148,sy:140,ss:602};/* v3.5.31 moved up + zoomed to fill the top */
 function drawBagSkin(c,dx,dy,dw,dh){if(!BAGIMG_OK)return false;try{c.drawImage(BAGIMG,BAG_CROP.sx,BAG_CROP.sy,BAG_CROP.ss,BAG_CROP.ss,dx,dy,dw,dh);return true;}catch(e){return false;}}
 function drawBackdropImg(c){try{c.fillStyle='#16100a';c.fillRect(DL,DT,DR-DL,DB-DT);c.save();c.beginPath();c.rect(DL,DT,DR-DL,DB-DT);c.clip();c.drawImage(BACKDROP,IL,IT,IR-IL,IB-IT);c.restore();}catch(e){BACKDROP_OK=false;}}
 function jamCheck(){if(CHUTE_JAM&&G&&G.belt&&G.belt.length<=0&&!jamStarvedT)jamStarvedT=Date.now();if(typeof updateChuteUI==='function')updateChuteUI();}
@@ -7312,7 +7313,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.30</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.31</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
