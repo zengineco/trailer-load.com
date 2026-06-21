@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.22
+   LOCK IN v3.5.23
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.23 - BAG ART + PERFECT LOAD + WIDER WALL. (1) Smalls bags now render with bag.png (the FedEx/UPS-recognizable bag) in the chute AND floor slots, replacing the box gradient / emoji. (2) DETERMINISTIC PERFECT LOAD: a 100%-full wall (zero empty cells) always completes + pops the menu + finish-glove, even mid keep-loading/maxPack. (3) Wall widened ~0.85 cube more on background.png (grows symmetrically, cells stay square). No scoring change.
    CHANGE LOG v3.5.22 - POLISH BATCH. (1) NC/SMALLS staging popup auto-closes the moment the lane is cleared. (2) A bag now breaks into a tidy 3x(2x1)+3x(1x1)=9-cube set (was 9 loose singles - kept smalls from dominating early). (3) Wall widened ~1.2 cubes + lifted on background.png (BACKDROP_WALL, cells stay square - eyeball/tune). (4) Three new event cursors wired: badmouse (illegal placement), nestmouse (tire nest), finishmouse (wall seal). NEXT: DISPATCH countdown visual on the wall bottom-1/3; bag.png pending sync. No scoring change.
    CHANGE LOG v3.5.21 - WIDER BACKDROP. Swapped the trailer backdrop to background.png (674x926, wider trailer interior) so the 17:20 wall stops overhanging the thinner old image; fallback chain background -> lockbackdrop -> backdrop. BACKDROP_WALL set to a FIRST-PASS region {l:.09,t:.12,r:.91,b:.77} - cells verified still square; exact per-edge fit pending eyeball. No scoring change.
    CHANGE LOG v3.5.20 - EVENT CURSOR. The existing follow-mouse glove (#cursor-glove) now swaps POSE on game events: open hand while holding a selected piece (mousehold), drop-hand on a successful place (dropmouse, ~420ms), lock-hand on a shelf lock-in (lockmouse, ~650ms), and the L-hand on a fail/timeout (endconditionmouse, ~1500ms), reverting to the idle pointer (mouse.png). Poses preloaded; hold/idle ticked every 90ms. Logic verified. Size/hotspot (46px, 4/12) are tunable to taste. No scoring change.
@@ -1397,7 +1398,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.22</div>
+  <div class="pause-sub">LOCK IN v3.5.23</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1511,7 +1512,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.22 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.23 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1622,7 +1623,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.22 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.23 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1977,7 +1978,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.22
+// LOCK IN v3.5.23
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4402,12 +4403,14 @@ function loop(ts){
 // v2.9.1 PHOTO BACKDROP — drops backdrop.png (repo) in as the trailer interior; falls
 // back to the procedural walls if the image is missing. Boxes still stack on the nose-wall grid.
 var BACKDROP=null,BACKDROP_OK=false;
-var BACKDROP_WALL={l:0.07,t:0.07,r:0.93,b:0.765}; // v3.5.22 ~1.2 cubes wider + lifted up vs prior pass (cells stay square via SQUARE_CELLS). TUNABLE.
+var BACKDROP_WALL={l:0.05,t:0.052,r:0.95,b:0.78}; // v3.5.23 ~0.85 cube wider again (grows symmetrically; cells stay square). TUNABLE.
 var SQUARE_CELLS=true; // v3.3.0 lock the stack grid to true squares (17:20); design the bg wall opening to 17:20 so there is no letterbox
 var CHUTE_JAM=true,jamStarvedT=0,jamWarnLevel=0,chuteJiggleT=0; // v3.4.0 chute jam / break-jam
 var CHUTE_IMG=null,CHUTE_OK=false;
 (function(){try{CHUTE_IMG=new Image();CHUTE_IMG.onload=function(){CHUTE_OK=true;};CHUTE_IMG.onerror=function(){CHUTE_OK=false;};CHUTE_IMG.src='chute.png';}catch(e){CHUTE_OK=false;}})();
 (function(){try{BACKDROP=new Image();BACKDROP.onload=function(){BACKDROP_OK=true;if(typeof resize==='function')resize();};BACKDROP.onerror=function(){if(BACKDROP.src.indexOf('background')>=0){BACKDROP.src='lockbackdrop.png';}else if(BACKDROP.src.indexOf('lockbackdrop')>=0){BACKDROP.src='backdrop.png';}else{BACKDROP_OK=false;}};BACKDROP.src='background.png';}catch(e){BACKDROP_OK=false;}})();/* v3.5.21 wider backdrop */
+// v3.5.23 smalls-bag art — the FedEx/UPS-recognizable bag
+var BAGIMG=null,BAGIMG_OK=false;(function(){try{BAGIMG=new Image();BAGIMG.onload=function(){BAGIMG_OK=true;};BAGIMG.onerror=function(){BAGIMG_OK=false;};BAGIMG.src='bag.png';}catch(e){BAGIMG_OK=false;}})();
 function drawBackdropImg(c){try{c.fillStyle='#16100a';c.fillRect(DL,DT,DR-DL,DB-DT);c.save();c.beginPath();c.rect(DL,DT,DR-DL,DB-DT);c.clip();c.drawImage(BACKDROP,IL,IT,IR-IL,IB-IT);c.restore();}catch(e){BACKDROP_OK=false;}}
 function jamCheck(){if(CHUTE_JAM&&G&&G.belt&&G.belt.length<=0&&!jamStarvedT)jamStarvedT=Date.now();if(typeof updateChuteUI==='function')updateChuteUI();}
 function breakJam(){
@@ -4619,7 +4622,10 @@ function drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,type,idx){
     c.font='bold 9px Share Tech Mono';c.fillStyle='rgba(25,165,148,.98)';
     c.textAlign='right';c.textBaseline='top';c.fillText('↻90°',sx+sw-2,sy+2);
   }
-  if(slot.isBag){c.font=(sh*.34)+'px serif';c.textBaseline='middle';c.fillText('🎒',sx+sw/2,sy+sh*.5+1);}
+  if(slot.isBag){ // v3.5.23 bag art in the floor slot (was 🎒)
+    if(BAGIMG_OK){var _far=BAGIMG.naturalWidth/Math.max(1,BAGIMG.naturalHeight),_fw=sw*.9,_fh=_fw/_far;if(_fh>sh*.9){_fh=sh*.9;_fw=_fh*_far;}try{c.drawImage(BAGIMG,sx+(sw-_fw)/2,sy+(sh-_fh)/2,_fw,_fh);}catch(_fe){}}
+    else{c.font=(sh*.34)+'px serif';c.textBaseline='middle';c.fillText('🎒',sx+sw/2,sy+sh*.5+1);}
+  }
   if(type==='nc'||slot.isNC){
     c.font='bold 8px Share Tech Mono';c.fillStyle='rgba(255,60,40,.95)';
     c.textAlign='left';c.textBaseline='top';c.fillText('SP',sx+2,sy+2);
@@ -5351,6 +5357,16 @@ function drawShippingLabel(c,x,y,w,h,txt,accent,seed,sub){
 function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
   var p=piece.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
   var R=Math.max(2,Math.min(w,h)*.1);
+  // v3.5.23 a smalls bag draws as the bag art, not a cardboard box
+  if(piece&&piece.isBag&&BAGIMG_OK){
+    c.save();
+    if(isSel){c.shadowColor='rgba(200,121,30,.65)';c.shadowBlur=12;}
+    var _bar=BAGIMG.naturalWidth/Math.max(1,BAGIMG.naturalHeight),_bw=w,_bh=w/_bar;
+    if(_bh>h){_bh=h;_bw=h*_bar;}
+    try{c.drawImage(BAGIMG,x+(w-_bw)/2,y+(h-_bh)/2,_bw,_bh);}catch(_be){}
+    c.restore();
+    return;
+  }
 
   if(isSel){
     c.save();c.shadowColor='rgba(200,121,30,.6)';c.shadowBlur=12;
@@ -7189,7 +7205,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.22</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.23</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7553,6 +7569,12 @@ var _LV=null; // current level active config (null = not in a level)
 // ── CHECK WIN — LEVEL MODE ──
 // In level mode, uses _LV thresholds instead of global WIN_H / density 0.35
 function checkWin(){
+  // v3.5.23 DETERMINISTIC PERFECT LOAD: a 100%-full wall (zero empty cells) always completes — even mid keep-loading
+  if(!gOver&&G&&G.grid&&countFilled()>=GW*GH&&!document.getElementById('next-popup').classList.contains('vis')){
+    if(G.maxPack){G.maxPack=false;var _mf=document.getElementById('maxpack-finish');if(_mf)_mf.style.display='none';}
+    sealWall('PERFECT LOAD — 100% PACKED, ZERO VOIDS');
+    return;
+  }
   if(!gOver&&!(G&&G.maxPack)&&!document.getElementById('next-popup').classList.contains('vis')){
     var hp=wallH()/GH;
     var density=countFilled()/(GW*GH);
