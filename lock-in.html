@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.21
+   LOCK IN v3.5.22
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.22 - POLISH BATCH. (1) NC/SMALLS staging popup auto-closes the moment the lane is cleared. (2) A bag now breaks into a tidy 3x(2x1)+3x(1x1)=9-cube set (was 9 loose singles - kept smalls from dominating early). (3) Wall widened ~1.2 cubes + lifted on background.png (BACKDROP_WALL, cells stay square - eyeball/tune). (4) Three new event cursors wired: badmouse (illegal placement), nestmouse (tire nest), finishmouse (wall seal). NEXT: DISPATCH countdown visual on the wall bottom-1/3; bag.png pending sync. No scoring change.
    CHANGE LOG v3.5.21 - WIDER BACKDROP. Swapped the trailer backdrop to background.png (674x926, wider trailer interior) so the 17:20 wall stops overhanging the thinner old image; fallback chain background -> lockbackdrop -> backdrop. BACKDROP_WALL set to a FIRST-PASS region {l:.09,t:.12,r:.91,b:.77} - cells verified still square; exact per-edge fit pending eyeball. No scoring change.
    CHANGE LOG v3.5.20 - EVENT CURSOR. The existing follow-mouse glove (#cursor-glove) now swaps POSE on game events: open hand while holding a selected piece (mousehold), drop-hand on a successful place (dropmouse, ~420ms), lock-hand on a shelf lock-in (lockmouse, ~650ms), and the L-hand on a fail/timeout (endconditionmouse, ~1500ms), reverting to the idle pointer (mouse.png). Poses preloaded; hold/idle ticked every 90ms. Logic verified. Size/hotspot (46px, 4/12) are tunable to taste. No scoring change.
    CHANGE LOG v3.5.19 - LINEHAUL BOARD + 3 VOICES. Dispatch voices renamed: COWORKER praises (ok), MANAGER handles rules/dispatch/cant-do-that (all corrective), TRAINER coaches (commentary). TRAINER shutdown: once session score clears TRAINER_CUTOFF (9000) the trainer stops the routine check-ins (you have proven you load safe) - MANAGER still enforces. NEW LINEHAUL board: persistent dispatch record, opens from the footer "▸ LINEHAUL" tag, holds the loop while open, same source-badge + outlined style as the ticker. Records every line (last 80). No scoring change.
@@ -1396,7 +1397,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.21</div>
+  <div class="pause-sub">LOCK IN v3.5.22</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1510,7 +1511,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.21 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.22 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1621,7 +1622,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.21 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.22 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1976,7 +1977,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.21
+// LOCK IN v3.5.22
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3378,12 +3379,19 @@ function spawnBag(){
   G.belt.push(makeBagPiece());
   S.smallsSpawned=(S.smallsSpawned||0)+1;
 }
+// v3.5.21 a bag breaks into a tidy set — 3x (2x1) + 3x (1x1) = 9 cubes — not 9 loose singles (keeps smalls from dominating early)
+function makeBagPiece(w,h){
+  return {type:'small',w:w,h:h,wc:w*h,cells:makeRect(w,h).map(function(c){return[c[0],c[1]];}),
+    id:uid('GP'),seed:rnd(100,9999),pal:{b:'#9060cc',l:'#b080ec',d:'#602090',t:'rgba(140,80,200,.55)'},
+    labelDef:LABELS[14],label:'FILL',isFrag:false,isGap:true,isBrokenBag:true};
+}
+var BAG_SPILL=[[2,1],[2,1],[2,1],[1,1],[1,1],[1,1]];
+function spillBag(){var si,c=0;for(si=0;si<BAG_SPILL.length&&G.belt.length<BELT_PIECE_COUNT+8;si++){var p=makeBagPiece(BAG_SPILL[si][0],BAG_SPILL[si][1]);G.belt.push(p);c+=p.wc;}return c;}
 function breakdownBeltBag(idx){
   var b=G.belt[idx];if(!b||!b.isBag)return;
   G.belt.splice(idx,1);
   S.bagsBroken=(S.bagsBroken||0)+1;
-  var cubes=0,guard=0;                            // spill ~9 cubes of smalls into the chute (uses the empty space)
-  while(cubes<9&&guard++<24&&G.belt.length<BELT_PIECE_COUNT+8){var sp=genPieceRaw(true);G.belt.push(sp);cubes+=(sp.wc||1);}
+  var cubes=spillBag();                            // 3x 2x1 + 3x 1x1 = 9 cubes into the chute
   if(typeof playSfx==='function')playSfx('bagbreak');
   if(selBeltIdx===idx)selBeltIdx=null;else if(selBeltIdx!==null&&selBeltIdx>idx)selBeltIdx--;
   if(typeof showBanner==='function')showBanner('BAG BROKEN — SMALLS SPILLED INTO THE CHUTE','ok',1800);
@@ -3462,8 +3470,7 @@ function breakdownBag(idx){
   // Remove bag
   G.bagSlots[idx]=null;
   // v3.5.12: spill the smalls INTO THE CHUTE (unified feed) — same as a chute-bag breakdown, not back into the slots
-  var cubes=0,guard=0;
-  while(cubes<9&&guard++<24&&G.belt.length<BELT_PIECE_COUNT+8){var sp=genPieceRaw(true);sp.isBrokenBag=true;G.belt.push(sp);cubes+=(sp.wc||1);}
+  var cubes=spillBag();                            // 3x 2x1 + 3x 1x1 = 9 cubes into the chute
   if(cubes>0){
     showBanner('BAG BROKEN DOWN! 🎁<br><span style="font-size:.52em">SMALLS SPILLED INTO THE CHUTE — FILL THOSE VOIDS!</span>','ok',2500);
     flash('fl-ok');
@@ -3517,6 +3524,7 @@ function tryNest(src,idx,tcell){
   var bonus=70+30*cost+(isHaz?120:0);
   G.score=(G.score||0)+bonus;
   S.nests=(S.nests||0)+1;
+  if(typeof gcurFlash==='function')gcurFlash('nest',520); // v3.5.22 nest-glove on a tire stuff
   // v3.5.9: a nest IS a placed small — count it toward throughput + smalls totals. Was logged ONLY as a "nest",
   // so the post-sort report undercounted Pieces, PPH, Avg pieces/wall, and Smalls-utility for every nested small.
   placed++;
@@ -3769,7 +3777,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   else if(source==='nc')box=G.ncSlots[sourceIdx];
   else if(source==='bag')box=G.bagSlots[sourceIdx];
   if(!box)return false;
-  if(!isLegal(G.grid,box,gx,gy,rot)){S.rejects=(S.rejects||0)+1;if(typeof playSfx==='function')playSfx('error');if(typeof addShake==='function')addShake(5);hapt('error');if(typeof showBanner==='function'&&(!G._rejWarn||Date.now()-G._rejWarn>2500)){G._rejWarn=Date.now();showBanner('\u2715 NO SUPPORT THERE \u2014 every box needs something solid under it.','warn',1800);}return false;} // v2.1.9 / v2.1.33 reject feedback
+  if(!isLegal(G.grid,box,gx,gy,rot)){S.rejects=(S.rejects||0)+1;if(typeof gcurFlash==='function')gcurFlash('bad',420);if(typeof playSfx==='function')playSfx('error');if(typeof addShake==='function')addShake(5);hapt('error');if(typeof showBanner==='function'&&(!G._rejWarn||Date.now()-G._rejWarn>2500)){G._rejWarn=Date.now();showBanner('\u2715 NO SUPPORT THERE \u2014 every box needs something solid under it.','warn',1800);}return false;} // v2.1.9 / v2.1.33 reject feedback
   var _segB=countSegregationViolations(G.grid),_kB=anyKillerTooClose(G.grid); // v2.1.6 pre-commit state
 
   // Fragile crush check — only fires for wc>=5, locked rows protect boxes
@@ -4266,6 +4274,7 @@ function sealWall(reason){
   if(!hydrationOK())return;
   if(G.sealed){if(gameMode!=='level'){var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ '+reason;}return;} // v3.5.4 EXPLOIT FIX: seal payout ONCE per wall — re-summoning the menu never re-awards the +2500
   G.sealed=true;
+  if(typeof gcurFlash==='function')gcurFlash('finish',1300); // v3.5.22 finish-glove on sealing the wall
   if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
   if(typeof playSfx==='function')playSfx('win');
   G.score=(G.score||0)+LOAD_SEALED_BONUS; // v2.1.11 #1 payout
@@ -4393,7 +4402,7 @@ function loop(ts){
 // v2.9.1 PHOTO BACKDROP — drops backdrop.png (repo) in as the trailer interior; falls
 // back to the procedural walls if the image is missing. Boxes still stack on the nose-wall grid.
 var BACKDROP=null,BACKDROP_OK=false;
-var BACKDROP_WALL={l:0.09,t:0.12,r:0.91,b:0.77}; // v3.5.21 FIRST-PASS for background.png (wider trailer). TUNABLE per edge — eyeball + adjust.
+var BACKDROP_WALL={l:0.07,t:0.07,r:0.93,b:0.765}; // v3.5.22 ~1.2 cubes wider + lifted up vs prior pass (cells stay square via SQUARE_CELLS). TUNABLE.
 var SQUARE_CELLS=true; // v3.3.0 lock the stack grid to true squares (17:20); design the bg wall opening to 17:20 so there is no letterbox
 var CHUTE_JAM=true,jamStarvedT=0,jamWarnLevel=0,chuteJiggleT=0; // v3.4.0 chute jam / break-jam
 var CHUTE_IMG=null,CHUTE_OK=false;
@@ -4460,6 +4469,7 @@ function stgClose(){STG_OPEN=null;var ov=document.getElementById('ov-staging');i
 function stgRender(){
   if(!STG_OPEN)return;
   var slots=(STG_OPEN==='nc')?G.ncSlots:G.bagSlots, sel=(STG_OPEN==='nc')?selNC:selBag;
+  if(slots&&slots.every(function(s){return !s;})){stgClose();return;} // v3.5.21 lane cleared -> popup goes away on its own
   var sep=document.getElementById('stg-sep');if(sep)sep.textContent=(STG_OPEN==='nc')?'NC \u00b7 LOAD LOW':'SMALLS \u00b7 GAP-FILL';
   var box=document.getElementById('stg-tiles');if(!box)return;
   var items=[],i;for(i=0;i<slots.length;i++){if(slots[i])items.push({i:i,s:slots[i]});}
@@ -6095,7 +6105,7 @@ function closeLinehaul(){
 }
 // ── v3.5.20 EVENT CURSOR: swap the glove pose on game events (the follow-mouse element is #cursor-glove) ──
 var GCUR={base:'mouse.png',tempUntil:0,tempSrc:'',hold:false};
-var GCUR_IMG={hold:'mousehold.png',drop:'dropmouse.png',lock:'lockmouse.png',end:'endconditionmouse.png'};
+var GCUR_IMG={hold:'mousehold.png',drop:'dropmouse.png',lock:'lockmouse.png',end:'endconditionmouse.png',bad:'badmouse.png',finish:'finishmouse.png',nest:'nestmouse.png'};
 function gcurPreload(){var k;for(k in GCUR_IMG){var im=new Image();im.src=GCUR_IMG[k];}}
 function gcurApply(){
   var img=document.getElementById('cursor-glove');if(!img)return;
@@ -7179,7 +7189,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.21</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.22</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
