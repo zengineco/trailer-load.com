@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.29
+   LOCK IN v3.5.30
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.30 - BAG SKIN CROP + CROOKED TAPES. Bag skin now uses only the INNER QUILTED SQUARE of bag.png (BAG_CROP) as the 3x3 skin (chute+wall+floor), cropping the bulging poly excess. Tapes reworked into crooked "indicator tape": seed-stable random position+angle (never spins with the piece; labels stay upright), capped at 2 (less crowded). SMALLS now wear the frontload sticker. haztape is a prominent crooked strip on all hazmats (was a subtle behind-label outline). Menu top-right buttons z-index bumped (defensive). No scoring change.
    CHANGE LOG v3.5.29 - TAPES + BAGS ON THE WALL. Placed boxes now render tapes (same seed-stable mapping, clipped to footprint) and hazmats get a haztape candy-stripe top+bottom. Bags wear the bag.png skin drawn ~15% oversized with a drop shadow — the stuffed-bag bulge/overlap is intentional + realistic. Smalls render as placed boxes as before. Verified no render throw across bag/fragile/NC/small/hazmat. No scoring change.
    CHANGE LOG v3.5.28 - ROOT FIX: bag shadow bug. The v3.5.21 spill helper was ALSO named makeBagPiece(w,h), SHADOWING the real makeBagPiece() (the 3x3 SMALLS bag generator). So spawnBag() + the daily bag pushed garbage (no w/h, empty cells) since v3.5.21 — the hallmark bags never actually spawned, and that garbage is what stalled the render. Renamed the spill helper to makeSpillPiece(); bags now spawn correctly (and bag.png finally renders). Crash guard from v3.5.27 kept as belt-and-suspenders. No scoring change.
    CHANGE LOG v3.5.27 - CRASH HOTFIX (render stall). A malformed belt piece (missing/zero w-h or empty cells — a broken-bag gap remnant) NaN-d createLinearGradient in drawBeltPiece -> full render stall ("WE'RE SORRY"). Hardened drawBeltFreight to fully REPAIR any malformed chute piece before render: recover dims from cells, rebuild cells from dims, default to a valid 1x1, ar can never be non-finite. The chute can no longer crash the render. (genPieceRaw confirmed dead code — 0 callers.) No scoring change.
@@ -452,7 +453,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   color:var(--t2);text-align:left;margin:0 0 16px 34px;text-transform:uppercase;
 }
 /* Top-right account / settings (placeholders, visible for reference) */
-#sm-topright{position:absolute;top:16px;right:18px;display:flex;gap:10px;align-items:center;z-index:6;}
+#sm-topright{position:absolute;top:16px;right:18px;display:flex;gap:10px;align-items:center;z-index:60;pointer-events:auto;}/* v3.5.30 ensure top-right menu buttons stay above the demo + mode cards */
 .sm-iconbtn,.sm-loginbtn{
   font-family:'Share Tech Mono',monospace;color:#1c1206;font-weight:bold;
   border:1px solid var(--acc-bright);border-radius:7px;background:var(--acc);
@@ -1404,7 +1405,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.29</div>
+  <div class="pause-sub">LOCK IN v3.5.30</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1518,7 +1519,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.29 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.30 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1629,7 +1630,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.29 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.30 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1984,7 +1985,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.29
+// LOCK IN v3.5.30
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4420,6 +4421,9 @@ var CHUTE_IMG=null,CHUTE_OK=false;
 (function(){try{BACKDROP=new Image();BACKDROP.onload=function(){BACKDROP_OK=true;if(typeof resize==='function')resize();};BACKDROP.onerror=function(){if(BACKDROP.src.indexOf('background')>=0){BACKDROP.src='lockbackdrop.png';}else if(BACKDROP.src.indexOf('lockbackdrop')>=0){BACKDROP.src='backdrop.png';}else{BACKDROP_OK=false;}};BACKDROP.src='background.png';}catch(e){BACKDROP_OK=false;}})();/* v3.5.21 wider backdrop */
 // v3.5.23 smalls-bag art — the FedEx/UPS-recognizable bag
 var BAGIMG=null,BAGIMG_OK=false;(function(){try{BAGIMG=new Image();BAGIMG.onload=function(){BAGIMG_OK=true;};BAGIMG.onerror=function(){BAGIMG_OK=false;};BAGIMG.src='bag.png';}catch(e){BAGIMG_OK=false;}})();
+// v3.5.30 use only the quilted INNER SQUARE of bag.png as the 3x3 skin (crop off the bulging poly excess). TUNABLE.
+var BAG_CROP={sx:150,sy:235,ss:592};
+function drawBagSkin(c,dx,dy,dw,dh){if(!BAGIMG_OK)return false;try{c.drawImage(BAGIMG,BAG_CROP.sx,BAG_CROP.sy,BAG_CROP.ss,BAG_CROP.ss,dx,dy,dw,dh);return true;}catch(e){return false;}}
 function drawBackdropImg(c){try{c.fillStyle='#16100a';c.fillRect(DL,DT,DR-DL,DB-DT);c.save();c.beginPath();c.rect(DL,DT,DR-DL,DB-DT);c.clip();c.drawImage(BACKDROP,IL,IT,IR-IL,IB-IT);c.restore();}catch(e){BACKDROP_OK=false;}}
 function jamCheck(){if(CHUTE_JAM&&G&&G.belt&&G.belt.length<=0&&!jamStarvedT)jamStarvedT=Date.now();if(typeof updateChuteUI==='function')updateChuteUI();}
 function breakJam(){
@@ -4631,8 +4635,8 @@ function drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,type,idx){
     c.font='bold 9px Share Tech Mono';c.fillStyle='rgba(25,165,148,.98)';
     c.textAlign='right';c.textBaseline='top';c.fillText('↻90°',sx+sw-2,sy+2);
   }
-  if(slot.isBag){ // v3.5.23 bag art in the floor slot (was 🎒)
-    if(BAGIMG_OK){var _far=BAGIMG.naturalWidth/Math.max(1,BAGIMG.naturalHeight),_fw=sw*.9,_fh=_fw/_far;if(_fh>sh*.9){_fh=sh*.9;_fw=_fh*_far;}try{c.drawImage(BAGIMG,sx+(sw-_fw)/2,sy+(sh-_fh)/2,_fw,_fh);}catch(_fe){}}
+  if(slot.isBag){ // v3.5.23/30 bag SKIN (inner square crop) in the floor slot (was 🎒)
+    if(BAGIMG_OK){drawBagSkin(c,sx+sw*0.05,sy+sh*0.05,sw*0.9,sh*0.9);}
     else{c.font=(sh*.34)+'px serif';c.textBaseline='middle';c.fillText('🎒',sx+sw/2,sy+sh*.5+1);}
   }
   if(type==='nc'||slot.isNC){
@@ -4938,10 +4942,10 @@ function renderWallBox(c,cell){
   // v3.5.29 BAG SKIN on the wall — a stuffed bag form-fits + bulges, so draw bag.png oversized (overlap is realistic — don't be shy)
   if(cell.box&&cell.box.isBag&&typeof BAGIMG_OK!=='undefined'&&BAGIMG_OK&&!cell.isCrushed){
     var _bminx=Math.min(tl.x,bl.x),_bmaxx=Math.max(tr.x,br.x),_bminy=Math.min(tl.y,tr.y),_bmaxy=Math.max(bl.y,br.y);
-    var _bgw=_bmaxx-_bminx,_bgh=_bmaxy-_bminy,_bov=Math.max(_bgw,_bgh)*0.15;
+    var _bgw=_bmaxx-_bminx,_bgh=_bmaxy-_bminy,_bov=Math.max(_bgw,_bgh)*0.06;
     c.save();
     c.shadowColor='rgba(0,0,0,.4)';c.shadowBlur=6;c.shadowOffsetY=3;
-    try{c.drawImage(BAGIMG,_bminx-_bov,_bminy-_bov,_bgw+_bov*2,_bgh+_bov*2);}catch(_be){}
+    drawBagSkin(c,_bminx-_bov,_bminy-_bov,_bgw+_bov*2,_bgh+_bov*2);
     c.restore();
     drawBoxLabel(c,cell,tl,tr,bl,br,p);
     return;
@@ -5030,8 +5034,7 @@ function renderWallBox(c,cell){
     var _wtxmin=Math.min(tl.x,bl.x),_wtxmax=Math.max(tr.x,br.x),_wtymin=Math.min(tl.y,tr.y),_wtymax=Math.max(bl.y,br.y);
     var _wtw=_wtxmax-_wtxmin,_wth=_wtymax-_wtymin;
     c.save();piecePath();c.clip();
-    drawTapeBands(c,cell.box,_wtxmin,_wtymin,_wtw,_wth);
-    if(typeof tapeHaz==='function'&&tapeHaz(cell.box)){var _whz=tapeImg('haztape');if(_whz){var _wbh=Math.max(3,_wth*0.13);drawOneTape(c,_whz,_wtxmin,_wtymin,_wtw,_wbh);drawOneTape(c,_whz,_wtxmin,_wtymax-_wbh,_wtw,_wbh);}}
+    drawTapes(c,cell.box,_wtxmin,_wtymin,_wtw,_wth);
     c.restore();
   }
 
@@ -5408,19 +5411,19 @@ function boxTapes(p){
   function rr(n){return (((s*9301+(n+1)*49297)%233280)>>>0)/233280;}
   var svc=(typeof svcCode==='function')?(''+svcCode(p)):'';
   var frag=!!(p.isFrag||(p.labelDef&&p.labelDef.isFrag)), nc=!!p.isNC;
+  var small=(p.type==='small'||p.isGap)&&!p.isBag;
   var w=p.w||1,h=p.h||1,mx=Math.max(w,h),mn=Math.min(w,h),isLong=(mx>=6&&mn<=2);
-  if(frag){t.push('fragile'); if(rr(1)<0.6)t.push('toponly'); if(rr(2)<0.35)t.push('donotstack');}
-  if(nc){t.push('heavy'); if(rr(3)<0.5)t.push('teamlift'); if(mx>=5)t.push('oversize');}
-  if(svc==='FRT'||p.type==='large'){if(t.indexOf('freight')<0)t.push('freight'); if(rr(4)<0.45)t.push('norotate');}
-  if(svc==='GND'){if(rr(5)<0.5)t.push('bulk');}
+  if(small)t.push('frontload');                                  // v3.5.30 smalls wear the front-load sticker
+  if(frag){t.push('fragile'); if(rr(1)<0.55)t.push('toponly');}
+  if(nc){t.push('heavy'); if(rr(3)<0.45)t.push('teamlift'); else if(mx>=5)t.push('oversize');}
+  if(svc==='FRT'||p.type==='large'){if(t.indexOf('freight')<0)t.push('freight');}
+  else if(svc==='GND'){if(rr(5)<0.5)t.push('bulk');}
   else if(svc==='AIR'||svc==='OVN'||svc==='EXP'||svc==='1DAY'){t.push('aircargo');}
   if(isLong){if(t.indexOf('thissideup')<0)t.push('thissideup'); if(rr(6)<0.44)t.push('liveplants');}
-  else if(h>w&&w>=2&&h<=6&&rr(7)<0.45){t.push('thissideup');}
-  if(w===2&&h===2&&rr(8)<0.18)t.push('liveanimals');
-  if(rr(9)<0.06)t.push('refrigerated');
-  if(rr(10)<0.04)t.push('securityseal');
-  if(rr(11)<0.03)t.push('highvalue');
-  if(t.length>3)t=t.slice(0,3);
+  else if(h>w&&w>=2&&h<=6&&rr(7)<0.4){t.push('thissideup');}
+  if(w===2&&h===2&&rr(8)<0.16)t.push('liveanimals');
+  if(rr(10)<0.05)t.push('securityseal');
+  if(t.length>2)t=t.slice(0,2);                                  // v3.5.30 less crowded — 2 max
   p._tapes=t;
   return t;
 }
@@ -5432,23 +5435,40 @@ function drawOneTape(c,img,x,y,w,bh){
   for(tx=x;tx<x+w;tx+=tileW)c.drawImage(img,tx,y,tileW,bh);
   c.restore();
 }
-// strips at top/bottom/upper edges so the centered shipping label stays readable
-function drawTapeBands(c,p,x,y,w,h){
+// v3.5.30 crooked "indicator tape" — slapped-on strips at a seed-stable angle/position (never spins with the piece)
+function drawTapeCrooked(c,img,cx,cy,len,bh,ang){
+  if(!img||len<8||bh<3)return;
+  c.save();c.translate(cx,cy);c.rotate(ang);
+  c.beginPath();c.rect(-len/2,-bh/2,len,bh);c.clip();
+  var ar=img.naturalWidth/Math.max(1,img.naturalHeight),tileW=Math.max(8,bh*ar),tx;
+  for(tx=-len/2;tx<len/2+tileW;tx+=tileW)c.drawImage(img,tx,-bh/2,tileW,bh);
+  c.restore();
+}
+function drawTapes(c,p,x,y,w,h){
   if(w<16||h<16)return;
-  var tapes=boxTapes(p);if(!tapes.length)return;
-  var bandH=Math.max(3,h*0.13),ys=[y+h*0.05,y+h-bandH-h*0.05,y+h*0.225],i,img;
-  for(i=0;i<Math.min(tapes.length,3);i++){img=tapeImg(tapes[i]);if(img)drawOneTape(c,img,x+1,ys[i],w-2,bandH);}
+  var tapes=boxTapes(p);
+  var hz=(typeof tapeHaz==='function'&&tapeHaz(p));
+  var list=hz?['haztape'].concat(tapes):tapes; if(!list.length)return;
+  var s=((p.seed||1)>>>0);function rr(n){return (((s*9301+(n+13)*49297)%233280)>>>0)/233280;}
+  var mn=Math.min(w,h),n=Math.min(list.length,hz?3:2),i;
+  for(i=0;i<n;i++){
+    var img=tapeImg(list[i]);if(!img)continue;
+    var isHz=(list[i]==='haztape');
+    var bh=Math.max(4,mn*(isHz?0.22:0.16));
+    var len=Math.max(w,h)*0.94;
+    var cx=x+w*(0.32+rr(i*3)*0.36), cy=y+h*(0.24+rr(i*3+1)*0.52);
+    var ang=(rr(i*3+2)-0.5)*0.7; // ±~20deg crooked, seed-stable
+    drawTapeCrooked(c,img,cx,cy,len,bh,ang);
+  }
 }
 function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
   var p=piece.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
   var R=Math.max(2,Math.min(w,h)*.1);
-  // v3.5.23 a smalls bag draws as the bag art, not a cardboard box
+  // v3.5.23/30 a smalls bag draws as the bag SKIN (inner square crop), not a cardboard box
   if(piece&&piece.isBag&&BAGIMG_OK){
     c.save();
     if(isSel){c.shadowColor='rgba(200,121,30,.65)';c.shadowBlur=12;}
-    var _bar=BAGIMG.naturalWidth/Math.max(1,BAGIMG.naturalHeight),_bw=w,_bh=w/_bar;
-    if(_bh>h){_bh=h;_bw=h*_bar;}
-    try{c.drawImage(BAGIMG,x+(w-_bw)/2,y+(h-_bh)/2,_bw,_bh);}catch(_be){}
+    drawBagSkin(c,x,y,w,h);
     c.restore();
     return;
   }
@@ -5500,8 +5520,8 @@ function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
 
   if(isSel)c.restore();
 
-  // v3.5.26 TAPES (over the box, under the label)
-  drawTapeBands(c,piece,x,y,w,h);
+  // v3.5.30 crooked indicator tapes (haztape handled inside, over the box, under the label)
+  drawTapes(c,piece,x,y,w,h);
 
   // Label badge
   var ld=piece.labelDef;
@@ -5509,8 +5529,6 @@ function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
     // v3.0.3 real shipping label (taller white tag + name + barcode)
     var lw=Math.max(14,Math.min(w*.80,w-3)),lh=Math.max(11,Math.min(h*.62,h-3));
     var lx=x+(w-lw)*.5,ly2=y+(h-lh)*.52;
-    // v3.5.26 haztape candy-stripe behind the label, slightly larger = the hazmat outline
-    if(tapeHaz(piece)){var _hz=tapeImg('haztape');if(_hz){var _hp=Math.max(2,lh*0.17);drawOneTape(c,_hz,lx-_hp,ly2-_hp,lw+_hp*2,lh+_hp*2);}}
     var _isPlain=(ld.s==='STD'||ld.s==='SP');
     var _sTxt=_isPlain?svcCode(piece):(ld.ico?ld.ico+' '+ld.s:ld.s);
     drawShippingLabel(c,lx,ly2,lw,lh,_sTxt,_isPlain?null:ld.bg,piece.seed,destCode(piece));
@@ -7294,7 +7312,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.29</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.30</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
