@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.37
+   LOCK IN v3.5.38
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.38 - OPERATIONS DRAWER REBUILT (Goyim: the v3.5.37 version was "dogwater" — it just re-showed the scoreboard + a couple broken zeros, incl. S.incidents which is an ARRAY not a number). OPERATIONS is now a live mid-load CHECK-IN modeled on the end report: a live LETTER GRADE hero (A+..F + rank + verdict + /100, same math as fillTelemetryTiles via new shared sessionGrade()), then grouped tiles pulled from the authoritative S accumulators — LOAD QUALITY (integrity/support/pack fill/gaps), SAFETY (incidents[].length/crunches/collapses/haz shelves), PRODUCTIVITY (pph now/pph peak/shelves/double locks/accuracy/pieces), all color-coded. No scoreboard dupes. Refreshes live from updateHUD. No scoring change.
    CHANGE LOG v3.5.37 - LEGITIMACY STEP 2A: BOTTOM CONSOLE (Goyim's redesign — scratch the right-side rail, keep linehaul at the bottom). The footer now hosts a 3-button console -> collapsible scrollable drawers: OPERATIONS (NEW live-stats drawer: SCORE/LOAD RATE/WALL HEIGHT/PACK/INTEGRITY/BALANCE/PLACED/SHELVES/GAPS/VOIDS/INCIDENTS/TRAILER, color-coded, refreshes live from updateHUD), LINEHAUL (the full dispatch log as a bottom drawer — bigger 16px Barlow body so missed messages are readable, no full-screen pause), ADMIN (-> the pause/admin surface; REPLACES the scoreboard ⏸ PAUSE button, which is removed). OPS/LINEHAUL are peek drawers (game runs behind them). NEXT (v3.5.38, step 2B/3): reskin ADMIN's pause onto the CLIPBOARD + migrate account/privacy/consent out of the old DATA tab into ADMIN + retire the DATA tab. No scoring change.
    CHANGE LOG v3.5.36 - LEGITIMACY PASS, STEP 1 (audit-driven quick fixes). Ran a full audit (auth/social/leaderboard, settings, menu, pause, linehaul) + backend check. Findings: socials/logins/leaderboards are REAL/wired end-to-end (gap is DATA not code — daily board has 0 submissions); settings 12/12 functional; menu complete; levels 6-10 actually play (master notes were stale). FIXES THIS SHIP: (1) AUDIO ON by default for anon/first-run (was volSfx/volMusic:0 silent while sliders showed 80/60 = looked broken) -> 80/60; a logged-in account will restore its own saved levels (classroom can save muted) — per-account sync is NEXT. Music starts on first user gesture (autoplay policy). (2) PERSISTENCE: settings + voice moved sessionStorage -> localStorage (survive tab close; the comment always claimed "Persisted prefs"). (3) Killed three stale "Coming Soon" code comments about levels 6-10 (they're live). (4) SECURITY: revoked public/anon/authenticated EXECUTE on the rls_auto_enable event-trigger fn (advisor WARN; recovery RPCs already guard on auth.uid(), boards/signup anon-exec are by design). NOTE: the ov-data "DATA" overlay is the CONSENT funnel (not dead code) — kept. No scoring change.
    CHANGE LOG v3.5.35 - TRADEMARK SCRUB (deploy blocker cleared). Swept the whole file for carrier trade-dress. Only TWO player-facing hits existed: (1) LV1 flavor "UPS, FedEx, Amazon" -> "Every carrier in the country"; (2) LV2 hub "FedEx Super Hub" -> "Memphis International" (matches the real-airport naming of every other level; city "Memphis, TN · MEM" kept — a real airport, not a mark). Generic freight vocab (GROUND/PRIORITY/EXPRESS/OVERNIGHT) KEPT — industry service tiers, not trademarks. Genericized two live code comments ("FedEx/UPS-recognizable" -> "courier-recognizable"); left historical CHANGELOG lines as the record. Deleted stray lock-in_v2.0.4.html from the repo. No scoring change.
@@ -474,6 +475,16 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .cd-lh-row.msg-danger .msg-src{color:#f4b09c;border-color:rgba(204,56,32,.65);background:rgba(110,22,12,.6);}
 .cd-lh-row .msg-body{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--t1);line-height:1.4;}
 .cd-empty{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--t3);text-align:center;padding:24px 0;}
+/* v3.5.38 OPERATIONS = live mini-report (grade hero + grouped metrics, pulled from the end-report sources) */
+.ops-hero{display:flex;align-items:center;gap:12px;padding:4px 2px 12px;border-bottom:1px solid var(--border2);margin-bottom:10px;}
+.ops-grade{font-family:'Bebas Neue',cursive;font-size:46px;line-height:.9;flex:none;min-width:54px;text-align:center;}
+.ops-hero-txt{flex:1;min-width:0;}
+.ops-rank{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:bold;letter-spacing:1px;color:var(--t1);text-transform:uppercase;}
+.ops-verd{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--t2);line-height:1.3;margin-top:2px;}
+.ops-pts{font-family:'Share Tech Mono',monospace;font-size:24px;font-weight:bold;flex:none;}
+.ops-pts span{font-size:13px;color:var(--t3);}
+.ops-sec{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--acc);text-transform:uppercase;font-weight:bold;margin:12px 0 7px;}
+.ops-sec.first{margin-top:0;}
 .ov-data{position:fixed;inset:0;z-index:120;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);}
 .ov-data.vis{display:flex;}
 .data-card{margin-top:0;max-width:440px;width:92%;background:var(--bg2);border:1px solid var(--acc);border-top:none;border-radius:0 0 12px 12px;padding:18px 20px 20px;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:dataDrop .28s ease;}
@@ -1456,7 +1467,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.37</div>
+  <div class="pause-sub">LOCK IN v3.5.38</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1570,7 +1581,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.37 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.38 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1681,7 +1692,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.37 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.38 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2046,7 +2057,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.37
+// LOCK IN v3.5.38
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6317,33 +6328,61 @@ function cdLinehaulRender(){
   var h='',i;for(i=_linehaulLog.length-1;i>=0;i--){var m=_linehaulLog[i];h+='<div class="cd-lh-row'+(m.type?(' msg-'+m.type):'')+'"><span class="msg-src">'+m.src+'</span><span class="msg-body">'+m.body+'</span></div>';}
   el.innerHTML=h;
 }
+// v3.5.38 live session grade — same math as the end-report (fillTelemetryTiles keeps the canonical copy; keep both in sync if the formula changes)
+function sessionGrade(){
+  var ih=(typeof S!=='undefined'&&S&&S.intHistory)?S.intHistory:[],ai=100,ais=0,k;
+  if(ih.length){for(k=0;k<ih.length;k++)ais+=ih[k];ai=ais/ih.length;}
+  var inc=(typeof S!=='undefined'&&S&&S.incidents)?S.incidents.length:0;
+  var crn=(S&&S.crunches)||0,col=(S&&S.collapses)||0,pph=(S&&S.bestPPH)||0,shf=(S&&S.shelvesLocked)||0;
+  var pts=10+ai*0.5+Math.min(20,shf*4)+Math.min(20,pph/10);
+  pts-=inc*8+crn*3+col*10;
+  if(inc>=2)pts=Math.min(pts,55);
+  pts=Math.max(0,Math.min(100,Math.round(pts)));
+  var g,rank,verd,clr;
+  if(pts>=93){g='A+';rank='YARD LEGEND';verd='Textbook load. Dispatch wishes every trailer looked like this.';clr='var(--ok)';}
+  else if(pts>=85){g='A';rank='DOCK VETERAN';verd='Tight. Square. Safe. Veteran work.';clr='var(--ok)';}
+  else if(pts>=75){g='B';rank='SOLID HAND';verd='Strong wall. A few cubes left behind.';clr='var(--teal)';}
+  else if(pts>=65){g='C';rank='GREENHORN+';verd='You made the door. Now make it clean.';clr='var(--warn)';}
+  else if(pts>=50){g='D';rank='ROOKIE';verd='Trailer sealed. Fundamentals need work.';clr='var(--warn)';}
+  else{g='F';rank='RE-TRAIN';verd=(inc>=2?'Safety record flagged — slow down.':'Floor first. Support everything. Try again.');clr='var(--danger)';}
+  return {pts:pts,g:g,rank:rank,verd:verd,clr:clr,ai:Math.round(ai),inc:inc};
+}
+// OPERATIONS = a live mid-load CHECK-IN (mini end-report), NOT a scoreboard rerun.
 function opsRender(){
   var el=document.getElementById('cd-body');if(!el)return;
   if(typeof G==='undefined'||!G||!G.grid){el.innerHTML='<div class="cd-empty">Start a load to see live operations.</div>';return;}
   function cell(k,v,cls){return '<div class="ops-cell"><div class="ops-k">'+k+'</div><div class="ops-v'+(cls?(' '+cls):'')+'">'+v+'</div></div>';}
-  var hp=Math.round((wallH()/GH)*100);
-  var pph=getPPH()||0;
+  var sg=sessionGrade();
+  var fill=Math.round(countFilled()/(GW*GH)*100);
+  var sup=Math.round(supportScore(G.grid)*100);
   var integ=(G.integrity!=null)?G.integrity:100;
-  var eff=Math.round((countFilled()/(GW*GH))*100);
-  var cog=(G.cog!=null)?G.cog:.5,dev=Math.abs(cog-.5);
-  var bal=dev<.07?'STABLE':dev<.16?'CAUTION':'DANGER';
-  var balCls=dev<.07?'ok':dev<.16?'warn':'danger';
-  var inc=(typeof S!=='undefined'&&S&&S.incidents!=null)?S.incidents:0;
-  var gaps=countGaps(G.grid);
-  var voids=getVoids(G.grid).length;
-  var h='<div class="ops-grid">';
-  h+=cell('SCORE',G.score||0);
-  h+=cell('LOAD RATE',pph||'—');
-  h+=cell('WALL HEIGHT',hp+'%');
-  h+=cell('PACK',eff+'%');
+  var pphNow=getPPH()||0,peak=(S&&S.bestPPH)||0;
+  var tp=(S&&S.totalPieces)||0,rej=(S&&S.rejects)||0;
+  var acc=(tp+rej)>0?Math.round(tp/(tp+rej)*100):100;
+  var inc=sg.inc,crn=(S&&S.crunches)||0,col=(S&&S.collapses)||0;
+  var h='<div class="ops-hero">'
+    +'<div class="ops-grade" style="color:'+sg.clr+'">'+sg.g+'</div>'
+    +'<div class="ops-hero-txt"><div class="ops-rank">'+sg.rank+'</div><div class="ops-verd">'+sg.verd+'</div></div>'
+    +'<div class="ops-pts" style="color:'+sg.clr+'">'+sg.pts+'<span>/100</span></div></div>';
+  h+='<div class="ops-sec first">LOAD QUALITY</div><div class="ops-grid">';
   h+=cell('INTEGRITY',integ+'%',integ<35?'danger':integ<55?'warn':'ok');
-  h+=cell('BALANCE',bal,balCls);
-  h+=cell('PLACED',(typeof placed!=='undefined')?placed:0);
-  h+=cell('SHELVES',G.tetrisTotal||0);
-  h+=cell('GAPS',gaps);
-  h+=cell('VOIDS',voids);
-  h+=cell('INCIDENTS',inc,inc>=2?'danger':inc>=1?'warn':'');
-  h+=cell('TRAILER','#'+((typeof S!=='undefined'&&S&&S.truck)||1));
+  h+=cell('SUPPORT',sup+'%',sup<50?'warn':'ok');
+  h+=cell('PACK FILL',fill+'%');
+  h+=cell('GAPS LEFT',(S&&S.lastGaps)||0);
+  h+='</div>';
+  h+='<div class="ops-sec">SAFETY</div><div class="ops-grid">';
+  h+=cell('INCIDENTS',inc+(inc>=2?' ⚠':''),inc>=2?'danger':inc>=1?'warn':'ok');
+  h+=cell('CRUNCHES',crn,crn>0?'warn':'');
+  h+=cell('COLLAPSES',col,col>0?'danger':'');
+  h+=cell('HAZ SHELVES',(S&&S.hazShelfLocks)||0);
+  h+='</div>';
+  h+='<div class="ops-sec">PRODUCTIVITY</div><div class="ops-grid">';
+  h+=cell('PPH NOW',pphNow||'—');
+  h+=cell('PPH PEAK',peak||'—');
+  h+=cell('SHELVES',(S&&S.shelvesLocked)||0);
+  h+=cell('DBL LOCKS',(S&&S.doubleLocks)||0);
+  h+=cell('ACCURACY',acc+'%',acc<80?'warn':'ok');
+  h+=cell('PIECES',tp);
   h+='</div>';
   el.innerHTML=h;
 }
@@ -7432,7 +7471,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.37</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.38</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
