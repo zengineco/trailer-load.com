@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.36
+   LOCK IN v3.5.37
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.37 - LEGITIMACY STEP 2A: BOTTOM CONSOLE (Goyim's redesign — scratch the right-side rail, keep linehaul at the bottom). The footer now hosts a 3-button console -> collapsible scrollable drawers: OPERATIONS (NEW live-stats drawer: SCORE/LOAD RATE/WALL HEIGHT/PACK/INTEGRITY/BALANCE/PLACED/SHELVES/GAPS/VOIDS/INCIDENTS/TRAILER, color-coded, refreshes live from updateHUD), LINEHAUL (the full dispatch log as a bottom drawer — bigger 16px Barlow body so missed messages are readable, no full-screen pause), ADMIN (-> the pause/admin surface; REPLACES the scoreboard ⏸ PAUSE button, which is removed). OPS/LINEHAUL are peek drawers (game runs behind them). NEXT (v3.5.38, step 2B/3): reskin ADMIN's pause onto the CLIPBOARD + migrate account/privacy/consent out of the old DATA tab into ADMIN + retire the DATA tab. No scoring change.
    CHANGE LOG v3.5.36 - LEGITIMACY PASS, STEP 1 (audit-driven quick fixes). Ran a full audit (auth/social/leaderboard, settings, menu, pause, linehaul) + backend check. Findings: socials/logins/leaderboards are REAL/wired end-to-end (gap is DATA not code — daily board has 0 submissions); settings 12/12 functional; menu complete; levels 6-10 actually play (master notes were stale). FIXES THIS SHIP: (1) AUDIO ON by default for anon/first-run (was volSfx/volMusic:0 silent while sliders showed 80/60 = looked broken) -> 80/60; a logged-in account will restore its own saved levels (classroom can save muted) — per-account sync is NEXT. Music starts on first user gesture (autoplay policy). (2) PERSISTENCE: settings + voice moved sessionStorage -> localStorage (survive tab close; the comment always claimed "Persisted prefs"). (3) Killed three stale "Coming Soon" code comments about levels 6-10 (they're live). (4) SECURITY: revoked public/anon/authenticated EXECUTE on the rls_auto_enable event-trigger fn (advisor WARN; recovery RPCs already guard on auth.uid(), boards/signup anon-exec are by design). NOTE: the ov-data "DATA" overlay is the CONSENT funnel (not dead code) — kept. No scoring change.
    CHANGE LOG v3.5.35 - TRADEMARK SCRUB (deploy blocker cleared). Swept the whole file for carrier trade-dress. Only TWO player-facing hits existed: (1) LV1 flavor "UPS, FedEx, Amazon" -> "Every carrier in the country"; (2) LV2 hub "FedEx Super Hub" -> "Memphis International" (matches the real-airport naming of every other level; city "Memphis, TN · MEM" kept — a real airport, not a mark). Generic freight vocab (GROUND/PRIORITY/EXPRESS/OVERNIGHT) KEPT — industry service tiers, not trademarks. Genericized two live code comments ("FedEx/UPS-recognizable" -> "courier-recognizable"); left historical CHANGELOG lines as the record. Deleted stray lock-in_v2.0.4.html from the repo. No scoring change.
    CHANGE LOG v3.5.34 - COLOR PASS (scoreboard + legibility). (1) SCOREBOARD COLORIZE: the always-on top strip was a wall of --t1 (only SCORE/ELAPSED had accent). Pulled the menu palette onto the rest as semantic hues — LOAD RATE=teal-bright (throughput), PACK=ok-green (fill quality), WALL HEIGHT=teal (progress), PLACED=sm-purple (count), TRAILER=amber-bright; MODE dimmed to --t2 so it recedes (contextual, not a metric). All via theme-aware vars so contrast holds in light AND dark. (2) DISPATCH BADGE PUSH: brightened the base COWORKER/MANAGER source tag (footer + LINEHAUL rows) so the untyped tags pop more. (3) LEGIBILITY: meaningful 9px->11px bumps on in-play HUD + interactive labels players actually read mid-game (belt HOLD, strike meter, waterline, pause hint, tour speed buttons) and 9->10 on smalls COMING-SOON tag, level difficulty badge, final-pack weight legend. Left intentional micro-labels (faint floor watermark, dense profile/leaderboard stat grids) at 9px on purpose. No scoring change.
@@ -436,6 +437,43 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .water-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--t3);text-align:center;}/* v3.5.34 9->11 waterline */
 .data-tab{position:fixed;left:8px;bottom:90px;z-index:60;background:var(--bg2);color:var(--t2);border:1px solid var(--border2);border-radius:6px;padding:5px 9px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;cursor:pointer;opacity:.7;}/* v3.5.17 raised above the footer so it no longer covers the chute green light */
 .data-tab:hover{opacity:1;border-color:var(--acc);color:var(--acc);}
+/* ── v3.5.37 BOTTOM CONSOLE — OPERATIONS / LINEHAUL / ADMIN collapsible drawers ── */
+#ops-console{display:flex;align-items:center;gap:6px;flex:none;}
+.console-btn{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--t2);background:var(--bg3);border:1px solid var(--border2);
+  border-radius:5px;padding:5px 11px;cursor:pointer;white-space:nowrap;}
+.console-btn:hover{border-color:var(--acc);color:var(--acc);}
+.console-btn.on{background:var(--acc);color:#1a1209;border-color:var(--acc);}
+.console-btn .ci{margin-right:5px;opacity:.85;}
+#console-drawer{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(1120px,100%);
+  max-height:52vh;background:var(--bg2);border:1px solid var(--border2);border-bottom:none;
+  border-radius:10px 10px 0 0;box-shadow:0 -8px 30px rgba(20,12,4,.45);z-index:120;
+  display:none;flex-direction:column;overflow:hidden;}
+#console-drawer.vis{display:flex;}
+.cd-hd{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;
+  border-bottom:1px solid var(--border2);background:rgba(0,0,0,.18);flex:none;}
+.cd-title{font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:2px;color:var(--acc);
+  text-transform:uppercase;font-weight:bold;}
+.cd-x{background:transparent;border:1px solid var(--border2);color:var(--t2);font-size:13px;letter-spacing:1px;
+  border-radius:4px;padding:4px 11px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-weight:bold;}
+.cd-x:hover{border-color:var(--acc);color:var(--acc);}
+.cd-body{padding:12px 14px;overflow-y:auto;flex:1;}
+.ops-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:9px;}
+.ops-cell{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:9px 11px;}
+.ops-k{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--t2);
+  text-transform:uppercase;font-weight:bold;margin-bottom:3px;}
+.ops-v{font-family:'Share Tech Mono',monospace;font-size:21px;font-weight:bold;color:var(--t1);line-height:1;}
+.ops-v.ok{color:var(--ok);}.ops-v.warn{color:var(--warn);}.ops-v.danger{color:var(--danger);}
+/* LINEHAUL drawer rows — bigger/more legible than the old board (Goyim) */
+.cd-lh-row{display:flex;align-items:baseline;gap:9px;padding:7px 2px;border-bottom:1px solid var(--border);}
+.cd-lh-row .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;
+  letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:3px;
+  background:rgba(0,0,0,.5);border:1px solid rgba(224,150,46,.4);color:#f0d9a8;}
+.cd-lh-row.msg-ok .msg-src{color:#aef0c6;border-color:rgba(31,157,87,.6);background:rgba(14,74,42,.55);}
+.cd-lh-row.msg-warn .msg-src{color:#f2cf92;border-color:rgba(212,130,15,.6);background:rgba(110,72,10,.55);}
+.cd-lh-row.msg-danger .msg-src{color:#f4b09c;border-color:rgba(204,56,32,.65);background:rgba(110,22,12,.6);}
+.cd-lh-row .msg-body{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--t1);line-height:1.4;}
+.cd-empty{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--t3);text-align:center;padding:24px 0;}
 .ov-data{position:fixed;inset:0;z-index:120;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);}
 .ov-data.vis{display:flex;}
 .data-card{margin-top:0;max-width:440px;width:92%;background:var(--bg2);border:1px solid var(--acc);border-top:none;border-radius:0 0 12px 12px;padding:18px 20px 20px;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:dataDrop .28s ease;}
@@ -1418,7 +1456,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.36</div>
+  <div class="pause-sub">LOCK IN v3.5.37</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1532,7 +1570,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.36 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.37 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1643,7 +1681,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.36 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.37 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1793,7 +1831,7 @@ body[data-cb="trit"]{
     <div class="sb-cell"><div class="sp-lbl">WALL HEIGHT</div><span class="sp-med" id="sp-h-val">0%</span><div class="sp-bar"><div class="sp-bar-fill" id="sp-h-fill" style="width:0%"></div></div></div>
     <div class="sb-cell"><div class="sp-lbl">PACK</div><span class="sp-med" id="sp-eff">0%</span></div>
     <div class="sb-cell"><div class="sp-lbl">PLACED</div><span class="sp-med" id="sp-placed">0</span></div>
-    <button id="sb-pause" onclick="togglePause()">⏸ PAUSE</button>
+    <!-- v3.5.37 scoreboard ⏸ PAUSE removed — ADMIN drawer in the bottom console is the pause/admin access point now -->
     <!-- hidden carriers: legacy updaters keep writing without null-crashing (data lives in pause / post-sort) -->
     <div style="display:none" aria-hidden="true">
       <span id="fp-grade"></span>
@@ -1831,7 +1869,11 @@ body[data-cb="trit"]{
     <div id="footer">
       <!-- v3.5.8: DISPATCH lives here now — one legible line directly above the controls (was a separate right column) -->
       <div id="dispatch-bar">
-        <span class="dispatch-tag" onclick="openLinehaul()" title="Open the Linehaul board — full dispatch record">▸ LINEHAUL</span>
+        <div id="ops-console">
+          <button class="console-btn" id="cbtn-ops" onclick="toggleDrawer('ops')" title="Live operations — load rate, pack, balance, incidents"><span class="ci">◈</span>OPERATIONS</button>
+          <button class="console-btn" id="cbtn-lh" onclick="toggleDrawer('linehaul')" title="Linehaul — full dispatch log (every message, nothing missed)"><span class="ci">▸</span>LINEHAUL</button>
+          <button class="console-btn" id="cbtn-admin" onclick="openAdmin()" title="Admin — pause / settings"><span class="ci">⚙</span>ADMIN</button>
+        </div>
         <div id="msg-feed"></div>
       </div>
       <div id="conv-header">
@@ -1850,6 +1892,12 @@ body[data-cb="trit"]{
 
   <!-- v3.4.11 NC/SMALLS staging popup (selector replaces the floor-corner slots) -->
   <div id="ov-staging"><div class="stg-wheel"><div class="stg-tiles" id="stg-tiles"></div></div></div>
+
+  <!-- v3.5.37 BOTTOM CONSOLE DRAWER — hosts OPERATIONS (live stats) + LINEHAUL (full log); ADMIN opens the pause surface -->
+  <div id="console-drawer">
+    <div class="cd-hd"><span class="cd-title" id="cd-title">OPERATIONS</span><button class="cd-x" onclick="closeDrawer()">CLOSE ✕</button></div>
+    <div class="cd-body" id="cd-body"></div>
+  </div>
 
   <!-- v3.5.8: RIGHT FEEDBACK PANEL removed entirely — DISPATCH moved into the footer, play window gets the width back. Hidden safety carriers keep the updater null-safe. -->
   <div style="display:none" aria-hidden="true">
@@ -1998,7 +2046,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.36
+// LOCK IN v3.5.37
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -5645,6 +5693,7 @@ function updateHUD(){
   }
   setEl('sp-eff',Math.round(eff*100)+'%');
   setEl('sp-placed',placed);
+  if(_drawerTab==='ops'&&typeof opsRender==='function')opsRender(); // v3.5.37 live OPERATIONS drawer
   setEl('sp-tetris',G.tetrisTotal||0);
   setEl('sp-bulkhead',G.bulkheadCount||0);
   setEl('sp-truck','#'+S.truck);
@@ -6210,6 +6259,7 @@ function pushMsg(html,type,source){
   _linehaulLog.push({src:src,type:type||'',body:body});
   if(_linehaulLog.length>80)_linehaulLog.shift();
   if(_linehaulOpen&&typeof lhRender==='function')lhRender();
+  if(_drawerTab==='linehaul'&&typeof cdLinehaulRender==='function')cdLinehaulRender(); // v3.5.37 live LINEHAUL drawer
   var feed=document.getElementById('msg-feed');if(!feed)return;
   var el=document.createElement('div');el.className='msg-line'+(type?(' msg-'+type):'');
   el.innerHTML='<span class="msg-src">'+src+'</span><span class="msg-body">'+body+'</span>';
@@ -6238,6 +6288,64 @@ function closeLinehaul(){
   var ov=document.getElementById('ov-linehaul');if(ov)ov.classList.remove('vis');
   _linehaulOpen=false;
   if(_lhPausedLoop&&!gOver&&!paused){_lhPausedLoop=false;lastLoopT=0;animF=requestAnimationFrame(loop);}
+}
+// ── v3.5.37 BOTTOM CONSOLE — OPERATIONS / LINEHAUL drawers + ADMIN ──
+// OPS and LINEHAUL are peek drawers (game keeps running behind them — read without stopping).
+// ADMIN routes to the pause surface (clipboard reskin + account migration land in v3.5.38).
+var _drawerTab=null;
+function toggleDrawer(tab){
+  if(_drawerTab===tab){closeDrawer();return;}
+  _drawerTab=tab;
+  var dr=document.getElementById('console-drawer');if(dr)dr.classList.add('vis');
+  var t=document.getElementById('cd-title');if(t)t.textContent=(tab==='ops')?'OPERATIONS':'LINEHAUL';
+  _cbtnSync();
+  if(tab==='ops')opsRender();else cdLinehaulRender();
+}
+function closeDrawer(){
+  _drawerTab=null;
+  var dr=document.getElementById('console-drawer');if(dr)dr.classList.remove('vis');
+  _cbtnSync();
+}
+function _cbtnSync(){
+  function s(id,on){var e=document.getElementById(id);if(e)e.classList.toggle('on',!!on);}
+  s('cbtn-ops',_drawerTab==='ops');s('cbtn-lh',_drawerTab==='linehaul');
+}
+function openAdmin(){togglePause();} // ADMIN = the pause/admin surface
+function cdLinehaulRender(){
+  var el=document.getElementById('cd-body');if(!el)return;
+  if(!_linehaulLog.length){el.innerHTML='<div class="cd-empty">No dispatch yet — load a wall and the board fills up.</div>';return;}
+  var h='',i;for(i=_linehaulLog.length-1;i>=0;i--){var m=_linehaulLog[i];h+='<div class="cd-lh-row'+(m.type?(' msg-'+m.type):'')+'"><span class="msg-src">'+m.src+'</span><span class="msg-body">'+m.body+'</span></div>';}
+  el.innerHTML=h;
+}
+function opsRender(){
+  var el=document.getElementById('cd-body');if(!el)return;
+  if(typeof G==='undefined'||!G||!G.grid){el.innerHTML='<div class="cd-empty">Start a load to see live operations.</div>';return;}
+  function cell(k,v,cls){return '<div class="ops-cell"><div class="ops-k">'+k+'</div><div class="ops-v'+(cls?(' '+cls):'')+'">'+v+'</div></div>';}
+  var hp=Math.round((wallH()/GH)*100);
+  var pph=getPPH()||0;
+  var integ=(G.integrity!=null)?G.integrity:100;
+  var eff=Math.round((countFilled()/(GW*GH))*100);
+  var cog=(G.cog!=null)?G.cog:.5,dev=Math.abs(cog-.5);
+  var bal=dev<.07?'STABLE':dev<.16?'CAUTION':'DANGER';
+  var balCls=dev<.07?'ok':dev<.16?'warn':'danger';
+  var inc=(typeof S!=='undefined'&&S&&S.incidents!=null)?S.incidents:0;
+  var gaps=countGaps(G.grid);
+  var voids=getVoids(G.grid).length;
+  var h='<div class="ops-grid">';
+  h+=cell('SCORE',G.score||0);
+  h+=cell('LOAD RATE',pph||'—');
+  h+=cell('WALL HEIGHT',hp+'%');
+  h+=cell('PACK',eff+'%');
+  h+=cell('INTEGRITY',integ+'%',integ<35?'danger':integ<55?'warn':'ok');
+  h+=cell('BALANCE',bal,balCls);
+  h+=cell('PLACED',(typeof placed!=='undefined')?placed:0);
+  h+=cell('SHELVES',G.tetrisTotal||0);
+  h+=cell('GAPS',gaps);
+  h+=cell('VOIDS',voids);
+  h+=cell('INCIDENTS',inc,inc>=2?'danger':inc>=1?'warn':'');
+  h+=cell('TRAILER','#'+((typeof S!=='undefined'&&S&&S.truck)||1));
+  h+='</div>';
+  el.innerHTML=h;
 }
 // ── v3.5.20 EVENT CURSOR: swap the glove pose on game events (the follow-mouse element is #cursor-glove) ──
 var GCUR={base:'mouse.png',tempUntil:0,tempSrc:'',hold:false};
@@ -7324,7 +7432,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.36</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.37</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
