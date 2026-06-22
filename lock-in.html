@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.38
+   LOCK IN v3.5.39
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.39 - LEGITIMACY STEP 2B/3: ADMIN = PAUSE ON THE CLIPBOARD + account folded in. (1) The pause menu (#ov-pause) now renders on the CLIPBOARD look (warm #f5f0e8 paper + metal-clip pseudo-elements via .pause-clip), unifying the clipboard motif (briefing + profile + now pause). Buttons/coach/hint recolored dark-on-cream. (2) NEW 'ACCOUNT & DATA' button in the pause menu -> opens the existing ov-data (account auth + privacy/consent), so the account hub now lives in ADMIN. (3) RETIRED the floating ◈ DATA tab button (zOpenData/ov-data overlay itself unchanged — just no longer a standalone floating tab). (4) Bumped .ov-data z-index 120->600 so it shows ABOVE the pause/menu (at 120 it would have been buried behind the pause at 300 / menu at 400 — also a latent fix). The three-drawer console (OPERATIONS/LINEHAUL/ADMIN) is now complete. No scoring change.
    CHANGE LOG v3.5.38 - OPERATIONS DRAWER REBUILT (Goyim: the v3.5.37 version was "dogwater" — it just re-showed the scoreboard + a couple broken zeros, incl. S.incidents which is an ARRAY not a number). OPERATIONS is now a live mid-load CHECK-IN modeled on the end report: a live LETTER GRADE hero (A+..F + rank + verdict + /100, same math as fillTelemetryTiles via new shared sessionGrade()), then grouped tiles pulled from the authoritative S accumulators — LOAD QUALITY (integrity/support/pack fill/gaps), SAFETY (incidents[].length/crunches/collapses/haz shelves), PRODUCTIVITY (pph now/pph peak/shelves/double locks/accuracy/pieces), all color-coded. No scoreboard dupes. Refreshes live from updateHUD. No scoring change.
    CHANGE LOG v3.5.37 - LEGITIMACY STEP 2A: BOTTOM CONSOLE (Goyim's redesign — scratch the right-side rail, keep linehaul at the bottom). The footer now hosts a 3-button console -> collapsible scrollable drawers: OPERATIONS (NEW live-stats drawer: SCORE/LOAD RATE/WALL HEIGHT/PACK/INTEGRITY/BALANCE/PLACED/SHELVES/GAPS/VOIDS/INCIDENTS/TRAILER, color-coded, refreshes live from updateHUD), LINEHAUL (the full dispatch log as a bottom drawer — bigger 16px Barlow body so missed messages are readable, no full-screen pause), ADMIN (-> the pause/admin surface; REPLACES the scoreboard ⏸ PAUSE button, which is removed). OPS/LINEHAUL are peek drawers (game runs behind them). NEXT (v3.5.38, step 2B/3): reskin ADMIN's pause onto the CLIPBOARD + migrate account/privacy/consent out of the old DATA tab into ADMIN + retire the DATA tab. No scoring change.
    CHANGE LOG v3.5.36 - LEGITIMACY PASS, STEP 1 (audit-driven quick fixes). Ran a full audit (auth/social/leaderboard, settings, menu, pause, linehaul) + backend check. Findings: socials/logins/leaderboards are REAL/wired end-to-end (gap is DATA not code — daily board has 0 submissions); settings 12/12 functional; menu complete; levels 6-10 actually play (master notes were stale). FIXES THIS SHIP: (1) AUDIO ON by default for anon/first-run (was volSfx/volMusic:0 silent while sliders showed 80/60 = looked broken) -> 80/60; a logged-in account will restore its own saved levels (classroom can save muted) — per-account sync is NEXT. Music starts on first user gesture (autoplay policy). (2) PERSISTENCE: settings + voice moved sessionStorage -> localStorage (survive tab close; the comment always claimed "Persisted prefs"). (3) Killed three stale "Coming Soon" code comments about levels 6-10 (they're live). (4) SECURITY: revoked public/anon/authenticated EXECUTE on the rls_auto_enable event-trigger fn (advisor WARN; recovery RPCs already guard on auth.uid(), boards/signup anon-exec are by design). NOTE: the ov-data "DATA" overlay is the CONSENT funnel (not dead code) — kept. No scoring change.
@@ -485,7 +486,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .ops-pts span{font-size:13px;color:var(--t3);}
 .ops-sec{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--acc);text-transform:uppercase;font-weight:bold;margin:12px 0 7px;}
 .ops-sec.first{margin-top:0;}
-.ov-data{position:fixed;inset:0;z-index:120;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);}
+.ov-data{position:fixed;inset:0;z-index:600;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);}/* v3.5.39 120->600 so ACCOUNT & DATA shows above the pause/menu (was buried) */
 .ov-data.vis{display:flex;}
 .data-card{margin-top:0;max-width:440px;width:92%;background:var(--bg2);border:1px solid var(--acc);border-top:none;border-radius:0 0 12px 12px;padding:18px 20px 20px;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:dataDrop .28s ease;}
 @keyframes dataDrop{from{transform:translateY(-100%);}to{transform:translateY(0);}}
@@ -967,6 +968,28 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pmb-restart:hover{border-color:var(--acc);color:var(--acc);}
 .pmb-theme{background:transparent;color:var(--t2);border-color:var(--border);}
 .pmb-theme:hover{border-color:var(--t2);color:var(--t1);}
+/* v3.5.39 ADMIN = the pause menu on the CLIPBOARD (warm paper + metal clip) — unifies the clipboard motif */
+.pause-clip{position:relative;background:#f5f0e8;border-radius:4px;width:min(420px,92vw);
+  padding:30px 26px 22px;box-shadow:0 16px 54px rgba(0,0,0,.6);
+  display:flex;flex-direction:column;gap:9px;max-height:88vh;overflow-y:auto;}
+.pause-clip::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);
+  width:120px;height:26px;background:#8a8d92;border-radius:5px;box-shadow:0 3px 8px rgba(0,0,0,.45);}
+.pause-clip::after{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+  width:62px;height:16px;background:#43474d;border-radius:3px;}
+.pause-clip .pause-title{color:#3a2c1a;text-shadow:none;font-size:40px;letter-spacing:5px;}
+.pause-clip .pause-sub{color:#9a8a6c;}
+.pause-clip .pause-menu{max-width:none;}
+.pause-clip .pmb{font-size:18px;letter-spacing:3px;border-color:#cbbfa6;color:#3a2c1a;background:rgba(255,255,255,.45);}
+.pause-clip .pmb:hover{border-color:var(--acc);color:var(--acc-dim);}
+.pause-clip .pmb-resume{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#2a1c08;border-color:var(--acc);}
+.pause-clip .pmb-resume:hover{filter:brightness(1.05);color:#2a1c08;}
+.pause-clip .pmb-restart{color:#6a2418;border-color:#d0a08a;}
+.pause-clip .pmb-account{background:rgba(19,133,120,.12);border-color:#7fbcae;color:#0f5e52;}
+.pause-clip #fp-tip{background:rgba(42,32,24,.05);border-radius:6px;padding:9px 11px;border:1px solid rgba(42,32,24,.08);}
+.pause-clip .fp-tip-hdr{color:var(--acc-dim);}
+.pause-clip #fp-tip-h{color:#3a2c1a;}
+.pause-clip #fp-tip-s{color:#6a5c44;}
+.pause-clip .pause-hint{color:#9a8a6c;}
 .pause-hint{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
   color:var(--t3);text-align:center;margin-top:4px;}
 /* v3.5.7: COACH card inside the pause overlay (overrides the old right-panel flex:1 layout) */
@@ -1466,11 +1489,14 @@ body[data-cb="trit"]{
 
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
+  <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
+  <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.38</div>
+  <div class="pause-sub">LOCK IN v3.5.39 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
+    <button class="pmb pmb-account" onclick="zOpenData()">◈ ACCOUNT &amp; DATA</button>
     <button class="pmb pmb-theme" id="theme-btn" onclick="toggleTheme()">◑ WARM-DARK MODE</button>
     <button class="pmb" onclick="pauseToMenu()">⌂ MAIN MENU — SWITCH MODE</button>
     <button class="pmb" onclick="clockOut()">⏏ CLOCK OUT — END &amp; SEE STATS</button>
@@ -1483,6 +1509,7 @@ body[data-cb="trit"]{
     <div id="fp-tip-s">Place SP freight along the floor before stacking regular freight — it anchors your wall.</div>
   </div>
   <div class="pause-hint">ESC or ⏸ to resume · R to rotate pieces</div>
+  </div>
 </div>
 
 <!-- ══════════════ BRIEFING CLIPBOARD ══════════════ -->
@@ -1581,7 +1608,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.38 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.39 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1692,7 +1719,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.38 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.39 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1798,7 +1825,7 @@ body[data-cb="trit"]{
 <div id="banner">LOCK IN!</div>
 
 <!-- v2.1.38 DATA & PRIVACY (double opt-in) -->
-<button id="data-tab" class="data-tab" onclick="zOpenData()">◈ DATA</button>
+<!-- v3.5.39 floating ◈ DATA tab retired — account/privacy/consent now lives in ADMIN (pause) as ACCOUNT & DATA; zOpenData/ov-data overlay unchanged -->
 <div id="ov-data" class="ov-data">
   <div class="data-card">
     <div class="data-hdr">◈ DATA &amp; PRIVACY</div>
@@ -2057,7 +2084,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.38
+// LOCK IN v3.5.39
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7471,7 +7498,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.38</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.39</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
