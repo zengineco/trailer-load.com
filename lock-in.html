@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.34
+   LOCK IN v3.5.35
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.35 - TRADEMARK SCRUB (deploy blocker cleared). Swept the whole file for carrier trade-dress. Only TWO player-facing hits existed: (1) LV1 flavor "UPS, FedEx, Amazon" -> "Every carrier in the country"; (2) LV2 hub "FedEx Super Hub" -> "Memphis International" (matches the real-airport naming of every other level; city "Memphis, TN · MEM" kept — a real airport, not a mark). Generic freight vocab (GROUND/PRIORITY/EXPRESS/OVERNIGHT) KEPT — industry service tiers, not trademarks. Genericized two live code comments ("FedEx/UPS-recognizable" -> "courier-recognizable"); left historical CHANGELOG lines as the record. Deleted stray lock-in_v2.0.4.html from the repo. No scoring change.
    CHANGE LOG v3.5.34 - COLOR PASS (scoreboard + legibility). (1) SCOREBOARD COLORIZE: the always-on top strip was a wall of --t1 (only SCORE/ELAPSED had accent). Pulled the menu palette onto the rest as semantic hues — LOAD RATE=teal-bright (throughput), PACK=ok-green (fill quality), WALL HEIGHT=teal (progress), PLACED=sm-purple (count), TRAILER=amber-bright; MODE dimmed to --t2 so it recedes (contextual, not a metric). All via theme-aware vars so contrast holds in light AND dark. (2) DISPATCH BADGE PUSH: brightened the base COWORKER/MANAGER source tag (footer + LINEHAUL rows) so the untyped tags pop more. (3) LEGIBILITY: meaningful 9px->11px bumps on in-play HUD + interactive labels players actually read mid-game (belt HOLD, strike meter, waterline, pause hint, tour speed buttons) and 9->10 on smalls COMING-SOON tag, level difficulty badge, final-pack weight legend. Left intentional micro-labels (faint floor watermark, dense profile/leaderboard stat grids) at 9px on purpose. No scoring change.
    CHANGE LOG v3.5.33 - NEW BAG TILE. Goyim uploaded a new finished SQUARE bag tile (bag (1).png, 1254x1254 -> swapped in as bag.png, redundant (1) removed). drawBagSkin now draws it FULL (no crop) since it is a complete tile. Re-enabled the bag skin path on chute + wall + floor-slot (the v3.5.32 black box is now the !BAGIMG_OK fallback). No scoring change.
    CHANGE LOG v3.5.32 - BAG/SMALLS RESHADE + LEGIBILITY (color pass start). bag.png skin RETIRED (Goyim: "so terrible") — bags now render as a normal cardboard box BLACK-shaded via pal (like smalls were purple); chute/wall/floor all reverted to the box render. Smalls reshaded PURPLE -> WHITE (pal + glow). Completion badge ("WALL COMPLETE - 95% TARGET HIT") was 9px slop -> 18px Bebas, legible. Color/legibility pass continues. No scoring change.
@@ -1416,7 +1417,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.34</div>
+  <div class="pause-sub">LOCK IN v3.5.35</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1530,7 +1531,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.34 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.35 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1641,7 +1642,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.34 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.35 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1996,7 +1997,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.34
+// LOCK IN v3.5.35
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4430,7 +4431,7 @@ var CHUTE_JAM=true,jamStarvedT=0,jamWarnLevel=0,chuteJiggleT=0; // v3.4.0 chute 
 var CHUTE_IMG=null,CHUTE_OK=false;
 (function(){try{CHUTE_IMG=new Image();CHUTE_IMG.onload=function(){CHUTE_OK=true;};CHUTE_IMG.onerror=function(){CHUTE_OK=false;};CHUTE_IMG.src='chute.png';}catch(e){CHUTE_OK=false;}})();
 (function(){try{BACKDROP=new Image();BACKDROP.onload=function(){BACKDROP_OK=true;if(typeof resize==='function')resize();};BACKDROP.onerror=function(){if(BACKDROP.src.indexOf('background')>=0){BACKDROP.src='lockbackdrop.png';}else if(BACKDROP.src.indexOf('lockbackdrop')>=0){BACKDROP.src='backdrop.png';}else{BACKDROP_OK=false;}};BACKDROP.src='background.png';}catch(e){BACKDROP_OK=false;}})();/* v3.5.21 wider backdrop */
-// v3.5.23 smalls-bag art — the FedEx/UPS-recognizable bag
+// v3.5.23 smalls-bag art — the courier-recognizable poly bag
 var BAGIMG=null,BAGIMG_OK=false;(function(){try{BAGIMG=new Image();BAGIMG.onload=function(){BAGIMG_OK=true;};BAGIMG.onerror=function(){BAGIMG_OK=false;};BAGIMG.src='bag.png';}catch(e){BAGIMG_OK=false;}})();
 // v3.5.33 new bag.png (1254x1254) is a finished SQUARE bag tile — draw it full into the cell, no crop
 function drawBagSkin(c,dx,dy,dw,dh){if(!BAGIMG_OK)return false;try{c.drawImage(BAGIMG,dx,dy,dw,dh);return true;}catch(e){return false;}}
@@ -5405,7 +5406,7 @@ function drawShippingLabel(c,x,y,w,h,txt,accent,seed,sub){
     }
   }
 }
-// ── v3.5.26 TAPE SYSTEM — stickers on boxes (the FedEx/UPS-recognizable hallmark) ──
+// ── v3.5.26 TAPE SYSTEM — stickers on boxes (the courier-recognizable hallmark) ──
 var TAPE_IMGS={};
 function tapeImg(name){
   var im=TAPE_IMGS[name];
@@ -7322,7 +7323,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.34</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.35</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7453,7 +7454,7 @@ null, // index 0 unused — levels are 1-based
 // ─────────────────────────────────────────────────────────────
 {n:1,name:'THE COLUMBUS WELCOME',hub:'Columbus, OH · CMH',city:'Columbus, OH · CMH',
  abbr:'COLUMBUS',
- flavor:'"Door 7. Columbus. UPS, FedEx, Amazon — all of them move freight through here. You\'re new. Everyone can tell. Show them anyway."',
+ flavor:'"Door 7. Columbus. Every carrier in the country moves freight through here. You\'re new. Everyone can tell. Show them anyway."',
  diffLabel:'DAY ONE',diffClass:'ls-d1',accent:'#28b870',
  poolW:{sml:.20,reg:.70,lrg:.10},
  ncCount:2,ncPreload:0,fragile:0,
@@ -7461,7 +7462,7 @@ null, // index 0 unused — levels are 1-based
  winH:.85,winDensity:.35,winIntegrity:0,winCOG:.5,zeroCrunches:false,
  parSec:300,star3Sec:240,star3Grade:'A',star2Grade:'B',star1Grade:'C'},
 // ─────────────────────────────────────────────────────────────
-{n:2,name:'THE MEMPHIS MIDNIGHT',hub:'FedEx Super Hub',city:'Memphis, TN · MEM',
+{n:2,name:'THE MEMPHIS MIDNIGHT',hub:'Memphis International',city:'Memphis, TN · MEM',
  abbr:'MEMPHIS',
  flavor:'"Holiday returns season. 180,000 packages per hour. Your trailer is bound for the Greensboro regional."',
  diffLabel:'LEARNING THE ROPES',diffClass:'ls-d2',accent:'#50a848',
