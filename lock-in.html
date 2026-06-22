@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.33
+   LOCK IN v3.5.34
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.34 - COLOR PASS (scoreboard + legibility). (1) SCOREBOARD COLORIZE: the always-on top strip was a wall of --t1 (only SCORE/ELAPSED had accent). Pulled the menu palette onto the rest as semantic hues — LOAD RATE=teal-bright (throughput), PACK=ok-green (fill quality), WALL HEIGHT=teal (progress), PLACED=sm-purple (count), TRAILER=amber-bright; MODE dimmed to --t2 so it recedes (contextual, not a metric). All via theme-aware vars so contrast holds in light AND dark. (2) DISPATCH BADGE PUSH: brightened the base COWORKER/MANAGER source tag (footer + LINEHAUL rows) so the untyped tags pop more. (3) LEGIBILITY: meaningful 9px->11px bumps on in-play HUD + interactive labels players actually read mid-game (belt HOLD, strike meter, waterline, pause hint, tour speed buttons) and 9->10 on smalls COMING-SOON tag, level difficulty badge, final-pack weight legend. Left intentional micro-labels (faint floor watermark, dense profile/leaderboard stat grids) at 9px on purpose. No scoring change.
    CHANGE LOG v3.5.33 - NEW BAG TILE. Goyim uploaded a new finished SQUARE bag tile (bag (1).png, 1254x1254 -> swapped in as bag.png, redundant (1) removed). drawBagSkin now draws it FULL (no crop) since it is a complete tile. Re-enabled the bag skin path on chute + wall + floor-slot (the v3.5.32 black box is now the !BAGIMG_OK fallback). No scoring change.
    CHANGE LOG v3.5.32 - BAG/SMALLS RESHADE + LEGIBILITY (color pass start). bag.png skin RETIRED (Goyim: "so terrible") — bags now render as a normal cardboard box BLACK-shaded via pal (like smalls were purple); chute/wall/floor all reverted to the box render. Smalls reshaded PURPLE -> WHITE (pal + glow). Completion badge ("WALL COMPLETE - 95% TARGET HIT") was 9px slop -> 18px Bebas, legible. Color/legibility pass continues. No scoring change.
    CHANGE LOG v3.5.31 - MENU OVERLAY Z-FIX + BAG CROP. Leaderboard/Profile/Linehaul overlays were z-index 355-360, BELOW the start menu (400), so opening them from the menu buried them behind the mode cards (not interactive). Bumped to 560 (above the menu, matching Settings) — verified the tabs + close are now topmost/clickable from the menu. Bag crop moved up + zoomed to fill the top (BAG_CROP sy 235->140, ss->602). NOTED: Goyim wants (1) a colorful text/UI theme across the game to match the menu, (2) social as a bottom tab -> a dashboard (own stats + leaderboard + friends). No scoring change.
@@ -258,6 +259,13 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .sb-cell .sp-big{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:1px;color:var(--acc);line-height:.85;display:block;}
 #stats-panel #sp-time{color:var(--acc-bright);letter-spacing:1px;}   /* ELAPSED — hero */
 #stats-panel #sp-score{color:var(--acc);}
+/* v3.5.34 COLOR PASS — pull the menu palette onto the scoreboard so it stops reading as a wall of --t1 white. Theme-aware vars keep contrast in light AND dark. Tunable: one semantic hue per metric. */
+#stats-panel #sp-pph{color:var(--teal-bright);}     /* LOAD RATE — throughput = teal */
+#stats-panel #sp-eff{color:var(--ok);}              /* PACK — fill quality = green */
+#stats-panel #sp-h-val{color:var(--teal);}          /* WALL HEIGHT — progress = teal-dim */
+#stats-panel #sp-placed{color:var(--sm-bright);}    /* PLACED — running count = purple */
+#stats-panel #sp-truck{color:var(--acc-bright);}    /* TRAILER # — amber-bright */
+#stats-panel #sp-mode{color:var(--t2);}             /* MODE — recede (contextual, not a metric) */
 .sb-cog{min-width:118px;}
 #stats-panel #sp-cog-wrap{width:100%;min-width:92px;margin-top:4px;}
 #stats-panel #sp-cog-s{font-size:13px;margin-top:3px;}
@@ -344,7 +352,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   to{border-color:#ff6040;box-shadow:0 0 16px rgba(255,96,64,.7);}}
 #belt-hold-overlay{
   position:absolute;pointer-events:none;z-index:26;
-  font-family:'Share Tech Mono',monospace;font-size:9px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;/* v3.5.34 9->11 in-play HOLD readout */
   color:#ff6040;font-weight:bold;letter-spacing:1px;text-align:center;
 }
 
@@ -361,7 +369,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   z-index:40;width:260px;text-align:center;
 }
 #strike-wrap.vis{display:block;}
-#strike-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;
+#strike-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;/* v3.5.34 9->11 strike meter */
   letter-spacing:2px;color:#cc3820;margin-bottom:3px;font-weight:bold;}
 #strike-bar-bg{height:8px;background:rgba(20,8,4,.8);border-radius:4px;
   border:1px solid rgba(204,56,32,.4);overflow:hidden;}
@@ -423,7 +431,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 @keyframes waterPulse{0%,100%{opacity:1;}50%{opacity:.55;}}
 .water-meter{height:7px;background:rgba(0,0,0,.35);border-radius:4px;overflow:hidden;}
 .water-fill{height:100%;width:0%;background:var(--t3);border-radius:4px;transition:width .25s,background .25s;}
-.water-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--t3);text-align:center;}
+.water-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.1em;color:var(--t3);text-align:center;}/* v3.5.34 9->11 waterline */
 .data-tab{position:fixed;left:8px;bottom:90px;z-index:60;background:var(--bg2);color:var(--t2);border:1px solid var(--border2);border-radius:6px;padding:5px 9px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;cursor:pointer;opacity:.7;}/* v3.5.17 raised above the footer so it no longer covers the chute green light */
 .data-tab:hover{opacity:1;border-color:var(--acc);color:var(--acc);}
 .ov-data{position:fixed;inset:0;z-index:120;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);}
@@ -465,7 +473,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .sm-iconbtn{font-size:22px;padding:7px 12px;}
 .sm-loginbtn{font-size:14px;letter-spacing:1px;padding:9px 16px;}
 .sm-iconbtn:hover,.sm-loginbtn:hover{background:var(--acc-bright);color:#140c04;}
-.sm-soon{font-size:9px;letter-spacing:1px;color:var(--t3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;}
+.sm-soon{font-size:10px;letter-spacing:1px;color:var(--t3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;}
 /* Mode cards — VERTICAL, brick-laid, LARGE legible text */
 #sm-modes{display:flex;flex-direction:column;gap:11px;width:360px;max-width:46vw;margin:0;padding:0 0 0 34px;}
 .sm-card{
@@ -597,7 +605,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 }
 .to-speed-btn{
   flex:1;
-  font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:bold;
+  font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;/* v3.5.34 9->11 speed buttons */
   padding:4px 0;border:1px solid var(--border2);border-radius:3px;cursor:pointer;
   background:transparent;color:var(--t2);text-align:center;
 }
@@ -674,7 +682,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   color:var(--t3);letter-spacing:.5px;
 }
 .ls-diff{
-  font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:bold;
+  font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;
   letter-spacing:1px;padding:2px 6px;border-radius:2px;
   border:1px solid;display:inline-block;align-self:flex-start;margin-top:2px;
 }
@@ -793,7 +801,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .fp-wt-bar{display:flex;height:9px;border-radius:3px;overflow:hidden;gap:1px;}
 .fp-wt-seg{height:100%;transition:flex .4s;}
 .fp-wt-leg{display:flex;gap:6px;margin-top:3px;flex-wrap:wrap;}
-.fp-wt-dot{display:flex;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--t2);}
+.fp-wt-dot{display:flex;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t2);}/* v3.5.34 9->10 weight legend */
 .fp-wt-dot span{width:8px;height:8px;border-radius:2px;display:inline-block;}
 #fp-counts{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px;}
 .fp-ct{display:flex;justify-content:space-between;align-items:baseline;}
@@ -908,7 +916,7 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pmb-restart:hover{border-color:var(--acc);color:var(--acc);}
 .pmb-theme{background:transparent;color:var(--t2);border-color:var(--border);}
 .pmb-theme:hover{border-color:var(--t2);color:var(--t1);}
-.pause-hint{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;
+.pause-hint{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
   color:var(--t3);text-align:center;margin-top:4px;}
 /* v3.5.7: COACH card inside the pause overlay (overrides the old right-panel flex:1 layout) */
 #ov-pause #fp-tip{flex:none;width:100%;max-width:340px;margin-top:14px;padding:12px 16px;
@@ -1198,7 +1206,7 @@ body[data-cb="trit"]{
 #footer #msg-feed{flex:1;flex-direction:row;align-items:center;gap:0;min-height:0;height:auto;overflow:hidden;}
 /* v3.5.18 pro dispatch line: [SOURCE badge] + outlined body */
 #footer .msg-line{display:flex;align-items:center;gap:9px;line-height:1.2;padding:3px 8px;flex:1;min-width:0;background:rgba(0,0,0,.36);border-radius:0 4px 4px 0;border-left-width:4px;}
-#footer .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14);color:#cdb78f;}
+#footer .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.5);border:1px solid rgba(224,150,46,.4);color:#f0d9a8;}/* v3.5.34 brighter base source tag (untyped COWORKER/MANAGER pop more) */
 #footer .msg-body{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.3px;color:#fff;-webkit-text-stroke:.6px rgba(8,5,2,.9);paint-order:stroke fill;text-shadow:0 1px 2px rgba(0,0,0,.7);}
 #footer .msg-body b{color:#ffd98a;}
 #footer .msg-line.msg-ok .msg-src{color:#aef0c6;border-color:rgba(31,157,87,.55);background:rgba(14,74,42,.5);}
@@ -1217,7 +1225,7 @@ body[data-cb="trit"]{
 .lh-empty{color:var(--t3);font-style:italic;padding:16px 6px;text-align:center;}
 .lh-row{display:flex;align-items:center;gap:9px;padding:6px 9px;background:rgba(0,0,0,.32);border-radius:0 4px 4px 0;border-left:4px solid var(--acc);}
 .lh-row.msg-ok{border-left-color:var(--ok);}.lh-row.msg-warn{border-left-color:var(--warn);}.lh-row.msg-danger{border-left-color:var(--danger);}
-.lh-row .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.14);color:#cdb78f;}
+.lh-row .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.5);border:1px solid rgba(224,150,46,.4);color:#f0d9a8;}/* v3.5.34 brighter base source tag */
 .lh-row.msg-ok .msg-src{color:#aef0c6;border-color:rgba(31,157,87,.55);background:rgba(14,74,42,.5);}
 .lh-row.msg-warn .msg-src{color:#f2cf92;border-color:rgba(212,130,15,.55);background:rgba(110,72,10,.5);}
 .lh-row.msg-danger .msg-src{color:#f4b09c;border-color:rgba(204,56,32,.6);background:rgba(110,22,12,.55);}
@@ -1408,7 +1416,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.33</div>
+  <div class="pause-sub">LOCK IN v3.5.34</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1522,7 +1530,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.33 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.34 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1633,7 +1641,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.33 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.34 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1988,7 +1996,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.33
+// LOCK IN v3.5.34
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7314,7 +7322,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.33</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.34</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
