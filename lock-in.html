@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.35
+   LOCK IN v3.5.36
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.36 - LEGITIMACY PASS, STEP 1 (audit-driven quick fixes). Ran a full audit (auth/social/leaderboard, settings, menu, pause, linehaul) + backend check. Findings: socials/logins/leaderboards are REAL/wired end-to-end (gap is DATA not code — daily board has 0 submissions); settings 12/12 functional; menu complete; levels 6-10 actually play (master notes were stale). FIXES THIS SHIP: (1) AUDIO ON by default for anon/first-run (was volSfx/volMusic:0 silent while sliders showed 80/60 = looked broken) -> 80/60; a logged-in account will restore its own saved levels (classroom can save muted) — per-account sync is NEXT. Music starts on first user gesture (autoplay policy). (2) PERSISTENCE: settings + voice moved sessionStorage -> localStorage (survive tab close; the comment always claimed "Persisted prefs"). (3) Killed three stale "Coming Soon" code comments about levels 6-10 (they're live). (4) SECURITY: revoked public/anon/authenticated EXECUTE on the rls_auto_enable event-trigger fn (advisor WARN; recovery RPCs already guard on auth.uid(), boards/signup anon-exec are by design). NOTE: the ov-data "DATA" overlay is the CONSENT funnel (not dead code) — kept. No scoring change.
    CHANGE LOG v3.5.35 - TRADEMARK SCRUB (deploy blocker cleared). Swept the whole file for carrier trade-dress. Only TWO player-facing hits existed: (1) LV1 flavor "UPS, FedEx, Amazon" -> "Every carrier in the country"; (2) LV2 hub "FedEx Super Hub" -> "Memphis International" (matches the real-airport naming of every other level; city "Memphis, TN · MEM" kept — a real airport, not a mark). Generic freight vocab (GROUND/PRIORITY/EXPRESS/OVERNIGHT) KEPT — industry service tiers, not trademarks. Genericized two live code comments ("FedEx/UPS-recognizable" -> "courier-recognizable"); left historical CHANGELOG lines as the record. Deleted stray lock-in_v2.0.4.html from the repo. No scoring change.
    CHANGE LOG v3.5.34 - COLOR PASS (scoreboard + legibility). (1) SCOREBOARD COLORIZE: the always-on top strip was a wall of --t1 (only SCORE/ELAPSED had accent). Pulled the menu palette onto the rest as semantic hues — LOAD RATE=teal-bright (throughput), PACK=ok-green (fill quality), WALL HEIGHT=teal (progress), PLACED=sm-purple (count), TRAILER=amber-bright; MODE dimmed to --t2 so it recedes (contextual, not a metric). All via theme-aware vars so contrast holds in light AND dark. (2) DISPATCH BADGE PUSH: brightened the base COWORKER/MANAGER source tag (footer + LINEHAUL rows) so the untyped tags pop more. (3) LEGIBILITY: meaningful 9px->11px bumps on in-play HUD + interactive labels players actually read mid-game (belt HOLD, strike meter, waterline, pause hint, tour speed buttons) and 9->10 on smalls COMING-SOON tag, level difficulty badge, final-pack weight legend. Left intentional micro-labels (faint floor watermark, dense profile/leaderboard stat grids) at 9px on purpose. No scoring change.
    CHANGE LOG v3.5.33 - NEW BAG TILE. Goyim uploaded a new finished SQUARE bag tile (bag (1).png, 1254x1254 -> swapped in as bag.png, redundant (1) removed). drawBagSkin now draws it FULL (no crop) since it is a complete tile. Re-enabled the bag skin path on chute + wall + floor-slot (the v3.5.32 black box is now the !BAGIMG_OK fallback). No scoring change.
@@ -393,7 +394,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 
 /* ═══════════════════════════════════════════════════════
    START MENU — v1.9.0
-   Three modes: TRAINING / SHIFT / LEVELS (coming soon)
+   Modes: PRACTICE / ARCADE / TOUR / DAILY / GAUNTLET (all live)
 ═══════════════════════════════════════════════════════ */
 #start-menu{
   position:fixed;inset:0;z-index:400;
@@ -1417,7 +1418,7 @@ body[data-cb="trit"]{
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.35</div>
+  <div class="pause-sub">LOCK IN v3.5.36</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1531,7 +1532,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.35 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.36 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1642,7 +1643,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.35 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.36 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1997,7 +1998,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.35
+// LOCK IN v3.5.36
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2020,7 +2021,7 @@ body[data-cb="trit"]{
 //   • START MENU — full-screen mode selection:
 //       TRAINING: looping demo, 20-step ideal wall, 3 speeds, pause/exit
 //       SHIFT: back-to-back walls, session accumulates totals
-//       LEVELS: Coming Soon (Phoenix Run / Chicago Overnight teaser)
+//       LEVELS: live — Tour mode, all 10 levels playable with mechanics
 //   • SHIFT MODE: nextTrailer() clears grid only, keeps session running.
 //       Header badge SHIFT · WALL N. End screen = session totals.
 //   • RETURN TO MENU: RELOAD YARD + pause-restart → start menu.
@@ -6265,11 +6266,11 @@ function gcurTick(){
 
 // ── VOICE STATE ──
 var activeVoice='std'; // 'std' | 'hub'
-try{var _sv=sessionStorage.getItem('liVoice');if(_sv)activeVoice=_sv;}catch(e){}
+try{var _sv=localStorage.getItem('liVoice');if(_sv)activeVoice=_sv;}catch(e){}
 
 function setVoice(v){
   activeVoice=v;
-  try{sessionStorage.setItem('liVoice',v);}catch(e){}
+  try{localStorage.setItem('liVoice',v);}catch(e){}
   gaEvent('voice_selected',{voice:v});
   var std=document.getElementById('vt-std');
   var hub=document.getElementById('vt-hub');
@@ -6292,7 +6293,7 @@ function briefTab(t){
   if(h)h.style.display=t==='hub'?'block':'none';
   // Keep voice in sync with tab
   activeVoice=t;
-  try{sessionStorage.setItem('liVoice',t);}catch(e){}
+  try{localStorage.setItem('liVoice',t);}catch(e){}
 }
 
 function acknowledgeBriefing(){
@@ -7323,7 +7324,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.35</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.36</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7502,7 +7503,7 @@ null, // index 0 unused — levels are 1-based
  winH:.92,winDensity:.55,winIntegrity:0,winCOG:.5,zeroCrunches:true,
  parSec:450,star3Sec:360,star3Grade:'A',star2Grade:'B',star1Grade:'C'},
 // ─────────────────────────────────────────────────────────────
-// LEVELS 6-10: configs defined, mechanics Coming Soon — locked in UI
+// LEVELS 1-10: all configs defined AND all mechanics live (drought/mid-drop/insp-hold/orient/strike/trainer) — fully playable, no locks
 {n:6,name:'THE PHOENIX RUN',hub:'Phoenix Sky Harbor',city:'Phoenix, AZ · PHX',
  abbr:'PHOENIX',
  flavor:'"116°F on the asphalt. Dispatch moved the clock up 15 minutes because someone called out."',
@@ -8449,18 +8450,22 @@ function toggleTheme(){
 }
 
 // ── SETTINGS (v2.1.24) ──
-// Persisted prefs. Audio levels are stored now and ready for the Pass E sound
-// engine (no audio yet). theme / learnGrid / reducedMotion / voice apply live.
-var SETTINGS={volMaster:80,volSfx:0,volMusic:0,theme:'light',learnGrid:false,reducedMotion:false,colorblind:'off',textScale:'normal',boxGrid:false,musicTrack:'auto',haptics:true};
+// Persisted prefs (localStorage — survive tab close; device-level "remember last setting").
+// v3.5.36 DECISION (Goyim): anon / first-run defaults AUDIO ON — it's a video game, the music
+// shouldn't be silent on the main screen / in a demo. A logged-in account restores its OWN saved
+// levels (a classroom can save muted), which is the NEXT step (per-account settings sync to the
+// backend). Music actually starts on the first user gesture (browser autoplay policy — see the
+// unlock listener by musicStart). theme / learnGrid / reducedMotion / voice apply live.
+var SETTINGS={volMaster:80,volSfx:80,volMusic:60,theme:'light',learnGrid:false,reducedMotion:false,colorblind:'off',textScale:'normal',boxGrid:false,musicTrack:'auto',haptics:true};
 function loadSettings(){
   try{
-    var raw=sessionStorage.getItem('liSettings');
+    var raw=localStorage.getItem('liSettings');
     if(raw){var o=JSON.parse(raw),k;for(k in o){if(SETTINGS.hasOwnProperty(k))SETTINGS[k]=o[k];}}
     else if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){SETTINGS.reducedMotion=true;}
   }catch(e){}
 }
 function saveSettings(){
-  try{sessionStorage.setItem('liSettings',JSON.stringify(SETTINGS));}catch(e){}
+  try{localStorage.setItem('liSettings',JSON.stringify(SETTINGS));}catch(e){}
 }
 function applySettings(){
   document.documentElement.dataset.theme=(SETTINGS.theme==='dark')?'dark':'';
