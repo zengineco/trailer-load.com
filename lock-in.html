@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.41
+   LOCK IN v3.5.42
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.42 - MOBILE MENU FIX (professional pass before outreach). The start menu used desktop left-strip caps that broke on phones: (1) #sm-modes was max-width:46vw -> on a ~375px phone the mode cards were ~172px and clipped the 34px names (GAUNTLET/PRACTICE cut off); now full-width (align-self:stretch, 16px gutters) with a clamped card-name font. (2) #sm-topright (LEADERBOARD/PROFILE/settings) is absolute top-right and OVERLAPPED the logo on narrow screens; now shrunk + the logo drops below the row (margin-top) so they never collide. (3) Bottom console buttons (OPERATIONS/LINEHAUL/ADMIN) tightened so the row doesn't overflow a phone. Pure @media(max-width:640px) block — desktop untouched. Goyim eyeballs on a real device (canvas can't sandbox-render). No scoring change.
    CHANGE LOG v3.5.41 - ADSENSE LOADER + CSP REOPEN (monetization / site review). Placed the AdSense loader (adsbygoogle.js from pagead2.googlesyndication.com, client ca-pub-8826956454892311) in the head of ALL pages (index/lock-in/privacy/terms) so Google can verify + review trailer-load.com for ad serving. [NOTE: changelog avoids a literal script tag on purpose — the syntax gate regexes for one.] Extended the game's CSP meta (was dropped in v3.0.0): script-src + connect-src now allow pagead2/googlesyndication/doubleclick, and added frame-src for the ad iframes (default-src 'self' was blocking them). Loader alone shows NO ads until Auto Ads is enabled or a unit is placed — model: free game is ad-supported ("ads keep it free"), enterprise removes ads + unlocks the classroom dashboard. Ads to go on landing + menu, NEVER over the live wall; the wall-completion interstitial is the AdMob path in the Android build. No scoring change.
    CHANGE LOG v3.5.40 - SIGNUP FIX (delivery blocker). "Sign up not working": zAuthSignup (the ov-data / ACCOUNT & DATA path, surfaced by v3.5.39) still called raw GoTrue /signup, which rejects the synthetic handle@players.lockin.app email — the exact break the v3.4.2 RPC fix cured on the PROFILE path but never here. Rewired zAuthSignup to the lockin_worker_signup RPC (create pre-confirmed user + handle row + recovery hex) then password-grant login, identical to the working pfDoSignup; shows the recovery code in the note. Login (token grant) was already fine in both UIs. Now BOTH signup entry points use the same working RPC. No scoring change.
    CHANGE LOG v3.5.39 - LEGITIMACY STEP 2B/3: ADMIN = PAUSE ON THE CLIPBOARD + account folded in. (1) The pause menu (#ov-pause) now renders on the CLIPBOARD look (warm #f5f0e8 paper + metal-clip pseudo-elements via .pause-clip), unifying the clipboard motif (briefing + profile + now pause). Buttons/coach/hint recolored dark-on-cream. (2) NEW 'ACCOUNT & DATA' button in the pause menu -> opens the existing ov-data (account auth + privacy/consent), so the account hub now lives in ADMIN. (3) RETIRED the floating ◈ DATA tab button (zOpenData/ov-data overlay itself unchanged — just no longer a standalone floating tab). (4) Bumped .ov-data z-index 120->600 so it shows ABOVE the pause/menu (at 120 it would have been buried behind the pause at 300 / menu at 400 — also a latent fix). The three-drawer console (OPERATIONS/LINEHAUL/ADMIN) is now complete. No scoring change.
@@ -562,6 +563,24 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   position:absolute;bottom:14px;left:0;right:0;text-align:center;
   font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
   color:var(--t3);
+}
+/* v3.5.42 MOBILE MENU FIX — desktop left-strip caps cut off mode names + the absolute top-right buttons overlapped the logo on phones. Full-width menu + cleared/shrunk controls on narrow screens. */
+@media (max-width:640px){
+  #start-menu{background:linear-gradient(180deg,rgba(11,8,5,.975),rgba(11,8,5,.9));padding:20px 0 28px;}
+  #sm-topright{top:10px;right:10px;gap:6px;}
+  .sm-loginbtn{font-size:11px;letter-spacing:.4px;padding:6px 9px;}
+  .sm-iconbtn{font-size:18px;padding:6px 10px;}
+  #sm-logo{margin:46px 0 12px 16px;}                    /* drop the logo below the top-right row so they never overlap */
+  #sm-header-img{max-width:min(240px,62vw);}
+  #sm-wordmark{font-size:clamp(34px,10vw,48px);letter-spacing:5px;}
+  #sm-tagline{margin-left:16px;}
+  #sm-modes{align-self:stretch;width:auto;max-width:none;padding:0 16px;gap:9px;}  /* was max-width:46vw = clipped names */
+  .sm-card{padding:12px 14px;gap:12px;}
+  .sm-card-ico{font-size:28px;width:36px;}
+  .sm-card-name{font-size:clamp(24px,7.2vw,32px);letter-spacing:1px;}
+  #ops-console{gap:4px;}
+  .console-btn{font-size:11px;padding:5px 7px;letter-spacing:.02em;}
+  .console-btn .ci{margin-right:3px;}
 }
 
 /* ── TRAINING SIDE PANEL ── */
@@ -1495,7 +1514,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.41 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.42 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1611,7 +1630,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.41 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.42 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1722,7 +1741,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.41 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.42 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2087,7 +2106,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.41
+// LOCK IN v3.5.42
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7511,7 +7530,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.41</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.42</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
