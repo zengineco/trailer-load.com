@@ -25,11 +25,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.39
+   LOCK IN v3.5.40
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.40 - SIGNUP FIX (delivery blocker). "Sign up not working": zAuthSignup (the ov-data / ACCOUNT & DATA path, surfaced by v3.5.39) still called raw GoTrue /signup, which rejects the synthetic handle@players.lockin.app email — the exact break the v3.4.2 RPC fix cured on the PROFILE path but never here. Rewired zAuthSignup to the lockin_worker_signup RPC (create pre-confirmed user + handle row + recovery hex) then password-grant login, identical to the working pfDoSignup; shows the recovery code in the note. Login (token grant) was already fine in both UIs. Now BOTH signup entry points use the same working RPC. No scoring change.
    CHANGE LOG v3.5.39 - LEGITIMACY STEP 2B/3: ADMIN = PAUSE ON THE CLIPBOARD + account folded in. (1) The pause menu (#ov-pause) now renders on the CLIPBOARD look (warm #f5f0e8 paper + metal-clip pseudo-elements via .pause-clip), unifying the clipboard motif (briefing + profile + now pause). Buttons/coach/hint recolored dark-on-cream. (2) NEW 'ACCOUNT & DATA' button in the pause menu -> opens the existing ov-data (account auth + privacy/consent), so the account hub now lives in ADMIN. (3) RETIRED the floating ◈ DATA tab button (zOpenData/ov-data overlay itself unchanged — just no longer a standalone floating tab). (4) Bumped .ov-data z-index 120->600 so it shows ABOVE the pause/menu (at 120 it would have been buried behind the pause at 300 / menu at 400 — also a latent fix). The three-drawer console (OPERATIONS/LINEHAUL/ADMIN) is now complete. No scoring change.
    CHANGE LOG v3.5.38 - OPERATIONS DRAWER REBUILT (Goyim: the v3.5.37 version was "dogwater" — it just re-showed the scoreboard + a couple broken zeros, incl. S.incidents which is an ARRAY not a number). OPERATIONS is now a live mid-load CHECK-IN modeled on the end report: a live LETTER GRADE hero (A+..F + rank + verdict + /100, same math as fillTelemetryTiles via new shared sessionGrade()), then grouped tiles pulled from the authoritative S accumulators — LOAD QUALITY (integrity/support/pack fill/gaps), SAFETY (incidents[].length/crunches/collapses/haz shelves), PRODUCTIVITY (pph now/pph peak/shelves/double locks/accuracy/pieces), all color-coded. No scoreboard dupes. Refreshes live from updateHUD. No scoring change.
    CHANGE LOG v3.5.37 - LEGITIMACY STEP 2A: BOTTOM CONSOLE (Goyim's redesign — scratch the right-side rail, keep linehaul at the bottom). The footer now hosts a 3-button console -> collapsible scrollable drawers: OPERATIONS (NEW live-stats drawer: SCORE/LOAD RATE/WALL HEIGHT/PACK/INTEGRITY/BALANCE/PLACED/SHELVES/GAPS/VOIDS/INCIDENTS/TRAILER, color-coded, refreshes live from updateHUD), LINEHAUL (the full dispatch log as a bottom drawer — bigger 16px Barlow body so missed messages are readable, no full-screen pause), ADMIN (-> the pause/admin surface; REPLACES the scoreboard ⏸ PAUSE button, which is removed). OPS/LINEHAUL are peek drawers (game runs behind them). NEXT (v3.5.38, step 2B/3): reskin ADMIN's pause onto the CLIPBOARD + migrate account/privacy/consent out of the old DATA tab into ADMIN + retire the DATA tab. No scoring change.
@@ -1492,7 +1493,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.39 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.40 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1608,7 +1609,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.39 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.40 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1719,7 +1720,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.39 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.40 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2084,7 +2085,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.39
+// LOCK IN v3.5.40
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2652,12 +2653,22 @@ function zAuthSignup(){
   if(!handle||handle.length<3){if(nt)nt.textContent='Pick a username (3+ chars: letters, numbers, underscore).';return;}
   if(pass.length<6){if(nt)nt.textContent='Password needs 6+ characters.';return;}
   if(nt)nt.textContent='Creating your handle\u2026';
-  try{fetch(ZDATA.authUrl+'/signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey},body:JSON.stringify({email:email,password:pass})})
+  // v3.5.40 SIGNUP FIX: use the lockin_worker_signup RPC (same working path as the profile pfDoSignup),
+  // NOT raw GoTrue /signup \u2014 GoTrue rejected the synthetic handle@players.lockin.app domain, which was
+  // THE "sign up not working" break. Creates a pre-confirmed user + handle row, returns a recovery hex.
+  try{fetch(ZDATA.endpoint+'/rpc/lockin_worker_signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey,'Authorization':'Bearer '+ZDATA.anonKey},body:JSON.stringify({p_username:handle,p_password:pass})})
     .then(function(r){return r.json();})
     .then(function(j){
-      if(j&&j.access_token){zSaveSession(j,email,handle);var pl=zLoadPlayer();pl.email=email;pl.handle=handle;pl.consentSelf=true;pl.consentDecided=true;zSavePlayer();if(typeof showBanner==='function')showBanner('\u2713 Welcome, '+handle+' \u2014 locked in.','ok',2200);if(nt)nt.textContent='Signed in as '+handle+'.';zSetRecovery();}
-      else if(j&&(j.id||j.user||j.confirmation_sent_at!==undefined)){if(nt)nt.textContent='\u2713 Handle reserved \u2014 tap SIGN IN to enter.';}
-      else{if(nt)nt.textContent='\u2715 '+((j&&(j.error_description||j.msg||j.error))||'Sign-up failed.');}
+      if(j&&j.ok){
+        if(nt)nt.textContent='Signing you in\u2026';
+        fetch(ZDATA.authUrl+'/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey},body:JSON.stringify({email:email,password:pass})})
+          .then(function(r2){return r2.json();}).then(function(t){
+            if(t&&t.access_token){zSaveSession(t,email,handle);var pl=zLoadPlayer();pl.email=email;pl.handle=handle;pl.consentSelf=true;pl.consentDecided=true;if(j.recovery)pl.recovery=j.recovery;zSavePlayer();if(typeof showBanner==='function')showBanner('\u2713 Welcome, '+handle+' \u2014 locked in.','ok',2200);
+              if(nt){if(j.recovery)nt.innerHTML='\u2713 Signed in as '+handle+'. <b>RECOVERY CODE: '+j.recovery+'</b> \u2014 write it down (resets your password, no email needed).';else nt.textContent='Signed in as '+handle+'.';}}
+            else{if(nt)nt.textContent='\u2713 Account made \u2014 tap SIGN IN to enter.';}
+          }).catch(function(e2){console.error('zAuthSignup login:',e2);if(nt)nt.textContent='\u2713 Account made \u2014 tap SIGN IN to enter.';});
+      }
+      else{if(nt)nt.textContent='\u2715 '+((j&&j.error)||'Sign-up failed \u2014 try another handle.');}
     }).catch(function(e){console.error('zAuthSignup:',e);if(nt)nt.textContent='\u2715 Network error \u2014 try again.';});}catch(e){console.error('zAuthSignup:',e);}
 }
 function zAuthLogout(){ZDATA.session=null;try{localStorage.removeItem('liAuth');}catch(e){}zAuthStatus();var nt=document.getElementById('auth-note');if(nt)nt.textContent='Signed out.';if(typeof showBanner==='function')showBanner('Signed out.','',1400);}
@@ -7498,7 +7509,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.39</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.40</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
