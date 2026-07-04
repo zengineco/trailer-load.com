@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOCK IN — Program Dashboard | trailer-load.com</title>
+<meta name="description" content="LOCK IN program dashboard — student loading competency report for CTE, logistics, and workforce programs. Attention to detail, follow-through, throughput, and safety, per student.">
+<meta name="google-adsense-account" content="ca-pub-8826956454892311">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3efe6;--panel:#ffffff;--ink:#241c14;--ink2:#6a5c48;--ink3:#9a8b72;
+  --acc:#c8791e;--acc-dim:#9a5c12;--teal:#138578;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;
+  --line:#e3dac9;--line2:#d2c6ad;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:16px;line-height:1.4;min-height:100vh;}
+.wrap{max-width:1140px;margin:0 auto;padding:0 16px;}
+.mono{font-family:'Share Tech Mono',monospace;}
+/* ── TOPBAR ── */
+#topbar{background:#1c1410;border-bottom:3px solid var(--acc);color:#f0e6d4;}
+#topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px;flex-wrap:wrap;}
+.brand{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:6px;color:var(--acc);line-height:1;}
+.brand small{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:#c0ad90;margin-top:2px;}
+#who{font-family:'Share Tech Mono',monospace;font-size:13px;color:#c0ad90;text-align:right;}
+#who b{color:#f0e6d4;display:block;font-size:15px;}
+.btn{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;border:1px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s;}
+.btn:hover{border-color:var(--acc);color:var(--acc-dim);}
+.btn-acc{background:var(--acc);color:#1a1006;border-color:var(--acc);}
+.btn-acc:hover{background:var(--acc-dim);color:#fff;}
+.btn-ghost{background:transparent;color:#c0ad90;border-color:#4a3826;}
+.btn-ghost:hover{border-color:var(--acc);color:var(--acc);}
+/* ── LOGIN ── */
+#login{max-width:400px;margin:8vh auto;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:32px 28px;box-shadow:0 12px 40px rgba(40,28,14,.12);}
+#login h1{font-family:'Bebas Neue',cursive;font-size:34px;letter-spacing:3px;color:var(--acc);line-height:1;}
+#login .sub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;margin:4px 0 22px;}
+.fld{display:block;margin-bottom:14px;}
+.fld span{display:block;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--ink2);text-transform:uppercase;font-weight:bold;margin-bottom:5px;}
+.fld input{width:100%;padding:11px 13px;background:#fbf9f4;border:1px solid var(--line2);border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--ink);}
+.fld input:focus{outline:none;border-color:var(--acc);}
+#login .btn-acc{width:100%;padding:12px;font-size:16px;margin-top:6px;}
+#login-note{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--ink2);line-height:1.5;margin-top:16px;text-align:center;}
+#login-msg{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;margin-top:12px;min-height:18px;}
+.err{color:var(--danger);}.good{color:var(--ok);}
+/* ── DASHBOARD ── */
+#dash{display:none;padding:22px 0 60px;}
+.dash-hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
+.dash-hd h1{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:2px;color:var(--ink);line-height:1;}
+.dash-hd .stamp{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--ink3);letter-spacing:1px;}
+.legend{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--ink2);margin-bottom:18px;}
+.legend b{color:var(--acc-dim);}
+/* summary cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:22px;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;box-shadow:0 3px 12px rgba(40,28,14,.05);}
+.card .k{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--ink2);text-transform:uppercase;font-weight:bold;}
+.card .v{font-family:'Bebas Neue',cursive;font-size:42px;letter-spacing:1px;line-height:1;margin-top:4px;color:var(--acc);}
+.card .c{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--ink3);margin-top:2px;}
+.card.ok .v{color:var(--ok);}.card.warn .v{color:var(--warn);}.card.danger .v{color:var(--danger);}
+/* toolbar */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+#search{flex:1;min-width:160px;padding:9px 12px;background:var(--panel);border:1px solid var(--line2);border-radius:7px;font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--ink);}
+#search:focus{outline:none;border-color:var(--acc);}
+/* table */
+.tbl-wrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto;box-shadow:0 3px 12px rgba(40,28,14,.05);}
+table{width:100%;border-collapse:collapse;min-width:760px;}
+th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink2);text-transform:uppercase;text-align:right;padding:12px 14px;border-bottom:2px solid var(--line2);cursor:pointer;white-space:nowrap;user-select:none;background:#faf7f0;position:sticky;top:0;}
+th:first-child{text-align:left;}
+th:hover{color:var(--acc-dim);}
+th .comp{display:block;font-size:9px;color:var(--ink3);letter-spacing:.5px;font-weight:normal;text-transform:none;}
+th.sorted{color:var(--acc-dim);}
+th .arr{color:var(--acc);}
+td{font-family:'Share Tech Mono',monospace;font-size:15px;padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--ink);}
+td:first-child{text-align:left;font-weight:bold;font-family:'Barlow Condensed',sans-serif;font-size:17px;}
+tr:hover td{background:#fbf9f4;}
+.pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:12px;font-weight:bold;}
+.pill.g{background:rgba(31,157,87,.14);color:#127a41;}
+.pill.w{background:rgba(212,130,15,.16);color:#9a5c0c;}
+.pill.d{background:rgba(194,58,26,.16);color:#a02c17;}
+.muted{color:var(--ink3);}
+#empty{padding:40px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--ink3);}
+.foot{margin-top:26px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--ink3);text-align:center;}
+.foot a{color:var(--teal);}
+@media(max-width:560px){.brand{font-size:24px;letter-spacing:4px;}.dash-hd h1{font-size:26px;}}
+</style>
+</head>
+<body>
+
+<div id="topbar"><div class="wrap">
+  <div class="brand">LOCK IN<small>PROGRAM DASHBOARD</small></div>
+  <div id="who" style="display:none;"></div>
+</div></div>
+
+<!-- LOGIN -->
+<div id="login">
+  <h1>Program Sign-In</h1>
+  <div class="sub">Facility / instructor access</div>
+  <label class="fld"><span>Program email</span><input id="li-email" type="email" autocomplete="username" placeholder="you@school.edu"></label>
+  <label class="fld"><span>Password</span><input id="li-pw" type="password" autocomplete="current-password" placeholder="••••••••"></label>
+  <button class="btn btn-acc" onclick="dLogin()">SIGN IN</button>
+  <div id="login-msg"></div>
+  <div id="login-note">Program credentials are issued by LOCK IN. Don't have access yet? Email <a href="mailto:vince@trailer-load.com">vince@trailer-load.com</a> to set up your program.</div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash"><div class="wrap">
+  <div class="dash-hd">
+    <h1>Competency Report</h1>
+    <div class="stamp" id="stamp"></div>
+  </div>
+  <div class="legend">Each student's loading performance, mapped to workplace competencies: <b>attention to detail</b> (load integrity), <b>follow-through</b> (walls completed), <b>throughput</b> (pieces/hour), and <b>safety</b> (incidents). Handles are anonymous — only your roster maps them to real students.</div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="toolbar">
+    <input id="search" type="text" placeholder="Filter students…" oninput="dRender()">
+    <button class="btn" onclick="dExport()">⭳ EXPORT CSV</button>
+    <button class="btn" onclick="dReload()">↻ REFRESH</button>
+    <button class="btn btn-ghost" onclick="dSignOut()" style="border-color:var(--line2);color:var(--ink2);">SIGN OUT</button>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr id="thead"></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="empty" style="display:none;"></div>
+  </div>
+
+  <div class="foot">LOCK IN · trailer-load.com · data shown is opt-in student gameplay only · © 2026</div>
+</div></div>
+
+<script>
+// ============================================================
+// LOCK IN — PROGRAM DASHBOARD
+// Facility-facing competency report. Reuses the game's Supabase auth
+// (GoTrue password grant) + the RLS-scoped lockin_cohort view.
+// Zengine | var-only, single STATE object, try/catch on async.
+// ============================================================
+var DASH={
+  authUrl:'https://igqpgsqogfrpujdgvefs.supabase.co/auth/v1',
+  endpoint:'https://igqpgsqogfrpujdgvefs.supabase.co/rest/v1',
+  anonKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlncXBnc3FvZ2ZycHVqZGd2ZWZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Njc1MzQsImV4cCI6MjA5NjQ0MzUzNH0.8Pn459HUFkqZu7ORSX15E13u9fWSD96OKR0w6yiuJQo',
+  session:null, rows:[], name:'', sortKey:'best_score', sortDir:-1
+};
+// columns: {key, label, competency, fmt}
+var DCOLS=[
+  {key:'username',   label:'Student',     comp:'handle'},
+  {key:'sessions',   label:'Sessions',    comp:'engagement'},
+  {key:'walls',      label:'Walls',       comp:'follow-through'},
+  {key:'avg_integrity',label:'Integrity', comp:'attention to detail'},
+  {key:'best_pph',   label:'Best PPH',    comp:'throughput'},
+  {key:'best_score', label:'Best Score',  comp:'overall'},
+  {key:'incidents',  label:'Incidents',   comp:'safety'},
+  {key:'last_seen',  label:'Last Active', comp:''}
+];
+function dHeaders(){
+  var h={'apikey':DASH.anonKey,'Content-Type':'application/json'};
+  h['Authorization']='Bearer '+((DASH.session&&DASH.session.access_token)||DASH.anonKey);
+  return h;
+}
+function dMsg(t,cls){var e=document.getElementById('login-msg');if(e){e.textContent=t||'';e.className=cls||'';}}
+function dEsc(s){return (''+(s==null?'':s)).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function dLogin(){
+  var em=document.getElementById('li-email'),pw=document.getElementById('li-pw');
+  var email=em?em.value.trim():'',pass=pw?pw.value:'';
+  if(!email||!pass){dMsg('Enter your program email + password.','err');return;}
+  dMsg('Signing in…','');
+  try{
+    fetch(DASH.authUrl+'/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':DASH.anonKey},body:JSON.stringify({email:email,password:pass})})
+      .then(function(r){return r.json();}).then(function(j){
+        if(j&&j.access_token){
+          DASH.session={access_token:j.access_token,refresh_token:j.refresh_token,email:email,uid:(j.user&&j.user.id)||null};
+          try{localStorage.setItem('lockinDashAuth',JSON.stringify(DASH.session));}catch(e){}
+          dMsg('','');dEnter();
+        } else {
+          dMsg('✕ '+((j&&(j.error_description||j.msg||j.error))||'Sign-in failed — check your credentials.'),'err');
+        }
+      }).catch(function(e){console.error('dLogin:',e);dMsg('✕ Network error — try again.','err');});
+  }catch(e){console.error('dLogin:',e);dMsg('✕ Error — try again.','err');}
+}
+function dEnter(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('dash').style.display='block';
+  var who=document.getElementById('who');if(who){who.style.display='block';who.innerHTML='<b>'+dEsc(DASH.name||'Your program')+'</b>'+dEsc(DASH.session&&DASH.session.email||'');}
+  dFetchFacility();dFetchCohort();
+}
+function dFetchFacility(){
+  try{
+    fetch(DASH.endpoint+'/lockin_facilities?select=name,facility_code',{headers:dHeaders()})
+      .then(function(r){return r.json();}).then(function(j){
+        if(j&&j.length){DASH.name=j[0].name||j[0].facility_code||'Your program';var who=document.getElementById('who');if(who)who.innerHTML='<b>'+dEsc(DASH.name)+'</b>'+dEsc(DASH.session&&DASH.session.email||'');}
+      }).catch(function(e){console.error('dFetchFacility:',e);});
+  }catch(e){console.error('dFetchFacility:',e);}
+}
+function dReload(){dFetchCohort();}
+function dFetchCohort(){
+  var tb=document.getElementById('tbody');if(tb)tb.innerHTML='';
+  var emp=document.getElementById('empty');if(emp){emp.style.display='block';emp.textContent='Loading roster…';}
+  try{
+    fetch(DASH.endpoint+'/lockin_cohort?select=*',{headers:dHeaders()})
+      .then(function(r){return r.json();}).then(function(j){
+        DASH.rows=(j&&j.length)?j:[];
+        var st=document.getElementById('stamp');if(st)st.textContent=DASH.rows.length+' students on roster';
+        dRender();
+      }).catch(function(e){console.error('dFetchCohort:',e);if(emp)emp.textContent='Could not load the roster — try REFRESH.';});
+  }catch(e){console.error('dFetchCohort:',e);}
+}
+function dNum(v){return (v==null||isNaN(v))?0:(+v);}
+function dSince(ts){
+  if(!ts)return '—';
+  try{
+    var then=new Date(ts).getTime(),now=Date.now(),d=Math.floor((now-then)/86400000);
+    if(d<=0)return 'today';if(d===1)return '1d ago';if(d<30)return d+'d ago';
+    var mo=Math.floor(d/30);return mo+'mo ago';
+  }catch(e){return '—';}
+}
+function dSort(k){
+  if(DASH.sortKey===k){DASH.sortDir*=-1;}else{DASH.sortKey=k;DASH.sortDir=(k==='username')?1:-1;}
+  dRender();
+}
+function dCards(rows){
+  var n=rows.length;
+  var ai=0,walls=0,flagged=0,i;
+  for(i=0;i<rows.length;i++){ai+=dNum(rows[i].avg_integrity);walls+=dNum(rows[i].walls);if(dNum(rows[i].incidents)>=2)flagged++;}
+  var avgInt=n?Math.round(ai/n):0;
+  var intCls=avgInt>=80?'ok':avgInt>=60?'warn':(n?'danger':'');
+  function card(k,v,c,cls){return '<div class="card '+(cls||'')+'"><div class="k">'+k+'</div><div class="v">'+v+'</div><div class="c">'+c+'</div></div>';}
+  return card('STUDENTS',n,'on your roster','')
+    +card('AVG INTEGRITY',(n?avgInt+'%':'—'),'attention to detail',intCls)
+    +card('WALLS LOADED',walls,'total follow-through','')
+    +card('FLAGGED',flagged,'2+ safety incidents',flagged>0?'danger':'ok');
+}
+function dRender(){
+  var q=(document.getElementById('search')||{}).value||'';q=q.toLowerCase().trim();
+  var rows=DASH.rows.filter(function(r){return !q||(''+(r.username||'')).toLowerCase().indexOf(q)>=0;});
+  // sort
+  var k=DASH.sortKey,dir=DASH.sortDir;
+  rows=rows.slice().sort(function(a,b){
+    var av=a[k],bv=b[k];
+    if(k==='username'){av=(''+(av||'')).toLowerCase();bv=(''+(bv||'')).toLowerCase();return av<bv?-1*dir:av>bv?1*dir:0;}
+    if(k==='last_seen'){av=av?new Date(av).getTime():0;bv=bv?new Date(bv).getTime():0;return (av-bv)*dir;}
+    return (dNum(av)-dNum(bv))*dir;
+  });
+  // summary cards (on the full roster, not the filtered view)
+  document.getElementById('cards').innerHTML=dCards(DASH.rows);
+  // header
+  var th='',c;for(c=0;c<DCOLS.length;c++){var col=DCOLS[c];var isS=(DASH.sortKey===col.key);
+    th+='<th class="'+(isS?'sorted':'')+'" onclick="dSort(\''+col.key+'\')">'+col.label+(isS?(' <span class="arr">'+(DASH.sortDir<0?'▼':'▲')+'</span>'):'')+(col.comp?('<span class="comp">'+col.comp+'</span>'):'')+'</th>';}
+  document.getElementById('thead').innerHTML=th;
+  // body
+  var emp=document.getElementById('empty');
+  if(!rows.length){document.getElementById('tbody').innerHTML='';if(emp){emp.style.display='block';emp.textContent=DASH.rows.length?'No students match that filter.':'No students have opted in yet. Share the program code and have students enable stats + your facility code in ACCOUNT & DATA.';}return;}
+  if(emp)emp.style.display='none';
+  var h='',i;
+  for(i=0;i<rows.length;i++){var r=rows[i];
+    var inc=dNum(r.incidents),ai=dNum(r.avg_integrity);
+    var incPill=inc>=2?'<span class="pill d">'+inc+'</span>':inc===1?'<span class="pill w">1</span>':'<span class="pill g">0</span>';
+    var intPill='<span class="pill '+(ai>=80?'g':ai>=60?'w':'d')+'">'+(ai||0)+'%</span>';
+    h+='<tr>'
+      +'<td>'+dEsc(r.username||'—')+'</td>'
+      +'<td>'+dNum(r.sessions)+'</td>'
+      +'<td>'+dNum(r.walls)+'</td>'
+      +'<td>'+intPill+'</td>'
+      +'<td>'+dNum(r.best_pph)+'</td>'
+      +'<td>'+dNum(r.best_score)+'</td>'
+      +'<td>'+incPill+'</td>'
+      +'<td class="muted">'+dSince(r.last_seen)+'</td>'
+      +'</tr>';
+  }
+  document.getElementById('tbody').innerHTML=h;
+}
+function dExport(){
+  var rows=DASH.rows.slice();
+  var head=['student','sessions','walls','avg_integrity_pct','best_pph','best_score','incidents','last_seen'];
+  var lines=[head.join(',')],i;
+  function q(v){v=(v==null?'':(''+v));return /[",\n]/.test(v)?('"'+v.replace(/"/g,'""')+'"'):v;}
+  for(i=0;i<rows.length;i++){var r=rows[i];
+    lines.push([r.username,dNum(r.sessions),dNum(r.walls),dNum(r.avg_integrity),dNum(r.best_pph),dNum(r.best_score),dNum(r.incidents),r.last_seen||''].map(q).join(','));}
+  var blob=new Blob([lines.join('\n')],{type:'text/csv'});
+  var url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='lockin-cohort-'+((DASH.name||'program').toLowerCase().replace(/[^a-z0-9]+/g,'-'))+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1500);
+}
+function dSignOut(){
+  DASH.session=null;DASH.rows=[];DASH.name='';
+  try{localStorage.removeItem('lockinDashAuth');}catch(e){}
+  document.getElementById('dash').style.display='none';
+  document.getElementById('login').style.display='block';
+  var who=document.getElementById('who');if(who)who.style.display='none';
+  dMsg('Signed out.','good');
+}
+function dBoot(){
+  try{var r=localStorage.getItem('lockinDashAuth');if(r){DASH.session=JSON.parse(r);if(DASH.session&&DASH.session.access_token){dEnter();return;}}}catch(e){console.error('dBoot:',e);}
+}
+dBoot();
+</script>
+</body>
+</html>
