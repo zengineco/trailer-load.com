@@ -201,7 +201,8 @@ function dFetchCohort(){
   try{
     fetch(DASH.endpoint+'/lockin_cohort?select=*',{headers:dHeaders()})
       .then(function(r){return r.json();}).then(function(j){
-        DASH.rows=(j&&j.length)?j:[];
+        // drop the instructor's own handle (it comes back via the self-read policy with all zeros)
+        DASH.rows=(j&&j.length)?j.filter(function(r){return !(DASH.session&&r.user_id===DASH.session.uid);}):[];
         var st=document.getElementById('stamp');if(st)st.textContent=DASH.rows.length+' students on roster';
         dRender();
       }).catch(function(e){console.error('dFetchCohort:',e);if(emp)emp.textContent='Could not load the roster — try REFRESH.';});
