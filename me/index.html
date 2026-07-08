@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clock In — Your Record | LOCK IN</title>
+<meta name="description" content="Clock in to LOCK IN and see your own loading record — walls loaded, integrity, pace, shelves, and safety, across every mode.">
+<meta name="google-adsense-account" content="ca-pub-8826956454892311">
+<link rel="canonical" href="https://www.trailer-load.com/me/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#ece5d8;--panel:#fff;--ink:#241c14;--ink2:#6a5c48;--ink3:#9a8b72;--acc:#c8791e;--acc-dim:#9a5c12;--acc-bright:#e0962e;--teal:#138578;--teal-bright:#19a594;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;--line:#e3dac9;--line2:#d2c6ad;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:16px;line-height:1.4;min-height:100vh;}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px;}
+#topbar{background:#1c1410;border-bottom:3px solid var(--acc);color:#f0e6d4;}
+#topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px;flex-wrap:wrap;}
+.brand{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:6px;color:var(--acc);line-height:1;}
+.brand small{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:#c0ad90;margin-top:2px;}
+.tb-links a{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:#c0ad90;text-decoration:none;margin-left:14px;}
+.tb-links a:hover{color:var(--acc);}
+.btn{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;border:1px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block;}
+.btn:hover{border-color:var(--acc);color:var(--acc-dim);}
+.btn-acc{background:var(--acc);color:#1a1006;border-color:var(--acc);}
+.btn-acc:hover{background:var(--acc-dim);color:#fff;}
+/* login */
+#login{max-width:380px;margin:8vh auto;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:30px 26px;box-shadow:0 12px 40px rgba(40,28,14,.12);}
+#login h1{font-family:'Bebas Neue',cursive;font-size:38px;letter-spacing:3px;color:var(--acc);line-height:1;}
+#login .sub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--ink3);text-transform:uppercase;margin:4px 0 22px;}
+.fld{display:block;margin-bottom:14px;}
+.fld span{display:block;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--ink2);text-transform:uppercase;font-weight:bold;margin-bottom:5px;}
+.fld input{width:100%;padding:11px 13px;background:#fbf9f4;border:1px solid var(--line2);border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--ink);}
+.fld input:focus{outline:none;border-color:var(--acc);}
+#login .btn-acc{width:100%;padding:12px;font-size:16px;margin-top:6px;}
+#login-note{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--ink2);line-height:1.5;margin-top:16px;text-align:center;}
+#login-note a{color:var(--teal);}
+#login-msg{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;margin-top:12px;min-height:18px;}
+.err{color:var(--danger);}.good{color:var(--ok);}
+/* profile */
+#me{display:none;padding:22px 0 60px;}
+.me-hero{background:linear-gradient(135deg,#1c1410,#2e2016);border:1px solid var(--line2);border-radius:14px;padding:22px 24px;color:#f0e6d4;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
+.me-hero .handle{font-family:'Bebas Neue',cursive;font-size:40px;letter-spacing:2px;color:#fff;line-height:1;}
+.me-hero .rank{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--acc-bright);text-transform:uppercase;margin-top:4px;}
+.me-hero .actions{display:flex;gap:8px;flex-wrap:wrap;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px;}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 17px;box-shadow:0 3px 12px rgba(40,28,14,.05);}
+.card .k{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--ink2);text-transform:uppercase;font-weight:bold;}
+.card .v{font-family:'Bebas Neue',cursive;font-size:40px;letter-spacing:1px;line-height:1;margin-top:4px;color:var(--acc);}
+.card .c{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--ink3);margin-top:2px;}
+.card.ok .v{color:var(--ok);}.card.warn .v{color:var(--warn);}.card.danger .v{color:var(--danger);}.card.teal .v{color:var(--teal);}
+h2{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:1px;margin:0 0 10px;}
+.tbl-wrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto;box-shadow:0 3px 12px rgba(40,28,14,.05);}
+table{width:100%;border-collapse:collapse;min-width:620px;}
+th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink2);text-transform:uppercase;text-align:right;padding:11px 14px;border-bottom:2px solid var(--line2);white-space:nowrap;background:#faf7f0;}
+th:first-child{text-align:left;}
+td{font-family:'Share Tech Mono',monospace;font-size:15px;padding:10px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;}
+td:first-child{text-align:left;font-weight:bold;font-family:'Barlow Condensed',sans-serif;font-size:16px;text-transform:capitalize;}
+tr:hover td{background:#fbf9f4;}
+#empty{padding:34px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--ink3);}
+#empty a{color:var(--teal);}
+.foot{margin-top:26px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--ink3);text-align:center;}
+.foot a{color:var(--teal);}
+@media(max-width:560px){.brand{font-size:24px;letter-spacing:4px;}.me-hero .handle{font-size:32px;}}
+</style>
+</head>
+<body>
+
+<div id="topbar"><div class="wrap">
+  <div class="brand">LOCK IN<small>CLOCK IN — YOUR RECORD</small></div>
+  <div class="tb-links"><a href="/">Home</a><a href="/lock-in.html">Play</a></div>
+</div></div>
+
+<!-- LOGIN -->
+<div id="login">
+  <h1>Clock In</h1>
+  <div class="sub">See your loading record</div>
+  <label class="fld"><span>Username</span><input id="li-user" type="text" autocomplete="username" placeholder="your handle"></label>
+  <label class="fld"><span>Password</span><input id="li-pw" type="password" autocomplete="current-password" placeholder="••••••••"></label>
+  <button class="btn btn-acc" onclick="mLogin()">CLOCK IN</button>
+  <div id="login-msg"></div>
+  <div id="login-note">No account yet? It's free — <a href="/lock-in.html">play the game</a>, then create one under ADMIN → ACCOUNT &amp; DATA. Your stats only save if you opt in.</div>
+</div>
+
+<!-- PROFILE -->
+<div id="me"><div class="wrap">
+  <div class="me-hero">
+    <div>
+      <div class="handle" id="me-handle">—</div>
+      <div class="rank" id="me-rank"></div>
+    </div>
+    <div class="actions">
+      <a class="btn btn-acc" href="/lock-in.html">▶ PLAY</a>
+      <button class="btn" onclick="mSignOut()">SIGN OUT</button>
+    </div>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <h2>By mode</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr>
+        <th>Mode</th><th>Sessions</th><th>Walls</th><th>Pieces</th><th>Best Score</th><th>Peak PPH</th><th>Integrity</th><th>Incidents</th>
+      </tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div id="empty" style="display:none;"></div>
+  </div>
+
+  <div class="foot">LOCK IN · trailer-load.com · your record, your device — saved only because you opted in · © 2026</div>
+</div></div>
+
+<script>
+// ============================================================
+// LOCK IN — CLOCK IN (worker self-profile)
+// Worker signs in and sees their own lifetime record. Reuses the game's
+// GoTrue password grant + the RLS-scoped lockin_lifetime view (self only).
+// Zengine | var-only, single STATE object, try/catch on async.
+// ============================================================
+var ME={
+  authUrl:'https://igqpgsqogfrpujdgvefs.supabase.co/auth/v1',
+  endpoint:'https://igqpgsqogfrpujdgvefs.supabase.co/rest/v1',
+  anonKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlncXBnc3FvZ2ZycHVqZGd2ZWZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Njc1MzQsImV4cCI6MjA5NjQ0MzUzNH0.8Pn459HUFkqZu7ORSX15E13u9fWSD96OKR0w6yiuJQo',
+  session:null, rows:[]
+};
+function mHeaders(){var h={'apikey':ME.anonKey,'Content-Type':'application/json'};h['Authorization']='Bearer '+((ME.session&&ME.session.access_token)||ME.anonKey);return h;}
+function mMsg(t,cls){var e=document.getElementById('login-msg');if(e){e.textContent=t||'';e.className=cls||'';}}
+function mClean(u){return (''+(u||'')).toLowerCase().replace(/[^a-z0-9_]/g,'');}
+function mNum(v){return (v==null||isNaN(v))?0:(+v);}
+function mLogin(){
+  var uEl=document.getElementById('li-user'),pEl=document.getElementById('li-pw');
+  var raw=uEl?uEl.value.trim():'',pass=pEl?pEl.value:'';
+  if(!raw||!pass){mMsg('Enter your username + password.','err');return;}
+  var email=(raw.indexOf('@')>=0)?raw:(mClean(raw)+'@players.lockin.app');
+  if(raw.indexOf('@')<0&&!mClean(raw)){mMsg('Username: letters, numbers, underscore.','err');return;}
+  mMsg('Clocking in…','');
+  try{
+    fetch(ME.authUrl+'/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':ME.anonKey},body:JSON.stringify({email:email,password:pass})})
+      .then(function(r){return r.json();}).then(function(j){
+        if(j&&j.access_token){
+          ME.session={access_token:j.access_token,refresh_token:j.refresh_token,uid:(j.user&&j.user.id)||null,handle:(raw.indexOf('@')>=0?raw:mClean(raw))};
+          try{localStorage.setItem('lockinMeAuth',JSON.stringify(ME.session));}catch(e){}
+          mMsg('','');mEnter();
+        } else {
+          mMsg('✕ '+((j&&(j.error_description||j.msg||j.error))||'Sign-in failed — check your credentials.'),'err');
+        }
+      }).catch(function(e){console.error('mLogin:',e);mMsg('✕ Network error — try again.','err');});
+  }catch(e){console.error('mLogin:',e);mMsg('✕ Error — try again.','err');}
+}
+function mEnter(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('me').style.display='block';
+  document.getElementById('me-handle').textContent=(ME.session&&ME.session.handle)||'You';
+  mFetch();
+}
+function mFetch(){
+  var emp=document.getElementById('empty');if(emp){emp.style.display='block';emp.textContent='Loading your record…';}
+  try{
+    fetch(ME.endpoint+'/lockin_lifetime?select=*',{headers:mHeaders()})
+      .then(function(r){return r.json();}).then(function(j){
+        ME.rows=(j&&j.length)?j:[];
+        mRender();
+      }).catch(function(e){console.error('mFetch:',e);if(emp)emp.textContent='Could not load your record — try again.';});
+  }catch(e){console.error('mFetch:',e);}
+}
+function mRank(ai){
+  if(ai>=90)return 'YARD LEGEND';if(ai>=82)return 'DOCK VETERAN';if(ai>=72)return 'SOLID HAND';
+  if(ai>=60)return 'GREENHORN+';if(ai>=45)return 'ROOKIE';return 'IN TRAINING';
+}
+function mRender(){
+  var rows=ME.rows;
+  var sessions=0,walls=0,pieces=0,bestScore=0,peak=0,inc=0,shelves=0,aiSum=0,aiN=0,i;
+  for(i=0;i<rows.length;i++){var r=rows[i];
+    sessions+=mNum(r.sessions);walls+=mNum(r.walls);pieces+=mNum(r.pieces);
+    bestScore=Math.max(bestScore,mNum(r.score));peak=Math.max(peak,mNum(r.peak_pph));
+    inc+=mNum(r.incidents);shelves+=mNum(r.shelves_locked);
+    if(mNum(r.avg_integrity)>0){aiSum+=mNum(r.avg_integrity);aiN++;}
+  }
+  var ai=aiN?Math.round(aiSum/aiN):0;
+  document.getElementById('me-rank').textContent=rows.length?mRank(ai):'CLOCK A WALL TO EARN YOUR RANK';
+  var intCls=ai>=80?'ok':ai>=60?'warn':(ai>0?'danger':'');
+  function card(k,v,c,cls){return '<div class="card '+(cls||'')+'"><div class="k">'+k+'</div><div class="v">'+v+'</div><div class="c">'+c+'</div></div>';}
+  document.getElementById('cards').innerHTML=
+     card('WALLS',walls,'sealed','')
+    +card('SESSIONS',sessions,'clocked in','')
+    +card('BEST SCORE',bestScore.toLocaleString(),'personal best','teal')
+    +card('PEAK PPH',peak||'—','fastest pace','teal')
+    +card('AVG INTEGRITY',(ai?ai+'%':'—'),'attention to detail',intCls)
+    +card('INCIDENTS',inc,'lifetime safety',inc>=2?'danger':inc>=1?'warn':'ok');
+  var emp=document.getElementById('empty');
+  if(!rows.length){document.getElementById('tbody').innerHTML='';if(emp){emp.style.display='block';emp.innerHTML='No walls on record yet. <a href="/lock-in.html">Load one</a> — with stats saving on — and it shows up here.';}return;}
+  if(emp)emp.style.display='none';
+  rows=rows.slice().sort(function(a,b){return mNum(b.walls)-mNum(a.walls);});
+  var h='';
+  for(i=0;i<rows.length;i++){var m=rows[i];var mi=mNum(m.avg_integrity);
+    h+='<tr><td>'+(m.mode||'—')+'</td><td>'+mNum(m.sessions)+'</td><td>'+mNum(m.walls)+'</td><td>'+mNum(m.pieces)+'</td><td>'+mNum(m.score).toLocaleString()+'</td><td>'+mNum(m.peak_pph)+'</td><td>'+(mi||0)+'%</td><td>'+mNum(m.incidents)+'</td></tr>';
+  }
+  document.getElementById('tbody').innerHTML=h;
+}
+function mSignOut(){
+  ME.session=null;ME.rows=[];
+  try{localStorage.removeItem('lockinMeAuth');}catch(e){}
+  document.getElementById('me').style.display='none';
+  document.getElementById('login').style.display='block';
+  mMsg('Clocked out.','good');
+}
+function mBoot(){
+  try{var r=localStorage.getItem('lockinMeAuth');if(r){ME.session=JSON.parse(r);if(ME.session&&ME.session.access_token){mEnter();return;}}}catch(e){console.error('mBoot:',e);}
+}
+mBoot();
+</script>
+</body>
+</html>
