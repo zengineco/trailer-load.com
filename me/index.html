@@ -62,6 +62,26 @@ tr:hover td{background:#fbf9f4;}
 #empty a{color:var(--teal);}
 .foot{margin-top:26px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--ink3);text-align:center;}
 .foot a{color:var(--teal);}
+/* leaderboards + friends */
+.lb-tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap;}
+.lb-tab{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;text-transform:uppercase;padding:8px 16px;border:1px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:7px;cursor:pointer;}
+.lb-tab.active{background:var(--acc);color:#1a1006;border-color:var(--acc);}
+.lb-board{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 3px 12px rgba(40,28,14,.05);}
+.lb-row{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line);font-family:'Share Tech Mono',monospace;}
+.lb-row:last-child{border-bottom:none;}
+.lb-row .lb-rank{width:32px;color:var(--ink3);font-weight:bold;}
+.lb-row .lb-name{flex:1;font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;color:var(--ink);}
+.lb-row .lb-score{font-weight:bold;color:var(--acc-dim);display:flex;align-items:center;gap:8px;}
+.lb-row.lb-me{background:rgba(200,121,30,.10);}
+.lb-row.lb-me .lb-name{color:var(--acc-dim);}
+.lb-empty{padding:22px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--ink3);}
+.lb-add{display:flex;gap:8px;margin-bottom:6px;}
+.lb-add input{flex:1;min-width:0;padding:9px 12px;background:var(--panel);border:1px solid var(--line2);border-radius:7px;font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--ink);}
+.lb-add input:focus{outline:none;border-color:var(--acc);}
+.lb-add .btn-acc{padding:9px 14px;white-space:nowrap;}
+.lb-unfollow{background:transparent;border:none;color:var(--ink3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;}
+.lb-unfollow:hover{color:var(--danger);}
+.lb-msg{font-family:'Share Tech Mono',monospace;font-size:12px;min-height:16px;margin-bottom:6px;}
 @media(max-width:560px){.brand{font-size:24px;letter-spacing:4px;}.me-hero .handle{font-size:32px;}}
 </style>
 </head>
@@ -109,6 +129,23 @@ tr:hover td{background:#fbf9f4;}
     <div id="empty" style="display:none;"></div>
   </div>
 
+  <h2 style="margin-top:28px;">Leaderboards</h2>
+  <div class="lb-tabs">
+    <button class="lb-tab active" id="lt-daily" onclick="mTab('daily')">Daily</button>
+    <button class="lb-tab" id="lt-all" onclick="mTab('all')">All-Time</button>
+    <button class="lb-tab" id="lt-friends" onclick="mTab('friends')">Friends</button>
+  </div>
+  <div class="lb-pane" id="lp-daily"><div id="lb-daily" class="lb-board"></div></div>
+  <div class="lb-pane" id="lp-all" style="display:none;"><div id="lb-all" class="lb-board"></div></div>
+  <div class="lb-pane" id="lp-friends" style="display:none;">
+    <div class="lb-add">
+      <input id="lb-follow-user" type="text" placeholder="follow a loader by username">
+      <button class="btn btn-acc" onclick="mFollow()">+ Follow</button>
+    </div>
+    <div id="lb-follow-msg" class="lb-msg"></div>
+    <div id="lb-friends" class="lb-board"></div>
+  </div>
+
   <div class="foot">LOCK IN · trailer-load.com · your record, your device — saved only because you opted in · © 2026</div>
 </div></div>
 
@@ -154,6 +191,60 @@ function mEnter(){
   document.getElementById('me').style.display='block';
   document.getElementById('me-handle').textContent=(ME.session&&ME.session.handle)||'You';
   mFetch();
+  mTab('daily');
+}
+function mEsc(s){return (''+(s==null?'':s)).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+// ── LEADERBOARDS + FRIENDS (reuse the game's daily view + all-time/friends/follow RPCs) ──
+function mTab(which){
+  var panes={daily:'lp-daily',all:'lp-all',friends:'lp-friends'},tabs={daily:'lt-daily',all:'lt-all',friends:'lt-friends'},k;
+  for(k in panes){var p=document.getElementById(panes[k]);if(p)p.style.display=(k===which)?'':'none';var t=document.getElementById(tabs[k]);if(t)t.classList.toggle('active',k===which);}
+  if(which==='daily')mDaily();else if(which==='all')mAlltime();else mFriends();
+}
+function mBoardRows(id,rows,empty,friends){
+  var el=document.getElementById(id);if(!el)return;
+  if(!rows||!rows.length){el.innerHTML='<div class="lb-empty">'+empty+'</div>';return;}
+  var me=(ME.session&&ME.session.handle)||'',h='',i;
+  for(i=0;i<rows.length;i++){var r=rows[i];
+    var sc=(r.score!=null?r.score:(r.best_score!=null?r.best_score:0));
+    var mine=(r.is_self||(me&&r.username===me))?' lb-me':'';
+    var unf=(friends&&!r.is_self)?'<button class="lb-unfollow" title="Unfollow" onclick="mUnfollow(\''+(''+r.username).replace(/[^A-Za-z0-9_\-]/g,'')+'\')">✕</button>':'';
+    h+='<div class="lb-row'+mine+'"><span class="lb-rank">'+(r.rank||(i+1))+'</span><span class="lb-name">'+mEsc(r.username)+(mine?' (you)':'')+'</span><span class="lb-score">'+mNum(sc).toLocaleString()+unf+'</span></div>';
+  }
+  el.innerHTML=h;
+}
+function mDaily(){
+  var b=document.getElementById('lb-daily');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
+  var key=new Date().toISOString().slice(0,10);
+  try{fetch(ME.endpoint+'/lockin_daily_board?puzzle_date=eq.'+encodeURIComponent(key)+'&order=rank.asc&limit=15&select=rank,username,score,incidents',{headers:mHeaders()})
+    .then(function(r){return r.json();}).then(function(j){mBoardRows('lb-daily',Array.isArray(j)?j:[],'No scores on today’s board yet — play Daily and be the first.',false);})
+    .catch(function(e){console.error('mDaily:',e);mBoardRows('lb-daily',[],'Could not load the board.',false);});}catch(e){console.error('mDaily:',e);}
+}
+function mAlltime(){
+  var b=document.getElementById('lb-all');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
+  try{fetch(ME.endpoint+'/rpc/lockin_alltime_board',{method:'POST',headers:mHeaders(),body:JSON.stringify({p_limit:25})})
+    .then(function(r){return r.json();}).then(function(j){mBoardRows('lb-all',Array.isArray(j)?j:[],'No ranked loaders yet — play and claim the top spot.',false);})
+    .catch(function(e){console.error('mAlltime:',e);mBoardRows('lb-all',[],'Could not load the board.',false);});}catch(e){console.error('mAlltime:',e);}
+}
+function mFriends(){
+  var b=document.getElementById('lb-friends');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
+  try{fetch(ME.endpoint+'/rpc/lockin_friends_board',{method:'POST',headers:mHeaders(),body:'{}'})
+    .then(function(r){return r.json();}).then(function(j){mBoardRows('lb-friends',Array.isArray(j)?j:[],'Just you so far — follow a loader above to compare.',true);})
+    .catch(function(e){console.error('mFriends:',e);mBoardRows('lb-friends',[],'Could not load friends.',true);});}catch(e){console.error('mFriends:',e);}
+}
+function mFMsg(t,cls){var e=document.getElementById('lb-follow-msg');if(e){e.textContent=t||'';e.className='lb-msg '+(cls||'');}}
+function mFollow(){
+  var el=document.getElementById('lb-follow-user');var u=el?mClean(el.value):'';
+  if(!u){mFMsg('Enter a username to follow.','err');return;}
+  mFMsg('Following…','');
+  try{fetch(ME.endpoint+'/rpc/lockin_follow',{method:'POST',headers:mHeaders(),body:JSON.stringify({p_username:u})})
+    .then(function(r){return r.json();}).then(function(j){
+      if(j&&j.error){mFMsg('✕ '+({no_such_user:'No loader by that name.',cannot_follow_self:'That’s you.'}[j.error]||j.error),'err');}
+      else{mFMsg('✓ Following '+u+'.','good');if(el)el.value='';mFriends();}
+    }).catch(function(e){console.error('mFollow:',e);mFMsg('✕ Network error — try again.','err');});}catch(e){console.error('mFollow:',e);}
+}
+function mUnfollow(u){
+  try{fetch(ME.endpoint+'/rpc/lockin_unfollow',{method:'POST',headers:mHeaders(),body:JSON.stringify({p_username:u})})
+    .then(function(){mFriends();}).catch(function(e){console.error('mUnfollow:',e);});}catch(e){console.error('mUnfollow:',e);}
 }
 function mFetch(){
   var emp=document.getElementById('empty');if(emp){emp.style.display='block';emp.textContent='Loading your record…';}
