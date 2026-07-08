@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.44
+   LOCK IN v3.5.45
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.45 - CLIPBOARD-BLANK FIX (cross-device briefing bug). The pre-sort clipboard showed with NO text on some machines / intermittently on phones. ROOT CAUSE: the HUB-voice briefing (#brief-hub) was retired from the HTML, but briefTab() still ran at boot — when the saved voice (localStorage liVoice) was 'hub', it set #brief-std to display:none and tried to show the missing #brief-hub, leaving the clipboard blank. Fingerprint matched exactly: fine at voice=std (work computer), blank at voice=hub (personal computer), intermittent by device. FIX: briefTab now only swaps to brief-hub if it actually exists; otherwise it ALWAYS shows brief-std regardless of voice. No scoring change.
    CHANGE LOG v3.5.44 - PICK BY ZONE (mobile release blocker — "nothing happened" / off-piece grabs). Selecting freight required tapping INSIDE a piece's exact rect; tiny pieces were near-impossible to hit and sometimes needed tapping off-piece. NEW: after the precise inside-rect hit (unchanged, wins first), an off-wall tap now grabs the NEAREST freight to the tap by center distance (pick-by-zone). Gated to taps that are NOT on a wall cell, so a placement tap is never stolen; bounded by distance (W*0.72) so far strays don't grab. Big forgiving touch target on phones. No scoring/state change. NEXT: clipboard text render bug, then onboarding/tutorial.
    CHANGE LOG v3.5.43 - MOBILE POLISH (Goyim device notes) + SMALLS SORT menu entry. (1) MOBILE MENU featured over the demo: v3.5.42 made the cards full-width, which blanketed the (crispy) background demo — now COMPACT left-column cards (max-width min(300px,70vw)) with a semi-transparent bg (rgba .80) and a fade-right menu backdrop, so the demo shows through. Smaller card/name fonts. (2) BRIEFING CLIPBOARD text was clipping top/bottom on phones (fixed landscape aspect-ratio 1372/1146 + tiny writing area) — on mobile the board is stretched a bit taller (aspect 1372/1420, background-size:100% 100%), the writing area expanded (top 35%->26%), text slightly smaller, and brief-body gets overflow-y:auto as a hard no-clip safety. (3) SMALLS SORT: new mode card (cyan) -> location.href='/ss/', the standalone companion mini-game (sort + stack the smalls) that already lives at /ss/index.html. No scoring change.
    CHANGE LOG v3.5.42 - MOBILE MENU FIX (professional pass before outreach). The start menu used desktop left-strip caps that broke on phones: (1) #sm-modes was max-width:46vw -> on a ~375px phone the mode cards were ~172px and clipped the 34px names (GAUNTLET/PRACTICE cut off); now full-width (align-self:stretch, 16px gutters) with a clamped card-name font. (2) #sm-topright (LEADERBOARD/PROFILE/settings) is absolute top-right and OVERLAPPED the logo on narrow screens; now shrunk + the logo drops below the row (margin-top) so they never collide. (3) Bottom console buttons (OPERATIONS/LINEHAUL/ADMIN) tightened so the row doesn't overflow a phone. Pure @media(max-width:640px) block — desktop untouched. Goyim eyeballs on a real device (canvas can't sandbox-render). No scoring change.
@@ -1525,7 +1526,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.44 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.45 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1646,7 +1647,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.44 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.45 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1757,7 +1758,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.44 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.45 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2122,7 +2123,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.44
+// LOCK IN v3.5.45
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6523,8 +6524,12 @@ function briefTab(t){
   });
   var s=document.getElementById('brief-std');
   var h=document.getElementById('brief-hub');
-  if(s)s.style.display=t==='hub'?'none':'block';
-  if(h)h.style.display=t==='hub'?'block':'none';
+  // v3.5.45 CLIPBOARD-BLANK FIX: the HUB briefing (#brief-hub) was retired, but 'hub' voice still
+  // hid #brief-std and tried to show the missing #brief-hub -> a BLANK clipboard for anyone whose
+  // saved voice is 'hub' (worked at std, blank at hub, intermittent by device). If brief-hub is gone,
+  // ALWAYS show brief-std regardless of voice.
+  if(h){if(s)s.style.display=t==='hub'?'none':'block';h.style.display=t==='hub'?'block':'none';}
+  else if(s){s.style.display='block';}
   // Keep voice in sync with tab
   activeVoice=t;
   try{localStorage.setItem('liVoice',t);}catch(e){}
@@ -7558,7 +7563,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.44</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.45</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
