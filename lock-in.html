@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.55
+   LOCK IN v3.5.56
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.56 - FLOATER SWEEP after collapse. Core column meta is solved (can't 1xN/NxN to the moon in normal play); remaining "floaties" are collapse artifacts -- when a stack sheds, boxes that rested on it were left hanging (no gravity to re-settle). settleFloaters() now sweeps after every column collapse: any box with nothing under it (floor or another box, via boxHasSupport) sheds back to the belt too, recursing until the wall is clean. No metric-capture change.
    CHANGE LOG v3.5.55 - COLUMN RULE v4 (the adjacency bug). Screenshots: parallel columns + combs never collapsed. ROOT CAUSE: the support check counted ANY single side-neighbor as support, so two pillars "held each other up." FIX: a cell is only anchored if SANDWICHED (a box on BOTH sides, trailer wall counts) OR under a LOCKED SHELF OR a tire seated on floor/another-tire. A single neighbor is NOT support -> gappy/crooked/edge/parallel pillars now fall. Added: a smalls/bag anywhere in a 3+ freestanding stack collapses; a tire on a BOX (not floor/tire) is part of the run. Rule: any freestanding 4+ (even tapered, the n-1 rule), non-taper 3+, or smalls-in-3+ -> collapse. SAFETY schema locked (build next): 2 warnings then escalate, the 2nd UNMITIGATED same offense = an incident, ~5 -> beginner "practice" trailer (not game-over); water clears ONE warning (over-drinking = sabotage); throw = pardon for a MINOR safety only, never hazmat; collapse = documented incident (2 = the talking-to); hazmat-high IS hazmat-mid-wall. No metric-capture change.
    CHANGE LOG v3.5.54 - COLUMN RULE v3 (taper-aware) + collapse RESOLVES + demo popup. Friend still stacked smalls to the ceiling off a wide 5x6/4x4 base, and the scan-all was re-firing the collapse EVERY placement. Rewrote: worstFreeStack() reads the DISTINCT boxes in each column's freestanding run (no lateral neighbor; a locked shelf/tire ends it) and flags NON-tapering stacks (any box >= the width of the one below = same-width/top-heavy, e.g. 1x1-on-1x1 smalls) vs a strict taper (4x4/3x3/2x2/1x1, exempt). Collapse now sheds the WHOLE offending stack back to the belt at once via collapseFreeStack (so it resolves and can't re-collapse every placement). Rule: non-taper & 3+ high -> collapse; any stack 5+ -> collapse; non-taper 2-high -> warning. DEMO: clear the round-over popup when the menu demo (re)starts (the only real demo bug; score/timer left as-is per Goyim). No metric-capture change.
    CHANGE LOG v3.5.53 - COLUMN RULE FIX (playtest jailbreaks). v3.5.52 only checked the placed box's columns and treated one lateral neighbor as full support, so a friend could: stack smalls forever on a wide box, build a separate column while an old 5-high one stood, and pillars persisted. Replaced freestandingColHeight (per-box) with tallestUnsupportedColumn() that scans EVERY column each placement and counts the top-down run of cells with NO lateral neighbor at that level, stopping at a supported/locked-shelf/tire level. Now smalls-on-a-box towers, separate columns, and pre-existing pillars all trip the 4-high collapse. NOTE: the exact TAPERING-pyramid exemption (4x4/3x3/2x2/1x1 stable, but a tall taper with no side support should still fail) is pending Goyim's next screenshots to define precisely. No scoring change.
@@ -1556,7 +1557,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.55 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.56 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1677,7 +1678,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.55 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.56 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1800,7 +1801,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.55 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.56 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2166,7 +2167,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.55
+// LOCK IN v3.5.56
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4279,6 +4280,33 @@ function worstFreeStack(){
   return worst;
 }
 // v3.5.54 topple the WHOLE freestanding stack back to the belt at once, so it's resolved and doesn't re-fire each placement
+// v3.5.56 does a box have anything under it (floor or another box)? Used to sweep floaters after a collapse.
+function boxHasSupport(c){
+  var cs=c.cells||makeRect(c.w,c.h),low={},i,cx,cy;
+  for(i=0;i<cs.length;i++){cx=c.rx+cs[i][0];cy=c.ry+cs[i][1];if(low[cx]===undefined||cy>low[cx])low[cx]=cy;}
+  for(var k in low){cx=+k;var by=low[k];
+    if(by>=GH-1)return true; // on the floor
+    var under=G.grid[by+1]&&G.grid[by+1][cx];
+    if(under&&under.id!==c.id)return true; // resting on another box
+  }
+  return false;
+}
+// v3.5.56 after a collapse, no gravity re-settles the wall — so any box left FLOATING (nothing under it)
+// gets shed back to the belt too. Recurses since shedding one floater can expose another.
+function settleFloaters(){
+  var moved=false,seen={},y,x,g=0;
+  for(y=0;y<GH;y++)for(x=0;x<GW;x++){
+    var c=G.grid[y]&&G.grid[y][x];
+    if(!c||seen[c.id])continue;seen[c.id]=1;
+    if(!boxHasSupport(c)){
+      var cs=c.cells||makeRect(c.w,c.h),i;
+      for(i=0;i<cs.length;i++){var ax=c.rx+cs[i][0],ay=c.ry+cs[i][1];if(G.grid[ay]&&G.grid[ay][ax]===c)G.grid[ay][ax]=null;}
+      if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...c.box,id:'F'+Date.now().toString(36)+(g++)});
+      moved=true;
+    }
+  }
+  if(moved)settleFloaters();
+}
 function collapseFreeStack(st){
   if(!st||!st.boxes)return;
   S.collapses=(S.collapses||0)+1;
@@ -4288,6 +4316,7 @@ function collapseFreeStack(st){
     for(i=0;i<cs.length;i++){var ax=cell.rx+cs[i][0],ay=cell.ry+cs[i][1];if(G.grid[ay]&&G.grid[ay][ax]===cell)G.grid[ay][ax]=null;}
     if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)+(n++)});
   });
+  settleFloaters(); // v3.5.56 sweep anything left hanging by the topple
   G.integrity=clamp((G.integrity||100)-COLLAPSE_INT_COST,0,100);
   G.cog=calcCOG(G.grid);G.support=supportScore(G.grid);
   recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
@@ -7735,7 +7764,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.55</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.56</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
