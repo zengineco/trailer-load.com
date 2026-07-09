@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.47
+   LOCK IN v3.5.48
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.48 - SIGNUP PASSWORD CONFIRM (backlog #5 — unrecoverable-account hole). Creating an account took a single password with no confirmation — a typo silently made an account you could never sign back into. Added a CONFIRM PASSWORD field to BOTH signup forms (the profile pfAuthFormHTML and the ACCOUNT & DATA / ov-data form) and a match check in BOTH signup handlers (pfDoSignup + zAuthSignup): mismatch blocks creation with a clear warning. Field is labeled "(new accounts)" and only enforced on CREATE ACCOUNT, ignored on SIGN IN. No scoring change.
    CHANGE LOG v3.5.47 - MOVABLE + SCALABLE TOUCH CONTROLS (accessibility pass, backlog #1). Playtest: big-handed warehouse loaders can't work the small fixed joystick ("my hands are too big for these little controls"). Settings -> Touch Controls (mobile): a CONTROL SIZE slider (0.7x-1.7x, scales the joystick + DROP + ROT live via transform:scale, which keeps the pointer-aim math correct since it reads getBoundingClientRect post-transform) + a MOVE JOYSTICK button that enters a drag-to-reposition edit mode (a bottom bar with SIZE slider + DONE; the joystick is draggable, clamped on-screen). Layout (scale + x/y) persists per device in localStorage (lockinCtrl) and applies on boot. Aim behavior unchanged when not editing. NEXT (his order): #5 signup password-confirm, then #3/#4 drop-forgiveness + fingertip hotspot, #6/#7 auth-clarity + social tab, #8 physics. No scoring change.
    CHANGE LOG v3.5.46 - DENSITY-WEIGHTED SCORING (kill the A+ exploit) + REAL CLOSE BUTTON. Playtest: a friend rushed to the height threshold at 61% density, bailed, and got A+ YARD LEGEND — the grade IS the product (the dashboard sells it), so a gameable grade is fatal. FIX (3 coordinated): (1) sealWall payout now SCALES BY FILL DENSITY (LOAD_SEALED_BONUS * fill) — a 61% wall earns 61% of the seal bonus. (2) the panic/dispatch speed-bonus is ALSO scaled by density — no reward for speed-bailing a loose wall. (3) sessionGrade now GATES on avg fill density (S.densHistory, reset per session): points *= (0.45 + 0.55*avgDensity), so 61% fill caps ~0.79x and a loose wall lands ~B instead of A+. Also: .pf-x close button (profile/leaderboard) was a bare 22px glyph nobody could tap -> now a real 40x40 bordered button. No change to the win THRESHOLD itself (still density>=target to seal); this makes the REWARD honest. NEXT (backlog): movable/scalable d-pad accessibility, placement ghost/preview render, social tab, signup password-confirm.
    CHANGE LOG v3.5.45 - CLIPBOARD-BLANK FIX (cross-device briefing bug). The pre-sort clipboard showed with NO text on some machines / intermittently on phones. ROOT CAUSE: the HUB-voice briefing (#brief-hub) was retired from the HTML, but briefTab() still ran at boot — when the saved voice (localStorage liVoice) was 'hub', it set #brief-std to display:none and tried to show the missing #brief-hub, leaving the clipboard blank. Fingerprint matched exactly: fine at voice=std (work computer), blank at voice=hub (personal computer), intermittent by device. FIX: briefTab now only swaps to brief-hub if it actually exists; otherwise it ALWAYS shows brief-std regardless of voice. No scoring change.
@@ -1548,7 +1549,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.47 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.48 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1669,7 +1670,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.47 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.48 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1792,7 +1793,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.47 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.48 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1907,6 +1908,7 @@ body[data-cb="trit"]{
       <div class="auth-toggle"><button id="auth-tab-w" class="auth-tab active" onclick="zAuthMode('worker')">WORKER</button><button id="auth-tab-f" class="auth-tab" onclick="zAuthMode('facility')">FACILITY</button></div>
       <label class="data-fld"><span id="auth-id-lbl">USERNAME</span><input id="auth-email" type="text" autocomplete="username" placeholder="pick a handle"></label>
       <label class="data-fld">PASSWORD<input id="auth-pw" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022"></label>
+      <label class="data-fld">CONFIRM PASSWORD <span>(new accounts)</span><input id="auth-pw2" type="password" placeholder="re-type to confirm"></label>
       <div class="data-btns"><button class="data-save" id="auth-signin" onclick="zAuthLogin()">SIGN IN</button><button class="data-cancel" id="auth-signup" onclick="zAuthSignup()">CREATE ACCOUNT</button></div>
       <div class="auth-note" id="auth-note">Pick a username + password to keep your record across devices. No email needed. Free, always.</div>
       <button id="auth-forgot" onclick="zForgotToggle()" style="background:none;border:none;color:var(--teal);text-decoration:underline;cursor:pointer;font-size:13px;padding:4px 0;">Forgot password?</button>
@@ -2157,7 +2159,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.47
+// LOCK IN v3.5.48
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2724,6 +2726,7 @@ function zAuthSignup(){
   var handle=zHandleClean(idv),email=zHandleEmail(idv);
   if(!handle||handle.length<3){if(nt)nt.textContent='Pick a username (3+ chars: letters, numbers, underscore).';return;}
   if(pass.length<6){if(nt)nt.textContent='Password needs 6+ characters.';return;}
+  var _pw2=document.getElementById('auth-pw2');if(_pw2&&_pw2.value!==pass){if(nt)nt.textContent='Passwords don\u2019t match \u2014 re-type to confirm (a typo here = an account you can\u2019t recover).';return;} // v3.5.48
   if(nt)nt.textContent='Creating your handle\u2026';
   // v3.5.40 SIGNUP FIX: use the lockin_worker_signup RPC (same working path as the profile pfDoSignup),
   // NOT raw GoTrue /signup \u2014 GoTrue rejected the synthetic handle@players.lockin.app domain, which was
@@ -7530,6 +7533,7 @@ function pfAuthFormHTML(){
     '<div class="pf-tabs"><button id="pf-tab-w" class="pf-tab on" onclick="pfMode(\'worker\')">WORKER</button><button id="pf-tab-f" class="pf-tab" onclick="pfMode(\'facility\')">FACILITY</button></div>'+
     '<div class="pf-fld"><label id="pf-id-lbl">USERNAME</label><input id="pf-id" type="text" autocomplete="username" placeholder="pick a handle"></div>'+
     '<div class="pf-fld"><label>PASSWORD</label><input id="pf-pw" type="password" autocomplete="current-password" placeholder="password"></div>'+
+    '<div class="pf-fld"><label>CONFIRM PASSWORD <small style="opacity:.55;">(new accounts)</small></label><input id="pf-pw2" type="password" autocomplete="new-password" placeholder="re-type to confirm"></div>'+
     '<div class="pf-auth-btns"><button class="btn-p" onclick="pfDoLogin()">SIGN IN</button><button id="pf-signup-btn" class="btn-p pf-ghost" onclick="pfDoSignup()">CREATE ACCOUNT</button></div>'+
     '<div class="pf-auth-note" id="pf-auth-note">Pick a username + password to keep your record across devices. No email needed. Free, always.</div>'+
     '<div class="pf-auth-foot">Gameplay is always free \u2014 your record is yours. Workers never pay.</div></div>';
@@ -7556,6 +7560,7 @@ function pfDoSignup(){
   var handle=zHandleClean(idv),email=zHandleEmail(idv);
   if(!handle||handle.length<3){if(nt)nt.textContent='Pick a username (3+ chars: letters, numbers, underscore).';return;}
   if(pass.length<6){if(nt)nt.textContent='Password needs 6+ characters.';return;}
+  var _pw2=document.getElementById('pf-pw2');if(_pw2&&_pw2.value!==pass){if(nt)nt.textContent='Passwords don\u2019t match \u2014 re-type to confirm (a typo here = an account you can\u2019t recover).';return;} // v3.5.48
   if(nt)nt.textContent='Creating your handle\u2026';
   try{fetch(ZDATA.endpoint+'/rpc/lockin_worker_signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey,'Authorization':'Bearer '+ZDATA.anonKey},body:JSON.stringify({p_username:handle,p_password:pass})})
     .then(function(r){return r.json();}).then(function(j){
@@ -7640,7 +7645,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.47</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.48</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
