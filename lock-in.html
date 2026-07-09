@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.53
+   LOCK IN v3.5.54
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.54 - COLUMN RULE v3 (taper-aware) + collapse RESOLVES + demo popup. Friend still stacked smalls to the ceiling off a wide 5x6/4x4 base, and the scan-all was re-firing the collapse EVERY placement. Rewrote: worstFreeStack() reads the DISTINCT boxes in each column's freestanding run (no lateral neighbor; a locked shelf/tire ends it) and flags NON-tapering stacks (any box >= the width of the one below = same-width/top-heavy, e.g. 1x1-on-1x1 smalls) vs a strict taper (4x4/3x3/2x2/1x1, exempt). Collapse now sheds the WHOLE offending stack back to the belt at once via collapseFreeStack (so it resolves and can't re-collapse every placement). Rule: non-taper & 3+ high -> collapse; any stack 5+ -> collapse; non-taper 2-high -> warning. DEMO: clear the round-over popup when the menu demo (re)starts (the only real demo bug; score/timer left as-is per Goyim). No metric-capture change.
    CHANGE LOG v3.5.53 - COLUMN RULE FIX (playtest jailbreaks). v3.5.52 only checked the placed box's columns and treated one lateral neighbor as full support, so a friend could: stack smalls forever on a wide box, build a separate column while an old 5-high one stood, and pillars persisted. Replaced freestandingColHeight (per-box) with tallestUnsupportedColumn() that scans EVERY column each placement and counts the top-down run of cells with NO lateral neighbor at that level, stopping at a supported/locked-shelf/tire level. Now smalls-on-a-box towers, separate columns, and pre-existing pillars all trip the 4-high collapse. NOTE: the exact TAPERING-pyramid exemption (4x4/3x3/2x2/1x1 stable, but a tall taper with no side support should still fail) is pending Goyim's next screenshots to define precisely. No scoring change.
    CHANGE LOG v3.5.52 - COLUMN COLLAPSE RULE (the foundational fix — freestanding pillars were a "foolish economy" that earned B/A grades). Playtest: a friend built non-collapsing pillars, got a B (would've been A with 300+ pph). Root problem: collapse only fired when global integrity craters, so isolated pillars survived. NEW freestandingColHeight() finds the tallest ISOLATED column (free on BOTH sides, excludes tire-columns + locked shelves) among the columns a just-placed box touches. In placeBox: 4-high freestanding -> COLLAPSE (reuses triggerCollapse, which already sheds the pole + splashes it back to the belt + counts S.collapses); 3-high -> panic warning; 2-high -> "that's the limit" warning. Tapering stacks (wide base, narrow top) and shelves/tire-columns stay stable, exactly per the loading guideline. This makes the grade honest by CONSTRUCTION — pillars aren't a strategy anymore. NEXT (spec'd in backlog): split safety WARNINGS vs INCIDENTS categories, the "throw box" saving-throw (make room; manager scolds; 1=warning/2=incident), leaderboard flesh-out (daily/all-time/best-wall/total), login indicator, and cosmetic-sweep-2 (LAST). No metric-capture change.
    CHANGE LOG v3.5.51 - AUTH-STATE CLARITY (backlog #6) + SMALLSORT DE-SLOP. #6: signing in as facility looked identical to worker signup. Now FACILITY mode = sign-in only — hides the CREATE ACCOUNT button AND the CONFIRM PASSWORD field (in BOTH auth UIs: profile pfMode + ACCOUNT&DATA zAuthMode); worker note clarified ("New here? CREATE ACCOUNT. Coming back? SIGN IN."). SMALLSORT (/ss/): removed the Zengine slop (ZG monogram + "www.zengine.site | Zengine" footer + export text) per Goyim — the companion mini-game now shows its real logo.png, a "LOCK IN companion · trailer-load.com" footer, and a "← LOCK IN" back-link (cross-wired). NEXT: #7 in-game SOCIAL tab (consolidate Profile+Leaderboard+Friends into one entry — bigger overlay build); deep Smallsort cross-wire (shared login/leaderboard/music/settings); #8 physics; + later: message-window trims, sarcastic "Do Better"/"HURRY UP!!!" coach lines, strategic "throw box" escalation (2=warn/3=doc/4=send-home), water return. No scoring change.
@@ -1554,7 +1555,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.53 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.54 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1675,7 +1676,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.53 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.54 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1798,7 +1799,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.53 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.54 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2164,7 +2165,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.53
+// LOCK IN v3.5.54
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4063,15 +4064,15 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   checkPanic();
   updateCoachTip();
 
-  // v3.5.52 COLUMN RULE — a freestanding pillar topples at 4 high (except a locked shelf or a tire column). 2 = limit, 3 = panic.
-  var _colH=tallestUnsupportedColumn();
-  if(_colH>=4&&!collapseAnimating&&!gOver){
-    showBanner('⚠ COLUMN TOPPLED — 4 HIGH FREESTANDING WON’T HOLD.<br><span style="font-size:.5em">Lean it on a wall, lock a shelf under it, or taper it down (wide base, narrow top).</span>','danger',3200);
-    setTimeout(function(){if(!collapseAnimating&&!gOver)triggerCollapse();},240);
-  } else if(_colH===3){
-    if(!G._col3||Date.now()-G._col3>2500){G._col3=Date.now();showBanner('⚠ THREE HIGH — THIS’LL TOPPLE. One more freestanding box in that column and it collapses.','warn',2100);}
-  } else if(_colH===2){
-    if(!G._col2||Date.now()-G._col2>2600){G._col2=Date.now();showBanner('TWO HIGH FREESTANDING — that’s the limit in that column. Build beside it or lock the shelf.','warn',1600);}
+  // v3.5.54 COLUMN RULE (taper-aware) — a freestanding stack topples if it's NON-tapering & 3+ high, or any stack 5+ high.
+  // Strict taper (4x4/3x3/2x2/1x1) is exempt. The whole stack sheds back to the belt at once (resolves — no per-placement re-fire).
+  var _st=worstFreeStack();
+  var _unstable=_st&&((!_st.tapering&&_st.h>=3)||_st.h>=5);
+  if(_unstable&&!collapseAnimating&&!gOver){
+    collapseAnimating=true;
+    setTimeout(function(){collapseFreeStack(_st);collapseAnimating=false;},220);
+  } else if(_st&&!_st.tapering&&_st.h===2){
+    if(!G._col2||Date.now()-G._col2>2600){G._col2=Date.now();showBanner('TWO HIGH, SAME WIDTH, NO SUPPORT — that’s the limit. Taper it (narrower on top) or lock the shelf before one more.','warn',1900);}
   }
 
   if((G.integrity||100)<=8&&!collapseAnimating)scheduleCollapse();
@@ -4241,26 +4242,48 @@ function hasLateralSupport(cell){
   return leftSupport&&rightSupport;
 }
 
-// v3.5.53 COLUMN STABILITY — scan EVERY column (not just the placed box's) for the tallest UNSUPPORTED tower.
-// Per level, top-down: a cell is "unsupported" if it has NO lateral neighbor on either side at that row.
-// The run of unsupported cells from the top ends at the first level that IS supported / locked-shelf / tire.
-// This catches all three jailbreaks: (1) smalls stacked on a wide box (the tower above is unsupported),
-// (2) a separate new pillar, and (3) an old pillar that was already standing (we re-scan on every placement).
-function tallestUnsupportedColumn(){
-  var best=0,cx,y;
+// v3.5.54 COLUMN STABILITY (taper-aware). Scan EVERY column for its freestanding stack: the DISTINCT boxes
+// stacked top-down that have NO lateral neighbor at their level (a locked shelf or tire anchors + ends the run).
+// A stack is STABLE only if it strictly TAPERS (each box narrower than the one directly below — the 4x4/3x3/2x2/1x1
+// pyramid). Same-width or top-heavy ("smalls to the moon", equal boxes) is NON-tapering => it topples.
+// Returns the worst stack {cx, boxes, h, tapering} or null.
+function worstFreeStack(){
+  var worst=null,cx,y;
   for(cx=0;cx<GW;cx++){
-    var run=0,hit=false;
+    var seen={},boxes=[],hit=false;
     for(y=0;y<GH;y++){
       var c=G.grid[y]&&G.grid[y][cx];
-      if(!c){if(hit)break;continue;} // skip empty cap; a gap below the stack ends the run
+      if(!c){if(hit)break;continue;}
       hit=true;
-      if((typeof isRowLockedIn==='function'&&isRowLockedIn(y))||(c.box&&c.box.cat==='tire'))break; // stable level anchors everything above it
-      if((cx>0&&G.grid[y][cx-1])||(cx<GW-1&&G.grid[y][cx+1]))break; // laterally supported at THIS level -> run ends
-      run++;
+      if((typeof isRowLockedIn==='function'&&isRowLockedIn(y))||(c.box&&c.box.cat==='tire'))break; // anchored -> stack ends
+      if((cx>0&&G.grid[y][cx-1])||(cx<GW-1&&G.grid[y][cx+1]))break; // laterally supported at this level -> stack ends
+      if(c.box&&!seen[c.id]){seen[c.id]=1;boxes.push(c);}
     }
-    if(run>best)best=run;
+    if(boxes.length<2)continue;
+    var tapering=true,i;
+    for(i=0;i<boxes.length-1;i++){var wu=(boxes[i].box&&boxes[i].box.w)||1,wl=(boxes[i+1].box&&boxes[i+1].box.w)||1;if(wu>=wl){tapering=false;break;}} // upper must be strictly narrower
+    var rec={cx:cx,boxes:boxes,h:boxes.length,tapering:tapering};
+    if(!worst||(!rec.tapering&&worst.tapering)||(rec.tapering===worst.tapering&&rec.h>worst.h))worst=rec; // non-taper first, then tallest
   }
-  return best;
+  return worst;
+}
+// v3.5.54 topple the WHOLE freestanding stack back to the belt at once, so it's resolved and doesn't re-fire each placement
+function collapseFreeStack(st){
+  if(!st||!st.boxes)return;
+  S.collapses=(S.collapses||0)+1;
+  var n=0;
+  st.boxes.forEach(function(cell){
+    var cs=cell.cells||makeRect(cell.w,cell.h),i;
+    for(i=0;i<cs.length;i++){var ax=cell.rx+cs[i][0],ay=cell.ry+cs[i][1];if(G.grid[ay]&&G.grid[ay][ax]===cell)G.grid[ay][ax]=null;}
+    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)+(n++)});
+  });
+  G.integrity=clamp((G.integrity||100)-COLLAPSE_INT_COST,0,100);
+  G.cog=calcCOG(G.grid);G.support=supportScore(G.grid);
+  recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
+  addShake(18);if(typeof playSfx==='function')playSfx('collapse');hapt('collapse');
+  if(typeof gridToCanvas==='function'){var _c=gridToCanvas((st.cx||Math.floor(GW/2))+0.5,GH*0.4);spawnBurst(_c.x,_c.y,32,'rgba(120,90,60,.95)',170,0.7,240);}
+  flash('fl-danger');
+  showBanner('⚠ COLUMN COLLAPSED — the freestanding stack toppled back to the belt.<br><span style="font-size:.5em">Same-width or top-heavy stacks fall. Taper it (wide base → narrow top) or lock a shelf. RECOVER FAST FOR BONUS.</span>','danger',3200);
 }
 
 // ── BONUS CHECKS ──
@@ -7028,6 +7051,7 @@ function startMenuDemo(){
   _demoMenuMode=true;_demoScript=DEMO_SCRIPT.slice(0,17).concat(DEMO_TOP);
   var _mc=document.getElementById('menu-demo-cap');if(_mc){_mc.textContent='LOADING A CLEAN WALL';_mc.classList.add('vis');}
   placed=0;startT=Date.now();gOver=false;paused=false;
+  var _np=document.getElementById('next-popup');if(_np)_np.classList.remove('vis'); // v3.5.54 no round-over popup lingering over the menu demo
   if(animF)cancelAnimationFrame(animF);lastLoopT=0;
   animF=requestAnimationFrame(trainingLoop);
   runDemoStep();
@@ -7700,7 +7724,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.53</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.54</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
