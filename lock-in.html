@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.45
+   LOCK IN v3.5.46
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.46 - DENSITY-WEIGHTED SCORING (kill the A+ exploit) + REAL CLOSE BUTTON. Playtest: a friend rushed to the height threshold at 61% density, bailed, and got A+ YARD LEGEND — the grade IS the product (the dashboard sells it), so a gameable grade is fatal. FIX (3 coordinated): (1) sealWall payout now SCALES BY FILL DENSITY (LOAD_SEALED_BONUS * fill) — a 61% wall earns 61% of the seal bonus. (2) the panic/dispatch speed-bonus is ALSO scaled by density — no reward for speed-bailing a loose wall. (3) sessionGrade now GATES on avg fill density (S.densHistory, reset per session): points *= (0.45 + 0.55*avgDensity), so 61% fill caps ~0.79x and a loose wall lands ~B instead of A+. Also: .pf-x close button (profile/leaderboard) was a bare 22px glyph nobody could tap -> now a real 40x40 bordered button. No change to the win THRESHOLD itself (still density>=target to seal); this makes the REWARD honest. NEXT (backlog): movable/scalable d-pad accessibility, placement ghost/preview render, social tab, signup password-confirm.
    CHANGE LOG v3.5.45 - CLIPBOARD-BLANK FIX (cross-device briefing bug). The pre-sort clipboard showed with NO text on some machines / intermittently on phones. ROOT CAUSE: the HUB-voice briefing (#brief-hub) was retired from the HTML, but briefTab() still ran at boot — when the saved voice (localStorage liVoice) was 'hub', it set #brief-std to display:none and tried to show the missing #brief-hub, leaving the clipboard blank. Fingerprint matched exactly: fine at voice=std (work computer), blank at voice=hub (personal computer), intermittent by device. FIX: briefTab now only swaps to brief-hub if it actually exists; otherwise it ALWAYS shows brief-std regardless of voice. No scoring change.
    CHANGE LOG v3.5.44 - PICK BY ZONE (mobile release blocker — "nothing happened" / off-piece grabs). Selecting freight required tapping INSIDE a piece's exact rect; tiny pieces were near-impossible to hit and sometimes needed tapping off-piece. NEW: after the precise inside-rect hit (unchanged, wins first), an off-wall tap now grabs the NEAREST freight to the tap by center distance (pick-by-zone). Gated to taps that are NOT on a wall cell, so a placement tap is never stolen; bounded by distance (W*0.72) so far strays don't grab. Big forgiving touch target on phones. No scoring/state change. NEXT: clipboard text render bug, then onboarding/tutorial.
    CHANGE LOG v3.5.43 - MOBILE POLISH (Goyim device notes) + SMALLS SORT menu entry. (1) MOBILE MENU featured over the demo: v3.5.42 made the cards full-width, which blanketed the (crispy) background demo — now COMPACT left-column cards (max-width min(300px,70vw)) with a semi-transparent bg (rgba .80) and a fade-right menu backdrop, so the demo shows through. Smaller card/name fonts. (2) BRIEFING CLIPBOARD text was clipping top/bottom on phones (fixed landscape aspect-ratio 1372/1146 + tiny writing area) — on mobile the board is stretched a bit taller (aspect 1372/1420, background-size:100% 100%), the writing area expanded (top 35%->26%), text slightly smaller, and brief-body gets overflow-y:auto as a hard no-clip safety. (3) SMALLS SORT: new mode card (cyan) -> location.href='/ss/', the standalone companion mini-game (sort + stack the smalls) that already lives at /ss/index.html. No scoring change.
@@ -1396,7 +1397,8 @@ body[data-cb="trit"]{
 .pf-card::after{content:'';position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:28px;height:16px;background:#444;border-radius:2px;z-index:3;}
 .pf-top{display:flex;align-items:center;justify-content:space-between;padding:30px 24px 12px;background:#ece7d8;border-bottom:2px solid #c8b898;border-radius:3px 3px 0 0;flex-shrink:0;}
 .pf-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#2a1a08;}
-.pf-x{background:none;border:none;color:#8b6a3a;font-size:22px;cursor:pointer;line-height:1;}
+.pf-x{background:rgba(0,0,0,.06);border:1px solid #d0bfa0;color:#8b6a3a;font-size:19px;cursor:pointer;line-height:1;width:40px;height:40px;min-width:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex:none;padding:0;}/* v3.5.46 real tappable close button (was a bare ✕ glyph nobody could hit) */
+.pf-x:hover{background:rgba(0,0,0,.12);color:#5a3f1a;border-color:#b89a6a;}
 .pf-x:hover{color:#c23a1a;}
 .pf-body{padding:18px 26px 20px;overflow-y:auto;flex:1;}
 .pf-loading{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:#7a6a52;text-align:center;padding:30px 10px;line-height:1.5;}
@@ -1526,7 +1528,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.45 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.46 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1647,7 +1649,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.45 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.46 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1758,7 +1760,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.45 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.46 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2123,7 +2125,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.45
+// LOCK IN v3.5.46
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2544,7 +2546,7 @@ function pickLabel(type,isPanic,isNC,isGap){
 }
 
 // ── GAME STATE ──
-var S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
+var S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],densHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
 // ============================================================
 // v2.1.38 — REVENUE ENGINE (data capture + double opt-in consent)
 // CONFIG: drop in the Supabase project values. Anon key is public (RLS-protected).
@@ -4436,13 +4438,16 @@ function sealWall(reason){
   if(typeof gcurFlash==='function')gcurFlash('finish',1300); // v3.5.22 finish-glove on sealing the wall
   if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
   if(typeof playSfx==='function')playSfx('win');
-  G.score=(G.score||0)+LOAD_SEALED_BONUS; // v2.1.11 #1 payout
-  showBanner('\u2713 LOAD SEALED +'+LOAD_SEALED_BONUS+'<br><span style="font-size:.52em">TRAILER COMPLETE \u2014 TOP PAYOUT.</span>','ok',3000);
+  var _dens=Math.min(1,countFilled()/(GW*GH)); // v3.5.46 fill density at seal
+  var _sealPay=Math.round(LOAD_SEALED_BONUS*_dens); // seal payout SCALED BY FILL \u2014 a loose wall earns a loose payout (kills the panic-bail-at-threshold A+ exploit)
+  try{S.densHistory=S.densHistory||[];S.densHistory.push(_dens);}catch(_dh){} // track for the session grade
+  G.score=(G.score||0)+_sealPay; // v2.1.11 #1 payout, v3.5.46 density-scaled
+  showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.52em">'+Math.round(_dens*100)+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
   if(panicActive&&!panicSealed){
     panicSealed=true;
     var rem=Math.max(0,PANIC_DURATION-(Date.now()-panicStartT)/1000);
     if(rem>0){
-      var bonus=Math.round(PANIC_BONUS_MAX*(rem/PANIC_DURATION));
+      var bonus=Math.round(PANIC_BONUS_MAX*(rem/PANIC_DURATION)*_dens); // v3.5.46 dispatch bonus also scaled by fill — no reward for speed-bailing a loose wall
       G.score+=bonus;
       showBanner('DISPATCH BONUS! ⚡<br><span style="font-size:.52em">+'+bonus+' CUBES — SEALED WITH '+Math.ceil(rem)+'s LEFT!</span>','ok',3000);
     }
@@ -6422,7 +6427,10 @@ function sessionGrade(){
   if(ih.length){for(k=0;k<ih.length;k++)ais+=ih[k];ai=ais/ih.length;}
   var inc=(typeof S!=='undefined'&&S&&S.incidents)?S.incidents.length:0;
   var crn=(S&&S.crunches)||0,col=(S&&S.collapses)||0,pph=(S&&S.bestPPH)||0,shf=(S&&S.shelvesLocked)||0;
-  var pts=10+ai*0.5+Math.min(20,shf*4)+Math.min(20,pph/10);
+  // v3.5.46 DENSITY GATE — a loose wall can't rank high (kills the "A+ on a 61% panic-bail" exploit)
+  var dh=(S&&S.densHistory)?S.densHistory:[],ad=1,dn;   // avg fill density across sealed walls (1 before any seal, so first wall isn't punished)
+  if(dh.length){var ds=0;for(dn=0;dn<dh.length;dn++)ds+=dh[dn];ad=ds/dh.length;}
+  var pts=(10+ai*0.5+Math.min(20,shf*4)+Math.min(20,pph/10))*(0.45+0.55*ad); // 61% fill -> ~0.79x, 100% -> full
   pts-=inc*8+crn*3+col*10;
   if(inc>=2)pts=Math.min(pts,55);
   pts=Math.max(0,Math.min(100,Math.round(pts)));
@@ -7563,7 +7571,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.45</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.46</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7636,7 +7644,7 @@ function returnToMenu(){
   gameMode='';currentLevel=0;_LV=null;
   updateShiftBadge();
   PANIC_THRESHOLD=0.85;PANIC_DURATION=60;
-  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],densHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
   initTruck();
   showStartMenu();
 }
@@ -7897,7 +7905,7 @@ function startLevel(n){
   // Init game state
   paused=false;
   levelStartT=Date.now();
-  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],densHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
   initTruck();
   // Pre-spawn NCs into staging if level requires them
   if(_LV.ncPreload>0){
@@ -8828,7 +8836,7 @@ function restartGame(){
   document.getElementById('ov-end').classList.remove('vis');
   // v2.1.12 FIX: do NOT reset gameMode here — caller (startShift/startRegular) sets it.
   updateShiftBadge();
-  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
+  S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],densHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
   initTruck();
   if(animF)cancelAnimationFrame(animF);lastLoopT=0;animF=requestAnimationFrame(loop);
   try{if(scene)scene.focus({preventScroll:true});}catch(e){}
