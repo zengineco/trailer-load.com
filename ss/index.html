@@ -106,7 +106,10 @@ html,body{width:100%;height:100dvh;
 <div id="root">
   <div id="hdr">
     <img class="logo-img" src="logo.png" alt="SMALLSORT" style="height:42px;width:auto;">
-    <a href="/lock-in.html" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:1px;">← LOCK IN</a>
+    <div style="display:flex;align-items:center;gap:14px;">
+      <span id="sm-acct" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;"></span>
+      <a href="/lock-in.html" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:1px;">← LOCK IN</a>
+    </div>
   </div>
   <div id="statbar">
     <div class="stat"><div class="lbl">Score</div><div class="val" id="s-score">0</div></div>
@@ -548,7 +551,27 @@ function boot(){
   document.getElementById('again-btn').addEventListener('pointerdown',startGame,{passive:true});
   document.getElementById('copy-btn').addEventListener('pointerdown',copyResult,{passive:true});
   window.addEventListener('resize',resize);
+  smAcctRender();
 }
+// v1.x ACCOUNT STATE — SmallsSort shares the same origin (trailer-load.com) as LOCK IN, so it
+// reads the same localStorage session ('liAuth'). This is what makes SIGN OUT reachable from here
+// (was the reported gap). Sign-IN lives in the main game's profile, so we link there rather than
+// duplicate the whole auth form.
+function smReadAuth(){try{var r=localStorage.getItem('liAuth');return r?JSON.parse(r):null;}catch(e){return null;}}
+function smAcctRender(){
+  var el=document.getElementById('sm-acct');if(!el)return;
+  var s=smReadAuth();
+  if(s&&(s.handle||s.email)){
+    var who=s.handle||(s.email||'').split('@')[0]||'LOADER';
+    el.innerHTML='<span style="color:var(--ok);">◉ '+smEsc(who)+'</span>'+
+      '<button id="sm-signout" style="font-family:inherit;font-size:10px;letter-spacing:1px;color:var(--t3);background:transparent;border:1px solid #3a3a3c;border-radius:5px;padding:3px 8px;cursor:pointer;">SIGN OUT ⏻</button>';
+    var b=document.getElementById('sm-signout');
+    if(b)b.addEventListener('click',function(){try{localStorage.removeItem('liAuth');}catch(e){}smAcctRender();},{passive:true});
+  }else{
+    el.innerHTML='<a href="/lock-in.html#signin" style="color:var(--t3);text-decoration:none;letter-spacing:1px;">SIGN IN →</a>';
+  }
+}
+function smEsc(s){return (''+s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 boot();
 </script>
 </body>

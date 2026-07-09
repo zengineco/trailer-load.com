@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.57
+   LOCK IN v3.5.58
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.58 - QUALITY-OF-LIFE batch. (1) SmallsSort (/ss/) now shares the LOCK IN account: it reads the same localStorage session, shows your handle, and finally has a SIGN OUT in its header (was the reported gap) - sign-IN links back to the game profile (#signin auto-opens it). (2) NEW Settings > Session > QUICK RESET - restart the current load from an empty trailer without leaving the game. (3) Next-trailer popup reordered: "CONTINUE LOADING - MAX PACK" now sits directly under "NEXT TRAILER" (was below the report link). No metric-capture change.
    CHANGE LOG v3.5.57 - GRADE HONESTY (the "A on a broken wall" bug). The POST-SORT REPORT hero grade was STILL running the old v2.1.39 lenient formula (no density gate, A at 85, collapse only -10) while the strict density-gated sessionGrade() only fed the live OPERATIONS drawer. That two-formula split is how a 48%-dense, 78-integrity, 6-collapse wall read as an A. The report now runs the SAME strict sessionGrade() as ops. Also fixed the stale SESSION integrity (100% while the wall was 78%): sealWall captured density but never integrity, so a sealed wall's real number never entered the session average and it defaulted toward the seed 100. NEW finalizeWall() is now the single source of truth - captures EXACTLY one integrity+density sample per wall (idempotent via G._finalized) the moment it's sealed / clocked-out / failed; every other push site now routes through it. And relabeled the report's "Wall fill %" to "Wall height %" - it measured ceiling-reach, not fill (one column to the roof read 100%); "Cube fill %" stays the true density. No new gameplay, just honest numbers.
    CHANGE LOG v3.5.56 - FLOATER SWEEP after collapse. Core column meta is solved (can't 1xN/NxN to the moon in normal play); remaining "floaties" are collapse artifacts -- when a stack sheds, boxes that rested on it were left hanging (no gravity to re-settle). settleFloaters() now sweeps after every column collapse: any box with nothing under it (floor or another box, via boxHasSupport) sheds back to the belt too, recursing until the wall is clean. No metric-capture change.
    CHANGE LOG v3.5.55 - COLUMN RULE v4 (the adjacency bug). Screenshots: parallel columns + combs never collapsed. ROOT CAUSE: the support check counted ANY single side-neighbor as support, so two pillars "held each other up." FIX: a cell is only anchored if SANDWICHED (a box on BOTH sides, trailer wall counts) OR under a LOCKED SHELF OR a tire seated on floor/another-tire. A single neighbor is NOT support -> gappy/crooked/edge/parallel pillars now fall. Added: a smalls/bag anywhere in a 3+ freestanding stack collapses; a tire on a BOX (not floor/tire) is part of the run. Rule: any freestanding 4+ (even tapered, the n-1 rule), non-taper 3+, or smalls-in-3+ -> collapse. SAFETY schema locked (build next): 2 warnings then escalate, the 2nd UNMITIGATED same offense = an incident, ~5 -> beginner "practice" trailer (not game-over); water clears ONE warning (over-drinking = sabotage); throw = pardon for a MINOR safety only, never hazmat; collapse = documented incident (2 = the talking-to); hazmat-high IS hazmat-mid-wall. No metric-capture change.
@@ -1558,7 +1559,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.57 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.58 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1679,7 +1680,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.57 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.58 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1802,7 +1803,15 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.57 · SETTINGS</div>
+      <div class="set-section">
+        <div class="set-sec-title">◈ Session</div>
+        <div class="set-row">
+          <div class="set-lbl">Quick Reset<small>Restart this load from an empty trailer — current wall is lost</small></div>
+          <button class="set-seg-btn" style="padding:8px 16px;color:var(--warn);border-color:var(--warn);" onclick="quickReset()">↺ QUICK RESET</button>
+        </div>
+      </div>
+
+      <div class="set-foot">LOCK IN v3.5.58 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1980,8 +1989,8 @@ body[data-cb="trit"]{
         <div id="next-popup">
           <div id="next-popup-badge">✓ WALL COMPLETE — LOAD SEALED</div>
           <button id="next-popup-btn" onclick="nextTrailer()">NEXT TRAILER ▶</button>
+          <button class="btn-p" onclick="npKeepLoading()">↺ CONTINUE LOADING — MAX PACK</button>
           <button class="btn-p" onclick="openPostSort()">◆ POST-SORT REPORT</button>
-          <button class="btn-p" onclick="npKeepLoading()">↺ KEEP LOADING — MAX PACK</button>
           <button class="btn-p" onclick="returnToMenu()">⌂ MAIN MENU</button>
         </div>
         <button id="maxpack-finish" onclick="npFinish()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
@@ -2168,7 +2177,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.57
+// LOCK IN v3.5.58
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7780,7 +7789,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.57</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.58</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8960,6 +8969,19 @@ function closeSettings(){
   var ov=document.getElementById('settings-overlay');
   if(ov)ov.classList.remove('vis');
 }
+// v3.5.58 QUICK RESET — restart the current load from an empty trailer, straight from Settings.
+function quickReset(){
+  if(!window.confirm('Quick reset — restart this load from an empty trailer? The current wall is lost.'))return;
+  closeSettings();
+  paused=false;
+  var pov=document.getElementById('ov-pause');if(pov)pov.classList.remove('vis');
+  var np=document.getElementById('next-popup');if(np)np.classList.remove('vis');
+  var oe=document.getElementById('ov-end');if(oe)oe.classList.remove('vis');
+  if(typeof gameMode!=='undefined'&&gameMode&&typeof restartGame==='function'){
+    restartGame(); // resets S + initTruck() + restarts the loop, keeps the current mode
+    if(typeof showBanner==='function')showBanner('↺ RESET — fresh trailer.','ok',1600);
+  }else if(typeof returnToMenu==='function'){returnToMenu();}
+}
 function setVolume(kind,v){
   v=parseInt(v,10);if(isNaN(v))v=0;
   sndInit();if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume();
@@ -9191,6 +9213,8 @@ if(_briefingDone){
   if(_br){_br.style.display='';_br.classList.remove('gone');}
   try{briefTab(activeVoice);}catch(e){console.error('briefTab:',e);}
 }
+// v3.5.58 — SmallsSort's "SIGN IN →" links here with #signin; open the profile/sign-in panel.
+try{if(location.hash==='#signin'&&typeof openProfile==='function')setTimeout(openProfile,300);}catch(e){}
 </script>
 </body>
 </html>
