@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.58
+   LOCK IN v3.5.59
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.59 - SAFETY SYSTEM + THROW/WATER side buttons. Two tracked categories now: WARNINGS (recoverable) and INCIDENTS (on the record). Ladder: a warning you DON'T mitigate, repeated as the SAME offense, escalates to an INCIDENT; 5 incidents = sent to a fresh beginner PRACTICE trailer (clean slate, record still stands - NOT game over). Mitigation: lock a shelf (instant neutralize), drink WATER (clears one open minor warning), or THROW the piece (pardons a minor only). HAZMAT-high and COLLAPSES are incidents outright - no pardon (a collapse is now a documented safety incident, so 2 = the talking-to; removed the old separate collapse grade term to avoid double-counting). HYDRATION is now a real safety: 75% up the wall with no water = warning, top it bone-dry = incident; OVER-drinking to farm warning-washes = SABOTAGE (logged). Washed safeties are STILL published (the "1501 safeties, 1490 for throwing boxes" bit - report now shows warnings total, washed, thrown-away, sabotage flags, sent-to-training). NEW side buttons: WATER (left gutter) + THROW (right gutter), emoji placeholders ready for Goyim's icons; THROW always spawns a bag of smalls. Live SAFE meter in the control row. DEFERRED: tire-sideways-as-hazard (needs the tire-orientation model). No change to how grade math reads density/integrity beyond the collapse-term removal.
    CHANGE LOG v3.5.58 - QUALITY-OF-LIFE batch. (1) SmallsSort (/ss/) now shares the LOCK IN account: it reads the same localStorage session, shows your handle, and finally has a SIGN OUT in its header (was the reported gap) - sign-IN links back to the game profile (#signin auto-opens it). (2) NEW Settings > Session > QUICK RESET - restart the current load from an empty trailer without leaving the game. (3) Next-trailer popup reordered: "CONTINUE LOADING - MAX PACK" now sits directly under "NEXT TRAILER" (was below the report link). No metric-capture change.
    CHANGE LOG v3.5.57 - GRADE HONESTY (the "A on a broken wall" bug). The POST-SORT REPORT hero grade was STILL running the old v2.1.39 lenient formula (no density gate, A at 85, collapse only -10) while the strict density-gated sessionGrade() only fed the live OPERATIONS drawer. That two-formula split is how a 48%-dense, 78-integrity, 6-collapse wall read as an A. The report now runs the SAME strict sessionGrade() as ops. Also fixed the stale SESSION integrity (100% while the wall was 78%): sealWall captured density but never integrity, so a sealed wall's real number never entered the session average and it defaulted toward the seed 100. NEW finalizeWall() is now the single source of truth - captures EXACTLY one integrity+density sample per wall (idempotent via G._finalized) the moment it's sealed / clocked-out / failed; every other push site now routes through it. And relabeled the report's "Wall fill %" to "Wall height %" - it measured ceiling-reach, not fill (one column to the roof read 100%); "Cube fill %" stays the true density. No new gameplay, just honest numbers.
    CHANGE LOG v3.5.56 - FLOATER SWEEP after collapse. Core column meta is solved (can't 1xN/NxN to the moon in normal play); remaining "floaties" are collapse artifacts -- when a stack sheds, boxes that rested on it were left hanging (no gravity to re-settle). settleFloaters() now sweeps after every column collapse: any box with nothing under it (floor or another box, via boxHasSupport) sheds back to the belt too, recursing until the wall is clean. No metric-capture change.
@@ -962,6 +963,17 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 
 /* ── v2.6.1 PORTRAIT TOUCH BOARD ── strip side HUD, full-width wall+belt, corner pause, HUD into pause sheet */
 #m-pause{display:none;}
+/* v3.5.59 side action buttons (WATER left margin / THROW right margin, in the beige side gutters) */
+.side-btn{position:absolute;bottom:18px;z-index:28;display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:rgba(22,22,24,.86);color:#f0ead8;border:1.5px solid #4a4a4c;border-radius:12px;padding:9px 11px;cursor:pointer;
+  font-family:'Bebas Neue',cursive;letter-spacing:1px;box-shadow:0 3px 12px rgba(0,0,0,.35);user-select:none;-webkit-user-select:none;}
+.side-btn .side-ic{font-size:22px;line-height:1;}
+.side-btn .side-ic img{width:26px;height:26px;display:block;object-fit:contain;}
+.side-btn .side-tx{font-size:12px;}
+.side-btn.side-l{left:14px;border-color:#2f7fd0;}
+.side-btn.side-r{right:14px;border-color:#c88a2a;}
+.side-btn:hover{filter:brightness(1.12);}
+.side-btn:active{transform:scale(.93);}
 #m-stick,#m-drop,#m-rot{display:none;}
 /* v3.5.47 CUSTOM TOUCH CONTROLS — movable + scalable joystick (accessibility for larger hands) */
 body.ctrl-edit #m-stick,body.ctrl-edit #m-drop,body.ctrl-edit #m-rot{display:flex!important;}
@@ -1559,7 +1571,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.58 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.59 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1680,7 +1692,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.58 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.59 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1811,7 +1823,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.58 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.59 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -1994,6 +2006,13 @@ body[data-cb="trit"]{
           <button class="btn-p" onclick="returnToMenu()">⌂ MAIN MENU</button>
         </div>
         <button id="maxpack-finish" onclick="npFinish()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
+        <!-- v3.5.59 SIDE BUTTONS — WATER (left margin) + THROW (right margin). Emoji are placeholders; swap the .side-ic span for <img src="water.png"/> / <img src="throw.png"/> when Goyim's icons land. -->
+        <button id="water-side" class="side-btn side-l" onclick="takeDrink()" title="Water break — clears one open minor warning. Skip it: 75% up the wall dry = warning, top it dry = incident.">
+          <span class="side-ic">💧</span><span class="side-tx">WATER</span>
+        </button>
+        <button id="throw-side" class="side-btn side-r" onclick="throwBox()" title="Throw the current piece — pardons ONE minor safety (never a hazmat), always spawns a bag of smalls.">
+          <span class="side-ic">🦵</span><span class="side-tx">THROW</span>
+        </button>
         <!-- v3.5.7: floating in-game coach tip removed — coach is pause-only now -->
       </div>
     </div>
@@ -2015,6 +2034,7 @@ body[data-cb="trit"]{
           <span class="stg-sep" id="stg-sep" onclick="stgClose()" style="display:none;"></span>
           <span class="stg-light" id="stg-bag" onclick="openStagingPopup('bag')" title="Smalls staging" style="display:none;"><b>SM</b><span class="stg-pie" id="stg-bag-pie"></span><span id="stg-bag-n">0/8</span></span>
         </div>
+        <span class="conv-lbl" id="safety-live" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;" title="Live safety — open warnings / incidents on record"></span>
         <button id="rot-btn" onclick="rotateSel()">↻ ROT [R]</button>
       </div>
       <canvas id="belt-canvas" style="display:none;width:100%;touch-action:none;"></canvas>
@@ -2177,7 +2197,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.58
+// LOCK IN v3.5.59
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3621,9 +3641,14 @@ function takeDrink(){
   G.drinks=(G.drinks||0)+1;
   S.drinks=(S.drinks||0)+1;
   if(typeof playSfx==='function')playSfx('drink');
-  if(G.drinks===1)showBanner('\ud83d\udca7 HYDRATED \u2014 1 is par. A second nets a bonus.','',1400);
+  var cleared=(typeof mitigateWarn==='function')&&mitigateWarn('water'); // water clears ONE open minor warning
+  if((G.drinks||0)>3){ // over-hydrating to farm warning-washes = sabotage (logged + published)
+    S.waterSabotage=(S.waterSabotage||0)+1;
+    showBanner('\ud83d\udeab OVER-HYDRATING TO DODGE SAFETIES IS SABOTAGE \u2014 logged.','danger',2200);
+  }else if(cleared){showBanner('\ud83d\udca7 WATER BREAK \u2014 warning cleared (still on the record as washed).','ok',1900);}
+  else if(G.drinks===1)showBanner('\ud83d\udca7 HYDRATED \u2014 1 is par. A second nets a bonus.','',1400);
   else if(G.drinks===2)showBanner('\ud83d\udca7 TOPPED OFF \u2014 hydration bonus secured.','ok',1400);
-  updateWaterHUD();
+  updateWaterHUD();if(typeof updateSafetyHUD==='function')updateSafetyHUD();
 }
 function updateWaterHUD(){
   var d=G.drinks||0;
@@ -4088,6 +4113,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   }
 
   if((G.integrity||100)<=8&&!collapseAnimating)scheduleCollapse();
+  if(typeof checkHydrationSafety==='function')checkHydrationSafety(); // v3.5.59 hydration-as-safety (75% warn / 100% incident if dry)
   checkWin();
 
   // Reset selection
@@ -4226,8 +4252,106 @@ function anyKillerTooClose(grid){
 function logIncident(type,cls){
   S.incidents=S.incidents||[];
   S.incidents.push({type:type,cls:cls||'',wall:(S.truck||1),t:Date.now()});
-  if(S.incidents.length===2)showBanner('\u26a0 SAFETY RECORD FLAGGED \u2014 second hazmat incident. On the floor, that\u2019s a documented discussion.','danger',3800);
+  if(typeof _incidentEscalation==='function')_incidentEscalation();
 }
+
+// \u2550\u2550\u2550 v3.5.59 SAFETY SYSTEM \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
+// Two tracked categories: WARNINGS (recoverable) and INCIDENTS (on the record).
+// Ladder: a warning you DON'T mitigate, repeated as the SAME offense, escalates to an
+// incident. SAFETY_PRACTICE_THRESHOLD incidents = sent to a fresh beginner "practice"
+// trailer (NOT game over). Mitigation: lock a shelf (instant), drink water (clears one),
+// or throw the piece (minor only). Hazmat-high and collapses are incidents outright \u2014 no
+// pardon. Washed safeties are STILL published (the "1501 safeties, 1490 for throwing" bit).
+var SAFETY_PRACTICE_THRESHOLD=5;
+var SAFETY_MINOR=['HYDRATION','TIRE_SIDEWAYS','SP_DWELL','SMALLS_DWELL']; // warn-eligible + throw/water-pardonable
+function _sfMinor(o){return SAFETY_MINOR.indexOf(o)>=0;}
+function _sfInit(){S.warnings=S.warnings||[];S.incidents=S.incidents||[];}
+function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
+function _incidentEscalation(){ // shared by logIncident + safetyIncident + collapse
+  _sfInit();
+  var n=S.incidents.length;
+  if(n===2)showBanner('\u26a0 SAFETY RECORD FLAGGED \u2014 second incident. On the floor, that\u2019s a documented discussion.','danger',3600);
+  if(n>=SAFETY_PRACTICE_THRESHOLD&&!(G&&G._practiceSent))sendToPractice();
+  updateSafetyHUD();
+}
+function safetyWarn(offense,msg){
+  _sfInit();
+  var i,prior=null;
+  for(i=0;i<S.warnings.length;i++){if(S.warnings[i].offense===offense&&!S.warnings[i].mitigated){prior=S.warnings[i];break;}}
+  if(prior){safetyIncident(offense,'Repeat '+_sfLabel(offense)+' \u2014 an unmitigated warning became an incident.');return;}
+  S.warnings.push({offense:offense,t:Date.now(),wall:(S.truck||1),mitigated:false,washedBy:null});
+  showBanner('\u26a0 SAFETY WARNING \u2014 '+msg+'<br><span style="font-size:.5em">MITIGATE: lock a shelf, drink water, or throw the piece. Same offense left open = an INCIDENT.</span>','warn',3200);
+  if(typeof playSfx==='function')playSfx('dwell');
+  updateSafetyHUD();
+}
+function safetyIncident(offense,msg){
+  _sfInit();
+  S.incidents.push({type:offense,cls:'',wall:(S.truck||1),t:Date.now()});
+  showBanner('\u26d4 SAFETY INCIDENT \u2014 '+msg,'danger',3400);
+  if(typeof playSfx==='function')playSfx('lose');
+  _incidentEscalation();
+}
+// clear the most-recent unmitigated MINOR warning; returns true if one was washed.
+function mitigateWarn(source){
+  _sfInit();var i,w=null;
+  for(i=S.warnings.length-1;i>=0;i--){if(!S.warnings[i].mitigated&&_sfMinor(S.warnings[i].offense)){w=S.warnings[i];break;}}
+  if(!w)return false;
+  w.mitigated=true;w.washedBy=source;
+  S.safetiesWashed=(S.safetiesWashed||0)+1;   // STILL PUBLISHED on the record
+  updateSafetyHUD();
+  return true;
+}
+function sendToPractice(){
+  if(G&&G._practiceSent)return;if(G)G._practiceSent=true;
+  S.practiceKicks=(S.practiceKicks||0)+1;
+  showBanner('\u26d4 SENT TO TRAINING \u2014 too many incidents.<br><span style="font-size:.5em">Fresh, clean practice trailer. Reset your habits \u2014 your record still stands.</span>','danger',4200);
+  setTimeout(function(){
+    S.warnings=[]; // new wall, warnings reset (incidents/record persist)
+    G.grid=makeGrid();placed=0;G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;G._practiceSent=false;
+    G.drinks=0;G._hyd75=false;G._hyd100=false;G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
+    G.practice=true;
+    selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;
+    if(typeof refillBelt==='function')refillBelt();
+    if(typeof showBanner==='function')showBanner('\ud83d\udfe2 PRACTICE TRAILER \u2014 clean slate. Load it right.','ok',2600);
+    if(typeof updateWaterHUD==='function')updateWaterHUD();
+    updateSafetyHUD();
+  },1400);
+}
+function updateSafetyHUD(){
+  _sfInit();
+  var w=0,i;for(i=0;i<S.warnings.length;i++)if(!S.warnings[i].mitigated)w++;
+  var inc=S.incidents.length;
+  var si=document.getElementById('safety-inc');if(si)si.textContent=inc;
+  var el=document.getElementById('safety-live');
+  if(el){
+    el.innerHTML='<b style="color:var(--t3)">SAFE</b> <span style="color:'+(w?'var(--warn)':'var(--t3)')+'">'+w+'\u26a0</span> <span style="color:'+(inc?'var(--danger)':'var(--t3)')+'">'+inc+'\u26d4</span>';
+    el.title=w+' open warning(s), '+inc+' incident(s) on record';
+  }
+}
+// HYDRATION as a safety: ~75% wall height with no drink = warning; 100% dry = incident.
+function checkHydrationSafety(){
+  if(typeof G==='undefined'||!G||!G.grid)return;
+  var pct=Math.round(wallH()/GH*100);
+  if(pct>=75&&pct<100&&(G.drinks||0)===0&&!G._hyd75){G._hyd75=true;safetyWarn('HYDRATION','you\u2019re 75% up the wall and haven\u2019t taken a water break.');}
+  if(pct>=100&&(G.drinks||0)===0&&!G._hyd100){G._hyd100=true;safetyIncident('HYDRATION_100','topped the wall bone-dry \u2014 no water the whole trailer.');}
+}
+// THROW \u2014 toss the selected piece; ALWAYS spawns a bag of smalls (a vet always has one to throw
+// on); pardons a MINOR safety only (hazmat is an incident, never a warning, so it can't be thrown away).
+function throwBox(){
+  if(gOver||typeof G==='undefined'||!G||!G.belt||!G.belt.length){if(typeof showBanner==='function'&&(!G||!G.belt||!G.belt.length))showBanner('Nothing in hand to throw.','',1200);return;}
+  var idx=(selBeltIdx!=null)?selBeltIdx:0;if(idx<0||idx>=G.belt.length)idx=0;
+  G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
+  S.throws=(S.throws||0)+1;
+  if(typeof spawnBag==='function')spawnBag(); // throwing ALWAYS puts a bag of smalls on the belt
+  var washed=mitigateWarn('throw');
+  if(washed){S.safetiesThrown=(S.safetiesThrown||0)+1;
+    showBanner('\ud83e\uddb5 THROWN \u2014 minor safety pardoned (logged as thrown). A bag of smalls hit the belt.','warn',2400);
+  }else{showBanner('\ud83e\uddb5 THROWN \u2014 piece tossed, a bag of smalls hit the belt.','',2000);}
+  if(typeof playSfx==='function')playSfx('place');
+  if(typeof refillBelt==='function')refillBelt();
+  updateSafetyHUD();
+}
+// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
 
 function isRowLockedIn(y){
   // A row is "locked in" if it is a complete full shelf (all GW cells filled).
@@ -4320,6 +4444,7 @@ function settleFloaters(){
 function collapseFreeStack(st){
   if(!st||!st.boxes)return;
   S.collapses=(S.collapses||0)+1;
+  S.incidents=S.incidents||[];S.incidents.push({type:'COLLAPSE',cls:'',wall:(S.truck||1),t:Date.now()});if(typeof _incidentEscalation==='function')_incidentEscalation(); // v3.5.59 a collapse is a documented safety incident
   var n=0;
   st.boxes.forEach(function(cell){
     var cs=cell.cells||makeRect(cell.w,cell.h),i;
@@ -4350,6 +4475,7 @@ function checkTetris(){
       if(!G.tetrisPaid[y]){
       G.tetrisPaid[y]=true; // v2.10.2 lock bonus pays once per row per trailer (unseal+relock can't refarm)
       G.tetrisTotal=(G.tetrisTotal||0)+1;S.shelvesLocked=(S.shelvesLocked||0)+1;if(typeof playSfx==='function')playSfx('lock'); // v2.1.8 / v2.11.1 shelf-lock sfx
+      if(typeof mitigateWarn==='function'&&mitigateWarn('lock')&&typeof showBanner==='function')showBanner('🔒 SHELF LOCKED — open safety warning neutralized (still on the record as washed).','ok',2000); // v3.5.59 lock = instant mitigation
       var prevInt=G.integrity||100;
       var intBonus=Math.min(30,100-prevInt);
       G.integrity=Math.min(100,prevInt+intBonus);
@@ -4504,6 +4630,7 @@ function triggerCollapse(){
   if(collapseAnimating)return;
   collapseAnimating=true;
   S.collapses=(S.collapses||0)+1; // v2.1.7
+  S.incidents=S.incidents||[];S.incidents.push({type:'COLLAPSE',cls:'',wall:(S.truck||1),t:Date.now()});if(typeof _incidentEscalation==='function')_incidentEscalation(); // v3.5.59 documented safety incident
   var candidates=[];var seen={};
   for(var y=0;y<Math.floor(GH*.65);y++)for(var x=0;x<GW;x++){
     var c=G.grid[y][x];
@@ -6643,7 +6770,7 @@ function sessionGrade(){
   var dh=(S&&S.densHistory)?S.densHistory:[],ad=1,dn;   // avg fill density across sealed walls (1 before any seal, so first wall isn't punished)
   if(dh.length){var ds=0;for(dn=0;dn<dh.length;dn++)ds+=dh[dn];ad=ds/dh.length;}
   var pts=(10+ai*0.45+Math.min(20,shf*4)+Math.min(22,pph/9))*(0.25+0.75*ad); // v3.5.50 STRICT: steeper solidity gate — only a near-gapless wall can max out (avg 0.7 solidity -> 0.78x)
-  pts-=inc*10+crn*4+col*12;
+  pts-=inc*10+crn*4;   // v3.5.59 collapses are now logged as INCIDENTS (inc*10), so the old separate col*12 term is gone — no double-count
   if(inc>=1)pts=Math.min(pts,88);   // v3.5.50 ANY safety incident caps you out of A+ (elite = spotless)
   if(inc>=2)pts=Math.min(pts,55);
   pts=Math.max(0,Math.min(100,Math.round(pts)));
@@ -7482,7 +7609,7 @@ function nextTrailer(){
     updateShiftBadge();
     // Clear grid only — keep session going
     G.grid=makeGrid();
-    G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;
+    G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;G._hyd75=false;G._hyd100=false;S.warnings=[]; // v3.5.59 fresh wall: reset open warnings + hydration flags (incidents/record persist)
     G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
     G.brickAwarded=false;G.crunchCount=0;G.hazViolations=0;G.recoveryCount=0;G.ncPlaced=0;G.drinks=0;
     G.preselectDepth=0;G.preselectWarned=false;G.seamWarned=false;G.segWarned=false;
@@ -7789,7 +7916,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.58</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.59</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7806,6 +7933,13 @@ function psBuild(lifeState,life){
       row('\u00b7 Hazmat-crush',null,ic('HAZMAT_CRUSH'),null,true)+
       row('\u00b7 Segregation',null,ic('SEGREGATION'),null,true)+
       row('\u00b7 Killer',null,ic('KILLER'),null,true)+
+      row('\u00b7 Collapse',null,ic('COLLAPSE'),null,true)+
+      row('\u00b7 No-hydration',null,ic('HYDRATION_100'),null,true)+
+      row('Warnings (total)',null,(S.warnings||[]).length,null)+
+      row('\u00b7 washed / mitigated',null,S.safetiesWashed||0,null,true)+
+      row('\u00b7 thrown-away',null,S.safetiesThrown||0,null,true)+
+      row('Water sabotage flags',null,S.waterSabotage||0,null)+
+      row('Sent to training',null,S.practiceKicks||0,null)+
       row('Crunches',null,S.crunches||0,'crunches')+
       row('Collapses',null,S.collapses||0,'collapses')+
       row('Recoveries',null,S.recoveries||0,'recoveries')+
@@ -9048,6 +9182,7 @@ function initTruck(){
   _freshLock=false;_lastTipTs=0;_tipIdx=0;
   document.getElementById('panic-wrap').classList.remove('vis');
   document.getElementById('next-popup').classList.remove('vis');
+  if(typeof updateSafetyHUD==='function')updateSafetyHUD(); // v3.5.59 paint the live safety meter on a fresh trailer
 }
 
 function restartGame(){
