@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.46
+   LOCK IN v3.5.47
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.47 - MOVABLE + SCALABLE TOUCH CONTROLS (accessibility pass, backlog #1). Playtest: big-handed warehouse loaders can't work the small fixed joystick ("my hands are too big for these little controls"). Settings -> Touch Controls (mobile): a CONTROL SIZE slider (0.7x-1.7x, scales the joystick + DROP + ROT live via transform:scale, which keeps the pointer-aim math correct since it reads getBoundingClientRect post-transform) + a MOVE JOYSTICK button that enters a drag-to-reposition edit mode (a bottom bar with SIZE slider + DONE; the joystick is draggable, clamped on-screen). Layout (scale + x/y) persists per device in localStorage (lockinCtrl) and applies on boot. Aim behavior unchanged when not editing. NEXT (his order): #5 signup password-confirm, then #3/#4 drop-forgiveness + fingertip hotspot, #6/#7 auth-clarity + social tab, #8 physics. No scoring change.
    CHANGE LOG v3.5.46 - DENSITY-WEIGHTED SCORING (kill the A+ exploit) + REAL CLOSE BUTTON. Playtest: a friend rushed to the height threshold at 61% density, bailed, and got A+ YARD LEGEND — the grade IS the product (the dashboard sells it), so a gameable grade is fatal. FIX (3 coordinated): (1) sealWall payout now SCALES BY FILL DENSITY (LOAD_SEALED_BONUS * fill) — a 61% wall earns 61% of the seal bonus. (2) the panic/dispatch speed-bonus is ALSO scaled by density — no reward for speed-bailing a loose wall. (3) sessionGrade now GATES on avg fill density (S.densHistory, reset per session): points *= (0.45 + 0.55*avgDensity), so 61% fill caps ~0.79x and a loose wall lands ~B instead of A+. Also: .pf-x close button (profile/leaderboard) was a bare 22px glyph nobody could tap -> now a real 40x40 bordered button. No change to the win THRESHOLD itself (still density>=target to seal); this makes the REWARD honest. NEXT (backlog): movable/scalable d-pad accessibility, placement ghost/preview render, social tab, signup password-confirm.
    CHANGE LOG v3.5.45 - CLIPBOARD-BLANK FIX (cross-device briefing bug). The pre-sort clipboard showed with NO text on some machines / intermittently on phones. ROOT CAUSE: the HUB-voice briefing (#brief-hub) was retired from the HTML, but briefTab() still ran at boot — when the saved voice (localStorage liVoice) was 'hub', it set #brief-std to display:none and tried to show the missing #brief-hub, leaving the clipboard blank. Fingerprint matched exactly: fine at voice=std (work computer), blank at voice=hub (personal computer), intermittent by device. FIX: briefTab now only swaps to brief-hub if it actually exists; otherwise it ALWAYS shows brief-std regardless of voice. No scoring change.
    CHANGE LOG v3.5.44 - PICK BY ZONE (mobile release blocker — "nothing happened" / off-piece grabs). Selecting freight required tapping INSIDE a piece's exact rect; tiny pieces were near-impossible to hit and sometimes needed tapping off-piece. NEW: after the precise inside-rect hit (unchanged, wins first), an off-wall tap now grabs the NEAREST freight to the tap by center distance (pick-by-zone). Gated to taps that are NOT on a wall cell, so a placement tap is never stolen; bounded by distance (W*0.72) so far strays don't grab. Big forgiving touch target on phones. No scoring/state change. NEXT: clipboard text render bug, then onboarding/tutorial.
@@ -951,6 +952,16 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 /* ── v2.6.1 PORTRAIT TOUCH BOARD ── strip side HUD, full-width wall+belt, corner pause, HUD into pause sheet */
 #m-pause{display:none;}
 #m-stick,#m-drop,#m-rot{display:none;}
+/* v3.5.47 CUSTOM TOUCH CONTROLS — movable + scalable joystick (accessibility for larger hands) */
+body.ctrl-edit #m-stick,body.ctrl-edit #m-drop,body.ctrl-edit #m-rot{display:flex!important;}
+body.ctrl-edit #m-stick{outline:2px dashed var(--acc-bright);outline-offset:4px;}
+#ctrl-edit-bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:400;background:rgba(20,14,8,.97);border-top:2px solid var(--acc);padding:12px 16px 16px;flex-direction:column;gap:10px;}
+body.ctrl-edit #ctrl-edit-bar{display:flex;}
+#ctrl-edit-bar .ce-hint{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--t2);line-height:1.3;}
+#ctrl-edit-bar .ce-row{display:flex;align-items:center;gap:12px;}
+#ctrl-edit-bar label{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--acc-bright);letter-spacing:1px;flex:none;}
+#ctrl-edit-bar input[type=range]{flex:1;min-width:0;}
+#ce-done{background:var(--acc);color:#1a1006;border:none;border-radius:7px;padding:9px 22px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;flex:none;}
 body.m-portrait #root{max-width:none;}
 body.m-portrait #stats-panel,body.m-portrait #fb-panel{display:none;}
 body.m-portrait #pause-btn{display:none;}
@@ -1522,13 +1533,22 @@ body[data-cb="trit"]{
 <div id="m-stick" aria-label="Aim joystick"><div id="m-nub"></div></div>
 <button id="m-drop" onclick="mCtl('drop')" aria-label="Drop piece">DROP</button>
 <button id="m-rot" onclick="mCtl('rot')" aria-label="Rotate piece">↻</button>
+<!-- v3.5.47 touch-control customizer (movable + scalable joystick) -->
+<div id="ctrl-edit-bar">
+  <div class="ce-hint">Drag the joystick to move it · slide to resize · your layout is saved on this device.</div>
+  <div class="ce-row">
+    <label>SIZE</label>
+    <input id="ce-scale" type="range" min="70" max="170" value="100" oninput="ctrlSetScale(this.value)">
+    <button id="ce-done" onclick="ctrlEditEnd()">DONE</button>
+  </div>
+</div>
 
 <!-- PAUSE OVERLAY -->
 <div id="ov-pause">
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.46 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.47 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1649,7 +1669,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.46 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.47 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1660,6 +1680,18 @@ body[data-cb="trit"]{
       <button id="set-close" onclick="closeSettings()">✕ CLOSE</button>
     </div>
     <div id="set-body">
+
+      <div class="set-section">
+        <div class="set-sec-title">◈ Touch Controls <small style="font-weight:normal;color:var(--t3);">(mobile)</small></div>
+        <div class="set-row">
+          <div class="set-lbl">Control Size<small>bigger for larger hands</small></div>
+          <input class="set-range" id="set-ctrl-scale" type="range" min="70" max="170" value="100" oninput="ctrlSetScale(this.value)">
+        </div>
+        <div class="set-row">
+          <div class="set-lbl">Reposition<small>drag the joystick anywhere you want it</small></div>
+          <button class="set-seg-btn" style="padding:8px 16px;" onclick="ctrlEditStart()">✥ MOVE JOYSTICK</button>
+        </div>
+      </div>
 
       <div class="set-section">
         <div class="set-sec-title">◈ Audio</div>
@@ -1760,7 +1792,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.46 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.47 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2125,7 +2157,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.46
+// LOCK IN v3.5.47
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6295,14 +6327,51 @@ function stickFrom(e){
   if(STK.nub)STK.nub.style.transform=(dist>0)?('translate('+(dx/dist*cl)+'px,'+(dy/dist*cl)+'px)'):'';
   STK.dir=(dist<12)?null:((Math.abs(dx)>Math.abs(dy))?(dx<0?'l':'r'):(dy<0?'u':'d'));
 }
+// ── v3.5.47 CUSTOM TOUCH CONTROLS (movable + scalable joystick — accessibility for larger hands) ──
+var CTRL={scale:1,jx:14,jy:124,editing:false,_sx:0,_sy:0,_jx0:0,_jy0:0,_drag:false};
+function ctrlLoad(){
+  try{var r=localStorage.getItem('lockinCtrl');if(r){var o=JSON.parse(r);if(o){if(o.scale)CTRL.scale=+o.scale;if(o.jx!=null)CTRL.jx=+o.jx;if(o.jy!=null)CTRL.jy=+o.jy;}}}catch(e){console.error('ctrlLoad:',e);}
+  ctrlApply();
+}
+function ctrlSave(){try{localStorage.setItem('lockinCtrl',JSON.stringify({scale:CTRL.scale,jx:CTRL.jx,jy:CTRL.jy}));}catch(e){console.error('ctrlSave:',e);}}
+function ctrlApply(){
+  var s=CTRL.scale||1;
+  var st=document.getElementById('m-stick'),dr=document.getElementById('m-drop'),rt=document.getElementById('m-rot');
+  if(st){st.style.left=CTRL.jx+'px';st.style.bottom=CTRL.jy+'px';st.style.transform='scale('+s+')';st.style.transformOrigin='bottom left';}
+  if(dr){dr.style.transform='scale('+s+')';dr.style.transformOrigin='bottom right';}
+  if(rt){rt.style.transform='scale('+s+')';rt.style.transformOrigin='bottom right';}
+  var a=document.getElementById('set-ctrl-scale'),b=document.getElementById('ce-scale');
+  if(a)a.value=Math.round(s*100);if(b)b.value=Math.round(s*100);
+}
+function ctrlSetScale(v){v=parseInt(v,10);if(isNaN(v))v=100;CTRL.scale=Math.max(.7,Math.min(1.7,v/100));ctrlApply();ctrlSave();}
+function ctrlEditStart(){CTRL.editing=true;document.body.classList.add('ctrl-edit');if(typeof closeSettings==='function')closeSettings();ctrlApply();}
+function ctrlEditEnd(){CTRL.editing=false;CTRL._drag=false;document.body.classList.remove('ctrl-edit');ctrlSave();}
 (function(){
   var el=document.getElementById('m-stick');if(!el)return;
   STK.el=el;STK.nub=document.getElementById('m-nub');
-  el.addEventListener('pointerdown',function(e){e.preventDefault();el.classList.add('grab');if(el.setPointerCapture)el.setPointerCapture(e.pointerId);
-    STK.on=true;stickFrom(e);stickStep();if(STK.timer)clearInterval(STK.timer);STK.timer=setInterval(function(){if(STK.dir)stickStep();},130);},{passive:false});
-  el.addEventListener('pointermove',function(e){if(STK.on){e.preventDefault();stickFrom(e);}},{passive:false});
-  function end(){STK.on=false;STK.dir=null;if(STK.timer){clearInterval(STK.timer);STK.timer=null;}if(STK.nub)STK.nub.style.transform='';el.classList.remove('grab');}
+  el.addEventListener('pointerdown',function(e){
+    e.preventDefault();
+    if(CTRL.editing){ // v3.5.47 reposition mode — drag the whole joystick, don't aim
+      CTRL._drag=true;CTRL._sx=e.clientX;CTRL._sy=e.clientY;CTRL._jx0=CTRL.jx;CTRL._jy0=CTRL.jy;
+      if(el.setPointerCapture)el.setPointerCapture(e.pointerId);return;
+    }
+    el.classList.add('grab');if(el.setPointerCapture)el.setPointerCapture(e.pointerId);
+    STK.on=true;stickFrom(e);stickStep();if(STK.timer)clearInterval(STK.timer);STK.timer=setInterval(function(){if(STK.dir)stickStep();},130);
+  },{passive:false});
+  el.addEventListener('pointermove',function(e){
+    if(CTRL.editing&&CTRL._drag){
+      e.preventDefault();
+      var sz=108*(CTRL.scale||1);
+      var nx=CTRL._jx0+(e.clientX-CTRL._sx), ny=CTRL._jy0-(e.clientY-CTRL._sy);
+      CTRL.jx=Math.max(4,Math.min(window.innerWidth-sz-4,nx));
+      CTRL.jy=Math.max(4,Math.min(window.innerHeight-sz-4,ny));
+      ctrlApply();return;
+    }
+    if(STK.on){e.preventDefault();stickFrom(e);}
+  },{passive:false});
+  function end(){if(CTRL._drag){CTRL._drag=false;ctrlSave();return;}STK.on=false;STK.dir=null;if(STK.timer){clearInterval(STK.timer);STK.timer=null;}if(STK.nub)STK.nub.style.transform='';el.classList.remove('grab');}
   el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);el.addEventListener('lostpointercapture',end);
+  ctrlLoad();
 })();
 // auto-arm: show joystick/DROP/ROTATE only when a piece is loaded + in play, so the belt/slot row stays tappable when idle
 setInterval(function(){
@@ -7571,7 +7640,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.46</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.47</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
