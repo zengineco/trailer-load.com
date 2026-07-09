@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.54
+   LOCK IN v3.5.55
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.55 - COLUMN RULE v4 (the adjacency bug). Screenshots: parallel columns + combs never collapsed. ROOT CAUSE: the support check counted ANY single side-neighbor as support, so two pillars "held each other up." FIX: a cell is only anchored if SANDWICHED (a box on BOTH sides, trailer wall counts) OR under a LOCKED SHELF OR a tire seated on floor/another-tire. A single neighbor is NOT support -> gappy/crooked/edge/parallel pillars now fall. Added: a smalls/bag anywhere in a 3+ freestanding stack collapses; a tire on a BOX (not floor/tire) is part of the run. Rule: any freestanding 4+ (even tapered, the n-1 rule), non-taper 3+, or smalls-in-3+ -> collapse. SAFETY schema locked (build next): 2 warnings then escalate, the 2nd UNMITIGATED same offense = an incident, ~5 -> beginner "practice" trailer (not game-over); water clears ONE warning (over-drinking = sabotage); throw = pardon for a MINOR safety only, never hazmat; collapse = documented incident (2 = the talking-to); hazmat-high IS hazmat-mid-wall. No metric-capture change.
    CHANGE LOG v3.5.54 - COLUMN RULE v3 (taper-aware) + collapse RESOLVES + demo popup. Friend still stacked smalls to the ceiling off a wide 5x6/4x4 base, and the scan-all was re-firing the collapse EVERY placement. Rewrote: worstFreeStack() reads the DISTINCT boxes in each column's freestanding run (no lateral neighbor; a locked shelf/tire ends it) and flags NON-tapering stacks (any box >= the width of the one below = same-width/top-heavy, e.g. 1x1-on-1x1 smalls) vs a strict taper (4x4/3x3/2x2/1x1, exempt). Collapse now sheds the WHOLE offending stack back to the belt at once via collapseFreeStack (so it resolves and can't re-collapse every placement). Rule: non-taper & 3+ high -> collapse; any stack 5+ -> collapse; non-taper 2-high -> warning. DEMO: clear the round-over popup when the menu demo (re)starts (the only real demo bug; score/timer left as-is per Goyim). No metric-capture change.
    CHANGE LOG v3.5.53 - COLUMN RULE FIX (playtest jailbreaks). v3.5.52 only checked the placed box's columns and treated one lateral neighbor as full support, so a friend could: stack smalls forever on a wide box, build a separate column while an old 5-high one stood, and pillars persisted. Replaced freestandingColHeight (per-box) with tallestUnsupportedColumn() that scans EVERY column each placement and counts the top-down run of cells with NO lateral neighbor at that level, stopping at a supported/locked-shelf/tire level. Now smalls-on-a-box towers, separate columns, and pre-existing pillars all trip the 4-high collapse. NOTE: the exact TAPERING-pyramid exemption (4x4/3x3/2x2/1x1 stable, but a tall taper with no side support should still fail) is pending Goyim's next screenshots to define precisely. No scoring change.
    CHANGE LOG v3.5.52 - COLUMN COLLAPSE RULE (the foundational fix — freestanding pillars were a "foolish economy" that earned B/A grades). Playtest: a friend built non-collapsing pillars, got a B (would've been A with 300+ pph). Root problem: collapse only fired when global integrity craters, so isolated pillars survived. NEW freestandingColHeight() finds the tallest ISOLATED column (free on BOTH sides, excludes tire-columns + locked shelves) among the columns a just-placed box touches. In placeBox: 4-high freestanding -> COLLAPSE (reuses triggerCollapse, which already sheds the pole + splashes it back to the belt + counts S.collapses); 3-high -> panic warning; 2-high -> "that's the limit" warning. Tapering stacks (wide base, narrow top) and shelves/tire-columns stay stable, exactly per the loading guideline. This makes the grade honest by CONSTRUCTION — pillars aren't a strategy anymore. NEXT (spec'd in backlog): split safety WARNINGS vs INCIDENTS categories, the "throw box" saving-throw (make room; manager scolds; 1=warning/2=incident), leaderboard flesh-out (daily/all-time/best-wall/total), login indicator, and cosmetic-sweep-2 (LAST). No metric-capture change.
@@ -1555,7 +1556,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.54 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.55 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1676,7 +1677,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.54 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.55 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1799,7 +1800,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.54 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.55 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2165,7 +2166,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.54
+// LOCK IN v3.5.55
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4067,7 +4068,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   // v3.5.54 COLUMN RULE (taper-aware) — a freestanding stack topples if it's NON-tapering & 3+ high, or any stack 5+ high.
   // Strict taper (4x4/3x3/2x2/1x1) is exempt. The whole stack sheds back to the belt at once (resolves — no per-placement re-fire).
   var _st=worstFreeStack();
-  var _unstable=_st&&((!_st.tapering&&_st.h>=3)||_st.h>=5);
+  var _unstable=_st&&_st.unstable;
   if(_unstable&&!collapseAnimating&&!gOver){
     collapseAnimating=true;
     setTimeout(function(){collapseFreeStack(_st);collapseAnimating=false;},220);
@@ -4250,20 +4251,30 @@ function hasLateralSupport(cell){
 function worstFreeStack(){
   var worst=null,cx,y;
   for(cx=0;cx<GW;cx++){
-    var seen={},boxes=[],hit=false;
+    var seen={},boxes=[],hit=false,hasSmall=false;
     for(y=0;y<GH;y++){
       var c=G.grid[y]&&G.grid[y][cx];
       if(!c){if(hit)break;continue;}
       hit=true;
-      if((typeof isRowLockedIn==='function'&&isRowLockedIn(y))||(c.box&&c.box.cat==='tire'))break; // anchored -> stack ends
-      if((cx>0&&G.grid[y][cx-1])||(cx<GW-1&&G.grid[y][cx+1]))break; // laterally supported at this level -> stack ends
-      if(c.box&&!seen[c.id]){seen[c.id]=1;boxes.push(c);}
+      if(typeof isRowLockedIn==='function'&&isRowLockedIn(y))break; // a LOCKED SHELF (full row) anchors everything above
+      if(c.box&&c.box.cat==='tire'){ // a tire anchors ONLY if it sits on the floor or another tire (not on a box)
+        var bl=(y+1>=GH)?'floor':(G.grid[y+1]&&G.grid[y+1][cx]);
+        if(bl==='floor'||(bl&&bl.box&&bl.box.cat==='tire'))break;
+      }
+      // SANDWICHED — boxes on BOTH sides (trailer wall counts) = solidly boxed-in = anchored (a real solid wall stands).
+      // v3.5.55 FIX: a SINGLE neighbor is NOT support (parallel pillars don't hold each other up) — this is why combs never fell.
+      var L=(cx===0)||!!(G.grid[y]&&G.grid[y][cx-1]);
+      var R=(cx===GW-1)||!!(G.grid[y]&&G.grid[y][cx+1]);
+      if(L&&R)break;
+      if(c.box&&!seen[c.id]){seen[c.id]=1;boxes.push(c);if(c.box.isBag||c.box.type==='small')hasSmall=true;}
     }
     if(boxes.length<2)continue;
     var tapering=true,i;
     for(i=0;i<boxes.length-1;i++){var wu=(boxes[i].box&&boxes[i].box.w)||1,wl=(boxes[i+1].box&&boxes[i+1].box.w)||1;if(wu>=wl){tapering=false;break;}} // upper must be strictly narrower
-    var rec={cx:cx,boxes:boxes,h:boxes.length,tapering:tapering};
-    if(!worst||(!rec.tapering&&worst.tapering)||(rec.tapering===worst.tapering&&rec.h>worst.h))worst=rec; // non-taper first, then tallest
+    // unstable: any freestanding 4+ (even tapered — the n-1 rule), OR non-taper 3+, OR a smalls/bag inside a 3+ stack
+    var bad=(boxes.length>=4)||(!tapering&&boxes.length>=3)||(hasSmall&&boxes.length>=3);
+    var rec={cx:cx,boxes:boxes,h:boxes.length,tapering:tapering,hasSmall:hasSmall,unstable:bad};
+    if((bad&&(!worst||!worst.unstable||rec.h>worst.h))||!worst)worst=rec;
   }
   return worst;
 }
@@ -7724,7 +7735,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.54</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.55</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
