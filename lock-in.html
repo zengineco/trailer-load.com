@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.56
+   LOCK IN v3.5.57
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.57 - GRADE HONESTY (the "A on a broken wall" bug). The POST-SORT REPORT hero grade was STILL running the old v2.1.39 lenient formula (no density gate, A at 85, collapse only -10) while the strict density-gated sessionGrade() only fed the live OPERATIONS drawer. That two-formula split is how a 48%-dense, 78-integrity, 6-collapse wall read as an A. The report now runs the SAME strict sessionGrade() as ops. Also fixed the stale SESSION integrity (100% while the wall was 78%): sealWall captured density but never integrity, so a sealed wall's real number never entered the session average and it defaulted toward the seed 100. NEW finalizeWall() is now the single source of truth - captures EXACTLY one integrity+density sample per wall (idempotent via G._finalized) the moment it's sealed / clocked-out / failed; every other push site now routes through it. And relabeled the report's "Wall fill %" to "Wall height %" - it measured ceiling-reach, not fill (one column to the roof read 100%); "Cube fill %" stays the true density. No new gameplay, just honest numbers.
    CHANGE LOG v3.5.56 - FLOATER SWEEP after collapse. Core column meta is solved (can't 1xN/NxN to the moon in normal play); remaining "floaties" are collapse artifacts -- when a stack sheds, boxes that rested on it were left hanging (no gravity to re-settle). settleFloaters() now sweeps after every column collapse: any box with nothing under it (floor or another box, via boxHasSupport) sheds back to the belt too, recursing until the wall is clean. No metric-capture change.
    CHANGE LOG v3.5.55 - COLUMN RULE v4 (the adjacency bug). Screenshots: parallel columns + combs never collapsed. ROOT CAUSE: the support check counted ANY single side-neighbor as support, so two pillars "held each other up." FIX: a cell is only anchored if SANDWICHED (a box on BOTH sides, trailer wall counts) OR under a LOCKED SHELF OR a tire seated on floor/another-tire. A single neighbor is NOT support -> gappy/crooked/edge/parallel pillars now fall. Added: a smalls/bag anywhere in a 3+ freestanding stack collapses; a tire on a BOX (not floor/tire) is part of the run. Rule: any freestanding 4+ (even tapered, the n-1 rule), non-taper 3+, or smalls-in-3+ -> collapse. SAFETY schema locked (build next): 2 warnings then escalate, the 2nd UNMITIGATED same offense = an incident, ~5 -> beginner "practice" trailer (not game-over); water clears ONE warning (over-drinking = sabotage); throw = pardon for a MINOR safety only, never hazmat; collapse = documented incident (2 = the talking-to); hazmat-high IS hazmat-mid-wall. No metric-capture change.
    CHANGE LOG v3.5.54 - COLUMN RULE v3 (taper-aware) + collapse RESOLVES + demo popup. Friend still stacked smalls to the ceiling off a wide 5x6/4x4 base, and the scan-all was re-firing the collapse EVERY placement. Rewrote: worstFreeStack() reads the DISTINCT boxes in each column's freestanding run (no lateral neighbor; a locked shelf/tire ends it) and flags NON-tapering stacks (any box >= the width of the one below = same-width/top-heavy, e.g. 1x1-on-1x1 smalls) vs a strict taper (4x4/3x3/2x2/1x1, exempt). Collapse now sheds the WHOLE offending stack back to the belt at once via collapseFreeStack (so it resolves and can't re-collapse every placement). Rule: non-taper & 3+ high -> collapse; any stack 5+ -> collapse; non-taper 2-high -> warning. DEMO: clear the round-over popup when the menu demo (re)starts (the only real demo bug; score/timer left as-is per Goyim). No metric-capture change.
@@ -1557,7 +1558,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.56 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.57 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1678,7 +1679,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.56 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.57 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1801,7 +1802,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.56 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.57 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2167,7 +2168,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.56
+// LOCK IN v3.5.57
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4571,6 +4572,20 @@ function getPPH(){var el=elapsed();return el>0?Math.round(placed/el*3600):0;}
 // A wall with one piece at the top row is not a complete wall.
 // Minimum density = 35% fill (enough to show real effort).
 // checkWin() defined in level system section — uses _LV thresholds in level mode.
+// v3.5.57 SINGLE SOURCE OF TRUTH for per-wall history. Every wall contributes EXACTLY ONE
+// integrity + density sample, captured the moment it stops being edited (seal / clock-out /
+// game-over), idempotent per wall via G._finalized. Fixes the stale session integrity (a sealed
+// wall's real integrity never reached the average, so it defaulted toward 100%) and makes the
+// density gate see the wall that's actually on screen.
+function finalizeWall(){
+  if(typeof G==='undefined'||!G||!G.grid)return;
+  if(G._finalized)return;
+  if((typeof countFilled==='function'?countFilled():0)<=0)return; // an empty wall contributes nothing
+  G._finalized=true;
+  S.intHistory=S.intHistory||[];S.intHistory.push(G.integrity==null?100:Math.round(G.integrity));
+  var _fd=Math.min(1,(typeof wallSolidity==='function')?wallSolidity(G.grid):((typeof countFilled==='function'?countFilled():0)/(GW*GH)));
+  S.densHistory=S.densHistory||[];S.densHistory.push(_fd);
+}
 function sealWall(reason){
   if(!hydrationOK())return;
   if(G.sealed){if(gameMode!=='level'){var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ '+reason;}return;} // v3.5.4 EXPLOIT FIX: seal payout ONCE per wall — re-summoning the menu never re-awards the +2500
@@ -4580,7 +4595,7 @@ function sealWall(reason){
   if(typeof playSfx==='function')playSfx('win');
   var _dens=Math.min(1,(typeof wallSolidity==='function')?wallSolidity(G.grid):(countFilled()/(GW*GH))); // v3.5.50 SOLIDITY (gapless fill up to wall height), not raw volume
   var _sealPay=Math.round(LOAD_SEALED_BONUS*_dens); // seal payout SCALED BY FILL \u2014 a loose wall earns a loose payout (kills the panic-bail-at-threshold A+ exploit)
-  try{S.densHistory=S.densHistory||[];S.densHistory.push(_dens);}catch(_dh){} // track for the session grade
+  try{finalizeWall();}catch(_dh){} // v3.5.57 capture this wall's integrity+density once (single source of truth)
   G.score=(G.score||0)+_sealPay; // v2.1.11 #1 payout, v3.5.46 density-scaled
   showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.52em">'+Math.round(_dens*100)+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
   if(panicActive&&!panicSealed){
@@ -7454,11 +7469,11 @@ function nextTrailer(){
     shiftState.totalBoxes+=placed;
     shiftState.walls++;
     S.totalScore+=G.score||0;
-    S.intHistory.push(G.integrity||100);
+    finalizeWall(); // v3.5.57 capture this wall's integrity+density once (no-op if already sealed)
     updateShiftBadge();
     // Clear grid only — keep session going
     G.grid=makeGrid();
-    G.score=0;G.cog=.5;G.support=1;G.integrity=100;
+    G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;
     G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
     G.brickAwarded=false;G.crunchCount=0;G.hazViolations=0;G.recoveryCount=0;G.ncPlaced=0;G.drinks=0;
     G.preselectDepth=0;G.preselectWarned=false;G.seamWarned=false;G.segWarned=false;
@@ -7478,7 +7493,7 @@ function nextTrailer(){
     flash('fl-ok');
   } else {
     S.truck++;S.totalScore+=G.score||0;S.trucksDone=S.truck-1;
-    S.intHistory.push(G.integrity||100);
+    finalizeWall(); // v3.5.57 capture this wall once (no-op if sealWall already did); initTruck() makes a fresh G so _finalized resets
     // v2.1.2 CARRY-TO-NEXT-WALL: staged NC/bag pieces ride to the next trailer
     // instead of being wiped by initTruck(). Models a non-conveyable you
     // couldn't load this trailer carrying over to the next.
@@ -7507,6 +7522,7 @@ function endGameShift(reason){
   gOver=true;_drHide();
   if(animF)cancelAnimationFrame(animF);
   try{
+    finalizeWall(); // v3.5.57 capture the final shift wall's integrity+density before grading
     shiftState.totalBoxes+=placed;
     var sessionMins=Math.round((Date.now()-shiftState.sessionStartT)/60000);
     document.getElementById('es-score').textContent=S.totalScore+(G.score||0);
@@ -7764,7 +7780,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.56</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.57</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7795,7 +7811,7 @@ function psBuild(lifeState,life){
       row('\u00b7 Density',null,psTxt('fp-sg-dens-v'),null,true)+
       row('\u00b7 Support',W.support,psTxt('fp-sg-sup-v'),null,true)+
       row('Cube fill %',W.cubePct,wlAvg('cubePct'),'cube_eff','','%')+
-      row('Wall fill %',W.fillPct,wlAvg('fillPct'),'avg_wall_pct','','%')+
+      row('Wall height %',W.fillPct,wlAvg('fillPct'),'avg_wall_pct','','%')+
       row('Avg pieces / wall',W.pieces,(walls>0?Math.round(pieces/walls):'\u2014'),null)+
       row('SP utility %',null,(ncU==null?'\u2014':ncU),'nc_util_pct','','%')+
       row('Smalls utility %',null,(smU==null?'\u2014':smU),'smalls_util_pct','','%')+
@@ -8819,23 +8835,11 @@ function fillTelemetryTiles(){
   set('es-support',(typeof G!=='undefined'&&G.grid)?Math.round(supportScore(G.grid)*100)+'%':'0%');
   set('es-nests',S.nests||0);set('es-drinks',S.drinks||0);
   // ── v2.1.39 SESSION GRADE (hero rating) ──
-  var _ih=S.intHistory||[],_ai=100,_ais=0,_aik;
-  if(_ih.length){for(_aik=0;_aik<_ih.length;_aik++)_ais+=_ih[_aik];_ai=_ais/_ih.length;}
-  var _inc=(S.incidents||[]).length,_crn=S.crunches||0,_col=S.collapses||0,_pph=S.bestPPH||0,_shf=S.shelvesLocked||0;
-  var _pts=10+_ai*0.5+Math.min(20,_shf*4)+Math.min(20,_pph/10);
-  _pts-=_inc*8+_crn*3+_col*10;
-  if(_inc>=2)_pts=Math.min(_pts,55);
-  _pts=Math.max(0,Math.min(100,Math.round(_pts)));
-  var _g,_rank,_verd,_clr;
-  if(_pts>=93){_g='A+';_rank='YARD LEGEND';_verd='Textbook load. Dispatch wishes every trailer looked like this.';_clr='var(--ok)';}
-  else if(_pts>=85){_g='A';_rank='DOCK VETERAN';_verd='Tight. Square. Safe. Veteran work.';_clr='var(--ok)';}
-  else if(_pts>=75){_g='B';_rank='SOLID HAND';_verd='Strong wall. A few cubes left behind.';_clr='var(--teal)';}
-  else if(_pts>=65){_g='C';_rank='GREENHORN+';_verd='You made the door. Now make it clean.';_clr='var(--warn)';}
-  else if(_pts>=50){_g='D';_rank='ROOKIE';_verd='Trailer sealed. Fundamentals need work.';_clr='var(--warn)';}
-  else{_g='F';_rank='RE-TRAIN';_verd=(_inc>=2?'Safety record flagged \u2014 slow down.':'Floor first. Support everything. Try again.');_clr='var(--danger)';}
-  set('es-grade-big',_g);set('es-rank',_rank);set('es-verdict',_verd);
-  var _grg=document.getElementById('es-grade-ring');if(_grg)_grg.style.borderColor=_clr;
-  var _gbg=document.getElementById('es-grade-big');if(_gbg)_gbg.style.color=_clr;
+  try{finalizeWall();}catch(_fg){} // v3.5.57 make sure the wall on screen is in the histories before we grade it
+  var _sg=sessionGrade(); // SINGLE strict grade — same density-gated formula as the live OPERATIONS drawer (killed the divergent v2.1.39 lenient formula that handed out soft A's on loose/collapsed walls)
+  set('es-grade-big',_sg.g);set('es-rank',_sg.rank);set('es-verdict',_sg.verd);
+  var _grg=document.getElementById('es-grade-ring');if(_grg)_grg.style.borderColor=_sg.clr;
+  var _gbg=document.getElementById('es-grade-big');if(_gbg)_gbg.style.color=_sg.clr;
 }
 // v2.1.8 CLOCK OUT — voluntary end. Keeps score, shows the full readout.
 function clockOut(){
@@ -8844,7 +8848,7 @@ function clockOut(){
   gOver=true;if(animF){cancelAnimationFrame(animF);animF=null;}
   S.totalScore=(S.totalScore||0)+(G.score||0);
   S.bestPPH=Math.max(S.bestPPH||0,getPPH());
-  S.intHistory.push(G.integrity||100);
+  finalizeWall(); // v3.5.57 capture the wall on screen (no-op if already sealed)
   if(gameMode==='shift'&&typeof shiftState!=='undefined')shiftState.totalBoxes+=placed;
   var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
   var trucks=(gameMode==='shift'&&typeof shiftState!=='undefined')?shiftState.walls:(S.trucksDone||S.truck||1);
@@ -9102,7 +9106,7 @@ function endGame(reason,win){
   if(gameMode==='level'){showLevelEnd(reason,true);return;}
   try{
     S.totalScore+=G.score||0;S.bestPPH=Math.max(S.bestPPH,getPPH());
-    S.intHistory.push(G.integrity||100);S.trucksDone=S.truck;
+    finalizeWall();S.trucksDone=S.truck; // v3.5.57 capture the failed/timed-out wall once
     var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
     document.getElementById('es-score').textContent=S.totalScore;
     document.getElementById('es-pph').textContent=S.bestPPH;
