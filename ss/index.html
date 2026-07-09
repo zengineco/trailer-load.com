@@ -105,8 +105,8 @@ html,body{width:100%;height:100dvh;
 <body>
 <div id="root">
   <div id="hdr">
-    <div class="logo">SMALLSORT <sub>LOCK IN · v0.5</sub></div>
-    <div id="zg">ZG</div>
+    <img class="logo-img" src="logo.png" alt="SMALLSORT" style="height:42px;width:auto;">
+    <a href="/lock-in.html" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:1px;">← LOCK IN</a>
   </div>
   <div id="statbar">
     <div class="stat"><div class="lbl">Score</div><div class="val" id="s-score">0</div></div>
@@ -117,7 +117,7 @@ html,body{width:100%;height:100dvh;
     <div class="stat"><div class="lbl">Time</div><div class="val" id="s-time">1:00</div></div>
   </div>
   <div id="field"><canvas id="cv"></canvas></div>
-  <div id="ftr">www.zengine.site | © 2026 Zengine™</div>
+  <div id="ftr">SMALLSORT · a LOCK IN companion · trailer-load.com · © 2026</div>
 
   <div class="ov vis" id="ov-start">
     <h1>SMALLSORT</h1>
@@ -533,7 +533,7 @@ function endGame(){
 function copyResult(){
   var acc=STATE.attempts>0?Math.round((STATE.sorted/STATE.attempts)*100):0;var dts=Math.round(STATE.downtime);
   var gr=gradeFor(acc,STATE.sorted,STATE.downtime);
-  var txt='SMALLSORT — Sort Result\n--------------------------------\nGrade:       '+gr[0]+'\nScore:       '+STATE.score+'\nAccuracy:    '+acc+'%\nThroughput:  '+STATE.sorted+'/min\nBest Combo:  '+STATE.bestCombo+'\nSorted:      '+STATE.sorted+'\nMisroutes:   '+STATE.miss+'\nQA Caught:   '+STATE.qaCaught+'\nStoppages:   '+STATE.stoppages+'\nDowntime:    '+dts+'s\n--------------------------------\nwww.zengine.site | © 2026 Zengine™';
+  var txt='SMALLSORT — Sort Result\n--------------------------------\nGrade:       '+gr[0]+'\nScore:       '+STATE.score+'\nAccuracy:    '+acc+'%\nThroughput:  '+STATE.sorted+'/min\nBest Combo:  '+STATE.bestCombo+'\nSorted:      '+STATE.sorted+'\nMisroutes:   '+STATE.miss+'\nQA Caught:   '+STATE.qaCaught+'\nStoppages:   '+STATE.stoppages+'\nDowntime:    '+dts+'s\n--------------------------------\nLOCK IN · SMALLSORT · trailer-load.com · © 2026';
   try{navigator.clipboard.writeText(txt);var b=document.getElementById('copy-btn');var o=b.textContent;b.textContent='✓ COPIED';setTimeout(function(){b.textContent=o;},1400);}
   catch(err){console.error('copyResult:',err);window.prompt('Copy result:',txt);}
 }

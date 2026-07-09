@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.50
+   LOCK IN v3.5.51
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.51 - AUTH-STATE CLARITY (backlog #6) + SMALLSORT DE-SLOP. #6: signing in as facility looked identical to worker signup. Now FACILITY mode = sign-in only — hides the CREATE ACCOUNT button AND the CONFIRM PASSWORD field (in BOTH auth UIs: profile pfMode + ACCOUNT&DATA zAuthMode); worker note clarified ("New here? CREATE ACCOUNT. Coming back? SIGN IN."). SMALLSORT (/ss/): removed the Zengine slop (ZG monogram + "www.zengine.site | Zengine" footer + export text) per Goyim — the companion mini-game now shows its real logo.png, a "LOCK IN companion · trailer-load.com" footer, and a "← LOCK IN" back-link (cross-wired). NEXT: #7 in-game SOCIAL tab (consolidate Profile+Leaderboard+Friends into one entry — bigger overlay build); deep Smallsort cross-wire (shared login/leaderboard/music/settings); #8 physics; + later: message-window trims, sarcastic "Do Better"/"HURRY UP!!!" coach lines, strategic "throw box" escalation (2=warn/3=doc/4=send-home), water return. No scoring change.
    CHANGE LOG v3.5.50 - TIRE NESTING FOR REAL BOXES + DENSITY/GRADE OVERHAUL (grade credibility — A+ must be elite). (1) TIRE NESTING: any compact box (<=3x3, area<=6) now seats in a tire hollow, not just smalls/bags — 2x2 (incl 2x2 hazmats), 3x2 in a farm tire, 3x1, etc. STD tire cap 3->4 so a 2x2 fits a standard tire; stuffing a REAL box pays a big bonus (200*(area-1) on top of base). Works desktop-tap + mobile/kbd DROP (both route through tryNest). (2) NEW wallSolidity() = gapless fill up to the wall's HEIGHT (filled / (GW*maxColHeight)) — real fill, not cheap volume; a sparse-tall or gappy wall reads much lower than raw fill. Seal payout + the grade's density gate now use SOLIDITY. (3) GRADE TIGHTENED: steeper solidity gate (0.25+0.75*density), harsher incident/crunch/collapse penalties, ANY safety incident caps you out of A+, and thresholds raised (A+ 93->95, A 85->87, B 75->76, C 65->62). A+ now requires a near-gapless, dead-square, spotless load. (4) "PERFECT LOAD!" now gates on solidity>=0.97 (not height) — no more perfect-load on a 79% gappy wall; fixed the %% double-percent in the tall-but-loose banner. No metric-capture change (all still logged + deliverable).
    CHANGE LOG v3.5.49 - DROP FORGIVENESS + FINGERTIP HOTSPOT (backlog #3/#4). #3: an off-wall tap grabbed the NEAREST chute piece even while you were already holding one — so a fat-finger miss of the wall swapped your held piece and you had to re-pick ("pick it up every time"). Now the generous off-wall pick is gated to when NOTHING is held; tapping exactly on a chute piece still switches deliberately. #4: the glove cursor hotspot was HOT_X=4,HOT_Y=12 (knuckle/thumb) so clicks landed low — moved to 8,4 (index-fingertip). No scoring change.
    CHANGE LOG v3.5.48 - SIGNUP PASSWORD CONFIRM (backlog #5 — unrecoverable-account hole). Creating an account took a single password with no confirmation — a typo silently made an account you could never sign back into. Added a CONFIRM PASSWORD field to BOTH signup forms (the profile pfAuthFormHTML and the ACCOUNT & DATA / ov-data form) and a match check in BOTH signup handlers (pfDoSignup + zAuthSignup): mismatch blocks creation with a clear warning. Field is labeled "(new accounts)" and only enforced on CREATE ACCOUNT, ignored on SIGN IN. No scoring change.
@@ -1551,7 +1552,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.50 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.51 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1672,7 +1673,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.50 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.51 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1795,7 +1796,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.50 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.51 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2161,7 +2162,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.50
+// LOCK IN v3.5.51
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2652,6 +2653,7 @@ function zAuthMode(m){
   if(tw)tw.classList.toggle('active',m==='worker');
   if(tf)tf.classList.toggle('active',m==='facility');
   var su=document.getElementById('auth-signup');if(su)su.style.display=(m==='worker')?'':'none';
+  var _a2=document.getElementById('auth-pw2');if(_a2&&_a2.parentNode)_a2.parentNode.style.display=(m==='worker')?'':'none'; // v3.5.51 facility = sign-in only, no confirm field
   var ei=document.getElementById('auth-email'),nt=document.getElementById('auth-note');
   var lbl=document.getElementById('auth-id-lbl');
   if(m==='facility'){if(ei){ei.placeholder='facility@org.com';ei.type='email';}if(lbl)lbl.textContent='EMAIL';if(nt)nt.textContent='Facility logins are issued by the publisher when you buy a dashboard. Enter the credentials we provided.';}
@@ -7542,15 +7544,16 @@ function pfMode(m){PF_MODE=m;
   if(wt)wt.className='pf-tab'+(m==='worker'?' on':'');
   if(ft)ft.className='pf-tab'+(m==='facility'?' on':'');
   var idl=document.getElementById('pf-id-lbl'),idi=document.getElementById('pf-id'),su=document.getElementById('pf-signup-btn'),nt=document.getElementById('pf-auth-note');
-  if(m==='facility'){if(idl)idl.textContent='FACILITY EMAIL';if(idi){idi.type='email';idi.placeholder='facility@school.edu';}if(su)su.style.display='none';if(nt)nt.textContent='Facility logins are issued by the publisher when a school or employer buys a dashboard.';}
-  else{if(idl)idl.textContent='USERNAME';if(idi){idi.type='text';idi.placeholder='pick a handle';}if(su)su.style.display='';if(nt)nt.textContent='Pick a username + password to keep your record across devices. No email needed. Free, always.';}
+  var cf=document.getElementById('pf-pw2-fld'); // v3.5.51 facility = sign-in only: hide CONFIRM + CREATE so it can't be mistaken for signup
+  if(m==='facility'){if(idl)idl.textContent='FACILITY EMAIL';if(idi){idi.type='email';idi.placeholder='facility@school.edu';}if(su)su.style.display='none';if(cf)cf.style.display='none';if(nt)nt.textContent='Facility logins are issued by the publisher when a school or employer buys a dashboard.';}
+  else{if(idl)idl.textContent='USERNAME';if(idi){idi.type='text';idi.placeholder='pick a handle';}if(su)su.style.display='';if(cf)cf.style.display='';if(nt)nt.textContent='New here? Pick a username + password and CREATE ACCOUNT. Coming back? Just SIGN IN. Free, always.';}
 }
 function pfAuthFormHTML(){
   return '<div class="pf-auth">'+
     '<div class="pf-tabs"><button id="pf-tab-w" class="pf-tab on" onclick="pfMode(\'worker\')">WORKER</button><button id="pf-tab-f" class="pf-tab" onclick="pfMode(\'facility\')">FACILITY</button></div>'+
     '<div class="pf-fld"><label id="pf-id-lbl">USERNAME</label><input id="pf-id" type="text" autocomplete="username" placeholder="pick a handle"></div>'+
     '<div class="pf-fld"><label>PASSWORD</label><input id="pf-pw" type="password" autocomplete="current-password" placeholder="password"></div>'+
-    '<div class="pf-fld"><label>CONFIRM PASSWORD <small style="opacity:.55;">(new accounts)</small></label><input id="pf-pw2" type="password" autocomplete="new-password" placeholder="re-type to confirm"></div>'+
+    '<div class="pf-fld" id="pf-pw2-fld"><label>CONFIRM PASSWORD <small style="opacity:.55;">(new accounts)</small></label><input id="pf-pw2" type="password" autocomplete="new-password" placeholder="re-type to confirm"></div>'+
     '<div class="pf-auth-btns"><button class="btn-p" onclick="pfDoLogin()">SIGN IN</button><button id="pf-signup-btn" class="btn-p pf-ghost" onclick="pfDoSignup()">CREATE ACCOUNT</button></div>'+
     '<div class="pf-auth-note" id="pf-auth-note">Pick a username + password to keep your record across devices. No email needed. Free, always.</div>'+
     '<div class="pf-auth-foot">Gameplay is always free \u2014 your record is yours. Workers never pay.</div></div>';
@@ -7662,7 +7665,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.50</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.51</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
