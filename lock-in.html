@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.48
+   LOCK IN v3.5.49
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.49 - DROP FORGIVENESS + FINGERTIP HOTSPOT (backlog #3/#4). #3: an off-wall tap grabbed the NEAREST chute piece even while you were already holding one — so a fat-finger miss of the wall swapped your held piece and you had to re-pick ("pick it up every time"). Now the generous off-wall pick is gated to when NOTHING is held; tapping exactly on a chute piece still switches deliberately. #4: the glove cursor hotspot was HOT_X=4,HOT_Y=12 (knuckle/thumb) so clicks landed low — moved to 8,4 (index-fingertip). No scoring change.
    CHANGE LOG v3.5.48 - SIGNUP PASSWORD CONFIRM (backlog #5 — unrecoverable-account hole). Creating an account took a single password with no confirmation — a typo silently made an account you could never sign back into. Added a CONFIRM PASSWORD field to BOTH signup forms (the profile pfAuthFormHTML and the ACCOUNT & DATA / ov-data form) and a match check in BOTH signup handlers (pfDoSignup + zAuthSignup): mismatch blocks creation with a clear warning. Field is labeled "(new accounts)" and only enforced on CREATE ACCOUNT, ignored on SIGN IN. No scoring change.
    CHANGE LOG v3.5.47 - MOVABLE + SCALABLE TOUCH CONTROLS (accessibility pass, backlog #1). Playtest: big-handed warehouse loaders can't work the small fixed joystick ("my hands are too big for these little controls"). Settings -> Touch Controls (mobile): a CONTROL SIZE slider (0.7x-1.7x, scales the joystick + DROP + ROT live via transform:scale, which keeps the pointer-aim math correct since it reads getBoundingClientRect post-transform) + a MOVE JOYSTICK button that enters a drag-to-reposition edit mode (a bottom bar with SIZE slider + DONE; the joystick is draggable, clamped on-screen). Layout (scale + x/y) persists per device in localStorage (lockinCtrl) and applies on boot. Aim behavior unchanged when not editing. NEXT (his order): #5 signup password-confirm, then #3/#4 drop-forgiveness + fingertip hotspot, #6/#7 auth-clarity + social tab, #8 physics. No scoring change.
    CHANGE LOG v3.5.46 - DENSITY-WEIGHTED SCORING (kill the A+ exploit) + REAL CLOSE BUTTON. Playtest: a friend rushed to the height threshold at 61% density, bailed, and got A+ YARD LEGEND — the grade IS the product (the dashboard sells it), so a gameable grade is fatal. FIX (3 coordinated): (1) sealWall payout now SCALES BY FILL DENSITY (LOAD_SEALED_BONUS * fill) — a 61% wall earns 61% of the seal bonus. (2) the panic/dispatch speed-bonus is ALSO scaled by density — no reward for speed-bailing a loose wall. (3) sessionGrade now GATES on avg fill density (S.densHistory, reset per session): points *= (0.45 + 0.55*avgDensity), so 61% fill caps ~0.79x and a loose wall lands ~B instead of A+. Also: .pf-x close button (profile/leaderboard) was a bare 22px glyph nobody could tap -> now a real 40x40 bordered button. No change to the win THRESHOLD itself (still density>=target to seal); this makes the REWARD honest. NEXT (backlog): movable/scalable d-pad accessibility, placement ghost/preview render, social tab, signup password-confirm.
@@ -1549,7 +1550,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.48 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.49 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1670,7 +1671,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.48 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.49 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1793,7 +1794,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.48 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.49 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2130,7 +2131,7 @@ body[data-cb="trit"]{
 <script>
 (function(){
   // Fingertip hotspot inside the rendered 46px cursor. Tune to /mouse.png art.
-  var HOT_X=4, HOT_Y=12;
+  var HOT_X=8, HOT_Y=4; // v3.5.49 hotspot at the index-FINGERTIP (was 4,12 = knuckle/thumb; friend flagged clicks landing low). Tune: smaller HOT_Y = higher.
   window.addEventListener('load',function(){
     var img=document.getElementById('cursor-glove'); if(!img) return;
     // Mouse only — touch devices keep native behavior.
@@ -2159,7 +2160,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.48
+// LOCK IN v3.5.49
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6078,7 +6079,8 @@ scene.addEventListener('pointerup',function(e){
     // v3.5.44 GENEROUS CHUTE PICK — the tap is NOT on a wall cell, so grab the NEAREST freight to it
     // (pick-by-ZONE, not pick-the-exact-tiny-piece). Fixes small pieces being near-impossible to tap, esp. mobile.
     // Gated to off-wall taps only, so a placement tap is never stolen; exact-rect hit above still wins first.
-    if(BELT_FREIGHT_HITS&&BELT_FREIGHT_HITS.length){
+    var _heldPc=(selBeltIdx!==null||selNC>=0||selBag>=0); // v3.5.49 DROP FORGIVENESS: a fat-finger off-wall miss while holding a piece must NOT steal a new one (was re-picking nearest = "pick it up every time")
+    if(!_heldPc&&BELT_FREIGHT_HITS&&BELT_FREIGHT_HITS.length){
       var _bi,_br,_bd,_bbest=-1,_bbestd=1e9;
       for(_bi=0;_bi<BELT_FREIGHT_HITS.length;_bi++){_br=BELT_FREIGHT_HITS[_bi];
         _bd=Math.abs(c2.mx-(_br.x+_br.w/2))+Math.abs(c2.my-(_br.y+_br.h/2));
@@ -7645,7 +7647,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.48</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.49</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
