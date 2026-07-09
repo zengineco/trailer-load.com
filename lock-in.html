@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.49
+   LOCK IN v3.5.50
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.50 - TIRE NESTING FOR REAL BOXES + DENSITY/GRADE OVERHAUL (grade credibility — A+ must be elite). (1) TIRE NESTING: any compact box (<=3x3, area<=6) now seats in a tire hollow, not just smalls/bags — 2x2 (incl 2x2 hazmats), 3x2 in a farm tire, 3x1, etc. STD tire cap 3->4 so a 2x2 fits a standard tire; stuffing a REAL box pays a big bonus (200*(area-1) on top of base). Works desktop-tap + mobile/kbd DROP (both route through tryNest). (2) NEW wallSolidity() = gapless fill up to the wall's HEIGHT (filled / (GW*maxColHeight)) — real fill, not cheap volume; a sparse-tall or gappy wall reads much lower than raw fill. Seal payout + the grade's density gate now use SOLIDITY. (3) GRADE TIGHTENED: steeper solidity gate (0.25+0.75*density), harsher incident/crunch/collapse penalties, ANY safety incident caps you out of A+, and thresholds raised (A+ 93->95, A 85->87, B 75->76, C 65->62). A+ now requires a near-gapless, dead-square, spotless load. (4) "PERFECT LOAD!" now gates on solidity>=0.97 (not height) — no more perfect-load on a 79% gappy wall; fixed the %% double-percent in the tall-but-loose banner. No metric-capture change (all still logged + deliverable).
    CHANGE LOG v3.5.49 - DROP FORGIVENESS + FINGERTIP HOTSPOT (backlog #3/#4). #3: an off-wall tap grabbed the NEAREST chute piece even while you were already holding one — so a fat-finger miss of the wall swapped your held piece and you had to re-pick ("pick it up every time"). Now the generous off-wall pick is gated to when NOTHING is held; tapping exactly on a chute piece still switches deliberately. #4: the glove cursor hotspot was HOT_X=4,HOT_Y=12 (knuckle/thumb) so clicks landed low — moved to 8,4 (index-fingertip). No scoring change.
    CHANGE LOG v3.5.48 - SIGNUP PASSWORD CONFIRM (backlog #5 — unrecoverable-account hole). Creating an account took a single password with no confirmation — a typo silently made an account you could never sign back into. Added a CONFIRM PASSWORD field to BOTH signup forms (the profile pfAuthFormHTML and the ACCOUNT & DATA / ov-data form) and a match check in BOTH signup handlers (pfDoSignup + zAuthSignup): mismatch blocks creation with a clear warning. Field is labeled "(new accounts)" and only enforced on CREATE ACCOUNT, ignored on SIGN IN. No scoring change.
    CHANGE LOG v3.5.47 - MOVABLE + SCALABLE TOUCH CONTROLS (accessibility pass, backlog #1). Playtest: big-handed warehouse loaders can't work the small fixed joystick ("my hands are too big for these little controls"). Settings -> Touch Controls (mobile): a CONTROL SIZE slider (0.7x-1.7x, scales the joystick + DROP + ROT live via transform:scale, which keeps the pointer-aim math correct since it reads getBoundingClientRect post-transform) + a MOVE JOYSTICK button that enters a drag-to-reposition edit mode (a bottom bar with SIZE slider + DONE; the joystick is draggable, clamped on-screen). Layout (scale + x/y) persists per device in localStorage (lockinCtrl) and applies on boot. Aim behavior unchanged when not editing. NEXT (his order): #5 signup password-confirm, then #3/#4 drop-forgiveness + fingertip hotspot, #6/#7 auth-clarity + social tab, #8 physics. No scoring change.
@@ -1550,7 +1551,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.49 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.50 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1671,7 +1672,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.49 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.50 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1794,7 +1795,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.49 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.50 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2160,7 +2161,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.49
+// LOCK IN v3.5.50
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3692,7 +3693,7 @@ function genPieceRaw(isGap){
 // WRITES: G.grid, G.belt or G.ncSlots, placed, selBeltIdx/selNC
 function getNestCap(box){
   if(!box||box.cat!=='tire')return 0;
-  return box.n==='TIRE-FARM'?6:(box.n==='TIRE-STD'?3:2);
+  return box.n==='TIRE-FARM'?6:(box.n==='TIRE-STD'?4:2); // v3.5.50 STD 3->4 so a 2x2 box fits a standard tire
 }
 function getNestUsed(box){
   var u=0,a=box.nest||[],i;for(i=0;i<a.length;i++)u+=(a[i].cost||1);return u;
@@ -3702,9 +3703,11 @@ function tryNest(src,idx,tcell){
   var tbox=tcell.box;
   var sb=(src==='belt')?G.belt[idx]:G.bagSlots[idx];
   if(!sb)return false;
-  var smallEnough=(sb.type==='small'||sb.isBag)&&sb.w<=3&&sb.h<=2;
-  if(!smallEnough)return false;
-  var cost=sb.isBag?2:(sb.cells?sb.cells.length:sb.w*sb.h);
+  // v3.5.50 REAL BOXES NEST NOW — any compact freight (<=3x3, area<=6) seats in a tire hollow if the cap allows, not just smalls/bags
+  var _area=sb.cells?sb.cells.length:(sb.w*sb.h);
+  var fits=!sb.isNC&&sb.w<=3&&sb.h<=3&&_area<=6;
+  if(!fits)return false;
+  var cost=sb.isBag?2:_area;
   var cap=getNestCap(tbox),used=getNestUsed(tbox);
   if(cap-used<cost){
     if(typeof playSfx==='function')playSfx('deny');
@@ -3716,7 +3719,8 @@ function tryNest(src,idx,tcell){
   tbox.nest.push({box:{...sb},haz:isHaz,cost:cost});
   if(src==='belt'){G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;}
   else{G.bagSlots[idx]=null;selBag=-1;if(typeof buildBagPanel==='function')buildBagPanel();}
-  var bonus=70+30*cost+(isHaz?120:0);
+  var _realBox=!(sb.type==='small'||sb.isBag)&&_area>=2; // a real regular/large box, not a smalls/bag
+  var bonus=70+30*cost+(isHaz?120:0)+(_realBox?200*(_area-1):0); // v3.5.50 BIG bonus for stuffing an actual box into the hollow
   G.score=(G.score||0)+bonus;
   S.nests=(S.nests||0)+1;
   if(typeof gcurFlash==='function')gcurFlash('nest',520); // v3.5.22 nest-glove on a tire stuff
@@ -3724,7 +3728,7 @@ function tryNest(src,idx,tcell){
   // so the post-sort report undercounted Pieces, PPH, Avg pieces/wall, and Smalls-utility for every nested small.
   placed++;
   S.totalPieces=(S.totalPieces||0)+1;
-  S.bagsPlaced=(S.bagsPlaced||0)+1;
+  if(sb.isBag||sb.type==='small')S.bagsPlaced=(S.bagsPlaced||0)+1; // v3.5.50 only count smalls/bags toward smalls-utility, not real boxes
   if(typeof playSfx==='function')playSfx(isHaz?'bonus':'nest');
   if(!G._nestTaught){
     G._nestTaught=true;
@@ -4474,7 +4478,7 @@ function sealWall(reason){
   if(typeof gcurFlash==='function')gcurFlash('finish',1300); // v3.5.22 finish-glove on sealing the wall
   if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
   if(typeof playSfx==='function')playSfx('win');
-  var _dens=Math.min(1,countFilled()/(GW*GH)); // v3.5.46 fill density at seal
+  var _dens=Math.min(1,(typeof wallSolidity==='function')?wallSolidity(G.grid):(countFilled()/(GW*GH))); // v3.5.50 SOLIDITY (gapless fill up to wall height), not raw volume
   var _sealPay=Math.round(LOAD_SEALED_BONUS*_dens); // seal payout SCALED BY FILL \u2014 a loose wall earns a loose payout (kills the panic-bail-at-threshold A+ exploit)
   try{S.densHistory=S.densHistory||[];S.densHistory.push(_dens);}catch(_dh){} // track for the session grade
   G.score=(G.score||0)+_sealPay; // v2.1.11 #1 payout, v3.5.46 density-scaled
@@ -6496,6 +6500,16 @@ function cdLinehaulRender(){
   el.innerHTML=h;
 }
 // v3.5.38 live session grade — same math as the end-report (fillTelemetryTiles keeps the canonical copy; keep both in sync if the formula changes)
+// v3.5.50 SOLIDITY — strict "gapless fill up to the wall's height" (real fill, not cheap volume).
+// 1.0 only if every cell below the tallest column is filled; a gappy or sparse-tall wall reads much lower.
+function wallSolidity(grid){
+  if(!grid)return 0;
+  var maxH=0,x,y;
+  for(x=0;x<GW;x++){for(y=0;y<GH;y++){if(grid[y]&&grid[y][x]){var hh=GH-y;if(hh>maxH)maxH=hh;break;}}}
+  if(maxH<=0)return 0;
+  var fl=(typeof countFilled==='function')?countFilled():0;
+  return Math.max(0,Math.min(1,fl/(GW*maxH)));
+}
 function sessionGrade(){
   var ih=(typeof S!=='undefined'&&S&&S.intHistory)?S.intHistory:[],ai=100,ais=0,k;
   if(ih.length){for(k=0;k<ih.length;k++)ais+=ih[k];ai=ais/ih.length;}
@@ -6504,16 +6518,17 @@ function sessionGrade(){
   // v3.5.46 DENSITY GATE — a loose wall can't rank high (kills the "A+ on a 61% panic-bail" exploit)
   var dh=(S&&S.densHistory)?S.densHistory:[],ad=1,dn;   // avg fill density across sealed walls (1 before any seal, so first wall isn't punished)
   if(dh.length){var ds=0;for(dn=0;dn<dh.length;dn++)ds+=dh[dn];ad=ds/dh.length;}
-  var pts=(10+ai*0.5+Math.min(20,shf*4)+Math.min(20,pph/10))*(0.45+0.55*ad); // 61% fill -> ~0.79x, 100% -> full
-  pts-=inc*8+crn*3+col*10;
+  var pts=(10+ai*0.45+Math.min(20,shf*4)+Math.min(22,pph/9))*(0.25+0.75*ad); // v3.5.50 STRICT: steeper solidity gate — only a near-gapless wall can max out (avg 0.7 solidity -> 0.78x)
+  pts-=inc*10+crn*4+col*12;
+  if(inc>=1)pts=Math.min(pts,88);   // v3.5.50 ANY safety incident caps you out of A+ (elite = spotless)
   if(inc>=2)pts=Math.min(pts,55);
   pts=Math.max(0,Math.min(100,Math.round(pts)));
   var g,rank,verd,clr;
-  if(pts>=93){g='A+';rank='YARD LEGEND';verd='Textbook load. Dispatch wishes every trailer looked like this.';clr='var(--ok)';}
-  else if(pts>=85){g='A';rank='DOCK VETERAN';verd='Tight. Square. Safe. Veteran work.';clr='var(--ok)';}
-  else if(pts>=75){g='B';rank='SOLID HAND';verd='Strong wall. A few cubes left behind.';clr='var(--teal)';}
-  else if(pts>=65){g='C';rank='GREENHORN+';verd='You made the door. Now make it clean.';clr='var(--warn)';}
-  else if(pts>=50){g='D';rank='ROOKIE';verd='Trailer sealed. Fundamentals need work.';clr='var(--warn)';}
+  if(pts>=95){g='A+';rank='YARD LEGEND';verd='Elite. Near-gapless, dead-square, spotless safety. Almost nobody loads like this.';clr='var(--ok)';}
+  else if(pts>=87){g='A';rank='DOCK VETERAN';verd='Tight, square, safe — a hair off perfect. Veteran work.';clr='var(--ok)';}
+  else if(pts>=76){g='B';rank='SOLID HAND';verd='Strong wall, but real cubes left behind or a loose spot.';clr='var(--teal)';}
+  else if(pts>=62){g='C';rank='GREENHORN+';verd='You made the door. Now make it TIGHT — pack the gaps.';clr='var(--warn)';}
+  else if(pts>=48){g='D';rank='ROOKIE';verd='Trailer sealed, but loose. Fundamentals need work.';clr='var(--warn)';}
   else{g='F';rank='RE-TRAIN';verd=(inc>=2?'Safety record flagged — slow down.':'Floor first. Support everything. Try again.');clr='var(--danger)';}
   return {pts:pts,g:g,rank:rank,verd:verd,clr:clr,ai:Math.round(ai),inc:inc};
 }
@@ -7647,7 +7662,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.49</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.50</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8027,12 +8042,12 @@ function checkWin(){
     var targetH=(_LV&&gameMode==='level')?_LV.winH:WIN_H;
     var targetD=(_LV&&gameMode==='level')?_LV.winDensity:0.35;
     if(hp>=targetH&&density>=targetD){
-      sealWall('WALL COMPLETE — '+(hp>=1?'PERFECT LOAD!':Math.round(hp*100)+'% TARGET HIT'));
+      var _sol=(typeof wallSolidity==='function')?wallSolidity(G.grid):density;sealWall('WALL COMPLETE — '+(_sol>=0.97?'PERFECT LOAD!':Math.round(_sol*100)+'% PACKED')); // v3.5.50 PERFECT gated on SOLIDITY (gapless), not height — no more "perfect load" on a 79% gappy wall
     } else if(hp>=targetH&&density<targetD){
       // v2.1.17 tall but loose: tell the player WHY it won't seal — never silent limbo
       if(Date.now()-winHintT>5000){
         winHintT=Date.now();
-        showBanner('WALL\u2019S TALL BUT LOOSE \u2014 pack it tighter to seal ('+Math.round(density*100)+'%% / '+Math.round(targetD*100)+'%% density).','warn',2600);
+        showBanner('WALL\u2019S TALL BUT LOOSE \u2014 pack it tighter to seal ('+Math.round(density*100)+'% / '+Math.round(targetD*100)+'% density).','warn',2600);
       }
     }
   }
