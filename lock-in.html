@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.51
+   LOCK IN v3.5.52
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.52 - COLUMN COLLAPSE RULE (the foundational fix — freestanding pillars were a "foolish economy" that earned B/A grades). Playtest: a friend built non-collapsing pillars, got a B (would've been A with 300+ pph). Root problem: collapse only fired when global integrity craters, so isolated pillars survived. NEW freestandingColHeight() finds the tallest ISOLATED column (free on BOTH sides, excludes tire-columns + locked shelves) among the columns a just-placed box touches. In placeBox: 4-high freestanding -> COLLAPSE (reuses triggerCollapse, which already sheds the pole + splashes it back to the belt + counts S.collapses); 3-high -> panic warning; 2-high -> "that's the limit" warning. Tapering stacks (wide base, narrow top) and shelves/tire-columns stay stable, exactly per the loading guideline. This makes the grade honest by CONSTRUCTION — pillars aren't a strategy anymore. NEXT (spec'd in backlog): split safety WARNINGS vs INCIDENTS categories, the "throw box" saving-throw (make room; manager scolds; 1=warning/2=incident), leaderboard flesh-out (daily/all-time/best-wall/total), login indicator, and cosmetic-sweep-2 (LAST). No metric-capture change.
    CHANGE LOG v3.5.51 - AUTH-STATE CLARITY (backlog #6) + SMALLSORT DE-SLOP. #6: signing in as facility looked identical to worker signup. Now FACILITY mode = sign-in only — hides the CREATE ACCOUNT button AND the CONFIRM PASSWORD field (in BOTH auth UIs: profile pfMode + ACCOUNT&DATA zAuthMode); worker note clarified ("New here? CREATE ACCOUNT. Coming back? SIGN IN."). SMALLSORT (/ss/): removed the Zengine slop (ZG monogram + "www.zengine.site | Zengine" footer + export text) per Goyim — the companion mini-game now shows its real logo.png, a "LOCK IN companion · trailer-load.com" footer, and a "← LOCK IN" back-link (cross-wired). NEXT: #7 in-game SOCIAL tab (consolidate Profile+Leaderboard+Friends into one entry — bigger overlay build); deep Smallsort cross-wire (shared login/leaderboard/music/settings); #8 physics; + later: message-window trims, sarcastic "Do Better"/"HURRY UP!!!" coach lines, strategic "throw box" escalation (2=warn/3=doc/4=send-home), water return. No scoring change.
    CHANGE LOG v3.5.50 - TIRE NESTING FOR REAL BOXES + DENSITY/GRADE OVERHAUL (grade credibility — A+ must be elite). (1) TIRE NESTING: any compact box (<=3x3, area<=6) now seats in a tire hollow, not just smalls/bags — 2x2 (incl 2x2 hazmats), 3x2 in a farm tire, 3x1, etc. STD tire cap 3->4 so a 2x2 fits a standard tire; stuffing a REAL box pays a big bonus (200*(area-1) on top of base). Works desktop-tap + mobile/kbd DROP (both route through tryNest). (2) NEW wallSolidity() = gapless fill up to the wall's HEIGHT (filled / (GW*maxColHeight)) — real fill, not cheap volume; a sparse-tall or gappy wall reads much lower than raw fill. Seal payout + the grade's density gate now use SOLIDITY. (3) GRADE TIGHTENED: steeper solidity gate (0.25+0.75*density), harsher incident/crunch/collapse penalties, ANY safety incident caps you out of A+, and thresholds raised (A+ 93->95, A 85->87, B 75->76, C 65->62). A+ now requires a near-gapless, dead-square, spotless load. (4) "PERFECT LOAD!" now gates on solidity>=0.97 (not height) — no more perfect-load on a 79% gappy wall; fixed the %% double-percent in the tall-but-loose banner. No metric-capture change (all still logged + deliverable).
    CHANGE LOG v3.5.49 - DROP FORGIVENESS + FINGERTIP HOTSPOT (backlog #3/#4). #3: an off-wall tap grabbed the NEAREST chute piece even while you were already holding one — so a fat-finger miss of the wall swapped your held piece and you had to re-pick ("pick it up every time"). Now the generous off-wall pick is gated to when NOTHING is held; tapping exactly on a chute piece still switches deliberately. #4: the glove cursor hotspot was HOT_X=4,HOT_Y=12 (knuckle/thumb) so clicks landed low — moved to 8,4 (index-fingertip). No scoring change.
@@ -1552,7 +1553,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.51 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.52 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1673,7 +1674,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.51 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.52 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1796,7 +1797,7 @@ body[data-cb="trit"]{
         <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.51 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.52 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2162,7 +2163,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.51
+// LOCK IN v3.5.52
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4061,6 +4062,17 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   checkPanic();
   updateCoachTip();
 
+  // v3.5.52 COLUMN RULE — a freestanding pillar topples at 4 high (except a locked shelf or a tire column). 2 = limit, 3 = panic.
+  var _colH=freestandingColHeight(gx,d);
+  if(_colH>=4&&!collapseAnimating&&!gOver){
+    showBanner('⚠ COLUMN TOPPLED — 4 HIGH FREESTANDING WON’T HOLD.<br><span style="font-size:.5em">Lean it on a wall, lock a shelf under it, or taper it down (wide base, narrow top).</span>','danger',3200);
+    setTimeout(function(){if(!collapseAnimating&&!gOver)triggerCollapse();},240);
+  } else if(_colH===3){
+    if(!G._col3||Date.now()-G._col3>2500){G._col3=Date.now();showBanner('⚠ THREE HIGH — THIS’LL TOPPLE. One more freestanding box in that column and it collapses.','warn',2100);}
+  } else if(_colH===2){
+    if(!G._col2||Date.now()-G._col2>2600){G._col2=Date.now();showBanner('TWO HIGH FREESTANDING — that’s the limit in that column. Build beside it or lock the shelf.','warn',1600);}
+  }
+
   if((G.integrity||100)<=8&&!collapseAnimating)scheduleCollapse();
   checkWin();
 
@@ -4226,6 +4238,27 @@ function hasLateralSupport(cell){
     if(ax<GW-1&&G.grid[ay][ax+1]&&G.grid[ay][ax+1].id!==cell.id)rightSupport=true;
   }
   return leftSupport&&rightSupport;
+}
+
+// v3.5.52 COLUMN STABILITY — tallest FREESTANDING column (free on BOTH sides, not a tire column, not stabilized
+// by a locked shelf) among the grid columns a just-placed box touches. A freestanding pillar can't hold height.
+function freestandingColHeight(gx,dims){
+  var cols={},i,best=0,cxs,cells=(dims&&dims.cells)?dims.cells:[];
+  for(i=0;i<cells.length;i++)cols[gx+cells[i][0]]=1;
+  for(cxs in cols){var cx=+cxs,top=-1,y;
+    for(y=0;y<GH;y++){if(G.grid[y]&&G.grid[y][cx]){top=y;break;}}
+    if(top<0)continue;
+    var ph=GH-top,le=true,re=true,tire=false,locked=false,c;
+    for(y=top;y<GH;y++){c=G.grid[y]&&G.grid[y][cx];if(!c)break;
+      if(c.box&&c.box.cat==='tire')tire=true;
+      if(typeof isRowLockedIn==='function'&&isRowLockedIn(y))locked=true;
+      if(cx>0&&G.grid[y][cx-1])le=false;
+      if(cx<GW-1&&G.grid[y][cx+1])re=false;
+    }
+    if(tire||locked)continue;   // tire-column or locked-shelf = stable, per the rule
+    if(le&&re&&ph>best)best=ph;  // freestanding = isolated on both sides (the pillar strategy)
+  }
+  return best;
 }
 
 // ── BONUS CHECKS ──
@@ -7665,7 +7698,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.51</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.52</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
