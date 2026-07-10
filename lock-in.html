@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.60
+   LOCK IN v3.5.61
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.61 - THE "LOCKED-SHELF MOONSHOT" + throw reachability + post-sort quality slop. (1) COLUMN: the jailbreaker's "if the bottom is supported we can still break your game" was real - worstFreeStack anchored on isRowLockedIn(y), which is true for EVERY row above any locked shelf, so completing one shelf made the freestanding scan break at the very top and you could tower infinitely above it. Now it breaks only AT the actual locked-shelf row (G.tetrisRows[y]); the shelf still anchors what rests on it, but a freestanding tower built on top is evaluated and topples normally. (2) THROW/WATER buttons pulled IN from the far gutters to flank the play field (were unreachable / choppy at the screen edge; throw "didn't work" because the cursor couldn't get to it). (3) POST-SORT LOAD QUALITY de-slopped: snapWall's Support was Math.round(0..1) = always 0 or 1 (that "Support: 1" in the report) - now *100 = a real %; Balance is tracked per wall; and Structure/Balance/Density/Support now read the SEALED WALL + wall-log averages instead of stale live HUD spans, so wall and session columns are real and consistent. No grade-math change.
    CHANGE LOG v3.5.60 - COLUMN RULE v5 (dimensional caps + moonshot kill). Two additions to worstFreeStack, both tunable. (1) MOONSHOT FIX: being "sandwiched" (boxed on both sides) now only ANCHORS a stack if at least one side is a real GROUND-CONNECTED pillar (solidBelow: filled continuously down to the floor or a locked shelf) or the trailer wall - two floating towers bracing each other no longer hold each other up above height 4. A genuine solid wall still stands (its neighbors reach the ground); a gap-braced tower now topples. (2) DIMENSIONAL CAP: a freestanding stack has a max CELL height keyed to its narrowest footprint - 1-wide 6, 2-wide 9, 3-wide 7, 4-wide 6, 5-wide+ 5 (strict taper +2). So a wide flat slab tips sooner (his "5x2 shouldn't go 3-high" = 6 cells > cap 5) while a tall-narrow box is allowed higher (his "2x6 up to ~9"). Existing rules kept: freestanding 4+, non-taper 3+, smalls-in-3+ all still collapse. Knobs live in freestandCellCap()/FREESTAND_TAPER_BONUS. No metric-capture change.
    CHANGE LOG v3.5.59 - SAFETY SYSTEM + THROW/WATER side buttons. Two tracked categories now: WARNINGS (recoverable) and INCIDENTS (on the record). Ladder: a warning you DON'T mitigate, repeated as the SAME offense, escalates to an INCIDENT; 5 incidents = sent to a fresh beginner PRACTICE trailer (clean slate, record still stands - NOT game over). Mitigation: lock a shelf (instant neutralize), drink WATER (clears one open minor warning), or THROW the piece (pardons a minor only). HAZMAT-high and COLLAPSES are incidents outright - no pardon (a collapse is now a documented safety incident, so 2 = the talking-to; removed the old separate collapse grade term to avoid double-counting). HYDRATION is now a real safety: 75% up the wall with no water = warning, top it bone-dry = incident; OVER-drinking to farm warning-washes = SABOTAGE (logged). Washed safeties are STILL published (the "1501 safeties, 1490 for throwing boxes" bit - report now shows warnings total, washed, thrown-away, sabotage flags, sent-to-training). NEW side buttons: WATER (left gutter) + THROW (right gutter), emoji placeholders ready for Goyim's icons; THROW always spawns a bag of smalls. Live SAFE meter in the control row. DEFERRED: tire-sideways-as-hazard (needs the tire-orientation model). No change to how grade math reads density/integrity beyond the collapse-term removal.
    CHANGE LOG v3.5.58 - QUALITY-OF-LIFE batch. (1) SmallsSort (/ss/) now shares the LOCK IN account: it reads the same localStorage session, shows your handle, and finally has a SIGN OUT in its header (was the reported gap) - sign-IN links back to the game profile (#signin auto-opens it). (2) NEW Settings > Session > QUICK RESET - restart the current load from an empty trailer without leaving the game. (3) Next-trailer popup reordered: "CONTINUE LOADING - MAX PACK" now sits directly under "NEXT TRAILER" (was below the report link). No metric-capture change.
@@ -971,8 +972,9 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .side-btn .side-ic{font-size:22px;line-height:1;}
 .side-btn .side-ic img{width:26px;height:26px;display:block;object-fit:contain;}
 .side-btn .side-tx{font-size:12px;}
-.side-btn.side-l{left:14px;border-color:#2f7fd0;}
-.side-btn.side-r{right:14px;border-color:#c88a2a;}
+/* v3.5.61 pulled IN from the far gutters (were left:14/right:14 = out in the margins, hard to reach + choppy edge tracking) to flank the play field near its bottom corners. max() clamps so they never leave the viewport on a narrow screen. */
+.side-btn.side-l{left:max(10px,calc(50% - 330px));border-color:#2f7fd0;}
+.side-btn.side-r{right:max(10px,calc(50% - 330px));border-color:#c88a2a;}
 .side-btn:hover{filter:brightness(1.12);}
 .side-btn:active{transform:scale(.93);}
 #m-stick,#m-drop,#m-rot{display:none;}
@@ -1572,7 +1574,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.60 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.61 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1693,7 +1695,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.60 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.61 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1824,7 +1826,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.60 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.61 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2198,7 +2200,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.60
+// LOCK IN v3.5.61
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4414,7 +4416,7 @@ function worstFreeStack(){
       var c=G.grid[y]&&G.grid[y][cx];
       if(!c){if(hit)break;continue;}
       hit=true;
-      if(typeof isRowLockedIn==='function'&&isRowLockedIn(y))break; // a LOCKED SHELF (full row) anchors everything above
+      if(G.tetrisRows&&G.tetrisRows[y])break; // v3.5.61 MOONSHOT FIX: break only AT the locked-shelf row itself — isRowLockedIn(y) was ALSO true for every row ABOVE any shelf, so locking one shelf granted infinite height above it. The shelf anchors what rests ON it; a freestanding tower built on top is still evaluated below.
       if(c.box&&c.box.cat==='tire'){ // a tire anchors ONLY if it sits on the floor or another tire (not on a box)
         var bl=(y+1>=GH)?'floor':(G.grid[y+1]&&G.grid[y+1][cx]);
         if(bl==='floor'||(bl&&bl.box&&bl.box.cat==='tire'))break;
@@ -7712,10 +7714,11 @@ function snapWall(){
   try{
     var hp=Math.round(wallH()/GH*100), eff=Math.round(countFilled()/(GW*GH)*100);
     return {score:G.score||0,pieces:placed||0,pph:getPPH()||0,integrity:G.integrity||0,
-      support:Math.round(supportScore(G.grid)||0),fillPct:hp,cubePct:eff,
+      support:Math.round((supportScore(G.grid)||0)*100),fillPct:hp,cubePct:eff, // v3.5.61 FIX: *100 — was Math.round(0..1) = always 0 or 1 (the "Support: 1" slop in the report)
+      bal:Math.round(clamp(100-Math.abs((G.cog||.5)-.5)*400,0,100)), // v3.5.61 balance tracked per-wall so the report can average it (was reading a stale live HUD span)
       voids:getVoids(G.grid).length,shelves:G.tetrisTotal||0,doubles:G.bulkheadCount||0,
       cog:Math.round(Math.abs((G.cog||.5)-.5)*200)/100};
-  }catch(e){return {score:0,pieces:0,pph:0,integrity:0,support:0,fillPct:0,cubePct:0,voids:0,shelves:0,doubles:0,cog:0};}
+  }catch(e){return {score:0,pieces:0,pph:0,integrity:0,support:0,fillPct:0,cubePct:0,bal:0,voids:0,shelves:0,doubles:0,cog:0};}
 }
 function psTxt(id){var e=document.getElementById(id);return e?e.textContent:'\u2014';}
 function psFmtTime(sec){sec=Math.max(0,Math.round(sec||0));var m=Math.floor(sec/60),s2=sec%60;return m+':'+(s2<10?'0':'')+s2;}
@@ -7949,7 +7952,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.60</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.61</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -7982,10 +7985,10 @@ function psBuild(lifeState,life){
 
     H+='<div class="ps-block"><h4><span class="d">\u25b8</span> LOAD QUALITY</h4>'+
       row('Integrity',W.integrity,avgInt,'avg_integrity')+
-      row('\u00b7 Structure',null,psTxt('fp-sg-struct-v'),null,true)+
-      row('\u00b7 Balance',null,psTxt('fp-sg-bal-v'),null,true)+
-      row('\u00b7 Density',null,psTxt('fp-sg-dens-v'),null,true)+
-      row('\u00b7 Support',W.support,psTxt('fp-sg-sup-v'),null,true)+
+      row('\u00b7 Structure',W.integrity,wlAvg('integrity'),null,true)+
+      row('\u00b7 Balance',W.bal,wlAvg('bal'),null,true)+
+      row('\u00b7 Density',W.cubePct,wlAvg('cubePct'),null,true)+
+      row('\u00b7 Support',W.support,wlAvg('support'),null,true)+
       row('Cube fill %',W.cubePct,wlAvg('cubePct'),'cube_eff','','%')+
       row('Wall height %',W.fillPct,wlAvg('fillPct'),'avg_wall_pct','','%')+
       row('Avg pieces / wall',W.pieces,(walls>0?Math.round(pieces/walls):'\u2014'),null)+
