@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.79
+   LOCK IN v3.5.80
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.80 - LEADERBOARD: TOTAL LOADED board. Split the old single "ALL-TIME" into two: BEST (your top single wall, all-time - the existing max-score board) + NEW TOTAL LOADED (lifetime cumulative - every score you've ever posted, summed). New SECURITY DEFINER RPC lockin_total_board() (anon-callable, mirrors lockin_alltime_board but SUM instead of MAX) ranks the consistency grinders. Tabs are now DAILY / BEST / TOTAL / FRIENDS. Verified in-browser: TOTAL loads live rows (vince 319k lifetime top). Additive - the existing boards + RPCs are untouched.
    CHANGE LOG v3.5.79 - PAUSE CLIPBOARD content fitted to the writing area (measured in-browser: 445px content in a 445px area, zero overflow, no scroll) — compacted the coach tip + tightened buttons/title so the six options + coach + hint all seat cleanly under the clip. The clip-in pattern is now proven; ready to stamp on write-up/profile/end.
    CHANGE LOG v3.5.78 - PER-MODE MUSIC. Each mode now kicks off on its own opening track, then the playlist auto-continues: GAUNTLET=1, ARCADE=2, PRACTICE=3, DAILY=4, TOUR=5. Fired on MODE SELECT only (not on retry, so it never restarts mid-run), and ONLY in AUTO — a pinned track from Settings is always respected. Verified in-browser: every mode loads its exact track, pinned tracks untouched. Purely additive to the audio layer; zero gameplay change.
    CHANGE LOG v3.5.77 - NEW CLIPBOARD ART fitted. Goyim's new clipboard.png (portrait, LOCK-IN on the clip, light-gray page) is in — auto-cropped its wide margins to 619x905 so the board fills the card. Re-fit BOTH surfaces that use it: the PAUSE menu (aspect-ratio + .clip-in writing-area insets top 23% / sides 6% / bottom 4.5%) and the BRIEFING (#clipboard + #brief-body to match). Flipped the briefing text from light-cream to DARK (#2a1c0e / amber accents) since the new page is light, not dark metal — light text would've vanished. Structure + contrast reasoned from the pixels; needs a human glance (preview viewport still 0x0). No logic change.
@@ -1652,7 +1653,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.79 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.80 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1773,7 +1774,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.79 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.80 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1926,7 +1927,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.79 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.80 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2229,7 +2230,8 @@ body[data-cb="trit"]{
 <div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">LEADERBOARD</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
   <div class="lb-tabs">
     <button class="lb-tab active" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
-    <button class="lb-tab" id="lb-tab-all" onclick="lbTab('all')">★ ALL-TIME</button>
+    <button class="lb-tab" id="lb-tab-all" onclick="lbTab('all')">★ BEST</button>
+    <button class="lb-tab" id="lb-tab-total" onclick="lbTab('total')">▲ TOTAL</button>
     <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">♦ FRIENDS</button>
   </div>
   <div id="lb-pane-daily">
@@ -2238,9 +2240,14 @@ body[data-cb="trit"]{
     <div class="lb-note">Play <b>DAILY</b> logged in to post your score. Same pieces worldwide, 00:00–23:59 UTC.</div>
   </div>
   <div id="lb-pane-all" style="display:none">
-    <div class="lb-tabline">★ WALL OF FAME · personal best, all-time</div>
+    <div class="lb-tabline">★ BEST WALL · your top single score, all-time</div>
     <div class="lb-board" id="lb-all-board"><div class="lb-empty">Loading…</div></div>
-    <div class="lb-note">Every logged-in loader's best score.</div>
+    <div class="lb-note">Every logged-in loader's single best wall — one perfect run.</div>
+  </div>
+  <div id="lb-pane-total" style="display:none">
+    <div class="lb-tabline">▲ TOTAL LOADED · lifetime cumulative</div>
+    <div class="lb-board" id="lb-total-board"><div class="lb-empty">Loading…</div></div>
+    <div class="lb-note">Every score you've ever posted, added up. Consistency — not just one big wall.</div>
   </div>
   <div id="lb-pane-friends" style="display:none">
     <div id="lb-friends-auth" class="lb-empty" style="display:none">Log in from <b>◆ PROFILE</b> to follow loaders and track their boards.</div>
@@ -2296,7 +2303,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.79
+// LOCK IN v3.5.80
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8105,11 +8112,22 @@ function lbRenderInto(id,rows,emptyMsg){
   el.innerHTML=h;
 }
 function lbTab(which){
-  var panes={daily:'lb-pane-daily',all:'lb-pane-all',friends:'lb-pane-friends'};
-  var tabs={daily:'lb-tab-daily',all:'lb-tab-all',friends:'lb-tab-friends'};
+  var panes={daily:'lb-pane-daily',all:'lb-pane-all',total:'lb-pane-total',friends:'lb-pane-friends'};
+  var tabs={daily:'lb-tab-daily',all:'lb-tab-all',total:'lb-tab-total',friends:'lb-tab-friends'};
   for(var k in panes){var p=document.getElementById(panes[k]);if(p)p.style.display=(k===which)?'':'none';var t=document.getElementById(tabs[k]);if(t)t.classList.toggle('active',k===which);}
   if(which==='all'&&!lbTab._allLoaded){lbTab._allLoaded=true;lbLoadAlltime();}
+  if(which==='total'&&!lbTab._totalLoaded){lbTab._totalLoaded=true;lbLoadTotal();} // v3.5.80 lifetime cumulative board
   if(which==='friends')lbLoadFriends();
+}
+// v3.5.80 TOTAL LOADED — lifetime cumulative score (sum of every session), the consistency board (RPC lockin_total_board)
+function lbLoadTotal(){
+  var b=document.getElementById('lb-total-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
+  try{
+    fetch(ZDATA.endpoint+'/rpc/lockin_total_board',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({p_limit:25})})
+      .then(function(r){return r.json();})
+      .then(function(j){lbRenderInto('lb-total-board',Array.isArray(j)?j:[],'No ranked loaders yet — log in, play, and stack a lifetime total.');})
+      .catch(function(e){console.error('totalBoard:',e);lbRenderInto('lb-total-board',[],'Could not load the board.');});
+  }catch(e){lbRenderInto('lb-total-board',[],'Could not load the board.');}
 }
 function lbLoadAlltime(){
   var b=document.getElementById('lb-all-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
@@ -8311,7 +8329,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.79</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.80</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
