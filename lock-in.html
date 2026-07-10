@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.89
+   LOCK IN v3.5.90
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.90 - PPH = REAL FREIGHT + PRODUCTIVITY WRITE-UPS. The moneymaker metric now counts what a hub actually counts: REAL FREIGHT (boxes). Smalls and bags NO LONGER count toward PPH — and because they still eat the clock, stopping to break down a bag to chink your gaps genuinely DRAGS your pace (the rookie who "loaded 400" really moved 80). New S.boxPieces (gross) + per-wall delta via _WALL_COUNTERS; getPPH()/avgPPH()/peak all read freight. THE HUB STANDARD = 250 pph. A substantial wall (≥6 freight, ≥20s) sealed below standard in a non-forgiving mode is a PRODUCTIVITY incident: 1st = a PACE FLAGGED banner, every 2nd = a signed WRITE-UP ("PACE BELOW HUB STANDARD"), mirroring the safety docs. Post-sort THROUGHPUT block is now "PRODUCTIVITY · REAL FREIGHT" — Avg/Peak PPH, Hub standard 250, met-standard? ✓/✕ per wall + session, Productivity write-ups, and Pieces/sec relabeled "(all)" so hand-tempo stays honest but separate. Verified in-browser: 8 boxes+12 smalls+3 bags/90s = 320 pph real (vs 920 if everything counted); slow walls ding then write up on the 2nd, fast walls stay clean; gates clean. DECISION: raiseWriteup() gained an optional count arg so productivity docs show the productivity tally, not the safety one.
    CHANGE LOG v3.5.89 - TRAILER-LOAD: THE FLAGSHIP (step 1 of 2 — stand it up, playtest the feel). The one canonical mode, wired into lifetime + the leaderboard. It runs ON the proven shift engine (endless walls, arcade dispatch feel, all working plumbing) so nothing else can break — new global TRAILER_MODE just (a) layers a late-wall gauntlet-spice and (b) rebrands the label. THE MELD: practice-smooth phase gen (shift already used it) + arcade dispatch/fail feel + as each wall fills past ~60%, a ramping chance (16%→~50% near the top) to seed gauntlet-style awkward pieces so the endgame is almost never a layup — and the THROW meta is always the out. New startTrailerLoad(); the menu ARCADE card becomes the TRAILER-LOAD flagship card (now first). Badge / scoreboard MODE / post-sort MODE all read TRAILER-LOAD. Verified in-browser: launch sets the flag, spice fires 112/300 at 85% fill (0 with it off), all three labels correct, gates clean. DECISION: gameMode stays 'shift' internally (zero new mode-branches to audit) — the flagship identity is the flag + labels; a clean data-key rename can come with the step-2 menu collapse. NEXT (step 2, after you play it): collapse the menu to 4 pillars (Trailer-Load · Daily · Training · Mini-Games), demote Practice/Gauntlet/Arcade into Mini-Games, give SmallsSort its own daily board.
    CHANGE LOG v3.5.88 - AUTH SWEEP: LOGIN FIX (regression). The v3.5.85 SOCIAL consolidation could leave TWO identical sign-in forms in the DOM at once — the SOCIAL ▸ ME tab's and the old standalone profile overlay's — both hardcoding #pf-id / #pf-pw / #pf-auth-note. Once the profile overlay rendered even once, getElementById('pf-id') resolved to the FIRST (empty, hidden) copy, so pfDoLogin/pfDoSignup read BLANK fields no matter what the player typed = "logging in is broken." FIX: (1) new pfFormEl() reads auth fields from the currently-VISIBLE profile surface, never a stale duplicate; (2) the standalone ov-profile overlay is RETIRED — openProfile() now routes to openSocial('me'), so exactly one auth form exists. Verified in-browser: #pf-id count 2→1, handler reads the typed username, login fires the real auth request. DECISION: kept the old ov-profile renderer as a dead-code fallback (only runs if openSocial is ever missing) rather than deleting it, to minimize blast radius on a ship-critical path.
    CHANGE LOG v3.5.87 - POST-SORT REPORT ACCURACY (per-wall). Two moneymaker bugs root-caused. (1) PIECE COUNT DRIFT: the per-wall "pieces" read the mutable `placed` counter, which goes -1 on every lift and never re-syncs to what's on the wall, so a wall the loader counts as 43 read as 30. NEW gridPieceCount() counts distinct boxes actually sealed in the grid at finalize — the number you'd count by eye, no drift. Both the WALL and SESSION columns of "Avg pieces / wall" now use this same grid-true method (was WALL=net-of-lifts vs SESSION=gross/walls — two methods in one row). (2) SHELVES/MIN had NO per-wall value (WALL column hardcoded null); now computed per wall (this wall's locks ÷ this wall's seconds), like Pieces/sec. Pipeline confirmed correctly wired per mode (finalizeWall on seal/fail/clock-out/shift, wallBaseline on every wall start). Verified in-browser. OPEN QUESTION for the next pass: does a placed smalls BAG count as 1 piece or its parcel count (FedEx piece-scan semantics) — changes PPH/throughput. No backend change.
@@ -1673,7 +1674,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.89 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.90 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1795,7 +1796,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.89 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.90 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1948,7 +1949,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.89 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.90 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2339,7 +2340,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.89
+// LOCK IN v3.5.90
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2384,6 +2385,10 @@ var MAX_NC_SLOTS=8, MAX_BAG_SLOTS=8;
 // Fail window extended: 120→180s before PPH kills the round (3 minutes, not 2).
 // Fast loaders (1000 PPH) are already rewarded via speedM — they never see this.
 var MIN_PPH=55, LOW_PPH_GRACE=60, LOW_PPH_FAIL=180;
+// v3.5.90 THE HUB STANDARD. Real FedEx/UPS loaders run ~250 pieces/hr — and "pieces" = REAL FREIGHT (boxes),
+// NOT smalls, NOT bags. Breaking down a smalls bag to chink your gaps is time you're NOT moving freight, so it
+// drags your pph. A wall sealed below standard is a PRODUCTIVITY incident — documented like a safety write-up.
+var STANDARD_PPH=250;
 var LARGE_DANGER_FAIL=18;
 var PANIC_THRESHOLD=0.85, PANIC_DURATION=60, PANIC_BONUS_MAX=800;
 var STOW_BONUS=200, TETRIS_BONUS=500, BULKHEAD_BONUS=500, BRICK_BONUS=300;
@@ -4007,6 +4012,7 @@ function tryNest(src,idx,tcell){
   placed++;
   S.totalPieces=(S.totalPieces||0)+1;
   if(sb.isBag||sb.type==='small')S.bagsPlaced=(S.bagsPlaced||0)+1; // v3.5.50 only count smalls/bags toward smalls-utility, not real boxes
+  else S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 a nested REAL box is freight; nested smalls/bags never count toward pph
   if(typeof playSfx==='function')playSfx(isHaz?'bonus':'nest');
   if(!G._nestTaught){
     G._nestTaught=true;
@@ -4324,6 +4330,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   placed++;
   if(typeof gcurFlash==='function')gcurFlash('drop',420); // v3.5.20 drop-glove on a successful place
   S.totalPieces=(S.totalPieces||0)+1; if(source==='bag')S.bagsPlaced=(S.bagsPlaced||0)+1; // v2.1.7
+  if(!(box.type==='small'||box.isBag))S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 PPH counts REAL freight only — smalls/bags excluded
   if(typeof zLog==='function')zLog('place',{x:gx,y:gy,n:box.n||box.label||'?',r:rot||0,src:source});
   if(!S.sessionStartT)S.sessionStartT=startT||Date.now(); // v2.1.9 session clock
   S.bestPPH=Math.max(S.bestPPH||0,getPPH()); // v2.1.9 PEAK pph (fixes the 0 bug)
@@ -4539,14 +4546,15 @@ var WRITEUP_DOCS={
   TIRE_STACK:{t:'TIRES STACKED VERTICALLY',w:'Tires stacked on their edge ROLL the second the door opens. Lay them flat \u2014 an obvious hazard is an immediate write-up.'},
   FRAGILE_CRUSH:{t:'REPEATED CRUSHED FRAGILES',w:'Fragile freight rides on TOP, nothing heavy above it. You keep burying them — crushed fragiles are damage claims. Lock a shelf over them or keep them high.'},
   COLLAPSE:{t:'REPEATED WALL COLLAPSES',w:'Your wall keeps coming down. Taper your stacks (wide base, narrow top) and lock shelves. Repeated collapses get documented.'},
-  ACCUMULATED:{t:'MULTIPLE SAFETY VIOLATIONS',w:'You have stacked up safety violations this session. The manager is now documenting each one. Slow down and load it clean.'}
+  ACCUMULATED:{t:'MULTIPLE SAFETY VIOLATIONS',w:'You have stacked up safety violations this session. The manager is now documenting each one. Slow down and load it clean.'},
+  PRODUCTIVITY:{t:'PACE BELOW HUB STANDARD',w:'The hub runs a ~250 pph standard, counted in REAL FREIGHT — boxes. Smalls and bags don’t count, and breaking a bag down to chink gaps is time you’re not moving freight. Your pace is under the line. Keep the belt fed and move the boxes.'}
 };
-function raiseWriteup(offense){
+function raiseWriteup(offense,num){
   var doc=WRITEUP_DOCS[offense]||WRITEUP_DOCS.ACCUMULATED;
   var who=(typeof zWho==='function')?zWho():'GUEST'; // v3.5.76 session-based identity, consistent with the report + lifetime
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('wu-loader',who);set('wu-date',new Date().toISOString().slice(0,10));
-  set('wu-num',(S.incidents||[]).length);set('wu-title',doc.t);set('wu-why',doc.w);
+  set('wu-num',(num!=null?num:(S.incidents||[]).length));set('wu-title',doc.t);set('wu-why',doc.w); // v3.5.90 num override so productivity write-ups show the productivity count
   paused=true;if(animF){cancelAnimationFrame(animF);animF=null;}
   var ov=document.getElementById('ov-writeup');if(ov)ov.classList.add('vis');
   if(typeof playSfx==='function')playSfx('lose');
@@ -5098,7 +5106,10 @@ function calcScore(segOverride){
   return Math.max(0,Math.round(raw*speedM*supM*integM*hazMult));
 }
 function elapsed(){return startT?(Date.now()-startT)/1000:0;}
-function getPPH(){var el=elapsed();return el>0?Math.round(placed/el*3600):0;}
+// v3.5.90 PPH = REAL FREIGHT per hour (boxes only). This wall's freight = S.boxPieces since the wall baseline.
+// Smalls/bags never entered boxPieces, so they can't inflate pph — and the seconds they cost still count, so
+// stopping to break down a bag genuinely drags your number. Gross (no lift-decrement): pph = freight moved / time.
+function getPPH(){var el=elapsed();if(el<=0)return 0;var wb=(S._wallBase&&S._wallBase.boxPieces)||0;return Math.round(Math.max(0,(S.boxPieces||0)-wb)/el*3600);}
 
 // ── WIN CHECK ──
 // DECISION: Win requires BOTH 92% height AND minimum density.
@@ -5113,7 +5124,7 @@ function getPPH(){var el=elapsed();return el>0?Math.round(placed/el*3600):0;}
 // v3.5.81 PER-WALL STATS — the report's WALL column must show the LAST SEALED wall, not the empty live one,
 // and MECHANICS/SAFETY need per-wall numbers. We baseline the cumulative counters at each wall START, then
 // store the DELTA (this wall's own totals) + the wall's quality snapshot in wallLog on finalize.
-var _WALL_COUNTERS=['rotations','lifts','rejects','stagingActions','crunches','collapses','recoveries','drinks','hazShelfLocks','nests','doubleLocks','shelvesLocked','bagsPlaced','bagsBroken','totalPieces','throws','safetiesWashed','safetiesThrown','waterSabotage'];
+var _WALL_COUNTERS=['rotations','lifts','rejects','stagingActions','crunches','collapses','recoveries','drinks','hazShelfLocks','nests','doubleLocks','shelvesLocked','bagsPlaced','bagsBroken','totalPieces','boxPieces','throws','safetiesWashed','safetiesThrown','waterSabotage'];
 function wallBaseline(){ // call at each wall START
   S._wallBase=S._wallBase||{};var i;
   for(i=0;i<_WALL_COUNTERS.length;i++)S._wallBase[_WALL_COUNTERS[i]]=S[_WALL_COUNTERS[i]]||0;
@@ -5138,6 +5149,18 @@ function finalizeWall(){
     _ws.warningsWall=(S.warnings||[]).length-(_b.warnings||0);
     _ws.durS=Math.max(0,Math.round((Date.now()-(_b.startT||Date.now()))/1000));
     S.wallLog=S.wallLog||[];S.wallLog.push(_ws);
+    // v3.5.90 PRODUCTIVITY: judge this sealed wall against the ~250 pph hub standard (real freight only). A
+    // substantial wall loaded below standard is a productivity ding; repeats get documented like a safety write-up.
+    // Practice/training are exempt (isForgiving). First ding = a banner; every 2nd = paperwork you have to sign.
+    var _wpph=_ws.pph||0,_wbox=_ws.boxPieces||0,_wdur=_ws.durS||0;
+    if(!(typeof isForgiving==='function'&&isForgiving())&&_wbox>=6&&_wdur>=20&&_wpph>0&&_wpph<STANDARD_PPH){
+      S.prodIncidents=S.prodIncidents||[];
+      S.prodIncidents.push({pph:_wpph,std:STANDARD_PPH,wall:(S.truck||1),t:Date.now()});
+      _ws.prodFlag=1;
+      var _pn=S.prodIncidents.length;
+      if(_pn%2===0&&typeof raiseWriteup==='function'){raiseWriteup('PRODUCTIVITY',_pn);}
+      else if(typeof showBanner==='function')showBanner('⚠ PACE FLAGGED — '+_wpph+' pph, under the '+STANDARD_PPH+' hub standard.<br><span style="font-size:.5em">Smalls & bags don’t count. Move real freight, keep the belt fed.</span>','warn',3600);
+    }
   }catch(_e){}
 }
 // v3.5.62 SINGLE displayed pack % — the SAME cube-fill the scoreboard PACK shows (setEl('sp-eff',Math.round(eff*100))).
@@ -8520,16 +8543,21 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.89</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.90</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
     var lwPcsSec=(LW&&LW.durS>0)?((LW.pieces||0)/LW.durS).toFixed(2):null;
     var lwShMin=(LW&&LW.durS>0)?(((LW.shelvesLocked||0)/LW.durS)*60).toFixed(1):null; // v3.5.87 per-wall shelves/min (WALL column was hardcoded null)
-    H+='<div class="ps-block"><h4><span class="d">\u25b8</span> THROUGHPUT</h4>'+
-      row('Avg PPH',lwv('pph'),Math.round((typeof avgPPH==='function')?avgPPH():0),'avg_pph')+
+    var _sessAvgPph=Math.round((typeof avgPPH==='function')?avgPPH():0); // v3.5.90 real freight only
+    var _prodDocs=(S.prodIncidents||[]).length;
+    H+='<div class="ps-block"><h4><span class="d">\u25b8</span> PRODUCTIVITY \u00b7 REAL FREIGHT</h4>'+
+      row('Avg PPH',lwv('pph'),_sessAvgPph,'avg_pph')+
       row('Peak PPH',lwv('pph'),S.bestPPH||0,'peak_pph')+
-      row('Pieces / sec',lwPcsSec,pcsSec,null)+
+      row('Hub standard',STANDARD_PPH,STANDARD_PPH,null)+
+      row('\u00b7 met standard?',(lwv('pph')!=null?(lwv('pph')>=STANDARD_PPH?'\u2713 YES':'\u2715 NO'):null),(_sessAvgPph>=STANDARD_PPH?'\u2713 YES':'\u2715 NO'),null,true)+
+      row('Productivity write-ups',lwv('prodFlag'),_prodDocs,null)+
+      row('Pieces / sec (all)',lwPcsSec,pcsSec,null)+
       row('Shelves / min',lwShMin,shMin,null)+
       row('Wall time',(LW&&LW.durS!=null)?psFmtTime(LW.durS):null,tWall,null)+'</div>';
 
@@ -9558,7 +9586,7 @@ function clearMechanic(){
 // READS: paused, gOver, animF
 // WRITES: paused, animF, document.documentElement.dataset.theme
 
-function avgPPH(){var t=S.sessionStartT?(Date.now()-S.sessionStartT)/1000:0;return t>0?Math.round((S.totalPieces||0)/t*3600):0;}
+function avgPPH(){var t=S.sessionStartT?(Date.now()-S.sessionStartT)/1000:0;return t>0?Math.round((S.boxPieces||0)/t*3600):0;} // v3.5.90 real freight only
 function sessionMinsNow(){return S.sessionStartT?Math.round((Date.now()-S.sessionStartT)/60000):0;}
 function fillTelemetryTiles(){
   function set(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
