@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.77
+   LOCK IN v3.5.78
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.78 - PER-MODE MUSIC. Each mode now kicks off on its own opening track, then the playlist auto-continues: GAUNTLET=1, ARCADE=2, PRACTICE=3, DAILY=4, TOUR=5. Fired on MODE SELECT only (not on retry, so it never restarts mid-run), and ONLY in AUTO — a pinned track from Settings is always respected. Verified in-browser: every mode loads its exact track, pinned tracks untouched. Purely additive to the audio layer; zero gameplay change.
    CHANGE LOG v3.5.77 - NEW CLIPBOARD ART fitted. Goyim's new clipboard.png (portrait, LOCK-IN on the clip, light-gray page) is in — auto-cropped its wide margins to 619x905 so the board fills the card. Re-fit BOTH surfaces that use it: the PAUSE menu (aspect-ratio + .clip-in writing-area insets top 23% / sides 6% / bottom 4.5%) and the BRIEFING (#clipboard + #brief-body to match). Flipped the briefing text from light-cream to DARK (#2a1c0e / amber accents) since the new page is light, not dark metal — light text would've vanished. Structure + contrast reasoned from the pixels; needs a human glance (preview viewport still 0x0). No logic change.
    CHANGE LOG v3.5.76 - LOGIN-STATE CONSISTENCY. The post-sort report showed a local handle ("kreminal") as LOADER while the footer said "LOG IN TO TRACK LIFETIME" — because the LOADER read the persistent LOCAL player record (liPlayer) while the lifetime/legend read the live auth session (ZDATA.session.uid). Two different sources. NEW single identity helper: zLoggedIn()/zWho() — "logged in" now means one thing everywhere (a live session with a uid, the SAME check the lifetime/profile/leaderboards already use). The report LOADER and the safety write-up loader now use it, so a genuine session shows the handle + tracks lifetime, and a local-only handle (no session) reads GUEST consistently top-to-bottom. No other logic change.
    CHANGE LOG v3.5.75 - CLIPBOARD MENUS (step 1: PAUSE). The pause/ADMIN menu now sits on the REAL clipboard.png (the same asset + writing-area pattern as the briefing), not the CSS-generated paper+clip. Shared .clip-card/.clip-in treatment added so it stamps onto the other menus next. NOTE: the preview viewport rendered 0x0 all session (screenshots dead), so this is structure-verified (clipboard.png applied, aspect-ratio set, content in the writing-area wrapper) but NOT pixel-verified — needs a human glance before I replicate it onto write-up/profile/end. No logic change.
@@ -1649,7 +1650,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.77 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.78 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1770,7 +1771,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.77 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.78 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1923,7 +1924,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.77 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.78 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2293,7 +2294,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.77
+// LOCK IN v3.5.78
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3151,6 +3152,16 @@ function musicSkip(){
   if(!MUSIC.started){musicStart();return;}
   musicLoad(MUSIC.idx+1);musicPlay();
   if(typeof showBanner==='function')showBanner('⏭ Track '+(MUSIC.idx+1),'',1100);
+}
+// v3.5.78 PER-MODE opening track — each mode kicks off on its own song, then the playlist auto-continues.
+// Only applies in AUTO (a pinned track is respected). Fired on MODE SELECT, not on retry, so it never restarts mid-run.
+var MODE_TRACK={gauntlet:1,shift:2,'':3,daily:4,level:5};
+function musicForMode(m){
+  if((SETTINGS.musicTrack||'auto')!=='auto')return; // user pinned a specific track — leave it
+  if(!MODE_TRACK.hasOwnProperty(m))return;
+  try{sndInit();if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume();}catch(e){}
+  MUSIC.started=true;
+  try{musicLoad(MODE_TRACK[m]-1);musicPlay();}catch(e){}
 }
 // First user gesture unlocks/creates the audio context (browser autoplay policy).
 (function(){
@@ -4184,6 +4195,7 @@ function startDaily(){
   _LV=null;_M=null;currentLevel=0; // v2.7.3 clear any stale level mechanic
   DAILY.key=dailyKey();DAILY.seed=keyToSeed(DAILY.key);DAILY.ptr=0;DAILY.active=true;
   paused=false;
+  if(typeof musicForMode==='function')musicForMode('daily');
   restartGame();
 }
 
@@ -7935,12 +7947,14 @@ function startGauntlet(){
   gameMode='gauntlet';
   _LV=null;_M=null;currentLevel=0; // no stale level mechanic
   paused=false;
+  if(typeof musicForMode==='function')musicForMode('gauntlet');
   restartGame();
 }
 function startRegular(){
   hideStartMenu();
   gameMode='';
   paused=false;
+  if(typeof musicForMode==='function')musicForMode('');
   restartGame();
 }
 function startShift(){
@@ -7949,6 +7963,7 @@ function startShift(){
   shiftState={walls:1,totalBoxes:0,sessionStartT:Date.now()};
   updateShiftBadge();
   paused=false;
+  if(typeof musicForMode==='function')musicForMode('shift');
   restartGame();
 }
 
@@ -8294,7 +8309,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.77</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.78</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8552,6 +8567,7 @@ function openLevelSelect(){
   hideStartMenu();
   buildLevelSelectCards();
   document.getElementById('level-select').classList.add('vis');
+  if(typeof musicForMode==='function')musicForMode('level'); // v3.5.78 Tour opens on track 5 (set here, not per-level, so levels don't restart it)
 }
 function closeLevelSelect(){
   document.getElementById('level-select').classList.remove('vis');
