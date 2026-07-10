@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.78
+   LOCK IN v3.5.79
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.79 - PAUSE CLIPBOARD content fitted to the writing area (measured in-browser: 445px content in a 445px area, zero overflow, no scroll) — compacted the coach tip + tightened buttons/title so the six options + coach + hint all seat cleanly under the clip. The clip-in pattern is now proven; ready to stamp on write-up/profile/end.
    CHANGE LOG v3.5.78 - PER-MODE MUSIC. Each mode now kicks off on its own opening track, then the playlist auto-continues: GAUNTLET=1, ARCADE=2, PRACTICE=3, DAILY=4, TOUR=5. Fired on MODE SELECT only (not on retry, so it never restarts mid-run), and ONLY in AUTO — a pinned track from Settings is always respected. Verified in-browser: every mode loads its exact track, pinned tracks untouched. Purely additive to the audio layer; zero gameplay change.
    CHANGE LOG v3.5.77 - NEW CLIPBOARD ART fitted. Goyim's new clipboard.png (portrait, LOCK-IN on the clip, light-gray page) is in — auto-cropped its wide margins to 619x905 so the board fills the card. Re-fit BOTH surfaces that use it: the PAUSE menu (aspect-ratio + .clip-in writing-area insets top 23% / sides 6% / bottom 4.5%) and the BRIEFING (#clipboard + #brief-body to match). Flipped the briefing text from light-cream to DARK (#2a1c0e / amber accents) since the new page is light, not dark metal — light text would've vanished. Structure + contrast reasoned from the pixels; needs a human glance (preview viewport still 0x0). No logic change.
    CHANGE LOG v3.5.76 - LOGIN-STATE CONSISTENCY. The post-sort report showed a local handle ("kreminal") as LOADER while the footer said "LOG IN TO TRACK LIFETIME" — because the LOADER read the persistent LOCAL player record (liPlayer) while the lifetime/legend read the live auth session (ZDATA.session.uid). Two different sources. NEW single identity helper: zLoggedIn()/zWho() — "logged in" now means one thing everywhere (a live session with a uid, the SAME check the lifetime/profile/leaderboards already use). The report LOADER and the safety write-up loader now use it, so a genuine session shows the handle + tracks lifetime, and a local-only handle (no session) reads GUEST consistently top-to-bottom. No other logic change.
@@ -1065,13 +1066,14 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pmb-theme{background:transparent;color:var(--t2);border-color:var(--border);}
 .pmb-theme:hover{border-color:var(--t2);color:var(--t1);}
 /* v3.5.75 UNIFIED CLIPBOARD — menus now sit on the REAL clipboard.png (like the briefing); content lives in the clear writing area */
-.clip-in{position:absolute;left:6%;right:6%;top:23%;bottom:4.5%;overflow-y:auto;display:flex;flex-direction:column;gap:8px;align-items:center;} /* v3.5.77 fitted to the new clipboard.png writing area (619x905, clip ~top 22%) */
+.clip-in{position:absolute;left:6%;right:6%;top:23%;bottom:4.5%;overflow-y:auto;display:flex;flex-direction:column;gap:6px;align-items:center;} /* v3.5.77 fitted to the new clipboard.png writing area (619x905, clip ~top 22%) */
 .pause-clip{position:relative;width:min(420px,92vw);aspect-ratio:619/905;background:url('clipboard.png') center/contain no-repeat;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));}
 .pause-clip::before,.pause-clip::after{display:none;}
-.pause-clip .pause-title{color:#3a2c1a;text-shadow:none;font-size:30px;letter-spacing:4px;}
+.pause-clip .pause-title{color:#3a2c1a;text-shadow:none;font-size:26px;letter-spacing:4px;}
 .pause-clip .pause-sub{color:#9a8a6c;}
-.pause-clip .pause-menu{max-width:300px;gap:6px;margin-top:2px;}
-.pause-clip .pmb{font-size:15px;letter-spacing:2px;padding:8px 0;border-color:#cbbfa6;color:#3a2c1a;background:rgba(255,255,255,.55);}
+.pause-clip .pause-menu{max-width:300px;gap:4px;margin-top:0;}
+.pause-clip .pmb{font-size:14px;letter-spacing:1.5px;padding:6px 0;border-color:#cbbfa6;color:#3a2c1a;background:rgba(255,255,255,.55);}
+.pause-clip #fp-tip{padding:6px 9px;}.pause-clip .fp-tip-hdr{font-size:9px;margin-bottom:1px;}.pause-clip #fp-tip-h{font-size:13px;}.pause-clip #fp-tip-s{font-size:12px;line-height:1.24;}
 .pause-clip .pmb:hover{border-color:var(--acc);color:var(--acc-dim);}
 .pause-clip .pmb-resume{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#2a1c08;border-color:var(--acc);}
 .pause-clip .pmb-resume:hover{filter:brightness(1.05);color:#2a1c08;}
@@ -1650,7 +1652,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.78 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.79 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1771,7 +1773,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.78 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.79 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1924,7 +1926,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.78 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.79 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2294,7 +2296,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.78
+// LOCK IN v3.5.79
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8309,7 +8311,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.78</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.79</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
