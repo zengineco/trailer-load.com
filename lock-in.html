@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.81
+   LOCK IN v3.5.82
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.82 - PRE-SORT BRIEFING rewrite (real instruction, not caveman). Rule #4 was flat wrong — "RED TAG = HEAVY" (HEAVY is a GRAY tag; red tags are fragile/DNS/SP/hazmat) AND it described the NC/SP STAGING mechanic, not "heavy". Rewrote the whole briefing as a professional dock-orientation sheet now that the new clipboard has room: 9 accurate, scannable rules (grab & place / build off the floor / lock shelves / stage the non-cons / fragile & glass on top / hazmat low & locked / lay tires flat / bags spill smalls / pack tight then seal) — sentence case, lighter weight, covers the mechanics that matter now (hazmat, tires, safety). Tightened the type so all 9 seat in the writing area (measured in-browser: 396px content in a 456px area, 60px headroom). No logic change. (Load-stand confirmed a REFERENCE, not a mechanic — removed from the backlog.)
    CHANGE LOG v3.5.81 - POST-SORT REPORT ACCURACY (the monetization core). MECHANICS + SAFETY were showing "—" in the WALL column (hardcoded null — no per-wall data existed) and THROUGHPUT's WALL pph read the EMPTY live wall (=0), not the wall you just sealed. Built a real PER-WALL stats layer: wallBaseline() snapshots the cumulative counters at every wall START (initTruck / shift-advance / practice trailer), and finalizeWall() stores the DELTA (this wall's own rotations/lifts/rejects/staging/crunches/collapses/recoveries/drinks/incidents/warnings/bonuses/bags + quality + pph + duration) into wallLog. The report's WALL column now reads the LAST SEALED wall (lwv()), so MECHANICS/SAFETY/THROUGHPUT/QUALITY all register per-wall AND session. Verified in-browser: Avg PPH W=340 (was 0), Rotations W=8/S=14, Incidents W=2/S=3, etc. Also capped Smalls-utility at 100% (was showing 200%), removed a duplicate wallLog push, relabeled "Avg time/wall" WALL cell to the wall's actual time. THE DASHBOARD reads the same session summary, so this accuracy flows through. No scoring change.
    CHANGE LOG v3.5.80 - LEADERBOARD: TOTAL LOADED board. Split the old single "ALL-TIME" into two: BEST (your top single wall, all-time - the existing max-score board) + NEW TOTAL LOADED (lifetime cumulative - every score you've ever posted, summed). New SECURITY DEFINER RPC lockin_total_board() (anon-callable, mirrors lockin_alltime_board but SUM instead of MAX) ranks the consistency grinders. Tabs are now DAILY / BEST / TOTAL / FRIENDS. Verified in-browser: TOTAL loads live rows (vince 319k lifetime top). Additive - the existing boards + RPCs are untouched.
    CHANGE LOG v3.5.79 - PAUSE CLIPBOARD content fitted to the writing area (measured in-browser: 445px content in a 445px area, zero overflow, no scroll) — compacted the coach tip + tightened buttons/title so the six options + coach + hint all seat cleanly under the clip. The clip-in pattern is now proven; ready to stamp on write-up/profile/end.
@@ -1218,17 +1219,17 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 /* writing area = clear light page below the clip, inside the frame (clip ~top 22%) */
 #brief-body{position:absolute;left:6%;right:6%;top:23%;bottom:4.5%;
   display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
-.brief-title{margin-bottom:clamp(8px,1.7vw,14px)!important;}
+.brief-title{margin-bottom:clamp(4px,1vw,7px)!important;}
 #brief-std{display:flex;flex-direction:column;}
-.brief-title{font-family:'Bebas Neue',cursive;font-size:clamp(20px,4.2vw,27px);letter-spacing:3px;
+.brief-title{font-family:'Bebas Neue',cursive;font-size:clamp(18px,3.6vw,23px);letter-spacing:2.5px;
   color:#2a1c0e;display:block;margin-bottom:1px;text-shadow:0 1px 0 rgba(255,255,255,.4);}
 .brief-sub{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,1.6vw,10px);letter-spacing:2px;
   color:#6a5a42;text-transform:uppercase;display:block;margin-bottom:clamp(7px,1.6vw,13px);}
-.brief-rule{display:flex;gap:9px;margin-bottom:clamp(5px,1.4vw,11px);align-items:baseline;}
-.brief-rule-num{font-family:'Bebas Neue',cursive;font-size:clamp(15px,3vw,19px);color:#b5651a;
-  line-height:1;flex-shrink:0;min-width:15px;}
-.brief-rule-txt{font-family:'Barlow Condensed',sans-serif;font-size:clamp(13px,2.7vw,17px);font-weight:700;
-  letter-spacing:.4px;color:#2a1c0e;line-height:1.22;}
+.brief-rule{display:flex;gap:8px;margin-bottom:clamp(3px,0.85vw,6px);align-items:baseline;} /* v3.5.82 tightened for the 9-rule professional briefing */
+.brief-rule-num{font-family:'Bebas Neue',cursive;font-size:clamp(14px,2.7vw,17px);color:#b5651a;
+  line-height:1;flex-shrink:0;min-width:14px;}
+.brief-rule-txt{font-family:'Barlow Condensed',sans-serif;font-size:clamp(12px,2.35vw,14.5px);font-weight:600;
+  letter-spacing:.3px;color:#2a1c0e;line-height:1.17;}
 .brief-rule-txt b{color:#a8511a;}
 #brief-cta-row{display:flex;align-items:center;justify-content:center;margin-top:16px;flex:none;}
 #brief-cta{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:4px;
@@ -1654,7 +1655,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.81 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.82 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1682,13 +1683,15 @@ body[data-cb="trit"]{
   <div id="brief-body">
     <div id="brief-std">
       <span class="brief-title">PRE-SORT MEETING</span>
-      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt">GRAB A BOX. CLICK THE WALL. <b>[R]</b> SPINS IT.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>FLOOR FIRST.</b> STACK UP. NOTHING FLOATS.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt">FILL A ROW → <b>LOCKED SHELF.</b> SHELVES HOLD THE WALL.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>RED TAG = HEAVY.</b> CLICK TO STAGE, THEN WALL IT.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>FRAGILE ON TOP.</b> NO CRUSHING.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>BAG = SMALLS.</b> DOUBLE-CLICK TO SPILL.</div></div>
-      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt">HIT <b>92%</b> — SEAL IT. BEAT THE <b>CLOCK</b> FOR BONUS.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt"><b>Grab &amp; place.</b> Pull a box off the chute, click the wall to set it. <b>[R]</b> rotates.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Build off the floor.</b> Every piece needs support under it — nothing floats, and tall thin stacks topple.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt"><b>Lock your shelves.</b> Fill a full row to lock it; a locked shelf braces the wall above.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>Stage the non-cons.</b> Tires, SP &amp; oversize freight wait in the side panel — click to grab one, then wall it.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile &amp; glass ride on top.</b> Never bury them — a crush is damaged freight and a write-up.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Hazmat low &amp; locked.</b> Floor it, cap it under a shelf. A loose hazmat that drops sends you home.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Lay tires flat.</b> A tire stood on its edge rolls the second the door opens.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>Bags spill smalls.</b> Double-click a bag — smalls fill the gaps a box can't reach.</div></div>
+      <div class="brief-rule"><div class="brief-rule-num">9</div><div class="brief-rule-txt"><b>Pack tight, then seal.</b> Density is the job — fill the wall, seal at height, beat the clock for a bonus.</div></div>
     </div>
   </div>
 </div>
@@ -1775,7 +1778,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.81 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.82 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1928,7 +1931,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.81 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.82 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2304,7 +2307,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.81
+// LOCK IN v3.5.82
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8354,7 +8357,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.81</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.82</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
