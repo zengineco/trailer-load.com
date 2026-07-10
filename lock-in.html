@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.62
+   LOCK IN v3.5.63
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.63 - ACCOUNT LOGIN re-skin (was "a weird table"). The worker/facility auth form now reads like a real game sign-in: a lit, softly-pulsing badge + a "CLOCK IN" wordmark hero, and a single glowing amber CLOCK IN primary button (the "something lit up") with a quieter "Create a free account" underneath. All field IDs (pf-id/pf-pw/pf-pw2/pf-tab-w/pf-tab-f/pf-signup-btn/pf-auth-note) are unchanged so pfMode/pfDoLogin/pfDoSignup keep working exactly as before — purely a visual pass. Profile/cohort/leaderboard tables untouched (next enterprise pass). No logic change.
    CHANGE LOG v3.5.62 - PACK % CONSISTENCY + practice-mode cleanup. (1) THE PERCENTAGE SLOP: the scoreboard PACK (cube-fill) and the "WALL COMPLETE — X% PACKED" popup (solidity) were DIFFERENT metrics, and the popup was FROZEN at the first seal - so after Continue Loading it read 49% while the scoreboard read 77% (and 48% vs a 29% wall, 82% vs 22%). Now every displayed "% PACKED" (seal banner, wall-complete popup, re-seal, FINISH) routes through one packPct() = the exact cube-fill the scoreboard shows, computed FRESH every time. Payout still scales by solidity internally; only the DISPLAY was unified. (2) MODE label: the Regular/"PRACTICE" menu card runs with gameMode='' and was rendering a BLANK mode cell - now reads PRACTICE; the safety-kickout trailer reads PRACTICE too. (3) NO DISPATCH in practice/regular/training - the learning modes no longer get the dispatch clock (was firing "DISPATCH IN 16s" in practice). No grade-math change.
    CHANGE LOG v3.5.61 - THE "LOCKED-SHELF MOONSHOT" + throw reachability + post-sort quality slop. (1) COLUMN: the jailbreaker's "if the bottom is supported we can still break your game" was real - worstFreeStack anchored on isRowLockedIn(y), which is true for EVERY row above any locked shelf, so completing one shelf made the freestanding scan break at the very top and you could tower infinitely above it. Now it breaks only AT the actual locked-shelf row (G.tetrisRows[y]); the shelf still anchors what rests on it, but a freestanding tower built on top is evaluated and topples normally. (2) THROW/WATER buttons pulled IN from the far gutters to flank the play field (were unreachable / choppy at the screen edge; throw "didn't work" because the cursor couldn't get to it). (3) POST-SORT LOAD QUALITY de-slopped: snapWall's Support was Math.round(0..1) = always 0 or 1 (that "Support: 1" in the report) - now *100 = a real %; Balance is tracked per wall; and Structure/Balance/Density/Support now read the SEALED WALL + wall-log averages instead of stale live HUD spans, so wall and session columns are real and consistent. No grade-math change.
    CHANGE LOG v3.5.60 - COLUMN RULE v5 (dimensional caps + moonshot kill). Two additions to worstFreeStack, both tunable. (1) MOONSHOT FIX: being "sandwiched" (boxed on both sides) now only ANCHORS a stack if at least one side is a real GROUND-CONNECTED pillar (solidBelow: filled continuously down to the floor or a locked shelf) or the trailer wall - two floating towers bracing each other no longer hold each other up above height 4. A genuine solid wall still stands (its neighbors reach the ground); a gap-braced tower now topples. (2) DIMENSIONAL CAP: a freestanding stack has a max CELL height keyed to its narrowest footprint - 1-wide 6, 2-wide 9, 3-wide 7, 4-wide 6, 5-wide+ 5 (strict taper +2). So a wide flat slab tips sooner (his "5x2 shouldn't go 3-high" = 6 cells > cap 5) while a tall-narrow box is allowed higher (his "2x6 up to ~9"). Existing rules kept: freestanding 4+, non-taper 3+, smalls-in-3+ all still collapse. Knobs live in freestandCellCap()/FREESTAND_TAPER_BONUS. No metric-capture change.
@@ -1471,6 +1472,19 @@ body[data-cb="trit"]{
 .pf-ghost{background:transparent!important;border:1px solid #8b4513!important;color:#8b4513!important;}
 .pf-auth-note{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#7a6a52;margin-top:12px;line-height:1.4;min-height:20px;}
 .pf-auth-foot{font-family:'Share Tech Mono',monospace;font-size:10px;color:#a89a7e;margin-top:14px;letter-spacing:.5px;border-top:1px dashed #c8b898;padding-top:10px;}
+/* v3.5.63 real game-login: a lit hero badge + a glowing primary CTA (the "something lit up") */
+.pf-authhero{text-align:center;margin:2px 0 18px;}
+.pf-authbadge{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:13px;background:linear-gradient(158deg,#3a2410,#170d06);color:#f3b24a;font-size:30px;margin-bottom:11px;box-shadow:0 0 0 1px rgba(200,138,42,.35),0 0 24px 3px rgba(224,150,46,.5),inset 0 1px 0 rgba(255,214,150,.28);animation:pfglow 2.6s ease-in-out infinite;}
+@keyframes pfglow{0%,100%{box-shadow:0 0 0 1px rgba(200,138,42,.35),0 0 20px 2px rgba(224,150,46,.42),inset 0 1px 0 rgba(255,214,150,.28);}50%{box-shadow:0 0 0 1px rgba(200,138,42,.5),0 0 30px 5px rgba(224,150,46,.62),inset 0 1px 0 rgba(255,214,150,.3);}}
+.pf-authttl{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:#2a1a08;line-height:.95;}
+.pf-authttl b{color:#b5651a;}
+.pf-authsub{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#6a5a42;max-width:320px;margin:6px auto 0;line-height:1.35;}
+.pf-cta{width:100%;margin-top:15px;padding:14px;border:none;border-radius:8px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:2.5px;color:#1a0f04;background:linear-gradient(180deg,#f5bb4e,#e0902e);box-shadow:0 3px 0 #a9661a,0 6px 20px rgba(224,150,46,.5);transition:filter .12s,transform .06s,box-shadow .06s;}
+.pf-cta span{font-size:15px;margin-left:4px;}
+.pf-cta:hover{filter:brightness(1.07);}
+.pf-cta:active{transform:translateY(2px);box-shadow:0 1px 0 #a9661a,0 3px 12px rgba(224,150,46,.4);}
+.pf-ghost2{width:100%;margin-top:9px;padding:9px;background:transparent;border:1px solid #c8b898;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:.5px;color:#8b4513;transition:background .12s;}
+.pf-ghost2:hover{background:rgba(139,69,19,.07);}
 .pf-foot{display:flex;align-items:center;justify-content:space-between;margin-top:18px;border-top:1px dashed #c8b898;padding-top:12px;}
 .pf-who{font-family:'Share Tech Mono',monospace;font-size:12px;color:#8b4513;}
 .pf-signout{background:transparent;border:1px solid #c23a1a;border-radius:4px;color:#c23a1a;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;padding:6px 14px;cursor:pointer;}
@@ -1575,7 +1589,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.62 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.63 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1696,7 +1710,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.62 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.63 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1827,7 +1841,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.62 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.63 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2201,7 +2215,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.62
+// LOCK IN v3.5.63
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7846,11 +7860,13 @@ function pfMode(m){PF_MODE=m;
 }
 function pfAuthFormHTML(){
   return '<div class="pf-auth">'+
+    '<div class="pf-authhero"><div class="pf-authbadge">\u25a3</div><div class="pf-authttl">CLOCK <b>IN</b></div><div class="pf-authsub">Bank your record across devices \u2014 walls, PPH, safety, rank. No email, always free.</div></div>'+
     '<div class="pf-tabs"><button id="pf-tab-w" class="pf-tab on" onclick="pfMode(\'worker\')">WORKER</button><button id="pf-tab-f" class="pf-tab" onclick="pfMode(\'facility\')">FACILITY</button></div>'+
     '<div class="pf-fld"><label id="pf-id-lbl">USERNAME</label><input id="pf-id" type="text" autocomplete="username" placeholder="pick a handle"></div>'+
     '<div class="pf-fld"><label>PASSWORD</label><input id="pf-pw" type="password" autocomplete="current-password" placeholder="password"></div>'+
     '<div class="pf-fld" id="pf-pw2-fld"><label>CONFIRM PASSWORD <small style="opacity:.55;">(new accounts)</small></label><input id="pf-pw2" type="password" autocomplete="new-password" placeholder="re-type to confirm"></div>'+
-    '<div class="pf-auth-btns"><button class="btn-p" onclick="pfDoLogin()">SIGN IN</button><button id="pf-signup-btn" class="btn-p pf-ghost" onclick="pfDoSignup()">CREATE ACCOUNT</button></div>'+
+    '<button class="pf-cta" onclick="pfDoLogin()">CLOCK IN<span>\u25b6</span></button>'+
+    '<button id="pf-signup-btn" class="pf-ghost2" onclick="pfDoSignup()">Create a free account</button>'+
     '<div class="pf-auth-note" id="pf-auth-note">Pick a username + password to keep your record across devices. No email needed. Free, always.</div>'+
     '<div class="pf-auth-foot">Gameplay is always free \u2014 your record is yours. Workers never pay.</div></div>';
 }
@@ -7961,7 +7977,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.62</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.63</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
