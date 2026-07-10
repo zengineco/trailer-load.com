@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.64
+   LOCK IN v3.5.65
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.65 - VERTICAL-TIRE PHYSICS + hazmat-collapse + throw penalty + level-name cleanup. (1) VERTICAL TIRE = unstable base: a rotated (on-edge) tire can't bear a load, so ANY piece placed one higher TOPPLES (onVerticalTire). (2) VERTICAL TIRE-STACKING ladder: stacking a tire on top of another tire escalates — 1st warning, 2nd incident, 3rd practice trailer, 4th round OVER ("your wall came down — you got hurt"). (3) HAZMAT in ANY collapse = round over ("you're going to hurt somebody") — a dropped hazmat is a hurt-somebody event, no matter the stack. (4) THROW PENALTY (perfect symmetry with the drink rule): 4th throw -100, 5th -200, 6th -300... per wall — kills the "throw forever → 1000 smalls from bags" exploit (you CAN, it just goes deep negative). (5) COMMENTARY: the abusive "use your brain" smalls line → "Fill the gaps." (6) LEVEL NAMES: L1 hub was a duplicate of its city (both "Columbus, OH · CMH") → "John Glenn Columbus Intl"; L5 was "THE INCHEON OVERNIGHT" (dupe of L7 Chicago) set in "Seoul" → "THE INCHEON RUSH" / "Incheon, South Korea · ICN". No grade-math change.
    CHANGE LOG v3.5.64 - SIDEWAYS TIRES + drink penalty + fragile-commentary slop. (1) SIDEWAYS TIRES: tire rotation is now ALLOWED (was hard-blocked with "lay it flat"). Standing a tire on edge is a MINOR manager safety fired on placement (TIRE_SIDEWAYS) — a 2nd unmitigated one escalates to an incident, and water/throw/shelf-lock washes it. A row of 3+ sideways tires draws extra commentary. (2) DRINK PENALTY: over-hydrating to farm warning-washes now costs score — 4th drink -100, 5th -200, 6th -300... (escalating -100). You can still drink your way out of a warning, but it's no longer free (pairs with throw + sideways-tire as a penalized escape valve, not an exploit). (3) FRAGILE COMMENTARY was INVERTED: gy=0 is the CEILING, so a fragile on the FLOOR (large gy) was hitting the "on top, good job" pool. Fixed — a low fragile now correctly gets the frag_bad ("exposed / will get crushed") lines. NOTE (not yet done): smalls-spam-via-throw anti-reward, level-location cleanup, and a broader "responses-only" commentary expansion. No grade-math change.
    CHANGE LOG v3.5.63 - ACCOUNT LOGIN re-skin (was "a weird table"). The worker/facility auth form now reads like a real game sign-in: a lit, softly-pulsing badge + a "CLOCK IN" wordmark hero, and a single glowing amber CLOCK IN primary button (the "something lit up") with a quieter "Create a free account" underneath. All field IDs (pf-id/pf-pw/pf-pw2/pf-tab-w/pf-tab-f/pf-signup-btn/pf-auth-note) are unchanged so pfMode/pfDoLogin/pfDoSignup keep working exactly as before — purely a visual pass. Profile/cohort/leaderboard tables untouched (next enterprise pass). No logic change.
    CHANGE LOG v3.5.62 - PACK % CONSISTENCY + practice-mode cleanup. (1) THE PERCENTAGE SLOP: the scoreboard PACK (cube-fill) and the "WALL COMPLETE — X% PACKED" popup (solidity) were DIFFERENT metrics, and the popup was FROZEN at the first seal - so after Continue Loading it read 49% while the scoreboard read 77% (and 48% vs a 29% wall, 82% vs 22%). Now every displayed "% PACKED" (seal banner, wall-complete popup, re-seal, FINISH) routes through one packPct() = the exact cube-fill the scoreboard shows, computed FRESH every time. Payout still scales by solidity internally; only the DISPLAY was unified. (2) MODE label: the Regular/"PRACTICE" menu card runs with gameMode='' and was rendering a BLANK mode cell - now reads PRACTICE; the safety-kickout trailer reads PRACTICE too. (3) NO DISPATCH in practice/regular/training - the learning modes no longer get the dispatch clock (was firing "DISPATCH IN 16s" in practice). No grade-math change.
@@ -1590,7 +1591,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.64 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.65 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1711,7 +1712,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.64 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.65 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1842,7 +1843,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.64 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.65 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2216,7 +2217,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.64
+// LOCK IN v3.5.65
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4132,15 +4133,27 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   checkPanic();
   updateCoachTip();
 
-  // v3.5.54 COLUMN RULE (taper-aware) — a freestanding stack topples if it's NON-tapering & 3+ high, or any stack 5+ high.
-  // Strict taper (4x4/3x3/2x2/1x1) is exempt. The whole stack sheds back to the belt at once (resolves — no per-placement re-fire).
-  var _st=worstFreeStack();
-  var _unstable=_st&&_st.unstable;
-  if(_unstable&&!collapseAnimating&&!gOver){
+  // v3.5.65 VERTICAL TIRE = unstable base — a tire on its edge rolls, so ANY piece one higher topples.
+  var _onVT=onVerticalTire(cell);
+  if(_onVT&&!collapseAnimating&&!gOver){
     collapseAnimating=true;
-    setTimeout(function(){collapseFreeStack(_st);collapseAnimating=false;},220);
-  } else if(_st&&!_st.tapering&&_st.h===2){
-    if(!G._col2||Date.now()-G._col2>2600){G._col2=Date.now();showBanner('TWO HIGH, SAME WIDTH, NO SUPPORT — that’s the limit. Taper it (narrower on top) or lock the shelf before one more.','warn',1900);}
+    var _vtIsTire=(box.cat==='tire'); // tire-on-tire = the escalating ladder; anything else just rolls off
+    setTimeout(function(){
+      if(_vtIsTire){_shedToBelt([cell,_onVT]);tireStackStrike();}
+      else{collapseFreeStack({boxes:[cell,_onVT],cx:cell.rx});} // a collapse (hazmat-checked inside)
+      collapseAnimating=false;
+    },200);
+  } else {
+    // v3.5.54 COLUMN RULE (taper-aware) — a freestanding stack topples if it's NON-tapering & 3+ high, or any stack 5+ high.
+    // Strict taper (4x4/3x3/2x2/1x1) is exempt. The whole stack sheds back to the belt at once (resolves — no per-placement re-fire).
+    var _st=worstFreeStack();
+    var _unstable=_st&&_st.unstable;
+    if(_unstable&&!collapseAnimating&&!gOver){
+      collapseAnimating=true;
+      setTimeout(function(){collapseFreeStack(_st);collapseAnimating=false;},220);
+    } else if(_st&&!_st.tapering&&_st.h===2){
+      if(!G._col2||Date.now()-G._col2>2600){G._col2=Date.now();showBanner('TWO HIGH, SAME WIDTH, NO SUPPORT — that’s the limit. Taper it (narrower on top) or lock the shelf before one more.','warn',1900);}
+    }
   }
 
   if((G.integrity||100)<=8&&!collapseAnimating)scheduleCollapse();
@@ -4339,7 +4352,7 @@ function sendToPractice(){
   setTimeout(function(){
     S.warnings=[]; // new wall, warnings reset (incidents/record persist)
     G.grid=makeGrid();placed=0;G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;G._practiceSent=false;
-    G.drinks=0;G._hyd75=false;G._hyd100=false;G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
+    G.drinks=0;G.throws=0;G._hyd75=false;G._hyd100=false;G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
     G.practice=true;
     selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;
     if(typeof refillBelt==='function')refillBelt();
@@ -4372,12 +4385,17 @@ function throwBox(){
   if(gOver||typeof G==='undefined'||!G||!G.belt||!G.belt.length){if(typeof showBanner==='function'&&(!G||!G.belt||!G.belt.length))showBanner('Nothing in hand to throw.','',1200);return;}
   var idx=(selBeltIdx!=null)?selBeltIdx:0;if(idx<0||idx>=G.belt.length)idx=0;
   G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
-  S.throws=(S.throws||0)+1;
+  S.throws=(S.throws||0)+1;G.throws=(G.throws||0)+1;
   if(typeof spawnBag==='function')spawnBag(); // throwing ALWAYS puts a bag of smalls on the belt
+  // v3.5.65 escalating throw penalty \u2014 PERFECT SYMMETRY with the drink rule (4th throw -100, 5th -200, 6th -300...).
+  // Kills the "throw forever, place 1000 smalls from bags" exploit: you CAN do it, it just goes deep score-negative.
+  var _tpen=0;
+  if((G.throws||0)>3){_tpen=(G.throws-3)*100;G.score=Math.max(0,(G.score||0)-_tpen);}
+  var _tp=_tpen>0?(' \u2212'+_tpen+' CUBES (spamming throws is not free)'):'';
   var washed=mitigateWarn('throw');
   if(washed){S.safetiesThrown=(S.safetiesThrown||0)+1;
-    showBanner('\ud83e\uddb5 THROWN \u2014 minor safety pardoned (logged as thrown). A bag of smalls hit the belt.','warn',2400);
-  }else{showBanner('\ud83e\uddb5 THROWN \u2014 piece tossed, a bag of smalls hit the belt.','',2000);}
+    showBanner('\ud83e\uddb5 THROWN \u2014 minor safety pardoned (logged as thrown). A bag of smalls hit the belt.'+_tp,'warn',2400);
+  }else{showBanner('\ud83e\uddb5 THROWN \u2014 piece tossed, a bag of smalls hit the belt.'+_tp,_tpen>0?'danger':'',2000);}
   if(typeof playSfx==='function')playSfx('place');
   if(typeof refillBelt==='function')refillBelt();
   updateSafetyHUD();
@@ -4504,6 +4522,35 @@ function settleFloaters(){
   }
   if(moved)settleFloaters();
 }
+// v3.5.65 is the just-placed cell resting directly on a ROTATED (vertical) tire? A tire on its edge rolls —
+// it can't bear a load, so anything one higher topples. Returns the offending tire cell or null.
+function onVerticalTire(cell){
+  if(!cell)return null;
+  var cs=cell.cells||makeRect(cell.w,cell.h),i,low={},k;
+  for(i=0;i<cs.length;i++){var cx=cell.rx+cs[i][0],cy=cell.ry+cs[i][1];if(low[cx]===undefined||cy>low[cx])low[cx]=cy;}
+  for(k in low){var by=low[k],bx=+k;var below=G.grid[by+1]&&G.grid[by+1][bx];
+    if(below&&below.id!==cell.id&&below.box&&below.box.cat==='tire'&&((below.rot||0)%2===1))return below;}
+  return null;
+}
+// v3.5.65 shed specific cells straight back to the belt (no collapse-incident) — used for the tire-stack ladder.
+function _shedToBelt(cells){
+  var i,g=0;for(i=0;i<cells.length;i++){var c=cells[i];if(!c)continue;
+    var cs=c.cells||makeRect(c.w,c.h),j;for(j=0;j<cs.length;j++){var ax=c.rx+cs[j][0],ay=c.ry+cs[j][1];if(G.grid[ay]&&G.grid[ay][ax]===c)G.grid[ay][ax]=null;}
+    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...c.box,id:'V'+Date.now().toString(36)+(g++)});}
+  if(typeof settleFloaters==='function')settleFloaters();
+  G.cog=calcCOG(G.grid);G.support=supportScore(G.grid);
+}
+// v3.5.65 VERTICAL TIRE-STACK LADDER — stacking a tire on top of another (rotated) tire escalates:
+// 1st = warning, 2nd = incident, 3rd = practice trailer, 4th = round over ("you got hurt").
+function tireStackStrike(){
+  S.tireStack=(S.tireStack||0)+1;var n=S.tireStack;
+  if(typeof playSfx==='function')playSfx(n>=3?'lose':'collapse');
+  addShake(12);
+  if(n===1){showBanner('⚠ TIRES DON’T STACK VERTICALLY — one on top of another ROLLS. First warning.','warn',3000);}
+  else if(n===2){if(typeof logIncident==='function')logIncident('TIRE_STACK','');showBanner('⛔ STACKED TIRES AGAIN — that’s an incident on your record.','danger',3200);}
+  else if(n===3){showBanner('⛔ THIRD TIME — off to a practice trailer to reset your habits.','danger',2800);if(typeof sendToPractice==='function')sendToPractice();}
+  else if(!gOver&&typeof endGame==='function'){endGame('YOUR WALL CAME DOWN — stacked tires rolled the load. You got hurt.',false);}
+}
 function collapseFreeStack(st){
   if(!st||!st.boxes)return;
   S.collapses=(S.collapses||0)+1;
@@ -4521,6 +4568,13 @@ function collapseFreeStack(st){
   addShake(18);if(typeof playSfx==='function')playSfx('collapse');hapt('collapse');
   if(typeof gridToCanvas==='function'){var _c=gridToCanvas((st.cx||Math.floor(GW/2))+0.5,GH*0.4);spawnBurst(_c.x,_c.y,32,'rgba(120,90,60,.95)',170,0.7,240);}
   flash('fl-danger');
+  // v3.5.65 HAZMAT in ANY collapse = you're sent home. A dropped hazmat is a hurt-somebody event.
+  var _cHaz=false;st.boxes.forEach(function(c){if(c&&c.box&&(c.box.isHaz||c.box.hazClass))_cHaz=true;});
+  if(_cHaz&&!gOver&&typeof endGame==='function'){
+    showBanner('⛔ HAZMAT DOWN — you’re going to hurt somebody. Keep hazmat low and locked.','danger',3600);
+    setTimeout(function(){endGame('HAZMAT IN A COLLAPSE — you’re going to hurt somebody.',false);},700);
+    return;
+  }
   showBanner('⚠ COLUMN COLLAPSED — the freestanding stack toppled back to the belt.<br><span style="font-size:.5em">Same-width or top-heavy stacks fall. Taper it (wide base → narrow top) or lock a shelf. RECOVER FAST FOR BONUS.</span>','danger',3200);
 }
 
@@ -7158,7 +7212,7 @@ var PLACE_CMT_HUB={
     'Nobody teaches that. You figured it out.',
     'More passion.',
     'That gap was embarrassing. Good.',
-    'Smalls go where regulars can\'t. Use your brain.',
+    'Smalls go where regulars can\'t. Fill the gaps.',
     'You can\'t fit a fart in that wall — fill it.',
     'It\'s just a bag of pet food.',
     'I hear there\'s boxes next door, too.',
@@ -7588,7 +7642,7 @@ function runDemoStep(){
     if(pEl2)pEl2.textContent='THAT\'S A LOCKED-IN WALL';
     if(rEl2)rEl2.textContent='Every principle you just watched is a real hub loading rule. The wall is about to reset — study it again, or hit EXIT and load one yourself in SHIFT mode.';
     trainingState.stepTimer=setTimeout(function(){
-      G.grid=makeGrid();placed=0;G.cog=.5;G.tetrisRows={};G.tetrisPaid={};G.drinks=0;
+      G.grid=makeGrid();placed=0;G.cog=.5;G.tetrisRows={};G.tetrisPaid={};G.drinks=0;G.throws=0;
       trainingState.stepIdx=0;
       if(trainingState.playing)runDemoStep();
     },4000/trainingState.speed);
@@ -7683,7 +7737,7 @@ function nextTrailer(){
     G.grid=makeGrid();
     G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;G._hyd75=false;G._hyd100=false;S.warnings=[]; // v3.5.59 fresh wall: reset open warnings + hydration flags (incidents/record persist)
     G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
-    G.brickAwarded=false;G.crunchCount=0;G.hazViolations=0;G.recoveryCount=0;G.ncPlaced=0;G.drinks=0;
+    G.brickAwarded=false;G.crunchCount=0;G.hazViolations=0;G.recoveryCount=0;G.ncPlaced=0;G.drinks=0;G.throws=0;
     G.preselectDepth=0;G.preselectWarned=false;G.seamWarned=false;G.segWarned=false;
     G.beltSinceNC=0;G.beltSinceBag=0;
     placed=0;startT=Date.now();
@@ -7991,7 +8045,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.64</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.65</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8127,7 +8181,7 @@ function saveLevelBests(){
 var LEVEL_CONFIG=[
 null, // index 0 unused — levels are 1-based
 // ─────────────────────────────────────────────────────────────
-{n:1,name:'THE COLUMBUS WELCOME',hub:'Columbus, OH · CMH',city:'Columbus, OH · CMH',
+{n:1,name:'THE COLUMBUS WELCOME',hub:'John Glenn Columbus Intl',city:'Columbus, OH · CMH',
  abbr:'COLUMBUS',
  flavor:'"Door 7. Columbus. Every carrier in the country moves freight through here. You\'re new. Everyone can tell. Show them anyway."',
  diffLabel:'DAY ONE',diffClass:'ls-d1',accent:'#28b870',
@@ -8167,7 +8221,7 @@ null, // index 0 unused — levels are 1-based
  winH:.90,winDensity:.40,winIntegrity:70,winCOG:.5,zeroCrunches:false,
  parSec:420,star3Sec:330,star3Grade:'A',star2Grade:'B',star1Grade:'C'},
 // ─────────────────────────────────────────────────────────────
-{n:5,name:'THE INCHEON OVERNIGHT',hub:'Incheon International',city:'Seoul, South Korea · ICN',
+{n:5,name:'THE INCHEON RUSH',hub:'Incheon International',city:'Incheon, South Korea · ICN',
  abbr:'INCHEON',
  flavor:'"Electronics, semiconductor components, K-beauty e-commerce. Everything is small. Everything is fragile. Everything is priority."',
  diffLabel:'MID-SHIFT GRIND',diffClass:'ls-d5',accent:'#d48020',
