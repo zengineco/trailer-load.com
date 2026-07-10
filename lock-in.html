@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.80
+   LOCK IN v3.5.81
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.81 - POST-SORT REPORT ACCURACY (the monetization core). MECHANICS + SAFETY were showing "—" in the WALL column (hardcoded null — no per-wall data existed) and THROUGHPUT's WALL pph read the EMPTY live wall (=0), not the wall you just sealed. Built a real PER-WALL stats layer: wallBaseline() snapshots the cumulative counters at every wall START (initTruck / shift-advance / practice trailer), and finalizeWall() stores the DELTA (this wall's own rotations/lifts/rejects/staging/crunches/collapses/recoveries/drinks/incidents/warnings/bonuses/bags + quality + pph + duration) into wallLog. The report's WALL column now reads the LAST SEALED wall (lwv()), so MECHANICS/SAFETY/THROUGHPUT/QUALITY all register per-wall AND session. Verified in-browser: Avg PPH W=340 (was 0), Rotations W=8/S=14, Incidents W=2/S=3, etc. Also capped Smalls-utility at 100% (was showing 200%), removed a duplicate wallLog push, relabeled "Avg time/wall" WALL cell to the wall's actual time. THE DASHBOARD reads the same session summary, so this accuracy flows through. No scoring change.
    CHANGE LOG v3.5.80 - LEADERBOARD: TOTAL LOADED board. Split the old single "ALL-TIME" into two: BEST (your top single wall, all-time - the existing max-score board) + NEW TOTAL LOADED (lifetime cumulative - every score you've ever posted, summed). New SECURITY DEFINER RPC lockin_total_board() (anon-callable, mirrors lockin_alltime_board but SUM instead of MAX) ranks the consistency grinders. Tabs are now DAILY / BEST / TOTAL / FRIENDS. Verified in-browser: TOTAL loads live rows (vince 319k lifetime top). Additive - the existing boards + RPCs are untouched.
    CHANGE LOG v3.5.79 - PAUSE CLIPBOARD content fitted to the writing area (measured in-browser: 445px content in a 445px area, zero overflow, no scroll) — compacted the coach tip + tightened buttons/title so the six options + coach + hint all seat cleanly under the clip. The clip-in pattern is now proven; ready to stamp on write-up/profile/end.
    CHANGE LOG v3.5.78 - PER-MODE MUSIC. Each mode now kicks off on its own opening track, then the playlist auto-continues: GAUNTLET=1, ARCADE=2, PRACTICE=3, DAILY=4, TOUR=5. Fired on MODE SELECT only (not on retry, so it never restarts mid-run), and ONLY in AUTO — a pinned track from Settings is always respected. Verified in-browser: every mode loads its exact track, pinned tracks untouched. Purely additive to the audio layer; zero gameplay change.
@@ -1653,7 +1654,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.80 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.81 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1774,7 +1775,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.80 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.81 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1927,7 +1928,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.80 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.81 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2303,7 +2304,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.80
+// LOCK IN v3.5.81
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4558,7 +4559,8 @@ function sendToPractice(){
     S.warnings=[]; // new wall, warnings reset (incidents/record persist)
     G.grid=makeGrid();placed=0;G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;G._practiceSent=false;
     G.drinks=0;G.throws=0;G._hyd75=false;G._hyd100=false;G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
-    G.practice=true;
+    G.practice=true;startT=Date.now();
+    if(typeof wallBaseline==='function')wallBaseline(); // v3.5.81 per-wall stat baseline (practice trailer)
     selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;
     if(typeof refillBelt==='function')refillBelt();
     if(typeof showBanner==='function')showBanner('\ud83d\udfe2 PRACTICE TRAILER \u2014 clean slate. Load it right.','ok',2600);
@@ -5066,6 +5068,17 @@ function getPPH(){var el=elapsed();return el>0?Math.round(placed/el*3600):0;}
 // game-over), idempotent per wall via G._finalized. Fixes the stale session integrity (a sealed
 // wall's real integrity never reached the average, so it defaulted toward 100%) and makes the
 // density gate see the wall that's actually on screen.
+// v3.5.81 PER-WALL STATS — the report's WALL column must show the LAST SEALED wall, not the empty live one,
+// and MECHANICS/SAFETY need per-wall numbers. We baseline the cumulative counters at each wall START, then
+// store the DELTA (this wall's own totals) + the wall's quality snapshot in wallLog on finalize.
+var _WALL_COUNTERS=['rotations','lifts','rejects','stagingActions','crunches','collapses','recoveries','drinks','hazShelfLocks','nests','doubleLocks','shelvesLocked','bagsPlaced','bagsBroken','totalPieces','throws','safetiesWashed','safetiesThrown','waterSabotage'];
+function wallBaseline(){ // call at each wall START
+  S._wallBase=S._wallBase||{};var i;
+  for(i=0;i<_WALL_COUNTERS.length;i++)S._wallBase[_WALL_COUNTERS[i]]=S[_WALL_COUNTERS[i]]||0;
+  S._wallBase.incidents=(S.incidents||[]).length;
+  S._wallBase.warnings=(S.warnings||[]).length;
+  S._wallBase.startT=Date.now();
+}
 function finalizeWall(){
   if(typeof G==='undefined'||!G||!G.grid)return;
   if(G._finalized)return;
@@ -5074,6 +5087,15 @@ function finalizeWall(){
   S.intHistory=S.intHistory||[];S.intHistory.push(G.integrity==null?100:Math.round(G.integrity));
   var _fd=Math.min(1,(typeof wallSolidity==='function')?wallSolidity(G.grid):((typeof countFilled==='function'?countFilled():0)/(GW*GH)));
   S.densHistory=S.densHistory||[];S.densHistory.push(_fd);
+  // rich per-wall snapshot (quality + this-wall counter deltas) for the report's WALL column
+  try{
+    var _ws=snapWall(),_b=S._wallBase||{},i;
+    for(i=0;i<_WALL_COUNTERS.length;i++){var k=_WALL_COUNTERS[i];_ws[k]=(S[k]||0)-(_b[k]||0);}
+    _ws.incidentsWall=(S.incidents||[]).length-(_b.incidents||0);
+    _ws.warningsWall=(S.warnings||[]).length-(_b.warnings||0);
+    _ws.durS=Math.max(0,Math.round((Date.now()-(_b.startT||Date.now()))/1000));
+    S.wallLog=S.wallLog||[];S.wallLog.push(_ws);
+  }catch(_e){}
 }
 // v3.5.62 SINGLE displayed pack % — the SAME cube-fill the scoreboard PACK shows (setEl('sp-eff',Math.round(eff*100))).
 // Every "% PACKED" the player sees (seal banner, wall-complete popup, re-seal, finish) now routes through this,
@@ -5108,7 +5130,7 @@ function sealWall(reason){
     setTimeout(function(){showLevelEnd(reason,false);},800);
     return;
   }
-  try{S.wallLog=S.wallLog||[];S.wallLog.push(snapWall());}catch(_sw){}
+  // v3.5.81 wallLog is pushed by finalizeWall() (called above) with the rich per-wall stats — no duplicate here.
   document.getElementById('next-popup').classList.add('vis');
   document.getElementById('next-popup-badge').textContent='✓ '+reason;
 }
@@ -8014,6 +8036,7 @@ function nextTrailer(){
     G.preselectDepth=0;G.preselectWarned=false;G.seamWarned=false;G.segWarned=false;
     G.beltSinceNC=0;G.beltSinceBag=0;
     placed=0;startT=Date.now();
+    if(typeof wallBaseline==='function')wallBaseline(); // v3.5.81 per-wall stat baseline (shift advance)
     selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;hCell=null;
     lgDangerSec=0;pphLowSec=0;
     collapseAnimating=false;panicActive=false;panicStartT=null;panicSealed=false;
@@ -8295,7 +8318,9 @@ function psBuild(lifeState,life){
     var walls=S.trucksDone||S.truck||0;
     var pieces=S.totalPieces||0;
     var wl=S.wallLog||[];
+    var LW=(wl.length)?wl[wl.length-1]:W; // v3.5.81 the WALL column = the LAST SEALED wall (was reading the empty live wall = all 0s)
     function wlAvg(k){if(!wl.length)return null;var t=0,i;for(i=0;i<wl.length;i++)t+=(wl[i][k]||0);return Math.round(t/wl.length);}
+    function lwv(k){return (LW&&LW[k]!=null)?LW[k]:null;} // last-wall value helper
     var inc=S.incidents||[];
     function ic(t){var k=0,i;for(i=0;i<inc.length;i++){if(inc[i]&&inc[i].type===t)k++;}return k;}
     var avgInt=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):'\u2014';
@@ -8315,8 +8340,8 @@ function psBuild(lifeState,life){
     var pcsSec=durS>0?(pieces/durS).toFixed(2):'0.00';
     var shMin=durS>0?(((S.shelvesLocked||0)/durS)*60).toFixed(1):'0.0';
     var tWall=walls>0?psFmtTime(durS/walls):'\u2014';
-    var ncU=S.ncSpawned?Math.round((S.ncPlaced||0)/S.ncSpawned*100):null;
-    var smU=S.smallsSpawned?Math.round((S.bagsPlaced||0)/S.smallsSpawned*100):null;
+    var ncU=S.ncSpawned?Math.min(100,Math.round((S.ncPlaced||0)/S.ncSpawned*100)):null;
+    var smU=S.smallsSpawned?Math.min(100,Math.round((S.bagsPlaced||0)/S.smallsSpawned*100)):null; // v3.5.81 cap at 100 (was showing 200%)
 
     var H='';
     H+='<div class="ps-tools"><button onclick="window.print()">\u23cf PRINT</button><button onclick="closePostSort()">\u2715 CLOSE</button></div>';
@@ -8329,62 +8354,64 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.80</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.81</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
+    var lwPcsSec=(LW&&LW.durS>0)?((LW.pieces||0)/LW.durS).toFixed(2):null;
     H+='<div class="ps-block"><h4><span class="d">\u25b8</span> THROUGHPUT</h4>'+
-      row('Avg PPH',W.pph,Math.round((typeof avgPPH==='function')?avgPPH():0),'avg_pph')+
-      row('Peak PPH',W.pph,S.bestPPH||0,'peak_pph')+
-      row('Pieces / sec',null,pcsSec,null)+
+      row('Avg PPH',lwv('pph'),Math.round((typeof avgPPH==='function')?avgPPH():0),'avg_pph')+
+      row('Peak PPH',lwv('pph'),S.bestPPH||0,'peak_pph')+
+      row('Pieces / sec',lwPcsSec,pcsSec,null)+
       row('Shelves / min',null,shMin,null)+
-      row('Avg time / wall',null,tWall,null)+'</div>';
+      row('Wall time',(LW&&LW.durS!=null)?psFmtTime(LW.durS):null,tWall,null)+'</div>';
 
     H+='<div class="ps-block"><h4><span class="d">\u25b8</span> SAFETY \u00b7 DOCS RECEIVED</h4>'+
-      row('Incidents (total)',null,inc.length,'incidents')+
+      row('Incidents (total)',lwv('incidentsWall'),inc.length,'incidents')+
       row('\u00b7 Hazmat-high',null,ic('HAZMAT_HIGH'),null,true)+
       row('\u00b7 Hazmat-crush',null,ic('HAZMAT_CRUSH'),null,true)+
       row('\u00b7 Segregation',null,ic('SEGREGATION'),null,true)+
       row('\u00b7 Killer',null,ic('KILLER'),null,true)+
       row('\u00b7 Collapse',null,ic('COLLAPSE'),null,true)+
       row('\u00b7 No-hydration',null,ic('HYDRATION_100'),null,true)+
-      row('Warnings (total)',null,(S.warnings||[]).length,null)+
-      row('\u00b7 washed / mitigated',null,S.safetiesWashed||0,null,true)+
-      row('\u00b7 thrown-away',null,S.safetiesThrown||0,null,true)+
-      row('Water sabotage flags',null,S.waterSabotage||0,null)+
+      row('Warnings (total)',lwv('warningsWall'),(S.warnings||[]).length,null)+
+      row('\u00b7 washed / mitigated',lwv('safetiesWashed'),S.safetiesWashed||0,null,true)+
+      row('\u00b7 thrown-away',lwv('safetiesThrown'),S.safetiesThrown||0,null,true)+
+      row('Water sabotage flags',lwv('waterSabotage'),S.waterSabotage||0,null)+
       row('Sent to training',null,S.practiceKicks||0,null)+
-      row('Crunches',null,S.crunches||0,'crunches')+
-      row('Collapses',null,S.collapses||0,'collapses')+
-      row('Recoveries',null,S.recoveries||0,'recoveries')+
-      row('Hydration breaks',null,S.drinks||0,'hydration_breaks')+
+      row('Crunches',lwv('crunches'),S.crunches||0,'crunches')+
+      row('Collapses',lwv('collapses'),S.collapses||0,'collapses')+
+      row('Recoveries',lwv('recoveries'),S.recoveries||0,'recoveries')+
+      row('Hydration breaks',lwv('drinks'),S.drinks||0,'hydration_breaks')+
       row('SP dwell warnings',null,S.ncDwellWarn||0,'nc_dwell_warnings')+
       row('Smalls dwell warnings',null,S.smallsDwellWarn||0,'smalls_dwell_warnings')+'</div>';
 
     H+='<div class="ps-block"><h4><span class="d">\u25b8</span> LOAD QUALITY</h4>'+
-      row('Integrity',W.integrity,avgInt,'avg_integrity')+
-      row('\u00b7 Structure',W.integrity,wlAvg('integrity'),null,true)+
-      row('\u00b7 Balance',W.bal,wlAvg('bal'),null,true)+
-      row('\u00b7 Density',W.cubePct,wlAvg('cubePct'),null,true)+
-      row('\u00b7 Support',W.support,wlAvg('support'),null,true)+
-      row('Cube fill %',W.cubePct,wlAvg('cubePct'),'cube_eff','','%')+
-      row('Wall height %',W.fillPct,wlAvg('fillPct'),'avg_wall_pct','','%')+
-      row('Avg pieces / wall',W.pieces,(walls>0?Math.round(pieces/walls):'\u2014'),null)+
+      row('Integrity',lwv('integrity'),avgInt,'avg_integrity')+
+      row('\u00b7 Structure',lwv('integrity'),wlAvg('integrity'),null,true)+
+      row('\u00b7 Balance',lwv('bal'),wlAvg('bal'),null,true)+
+      row('\u00b7 Density',lwv('cubePct'),wlAvg('cubePct'),null,true)+
+      row('\u00b7 Support',lwv('support'),wlAvg('support'),null,true)+
+      row('Cube fill %',lwv('cubePct'),wlAvg('cubePct'),'cube_eff','','%')+
+      row('Wall height %',lwv('fillPct'),wlAvg('fillPct'),'avg_wall_pct','','%')+
+      row('Avg pieces / wall',lwv('pieces'),(walls>0?Math.round(pieces/walls):'\u2014'),null)+
       row('SP utility %',null,(ncU==null?'\u2014':ncU),'nc_util_pct','','%')+
       row('Smalls utility %',null,(smU==null?'\u2014':smU),'smalls_util_pct','','%')+
-      row('Voids (open cells)',W.voids,null,null)+
-      row('Shelves locked',W.shelves,S.shelvesLocked||0,'shelves_locked')+
-      row('Double locks',W.doubles,S.doubleLocks||0,'double_locks')+
-      row('Tire nests (vet)',null,S.nests||0,'nests')+
-      row('COG offset',W.cog,null,null)+'</div>';
+      row('Voids (open cells)',lwv('voids'),null,null)+
+      row('Shelves locked',lwv('shelves'),S.shelvesLocked||0,'shelves_locked')+
+      row('Double locks',lwv('doubles'),S.doubleLocks||0,'double_locks')+
+      row('Tire nests (vet)',lwv('nests'),S.nests||0,'nests')+
+      row('COG offset',lwv('cog'),null,null)+'</div>';
 
+    var lwBonus=LW?((LW.recoveries||0)+(LW.doubleLocks||0)+(LW.hazShelfLocks||0)+(LW.nests||0)):null;
     H+='<div class="ps-block"><h4><span class="d">\u25b8</span> MECHANICS</h4>'+
-      row('Rotations',null,S.rotations||0,'rotations')+
-      row('Lifts',null,S.lifts||0,'lifts')+
-      row('Rejected drops',null,S.rejects||0,'rejected_drops')+
-      row('Staging actions',null,S.stagingActions||0,null)+
-      row('Hazmat locks',null,S.hazShelfLocks||0,null)+
-      row('Bonuses received',null,S.bonuses||((S.recoveries||0)+(S.doubleLocks||0)+(S.hazShelfLocks||0)+(S.nests||0)),'bonuses')+
-      row('Bags broken / placed',null,(S.bagsBroken||0)+'/'+(S.bagsPlaced||0),null)+'</div>'; // v3.5.11 dropped the two perma-"\u2014" rows (Slot occupancy / Pack-fill) \u2014 never implemented, read as slop
+      row('Rotations',lwv('rotations'),S.rotations||0,'rotations')+
+      row('Lifts',lwv('lifts'),S.lifts||0,'lifts')+
+      row('Rejected drops',lwv('rejects'),S.rejects||0,'rejected_drops')+
+      row('Staging actions',lwv('stagingActions'),S.stagingActions||0,null)+
+      row('Hazmat locks',lwv('hazShelfLocks'),S.hazShelfLocks||0,null)+
+      row('Bonuses received',lwBonus,S.bonuses||((S.recoveries||0)+(S.doubleLocks||0)+(S.hazShelfLocks||0)+(S.nests||0)),'bonuses')+
+      row('Bags broken / placed',LW?((LW.bagsBroken||0)+'/'+(LW.bagsPlaced||0)):null,(S.bagsBroken||0)+'/'+(S.bagsPlaced||0),null)+'</div>'; // v3.5.11 dropped the two perma-"\u2014" rows (Slot occupancy / Pack-fill) \u2014 never implemented, read as slop
 
     H+='</div>'; // end blocks
 
@@ -9589,6 +9616,7 @@ function initTruck(){
   // Seed a couple of NCs and bags so the panels aren't empty from the start
   if(gameMode==='daily'){seedDailyTray();}else if(gameMode!=='gauntlet'){for(var i=0;i<2;i++)spawnNC();for(var i=0;i<2;i++)spawnBag();} // v2.7.3 daily = deterministic 6 NC + 4 bag loadout
   placed=0;startT=Date.now();
+  if(typeof wallBaseline==='function')wallBaseline(); // v3.5.81 per-wall stat baseline
   selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;hCell=null;
   lgDangerSec=0;pphLowSec=0;gOver=false;
   collapseAnimating=false;panicActive=false;panicStartT=null;panicSealed=false;
