@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.66
+   LOCK IN v3.5.67
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.67 - THE HEY WINDOW (throw is now a real risk/reward mechanic). Throwing a box grabs you a smalls bag FAST — but the manager sees it: "HEY —" opens a 2-SECOND WINDOW. DRINK WATER inside it and he says "…THANK YOU FOR STAYING HYDRATED" (the toss slides, no violation). Miss it and he escalates: "YOU ARE NOT ALLOWED TO THROW PACKAGES!" → a minor THROW safety that ladders to an incident on repeat. Combined with the cooldowns (throw 5s / drink 6s) + the escalating throw & drink score penalties, the meta is: grab a bag when you need one and get away with it — as long as it isn't every box. Removed the old throw-pardons-a-warning model (drinking is the cover now). THROW added to the minor-offense set + safety labels. NEXT: the clipboard write-up/documentation popup that stops the game to acknowledge an infraction. No grade-math change.
    CHANGE LOG v3.5.66 - COLLAPSE ESCALATION + throw/drink cooldowns + settings de-slop. (1) COLLAPSE IS A LEARNING CURVE now, not an instant violation: 1st-2nd collapse = a playful "whoopsie" (no record), 3rd = the trainer notices ("your wall keeps collapsing — fix it"), 4th = a safety warning on the record, 5th+ = a violation/incident. The narrative escalates like a real floor: trainer notices → says something → manager comes to watch → writes it up. (Hazmat-in-a-collapse still = round over, checked first.) Both collapse paths (column-topple + integrity-crash) route through collapseEscalation(). (2) THROW + DRINK COOLDOWNS: neither can be spammed — throw 5s, drink 6s, the button greys out while cooling. With the escalating score penalties, the escape-valve meta is now strategic (and optional). (3) SETTINGS descriptions de-slopped: dropped the "full recorded set lands later" / "more palettes can follow" unfulfilled-promise lines and the clunky "(fully off when OFF)". NEXT (spec'd, awaiting the nod): the write-up/documentation popup + the throw→HEY→2s mitigation window. No grade-math change.
    CHANGE LOG v3.5.65 - VERTICAL-TIRE PHYSICS + hazmat-collapse + throw penalty + level-name cleanup. (1) VERTICAL TIRE = unstable base: a rotated (on-edge) tire can't bear a load, so ANY piece placed one higher TOPPLES (onVerticalTire). (2) VERTICAL TIRE-STACKING ladder: stacking a tire on top of another tire escalates — 1st warning, 2nd incident, 3rd practice trailer, 4th round OVER ("your wall came down — you got hurt"). (3) HAZMAT in ANY collapse = round over ("you're going to hurt somebody") — a dropped hazmat is a hurt-somebody event, no matter the stack. (4) THROW PENALTY (perfect symmetry with the drink rule): 4th throw -100, 5th -200, 6th -300... per wall — kills the "throw forever → 1000 smalls from bags" exploit (you CAN, it just goes deep negative). (5) COMMENTARY: the abusive "use your brain" smalls line → "Fill the gaps." (6) LEVEL NAMES: L1 hub was a duplicate of its city (both "Columbus, OH · CMH") → "John Glenn Columbus Intl"; L5 was "THE INCHEON OVERNIGHT" (dupe of L7 Chicago) set in "Seoul" → "THE INCHEON RUSH" / "Incheon, South Korea · ICN". No grade-math change.
    CHANGE LOG v3.5.64 - SIDEWAYS TIRES + drink penalty + fragile-commentary slop. (1) SIDEWAYS TIRES: tire rotation is now ALLOWED (was hard-blocked with "lay it flat"). Standing a tire on edge is a MINOR manager safety fired on placement (TIRE_SIDEWAYS) — a 2nd unmitigated one escalates to an incident, and water/throw/shelf-lock washes it. A row of 3+ sideways tires draws extra commentary. (2) DRINK PENALTY: over-hydrating to farm warning-washes now costs score — 4th drink -100, 5th -200, 6th -300... (escalating -100). You can still drink your way out of a warning, but it's no longer free (pairs with throw + sideways-tire as a penalized escape valve, not an exploit). (3) FRAGILE COMMENTARY was INVERTED: gy=0 is the CEILING, so a fragile on the FLOOR (large gy) was hitting the "on top, good job" pool. Fixed — a low fragile now correctly gets the frag_bad ("exposed / will get crushed") lines. NOTE (not yet done): smalls-spam-via-throw anti-reward, level-location cleanup, and a broader "responses-only" commentary expansion. No grade-math change.
@@ -1592,7 +1593,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.66 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.67 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1713,7 +1714,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.66 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.67 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1844,7 +1845,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.66 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.67 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2218,7 +2219,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.66
+// LOCK IN v3.5.67
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3669,6 +3670,9 @@ function takeDrink(){
   S.drinks=(S.drinks||0)+1;
   if(typeof playSfx==='function')playSfx('drink');
   var cleared=(typeof mitigateWarn==='function')&&mitigateWarn('water'); // water clears ONE open minor warning
+  // v3.5.67 THE HEY WINDOW — a drink inside the 2s window COVERS the throw you just made ("...thank you for staying hydrated").
+  var _covered=false;
+  if(typeof _throwPending!=='undefined'&&_throwPending){_throwPending=false;if(typeof _throwWinTO!=='undefined'&&_throwWinTO){clearTimeout(_throwWinTO);_throwWinTO=null;}S.throwsCovered=(S.throwsCovered||0)+1;_covered=true;}
   if((G.drinks||0)>3){ // over-hydrating to farm warning-washes = sabotage (logged + published)
     // v3.5.64 escalating SCORE penalty: 4th drink -100, 5th -200, 6th -300... you CAN still drink your way
     // out of a warning, but it costs you. Keeps the escape valve honest instead of free.
@@ -3676,7 +3680,8 @@ function takeDrink(){
     G.score=Math.max(0,(G.score||0)-_dpen);
     S.waterSabotage=(S.waterSabotage||0)+1;
     showBanner('\ud83d\udeab OVER-HYDRATING TO DODGE SAFETIES IS SABOTAGE \u2014 logged. \u2212'+_dpen+' CUBES'+(cleared?' (warning still cleared).':'.'),'danger',2400);
-  }else if(cleared){showBanner('\ud83d\udca7 WATER BREAK \u2014 warning cleared (still on the record as washed).','ok',1900);}
+  }else if(_covered){showBanner('\ud83d\udc77 MANAGER: \u2026THANK YOU FOR STAYING HYDRATED. \ud83d\udca7<br><span style="font-size:.5em">(the toss slides \u2014 this time.)</span>','ok',2400);}
+  else if(cleared){showBanner('\ud83d\udca7 WATER BREAK \u2014 warning cleared (still on the record as washed).','ok',1900);}
   else if(G.drinks===1)showBanner('\ud83d\udca7 HYDRATED \u2014 1 is par. A second nets a bonus.','',1400);
   else if(G.drinks===2)showBanner('\ud83d\udca7 TOPPED OFF \u2014 hydration bonus secured.','ok',1400);
   updateWaterHUD();if(typeof updateSafetyHUD==='function')updateSafetyHUD();
@@ -4314,10 +4319,10 @@ function logIncident(type,cls){
 // or throw the piece (minor only). Hazmat-high and collapses are incidents outright \u2014 no
 // pardon. Washed safeties are STILL published (the "1501 safeties, 1490 for throwing" bit).
 var SAFETY_PRACTICE_THRESHOLD=5;
-var SAFETY_MINOR=['HYDRATION','TIRE_SIDEWAYS','SP_DWELL','SMALLS_DWELL']; // warn-eligible + throw/water-pardonable
+var SAFETY_MINOR=['HYDRATION','TIRE_SIDEWAYS','SP_DWELL','SMALLS_DWELL','THROW']; // warn-eligible + water-clearable
 function _sfMinor(o){return SAFETY_MINOR.indexOf(o)>=0;}
 function _sfInit(){S.warnings=S.warnings||[];S.incidents=S.incidents||[];}
-function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
+function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',TIRE_STACK:'stacked tires',THROW:'thrown package',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
 function _incidentEscalation(){ // shared by logIncident + safetyIncident + collapse
   _sfInit();
   var n=S.incidents.length;
@@ -4386,8 +4391,24 @@ function checkHydrationSafety(){
   if(pct>=75&&pct<100&&(G.drinks||0)===0&&!G._hyd75){G._hyd75=true;safetyWarn('HYDRATION','you\u2019re 75% up the wall and haven\u2019t taken a water break.');}
   if(pct>=100&&(G.drinks||0)===0&&!G._hyd100){G._hyd100=true;safetyIncident('HYDRATION_100','topped the wall bone-dry \u2014 no water the whole trailer.');}
 }
-// THROW \u2014 toss the selected piece; ALWAYS spawns a bag of smalls (a vet always has one to throw
-// on); pardons a MINOR safety only (hazmat is an incident, never a warning, so it can't be thrown away).
+// v3.5.67 THE HEY WINDOW \u2014 throwing a box grabs you a smalls bag FAST, but the manager sees it. You get a
+// 2-second window to COVER it with a water break ("\u2026thank you for staying hydrated"). Miss it and the manager
+// escalates ("YOU ARE NOT ALLOWED TO THROW PACKAGES!") into a minor safety that can ladder to an incident.
+// The meta: grab a bag when you need one and get away with it \u2014 as long as it isn't every box.
+var _throwPending=false,_throwWinTO=null;
+function _openThrowWindow(pen){
+  _throwPending=true;
+  if(_throwWinTO)clearTimeout(_throwWinTO);
+  showBanner('\ud83d\udc77 MANAGER: HEY \u2014'+((pen>0)?(' (\u2212'+pen+' cubes)'):'')+'<br><span style="font-size:.5em">bag\u2019s on the belt. DRINK WATER in the next 2s to cover the toss.</span>','warn',2200);
+  _throwWinTO=setTimeout(function(){
+    _throwWinTO=null;
+    if(!_throwPending||gOver)return;
+    _throwPending=false;
+    showBanner('\ud83d\udc77 MANAGER: YOU ARE NOT ALLOWED TO THROW PACKAGES!','danger',3200);
+    if(typeof safetyWarn==='function')safetyWarn('THROW','tossed a package and didn\u2019t cover it with a water break.');
+  },2000);
+}
+// THROW \u2014 toss the selected piece; ALWAYS spawns a bag of smalls (a vet always has one to throw on).
 function throwBox(){
   if(gOver||typeof G==='undefined'||!G||!G.belt||!G.belt.length){if(typeof showBanner==='function'&&(!G||!G.belt||!G.belt.length))showBanner('Nothing in hand to throw.','',1200);return;}
   if(Date.now()-_lastThrowT<THROW_CD){showBanner('🦵 THROW ON COOLDOWN — you can’t chuck packages back-to-back.','warn',1200);return;}
@@ -4400,13 +4421,9 @@ function throwBox(){
   // Kills the "throw forever, place 1000 smalls from bags" exploit: you CAN do it, it just goes deep score-negative.
   var _tpen=0;
   if((G.throws||0)>3){_tpen=(G.throws-3)*100;G.score=Math.max(0,(G.score||0)-_tpen);}
-  var _tp=_tpen>0?(' \u2212'+_tpen+' CUBES (spamming throws is not free)'):'';
-  var washed=mitigateWarn('throw');
-  if(washed){S.safetiesThrown=(S.safetiesThrown||0)+1;
-    showBanner('\ud83e\uddb5 THROWN \u2014 minor safety pardoned (logged as thrown). A bag of smalls hit the belt.'+_tp,'warn',2400);
-  }else{showBanner('\ud83e\uddb5 THROWN \u2014 piece tossed, a bag of smalls hit the belt.'+_tp,_tpen>0?'danger':'',2000);}
   if(typeof playSfx==='function')playSfx('place');
   if(typeof refillBelt==='function')refillBelt();
+  _openThrowWindow(_tpen); // v3.5.67 THE HEY WINDOW \u2014 a bag hits the belt, manager says "HEY \u2014"; DRINK within 2s to cover it or it's a violation
   updateSafetyHUD();
 }
 // \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550
@@ -8068,7 +8085,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.66</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.67</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
