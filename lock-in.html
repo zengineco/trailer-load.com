@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.84
+   LOCK IN v3.5.85
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.85 - THE SOCIAL HUB (Profile + Leaderboard + Friends consolidated). The two menu buttons (LEADERBOARD + PROFILE) are now ONE "◆ SOCIAL" button opening one overlay titled SOCIAL with four tabs: ◉ ME (your record, or the sign-in form logged out) / ◈ DAILY / ★ HALL / ♦ FRIENDS. The ME tab reuses the exact profile renderer via a new PF_BODY target var (default 'pf-body' so the standalone profile overlay still works). Daily-board loading moved into lbTab('daily') so any entry path loads it; openLeaderboard() is now an alias → openSocial('daily'); the pause PROFILE button → openSocial('me'). Verified in-browser: title SOCIAL, all 4 tabs, ME shows the auth form when anon, HALL/DAILY load. No backend change. NEXT (social pass 2): daily top-10 "you made it — sign in" CTA, daily-board flesh-out, more leaderboard categories, clipboard-skin the rest of the menus.
    CHANGE LOG v3.5.84 - BRIEFING DETAIL + TOUR/GAUNTLET swap. (2) Every pre-sort rule now has a muted "why" detail line under it — real intermediate instruction (a 4+ freestanding stack topples; locked shelves cap hazmat; hazmat in any collapse ends the round; standing a tire is a warning a drink clears; throw a box to summon a bag; density not just height). Tightened the type so all 9 rules + 9 why-lines seat in the clipboard (measured: 431px in a 456px area, 25px headroom). (3) Menu order swapped: GAUNTLET now sits where TOUR was (after ARCADE) and TOUR moved down (after DAILY). NOTE on Arcade chute (#1): the belt genuinely holds ~12 pieces and the render caps at 10 — there's NO count cap, so a visible "6" is chute-geometry clipping the bottom rows; needs a screenshot to tune the clip precisely (won't guess render geometry blind). No logic change.
    CHANGE LOG v3.5.83 - LEADERBOARD POLISH: THE HALL (Walls of Fame + Walls of Shame). The old ALL-TIME/TOTAL tabs are now one "★ HALL" tab with a Fame/Shame dropdown = 9 boards. FAME: Best Wall, Total Loaded, Fastest Wall, Fewest Pieces, Cleanest Wall. SHAME: Slowest Wall, Most Pieces, Messiest Wall, Most Collapses. Fastest/slowest/fewest/most-pieces are true SINGLE-WALL boards, powered by a NEW backend: lockin_walls table (RLS insert-own) + lockin_log_wall() (posts each SEALED wall, logged-in only, from the v3.5.81 per-wall stats) + a flexible lockin_wall_board(metric) RPC (fastest/fewest/messiest sort ascending; density-gated so a loose bail can't cheese Fastest/Fewest). Tabs are now DAILY / HALL / FRIENDS. Verified in-browser: Best=vince 259k, Total=vince 319k live; per-wall boards show "be the first" until walls seal (they populate as logged-in players play). Additive — existing boards/RPCs untouched. Arcade-chute-6, extra briefing detail, tour/gauntlet swap + socials tab still queued.
    CHANGE LOG v3.5.82 - PRE-SORT BRIEFING rewrite (real instruction, not caveman). Rule #4 was flat wrong — "RED TAG = HEAVY" (HEAVY is a GRAY tag; red tags are fragile/DNS/SP/hazmat) AND it described the NC/SP STAGING mechanic, not "heavy". Rewrote the whole briefing as a professional dock-orientation sheet now that the new clipboard has room: 9 accurate, scannable rules (grab & place / build off the floor / lock shelves / stage the non-cons / fragile & glass on top / hazmat low & locked / lay tires flat / bags spill smalls / pack tight then seal) — sentence case, lighter weight, covers the mechanics that matter now (hazmat, tires, safety). Tightened the type so all 9 seat in the writing area (measured in-browser: 396px content in a 456px area, 60px headroom). No logic change. (Load-stand confirmed a REFERENCE, not a mechanic — removed from the backlog.)
@@ -1661,7 +1662,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.84 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.85 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1731,8 +1732,7 @@ body[data-cb="trit"]{
 <!-- ═══════════════════ START MENU ═══════════════════ -->
 <div id="start-menu" style="display:none;">
   <div id="sm-topright">
-    <button class="sm-loginbtn" title="Leaderboard" onclick="openLeaderboard()">◆ LEADERBOARD</button>
-    <button class="sm-loginbtn" title="Your profile / record" onclick="openProfile()">◆ PROFILE</button>
+    <button class="sm-loginbtn" title="Your record, the boards & friends" onclick="openSocial()">◆ SOCIAL</button>
     <button class="sm-iconbtn" title="Settings" onclick="openSettings()">⚙</button>
   </div>
   <div id="sm-logo">
@@ -1784,7 +1784,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.84 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.85 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1937,7 +1937,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.84 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.85 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2228,7 +2228,7 @@ body[data-cb="trit"]{
     <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="restartGame()">↻ TRY AGAIN</button>
     <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="returnToMenu()">⌂ MAIN MENU</button>
     <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="openSettings()">⚙ SETTINGS</button>
-    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="openProfile()">◊ PROFILE</button>
+    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="openSocial('me')">◊ SOCIAL</button>
     <button class="btn-p" style="flex:1 1 100%" onclick="openPostSort()">◆ POST-SORT REPORT</button>
   </div>
 </div>
@@ -2237,11 +2237,15 @@ body[data-cb="trit"]{
 <div id="ov-recover"><div class="rec-card"><div class="rec-icon">⚠</div><div class="rec-title">WE'RE SORRY — THE SCREEN STALLED</div><div class="rec-sub">The display stopped updating. Your session is safe. Tap RESUME to retry — and if it stays stuck, do a HARD REFRESH (Ctrl+Shift+R, or Cmd+Shift+R on Mac) for a clean reset.</div><div class="rec-btns"><button class="btn-p" onclick="recoverResume()">▶ RESUME</button><button class="btn-p" onclick="recoverMenu()">CHOOSE MODE</button><button class="btn-p" onclick="location.reload()">⟳ HARD REFRESH</button></div><div class="rec-dbg" id="rec-dbg"></div></div></div>
 <div id="ov-profile"><div class="pf-card"><div class="pf-top"><div class="pf-title" id="pf-title">PROFILE</div><button class="pf-x" onclick="closeProfile()">✕</button></div><div class="pf-body" id="pf-body"></div></div></div>
 <!-- v3.5.13 LEADERBOARD -->
-<div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">LEADERBOARD</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
+<div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">SOCIAL</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
   <div class="lb-tabs">
-    <button class="lb-tab active" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
+    <button class="lb-tab active" id="lb-tab-me" onclick="lbTab('me')">◉ ME</button>
+    <button class="lb-tab" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
     <button class="lb-tab" id="lb-tab-hall" onclick="lbTab('hall')">★ HALL</button>
     <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">♦ FRIENDS</button>
+  </div>
+  <div id="lb-pane-me">
+    <div class="pf-body" id="lb-me-body" style="padding:0"><div class="pf-loading">Loading your record…</div></div>
   </div>
   <div id="lb-pane-daily">
     <div class="lb-tabline" id="lb-daily-date">◈ DAILY · —</div>
@@ -2322,7 +2326,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.84
+// LOCK IN v3.5.85
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8154,11 +8158,33 @@ function lbRenderInto(id,rows,emptyMsg){
   el.innerHTML=h;
 }
 function lbTab(which){
-  var panes={daily:'lb-pane-daily',hall:'lb-pane-hall',friends:'lb-pane-friends'};
-  var tabs={daily:'lb-tab-daily',hall:'lb-tab-hall',friends:'lb-tab-friends'};
+  var panes={me:'lb-pane-me',daily:'lb-pane-daily',hall:'lb-pane-hall',friends:'lb-pane-friends'};
+  var tabs={me:'lb-tab-me',daily:'lb-tab-daily',hall:'lb-tab-hall',friends:'lb-tab-friends'};
   for(var k in panes){var p=document.getElementById(panes[k]);if(p)p.style.display=(k===which)?'':'none';var t=document.getElementById(tabs[k]);if(t)t.classList.toggle('active',k===which);}
+  if(which==='me')lbLoadMe(); // v3.5.85 the ME tab = your profile/record, folded into SOCIAL
+  if(which==='daily'){ // v3.5.85 load the daily board whenever the tab is shown (was only in openLeaderboard)
+    var dd=document.getElementById('lb-daily-date');if(dd)dd.textContent='◈ DAILY · '+dailyKey();
+    var db=document.getElementById('lb-daily-board');if(db)db.innerHTML='<div class="lb-empty">Loading…</div>';
+    if(typeof zLoadDailyBoard==='function')zLoadDailyBoard(function(rows){lbRenderInto('lb-daily-board',rows);});
+  }
   if(which==='hall'){var sel=document.getElementById('lb-hall-metric');lbLoadHall(sel?sel.value:'best');} // v3.5.83 fame/shame boards
   if(which==='friends')lbLoadFriends();
+}
+// v3.5.85 SOCIAL hub entry — one button, one overlay: ME (record) / DAILY / HALL / FRIENDS.
+function openSocial(tab){
+  var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.add('vis');
+  lbTab(tab||((ZDATA.session&&ZDATA.session.uid)?'me':'daily'));
+}
+// ME tab renders the profile (or the sign-in form) into the SOCIAL overlay, reusing the profile renderer via PF_BODY.
+function lbLoadMe(){
+  PF_BODY='lb-me-body';
+  var sx=ZDATA.session,body=document.getElementById('lb-me-body');
+  if(!sx||!sx.uid){if(body)body.innerHTML=pfAuthFormHTML();if(typeof pfMode==='function')pfMode(PF_MODE||'worker');return;}
+  if(body)body.innerHTML='<div class="pf-loading">Loading your record…</div>';
+  fetchFacilities(function(facs){
+    if(facs&&facs.length){fetchCohort(function(rows){pfRenderCohort(facs,rows);});}
+    else{fetchProfile(function(state,rows){pfRenderPlayer(state,rows);});}
+  });
 }
 // v3.5.83 THE HALL — Walls of Fame + Walls of Shame, one dropdown, many boards.
 var HALL_META={
@@ -8271,14 +8297,7 @@ function lbUnfollow(u){
       .catch(function(e){console.error('unfollow:',e);});
   }catch(e){}
 }
-function openLeaderboard(){
-  var ov=document.getElementById('ov-leaderboard');if(!ov)return;ov.classList.add('vis');
-  lbTab._allLoaded=false;lbTab('daily');
-  var d=document.getElementById('lb-daily-date');if(d)d.textContent='◈ DAILY · '+dailyKey();
-  var b=document.getElementById('lb-daily-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
-  if(typeof zLoadDailyBoard==='function')zLoadDailyBoard(function(rows){lbRenderInto('lb-daily-board',rows);});
-  if(typeof gaEvent==='function')gaEvent('leaderboard_open',{});
-}
+function openLeaderboard(){ openSocial('daily'); if(typeof gaEvent==='function')gaEvent('leaderboard_open',{}); } // v3.5.85 alias → SOCIAL hub
 function pfEsc(x){x=(x==null?'':''+x);return x.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function pfNum(n){return (n==null||isNaN(+n))?'\u2014':Math.round(+n);}
 function pfDate(t){if(!t)return '\u2014';try{var d=new Date(t);return (d.getMonth()+1)+'/'+d.getDate()+'/'+(''+d.getFullYear()).slice(2);}catch(e){return '\u2014';}}
@@ -8347,15 +8366,16 @@ function pfDoSignup(){
     }).catch(function(e){console.error('pfDoSignup:',e);if(nt)nt.textContent='\u2715 Network error \u2014 try again.';});}catch(e){console.error('pfDoSignup:',e);}
 }
 function pfDoLogout(){if(typeof zAuthLogout==='function')zAuthLogout();PF_MODE='worker';openProfile();}
-function openProfile(){var ov=document.getElementById('ov-profile');if(!ov)return;ov.classList.add('vis');
-  var body=document.getElementById('pf-body'),tt=document.getElementById('pf-title'),sx=ZDATA.session;
+var PF_BODY='pf-body'; // v3.5.85 render target so the SOCIAL "ME" tab can reuse the profile renderer
+function openProfile(){PF_BODY='pf-body';var ov=document.getElementById('ov-profile');if(!ov)return;ov.classList.add('vis');
+  var body=document.getElementById(PF_BODY),tt=document.getElementById('pf-title'),sx=ZDATA.session;
   if(!sx||!sx.uid){if(tt)tt.textContent='SIGN IN';if(body)body.innerHTML=pfAuthFormHTML();pfMode(PF_MODE||'worker');return;}
   if(body)body.innerHTML='<div class="pf-loading">Loading your record\u2026</div>';
   fetchFacilities(function(facs){
     if(facs&&facs.length){if(tt)tt.textContent='COHORT';fetchCohort(function(rows){pfRenderCohort(facs,rows);});}
     else{if(tt)tt.textContent='YOUR RECORD';fetchProfile(function(state,rows){pfRenderPlayer(state,rows);});}
   });}
-function pfRenderPlayer(state,rows){var body=document.getElementById('pf-body');if(!body)return;
+function pfRenderPlayer(state,rows){var body=document.getElementById(PF_BODY);if(!body)return;
   if(state!=='ok'){body.innerHTML='<div class="pf-loading">Couldn\u2019t reach the yard server. Try again in a moment.</div>';return;}
   if(!rows||!rows.length){body.innerHTML='<div class="pf-loading">No sealed sessions yet \u2014 load a wall and your record starts here.</div>';return;}
   var tot={sessions:0,walls:0,score:0,shelves:0,doubles:0,nests:0,incidents:0},i,r,peak=0,ai=0,aiN=0,last=null;
@@ -8367,7 +8387,7 @@ function pfRenderPlayer(state,rows){var body=document.getElementById('pf-body');
   h+='<div class="pf-sec">BY MODE</div><table class="pf-table"><tr><th>MODE</th><th>WALLS</th><th>PEAK PPH</th><th>AVG INT</th><th>SCORE</th></tr>';
   for(i=0;i<rows.length;i++){r=rows[i];h+='<tr><td>'+pfEsc((r.mode||'\u2014').toUpperCase())+'</td><td>'+pfNum(r.walls)+'</td><td>'+pfNum(r.peak_pph)+'</td><td>'+pfNum(r.avg_integrity)+'%</td><td>'+pfNum(r.score)+'</td></tr>';}
   h+='</table>'+pfFootHTML();body.innerHTML=h;}
-function pfRenderCohort(facs,rows){var body=document.getElementById('pf-body');if(!body)return;
+function pfRenderCohort(facs,rows){var body=document.getElementById(PF_BODY);if(!body)return;
   var fnames=[],k;for(k=0;k<facs.length;k++)fnames.push(pfEsc(facs[k].name||facs[k].facility_code));
   var h='<div class="pf-hero"><div class="pf-hero-id">'+(fnames.join(' \u00b7 ')||'YOUR FACILITY')+'</div><div class="pf-hero-sub">'+(rows?rows.length:0)+' enrolled handle'+((rows&&rows.length===1)?'':'s')+'</div></div>';
   if(!rows||!rows.length){h+='<div class="pf-loading">No handles enrolled yet. Hand out usernames + dock hex-codes to start the roster.</div>';body.innerHTML=h;return;}
@@ -8418,7 +8438,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.84</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.85</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
