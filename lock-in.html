@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.74
+   LOCK IN v3.5.75
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.75 - CLIPBOARD MENUS (step 1: PAUSE). The pause/ADMIN menu now sits on the REAL clipboard.png (the same asset + writing-area pattern as the briefing), not the CSS-generated paper+clip. Shared .clip-card/.clip-in treatment added so it stamps onto the other menus next. NOTE: the preview viewport rendered 0x0 all session (screenshots dead), so this is structure-verified (clipboard.png applied, aspect-ratio set, content in the writing-area wrapper) but NOT pixel-verified — needs a human glance before I replicate it onto write-up/profile/end. No logic change.
    CHANGE LOG v3.5.74 - PROFILE/COHORT enterprise reskin. The worker record + facility roster now read like a real HR/competency report: sticky uppercase column headers on a toned bar, zebra rows + hover, tabular-lining numbers, polished metric tiles (subtle gradient + inset highlight), stronger section rules, and a highlighted "you" row hook. Pure CSS on the existing markup — no data/logic change. NEXT: put clipboard.png behind ALL menus (pause/end/profile/write-up), like the briefing.
    CHANGE LOG v3.5.73 - PER-MODE MUSIC + control-strip WATER/THROW + pause tidy + throw polish. (1) PER-MODE MUSIC: each mode opens on its own track then continues the AUTO playlist — Gauntlet 1, Arcade 2, Practice 3, Daily 4, Tour 5 (skipped if you pinned a track in Settings). (2) WATER + THROW moved OUT of the floating side gutters INTO the bottom control strip alongside BREAK JAM / NC / ROT (cooldown-grey still works; kept the IDs). (3) THROW icon 🦵→🤾 (reads like a throw, not a kick). (4) THROW ricochet: bigger box (~36-52 vs ~18) + higher launch (bounce kept). (5) PAUSE MENU reordered to Resume · Settings · Account · Restart · Main Menu · Clock Out, and WARM-DARK MODE removed (it lives in Settings). No grade-math change.
    CHANGE LOG v3.5.72 - FRAGILE-CRUSH warning + HAZMAT nesting + persistent HAZMAT marker. (1) FRAGILE CRUSH is a WARNING first now, not a firing — an autopilot slip. Crushing a fragile fires a minor FRAGILE_CRUSH safety (water/lock/throw-clearable) that ladders to an incident only on repeat; a crushed HAZMAT is still the instant write-up. (2) HAZMAT NESTING: hazmats (NC pieces) can now be seated into a placed tire's hollow — the code rewarded it but the fits-gate blocked all NC pieces. Select a hazmat, tap a tire = leak-shielded in the hollow (big bonus, and it can't fall in a collapse). (3) PERSISTENT HAZMAT MARKER: any LOOSE hazmat on the wall (not capped by a locked shelf above it) now pulses a red warning outline every frame, so the danger is always visible — lock a shelf over it or nest it to clear the marker. No grade-math change.
@@ -1060,18 +1061,14 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pmb-restart:hover{border-color:var(--acc);color:var(--acc);}
 .pmb-theme{background:transparent;color:var(--t2);border-color:var(--border);}
 .pmb-theme:hover{border-color:var(--t2);color:var(--t1);}
-/* v3.5.39 ADMIN = the pause menu on the CLIPBOARD (warm paper + metal clip) — unifies the clipboard motif */
-.pause-clip{position:relative;background:#f5f0e8;border-radius:4px;width:min(420px,92vw);
-  padding:30px 26px 22px;box-shadow:0 16px 54px rgba(0,0,0,.6);
-  display:flex;flex-direction:column;gap:9px;max-height:88vh;overflow-y:auto;}
-.pause-clip::before{content:'';position:absolute;top:-14px;left:50%;transform:translateX(-50%);
-  width:120px;height:26px;background:#8a8d92;border-radius:5px;box-shadow:0 3px 8px rgba(0,0,0,.45);}
-.pause-clip::after{content:'';position:absolute;top:-9px;left:50%;transform:translateX(-50%);
-  width:62px;height:16px;background:#43474d;border-radius:3px;}
-.pause-clip .pause-title{color:#3a2c1a;text-shadow:none;font-size:40px;letter-spacing:5px;}
+/* v3.5.75 UNIFIED CLIPBOARD — menus now sit on the REAL clipboard.png (like the briefing); content lives in the clear writing area */
+.clip-in{position:absolute;left:11%;right:11%;top:33%;bottom:7.5%;overflow-y:auto;display:flex;flex-direction:column;gap:8px;align-items:center;}
+.pause-clip{position:relative;width:min(500px,94vw);aspect-ratio:1372/1146;background:url('clipboard.png') center/contain no-repeat;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));}
+.pause-clip::before,.pause-clip::after{display:none;}
+.pause-clip .pause-title{color:#3a2c1a;text-shadow:none;font-size:30px;letter-spacing:4px;}
 .pause-clip .pause-sub{color:#9a8a6c;}
-.pause-clip .pause-menu{max-width:none;}
-.pause-clip .pmb{font-size:18px;letter-spacing:3px;border-color:#cbbfa6;color:#3a2c1a;background:rgba(255,255,255,.45);}
+.pause-clip .pause-menu{max-width:300px;gap:6px;margin-top:2px;}
+.pause-clip .pmb{font-size:15px;letter-spacing:2px;padding:8px 0;border-color:#cbbfa6;color:#3a2c1a;background:rgba(255,255,255,.55);}
 .pause-clip .pmb:hover{border-color:var(--acc);color:var(--acc-dim);}
 .pause-clip .pmb-resume{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#2a1c08;border-color:var(--acc);}
 .pause-clip .pmb-resume:hover{filter:brightness(1.05);color:#2a1c08;}
@@ -1648,8 +1645,9 @@ body[data-cb="trit"]{
 <div id="ov-pause">
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
+  <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.74 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.75 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1665,6 +1663,7 @@ body[data-cb="trit"]{
     <div id="fp-tip-s">Place SP freight along the floor before stacking regular freight — it anchors your wall.</div>
   </div>
   <div class="pause-hint">ESC or ⏸ to resume · R to rotate pieces</div>
+  </div>
   </div>
 </div>
 
@@ -1769,7 +1768,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.74 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.75 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1922,7 +1921,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.74 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.75 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2292,7 +2291,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.74
+// LOCK IN v3.5.75
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8289,7 +8288,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.74</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.75</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
