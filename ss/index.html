@@ -396,10 +396,14 @@ function drawPkg(pkg){
     cx.restore();drawBadge(pkg,x,y,h,'✖','rgba(224,80,42,.95)','#fff');return;
   }
 
+  // v1.x PLAIN CARDBOARD skin (recycled from LOCK IN) — the box color was an early devmode cue; the ROUTE now
+  // reads off a randomly-placed sticker, like a real parcel. Every box is the same cardboard; you read the label.
   var bg=cx.createLinearGradient(x,y,x+w,y+h);
-  bg.addColorStop(0,pkg.light);bg.addColorStop(.5,pkg.col);bg.addColorStop(1,shade(pkg.col,-22));
+  bg.addColorStop(0,'#cba079');bg.addColorStop(.5,'#b8895a');bg.addColorStop(1,'#8f6a42');
   cx.fillStyle=bg;rr(x,y,w,h,7);cx.fill();
-  cx.fillStyle='rgba(255,255,255,.14)';rr(x,y,w,h*0.34,7);cx.fill();
+  cx.fillStyle='rgba(255,255,255,.12)';rr(x,y,w,h*0.34,7);cx.fill();
+  // faint corrugation seam down the middle
+  cx.strokeStyle='rgba(80,54,30,.18)';cx.lineWidth=1;cx.beginPath();cx.moveTo(x+w*0.5,y+3);cx.lineTo(x+w*0.5,y+h-3);cx.stroke();
 
   if(pkg.cond==='fragile'){
     cx.save();rr(x,y,w,h,7);cx.clip();
@@ -427,9 +431,18 @@ function drawPkg(pkg){
   cx.restore();
 
   if(!hidesRoute(pkg)){
-    cx.fillStyle='rgba(248,244,232,.95)';
-    var lw=w*0.58,lh=h*0.38,lx=pkg.x-lw/2,ly=pkg.y-lh/2;cx.fillRect(lx,ly,lw,lh);
-    cx.fillStyle='#1c140a';cx.font="bold "+Math.max(10,h*0.28)+"px 'Bebas Neue'";cx.textAlign='center';cx.textBaseline='middle';cx.fillText(pkg.route,pkg.x,pkg.y);
+    // v1.x ROUTE STICKER — a manila label slapped at a seeded-random spot with a slight tilt (you have to FIND
+    // and read it, like a real box). A thin route-colored stripe sits on the sticker as a secondary cue.
+    var sw=w*0.52,sh=h*0.44;
+    var sxr=x+5+((pkg.seed*29)%Math.max(1,Math.round(w-sw-10)));
+    var syr=y+5+((pkg.seed*53)%Math.max(1,Math.round(h-sh-10)));
+    cx.save();
+    cx.translate(sxr+sw/2,syr+sh/2);cx.rotate(((pkg.seed%7)-3)*0.045);
+    cx.fillStyle='rgba(250,247,238,.98)';cx.fillRect(-sw/2,-sh/2,sw,sh);
+    cx.fillStyle=pkg.col;cx.fillRect(-sw/2,-sh/2,sw,sh*0.24); // the sticker STRIPE (route accent)
+    cx.strokeStyle='rgba(20,16,10,.35)';cx.lineWidth=1;cx.strokeRect(-sw/2,-sh/2,sw,sh);
+    cx.fillStyle='#1c140a';cx.font="bold "+Math.max(9,h*0.24)+"px 'Bebas Neue'";cx.textAlign='center';cx.textBaseline='middle';cx.fillText(pkg.route,0,sh*0.08);
+    cx.restore();
   }
 
   if(pkg.cond==='fragile')drawBadge(pkg,x,y,h,'⚠','rgba(242,194,0,.98)','#1a1208');
