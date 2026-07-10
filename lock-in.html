@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.67
+   LOCK IN v3.5.68
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.68 - THE SAFETY WRITE-UP (paperwork that STOPS the game). Real infractions now raise a clipboard document — LOCK IN letterhead, loader, date, INFRACTION #, the specific violation + WHY IT MATTERS (the rule), and a ✍ SIGN & CONTINUE that resumes play. "Bad the first time" hazards fire it IMMEDIATELY (hazmat-high, hazmat-crush, killer pair, segregation breach, vertical tire-stack); everything else accumulates and gets written up every 3rd violation. It routes through the shared _incidentEscalation so every incident path is covered, pauses via the real loop (paused + cancelAnimationFrame, watchdog + keyboard guards updated), and the hazmat docs spell out the loose-hazmat rule loud and clear. Verified end-to-end in-browser: fires, populates, pauses, signs, resumes. NEXT in the crank: throw ricochet animation, achievement system + the jailbreaker trophy, SmallsSort box-skins, music pass. No grade-math change.
    CHANGE LOG v3.5.67 - THE HEY WINDOW (throw is now a real risk/reward mechanic). Throwing a box grabs you a smalls bag FAST — but the manager sees it: "HEY —" opens a 2-SECOND WINDOW. DRINK WATER inside it and he says "…THANK YOU FOR STAYING HYDRATED" (the toss slides, no violation). Miss it and he escalates: "YOU ARE NOT ALLOWED TO THROW PACKAGES!" → a minor THROW safety that ladders to an incident on repeat. Combined with the cooldowns (throw 5s / drink 6s) + the escalating throw & drink score penalties, the meta is: grab a bag when you need one and get away with it — as long as it isn't every box. Removed the old throw-pardons-a-warning model (drinking is the cover now). THROW added to the minor-offense set + safety labels. NEXT: the clipboard write-up/documentation popup that stops the game to acknowledge an infraction. No grade-math change.
    CHANGE LOG v3.5.66 - COLLAPSE ESCALATION + throw/drink cooldowns + settings de-slop. (1) COLLAPSE IS A LEARNING CURVE now, not an instant violation: 1st-2nd collapse = a playful "whoopsie" (no record), 3rd = the trainer notices ("your wall keeps collapsing — fix it"), 4th = a safety warning on the record, 5th+ = a violation/incident. The narrative escalates like a real floor: trainer notices → says something → manager comes to watch → writes it up. (Hazmat-in-a-collapse still = round over, checked first.) Both collapse paths (column-topple + integrity-crash) route through collapseEscalation(). (2) THROW + DRINK COOLDOWNS: neither can be spammed — throw 5s, drink 6s, the button greys out while cooling. With the escalating score penalties, the escape-valve meta is now strategic (and optional). (3) SETTINGS descriptions de-slopped: dropped the "full recorded set lands later" / "more palettes can follow" unfulfilled-promise lines and the clunky "(fully off when OFF)". NEXT (spec'd, awaiting the nod): the write-up/documentation popup + the throw→HEY→2s mitigation window. No grade-math change.
    CHANGE LOG v3.5.65 - VERTICAL-TIRE PHYSICS + hazmat-collapse + throw penalty + level-name cleanup. (1) VERTICAL TIRE = unstable base: a rotated (on-edge) tire can't bear a load, so ANY piece placed one higher TOPPLES (onVerticalTire). (2) VERTICAL TIRE-STACKING ladder: stacking a tire on top of another tire escalates — 1st warning, 2nd incident, 3rd practice trailer, 4th round OVER ("your wall came down — you got hurt"). (3) HAZMAT in ANY collapse = round over ("you're going to hurt somebody") — a dropped hazmat is a hurt-somebody event, no matter the stack. (4) THROW PENALTY (perfect symmetry with the drink rule): 4th throw -100, 5th -200, 6th -300... per wall — kills the "throw forever → 1000 smalls from bags" exploit (you CAN, it just goes deep negative). (5) COMMENTARY: the abusive "use your brain" smalls line → "Fill the gaps." (6) LEVEL NAMES: L1 hub was a duplicate of its city (both "Columbus, OH · CMH") → "John Glenn Columbus Intl"; L5 was "THE INCHEON OVERNIGHT" (dupe of L7 Chicago) set in "Seoul" → "THE INCHEON RUSH" / "Incheon, South Korea · ICN". No grade-math change.
@@ -1068,6 +1069,27 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pause-clip #fp-tip-h{color:#3a2c1a;}
 .pause-clip #fp-tip-s{color:#6a5c44;}
 .pause-clip .pause-hint{color:#9a8a6c;}
+/* v3.5.68 SAFETY WRITE-UP — a clipboard document that STOPS the game; you must sign to continue */
+#ov-writeup{position:fixed;inset:0;z-index:520;display:none;align-items:center;justify-content:center;background:rgba(10,7,4,.82);padding:16px;}
+#ov-writeup.vis{display:flex;}
+.wu-clip{position:relative;background:#f5f0e8;border-radius:5px;width:min(460px,94vw);max-height:92vh;overflow-y:auto;padding:26px 26px 20px;box-shadow:0 22px 60px rgba(0,0,0,.6);border-top:6px solid #c8791e;font-family:'Barlow Condensed',sans-serif;color:#2a1c0e;}
+.wu-clip::before{content:'';position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:80px;height:20px;background:#8a7a5e;border-radius:4px;box-shadow:0 2px 5px rgba(0,0,0,.35);}
+.wu-head{border-bottom:2px solid #2a1c0e;padding-bottom:8px;margin-bottom:12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.wu-brand{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#2a1c0e;}
+.wu-brand b{color:#c8791e;}
+.wu-doc{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#8a1a1a;border:1px solid #c04a2a;padding:2px 7px;border-radius:3px;}
+.wu-meta{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:14px;}
+.wu-meta div{display:flex;flex-direction:column;}
+.wu-meta span{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:#9a8a6c;}
+.wu-meta b{font-size:16px;color:#2a1c0e;word-break:break-all;}
+.wu-inf-lbl,.wu-why-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#8a1a1a;margin-bottom:3px;}
+.wu-why-lbl{color:#7a6a4c;margin-top:14px;}
+.wu-inf{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:1px;color:#8a1a1a;line-height:1.05;}
+.wu-why{font-size:16px;line-height:1.42;color:#3a2c1a;}
+.wu-ack{margin-top:18px;border-top:1px dashed #c8b898;padding-top:12px;}
+.wu-ack span{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;color:#9a8a6c;margin-bottom:10px;line-height:1.4;}
+.wu-ack button{width:100%;padding:13px;border:none;border-radius:6px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#1a0f04;background:linear-gradient(180deg,#f3b64a,#e0902e);box-shadow:0 3px 0 #a9661a;}
+.wu-ack button:active{transform:translateY(2px);box-shadow:0 1px 0 #a9661a;}
 .pause-hint{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
   color:var(--t3);text-align:center;margin-top:4px;}
 /* v3.5.7: COACH card inside the pause overlay (overrides the old right-panel flex:1 layout) */
@@ -1593,7 +1615,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.67 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.68 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1714,9 +1736,28 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.67 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.68 · © 2026</div>
 </div>
 
+<!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
+<div id="ov-writeup">
+  <div class="wu-clip">
+    <div class="wu-head"><span class="wu-brand">LOCK<b> IN</b></span><span class="wu-doc">SAFETY WRITE-UP</span></div>
+    <div class="wu-meta">
+      <div><span>LOADER</span><b id="wu-loader">GUEST</b></div>
+      <div><span>DATE</span><b id="wu-date">—</b></div>
+      <div><span>INFRACTION #</span><b id="wu-num">1</b></div>
+    </div>
+    <div class="wu-inf-lbl">INFRACTION</div>
+    <div class="wu-inf" id="wu-title">—</div>
+    <div class="wu-why-lbl">WHY IT MATTERS</div>
+    <div class="wu-why" id="wu-why">—</div>
+    <div class="wu-ack">
+      <span id="wu-ack-note">By signing, you acknowledge the safety briefing. Repeat infractions escalate — five sends you to a practice trailer.</span>
+      <button onclick="signWriteup()">✍ SIGN &amp; CONTINUE</button>
+    </div>
+  </div>
+</div>
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
 <div id="settings-overlay">
   <div id="set-panel">
@@ -1845,7 +1886,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.67 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.68 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2219,7 +2260,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.67
+// LOCK IN v3.5.68
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4323,10 +4364,41 @@ var SAFETY_MINOR=['HYDRATION','TIRE_SIDEWAYS','SP_DWELL','SMALLS_DWELL','THROW']
 function _sfMinor(o){return SAFETY_MINOR.indexOf(o)>=0;}
 function _sfInit(){S.warnings=S.warnings||[];S.incidents=S.incidents||[];}
 function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',TIRE_STACK:'stacked tires',THROW:'thrown package',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
+// v3.5.68 WRITE-UP SYSTEM \u2014 some infractions are "bad the first time" (obvious hazards \u2192 instant paperwork);
+// everything else accumulates and gets documented every 3rd violation. The write-up STOPS the game to be signed.
+var WRITEUP_POOL=['HAZMAT_HIGH','HAZMAT_CRUSH','KILLER','SEGREGATION','TIRE_STACK']; // immediate write-up
+var WRITEUP_DOCS={
+  HAZMAT_HIGH:{t:'HAZMAT LOADED ABOVE SHOULDER HEIGHT',w:'Hazardous freight rides LOW and LOCKED under a shelf so it can never fall. A high hazmat that comes down is a chemical-spill injury \u2014 an automatic write-up. You cannot leave hazmat loose.'},
+  HAZMAT_CRUSH:{t:'HAZMAT LOADED UNDER WEIGHT',w:'Never bury a hazmat under heavy freight \u2014 crushed containers leak. Load it low, cap it with a LOCKED shelf, put nothing heavy on top.'},
+  KILLER:{t:'INCOMPATIBLE HAZMAT CLASSES IN CONTACT',w:'These two classes react with each other. 49 CFR requires separation \u2014 a "killer pair" touching is the write-up every carrier fears.'},
+  SEGREGATION:{t:'HAZMAT SEGREGATION BREACH',w:'Different hazmat classes need clear cells between them (49 CFR segregation table). Keep them apart.'},
+  TIRE_STACK:{t:'TIRES STACKED VERTICALLY',w:'Tires stacked on their edge ROLL the second the door opens. Lay them flat \u2014 an obvious hazard is an immediate write-up.'},
+  COLLAPSE:{t:'REPEATED WALL COLLAPSES',w:'Your wall keeps coming down. Taper your stacks (wide base, narrow top) and lock shelves. Repeated collapses get documented.'},
+  ACCUMULATED:{t:'MULTIPLE SAFETY VIOLATIONS',w:'You have stacked up safety violations this session. The manager is now documenting each one. Slow down and load it clean.'}
+};
+function raiseWriteup(offense){
+  var doc=WRITEUP_DOCS[offense]||WRITEUP_DOCS.ACCUMULATED;
+  var p=(typeof zLoadPlayer==='function')?zLoadPlayer():{};
+  var who=(p&&(p.handle||((p.email||'').split('@')[0])))||'GUEST';
+  function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  set('wu-loader',who);set('wu-date',new Date().toISOString().slice(0,10));
+  set('wu-num',(S.incidents||[]).length);set('wu-title',doc.t);set('wu-why',doc.w);
+  paused=true;if(animF){cancelAnimationFrame(animF);animF=null;}
+  var ov=document.getElementById('ov-writeup');if(ov)ov.classList.add('vis');
+  if(typeof playSfx==='function')playSfx('lose');
+}
+function signWriteup(){
+  var ov=document.getElementById('ov-writeup');if(ov)ov.classList.remove('vis');
+  if(gOver)return;
+  paused=false;lastLoopT=0;animF=requestAnimationFrame(loop);
+}
 function _incidentEscalation(){ // shared by logIncident + safetyIncident + collapse
   _sfInit();
   var n=S.incidents.length;
-  if(n===2)showBanner('\u26a0 SAFETY RECORD FLAGGED \u2014 second incident. On the floor, that\u2019s a documented discussion.','danger',3600);
+  var offense=(n>0&&S.incidents[n-1])?S.incidents[n-1].type:'';
+  if(WRITEUP_POOL.indexOf(offense)>=0){raiseWriteup(offense);} // "bad the first time" \u2192 instant paperwork
+  else if(n%3===0){raiseWriteup(WRITEUP_DOCS[offense]?offense:'ACCUMULATED');} // otherwise every 3rd violation
+  else if(n===2)showBanner('\u26a0 SAFETY RECORD FLAGGED \u2014 second incident. On the floor, that\u2019s a documented discussion.','danger',3600);
   if(n>=SAFETY_PRACTICE_THRESHOLD&&!(G&&G._practiceSent))sendToPractice();
   updateSafetyHUD();
 }
@@ -4940,7 +5012,7 @@ function _shown(id){var e=document.getElementById(id);return !!(e&&e.offsetParen
 function _watchdog(){
   try{
     try{window.__LI_STATE='hb='+_hb+' paused='+paused+' gOver='+gOver+' mode='+gameMode+' placed='+placed+' belt='+((typeof G!=='undefined'&&G.belt)?G.belt.length:'?')+' nc='+((typeof G!=='undefined'&&G.ncSlots)?G.ncSlots.filter(function(x){return x;}).length:'?')+' bag='+((typeof G!=='undefined'&&G.bagSlots)?G.bagSlots.filter(function(x){return x;}).length:'?')+' selB='+selBeltIdx+' selNC='+selNC+' selBag='+selBag+' collapseAnim='+collapseAnimating+' recovery='+recoveryActive+' panic='+panicActive+' bagDwell='+bagDwellFired+' ncHaz='+ncHazardFired+' animF='+animF+' hidden='+(typeof document!=='undefined'&&document.hidden)+' ov[pop='+_shown('next-popup')+' pause='+_shown('ov-pause')+' end='+_shown('ov-end')+' post='+_shown('ov-postsort')+' lvend='+_shown('ov-level-end')+' menu='+_shown('start-menu')+']';}catch(_ps){}
-    var blocked=_shown('start-menu')||_shown('ov-pause')||_shown('ov-end')||_shown('ov-postsort')||_shown('ov-level-end')||_shown('level-select')||_shown('ov-recover');
+    var blocked=_shown('start-menu')||_shown('ov-pause')||_shown('ov-end')||_shown('ov-postsort')||_shown('ov-writeup')||_shown('ov-level-end')||_shown('level-select')||_shown('ov-recover');
     if(paused||gOver||blocked||(typeof document!=='undefined'&&document.hidden)){_hbLast=_hb;return;}
     if(_hb===_hbLast){
       var st='paused='+paused+' gOver='+gOver+' mode='+gameMode+' placed='+placed+' wallH='+((typeof wallH==='function')?wallH():'?')+' animF='+animF+' lastLoopT='+Math.round(lastLoopT||0)+' W='+((typeof W==='number')?W:'?')+' H='+((typeof H==='number')?H:'?');
@@ -6656,7 +6728,7 @@ var _kbHinted=false;
 function kbPlayActive(){
   if(!(gameMode==='shift'||gameMode==='training'||gameMode==='level'||gameMode==='daily'||gameMode==='gauntlet'||gameMode===''))return false; // '' = regular; menu/idle excluded by overlay guards below
   if(paused||gOver)return false;
-  if(_shown('start-menu')||_shown('ov-pause')||_shown('ov-end')||_shown('ov-postsort')||_shown('ov-level-end')||_shown('level-select')||_shown('ov-recover')||_shown('next-popup'))return false;
+  if(_shown('start-menu')||_shown('ov-pause')||_shown('ov-end')||_shown('ov-postsort')||_shown('ov-writeup')||_shown('ov-level-end')||_shown('level-select')||_shown('ov-recover')||_shown('next-popup'))return false;
   return true;
 }
 function kbSelBox(){
@@ -8085,7 +8157,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.67</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.68</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
