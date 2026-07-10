@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.75
+   LOCK IN v3.5.76
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.76 - LOGIN-STATE CONSISTENCY. The post-sort report showed a local handle ("kreminal") as LOADER while the footer said "LOG IN TO TRACK LIFETIME" — because the LOADER read the persistent LOCAL player record (liPlayer) while the lifetime/legend read the live auth session (ZDATA.session.uid). Two different sources. NEW single identity helper: zLoggedIn()/zWho() — "logged in" now means one thing everywhere (a live session with a uid, the SAME check the lifetime/profile/leaderboards already use). The report LOADER and the safety write-up loader now use it, so a genuine session shows the handle + tracks lifetime, and a local-only handle (no session) reads GUEST consistently top-to-bottom. No other logic change.
    CHANGE LOG v3.5.75 - CLIPBOARD MENUS (step 1: PAUSE). The pause/ADMIN menu now sits on the REAL clipboard.png (the same asset + writing-area pattern as the briefing), not the CSS-generated paper+clip. Shared .clip-card/.clip-in treatment added so it stamps onto the other menus next. NOTE: the preview viewport rendered 0x0 all session (screenshots dead), so this is structure-verified (clipboard.png applied, aspect-ratio set, content in the writing-area wrapper) but NOT pixel-verified — needs a human glance before I replicate it onto write-up/profile/end. No logic change.
    CHANGE LOG v3.5.74 - PROFILE/COHORT enterprise reskin. The worker record + facility roster now read like a real HR/competency report: sticky uppercase column headers on a toned bar, zebra rows + hover, tabular-lining numbers, polished metric tiles (subtle gradient + inset highlight), stronger section rules, and a highlighted "you" row hook. Pure CSS on the existing markup — no data/logic change. NEXT: put clipboard.png behind ALL menus (pause/end/profile/write-up), like the briefing.
    CHANGE LOG v3.5.73 - PER-MODE MUSIC + control-strip WATER/THROW + pause tidy + throw polish. (1) PER-MODE MUSIC: each mode opens on its own track then continues the AUTO playlist — Gauntlet 1, Arcade 2, Practice 3, Daily 4, Tour 5 (skipped if you pinned a track in Settings). (2) WATER + THROW moved OUT of the floating side gutters INTO the bottom control strip alongside BREAK JAM / NC / ROT (cooldown-grey still works; kept the IDs). (3) THROW icon 🦵→🤾 (reads like a throw, not a kick). (4) THROW ricochet: bigger box (~36-52 vs ~18) + higher launch (bounce kept). (5) PAUSE MENU reordered to Resume · Settings · Account · Restart · Main Menu · Clock Out, and WARM-DARK MODE removed (it lives in Settings). No grade-math change.
@@ -1647,7 +1648,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.75 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.76 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1768,7 +1769,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.75 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.76 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1921,7 +1922,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.75 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.76 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2291,7 +2292,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.75
+// LOCK IN v3.5.76
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2801,6 +2802,11 @@ function zSaveSession(j,email,handle){
   try{localStorage.setItem('liAuth',JSON.stringify(ZDATA.session));}catch(e){console.error('zSaveSession:',e);}
   zAuthStatus();
 }
+// v3.5.76 SINGLE identity source. "Logged in" = a live auth session (ZDATA.session.uid) — the SAME check the
+// lifetime / profile / leaderboards already use. Prevents the report showing a local handle at the top while the
+// footer says "log in to track". A local-only handle with no session reads as GUEST, consistently everywhere.
+function zLoggedIn(){return !!(ZDATA.session&&ZDATA.session.uid);}
+function zWho(){var s=ZDATA.session;if(s&&s.uid)return s.handle||((s.email||'').split('@')[0])||'LOADER';return 'GUEST';}
 function zAuthLoad(){
   if(!ZDATA.session){try{var r=localStorage.getItem('liAuth');if(r)ZDATA.session=JSON.parse(r);}catch(e){console.error('zAuthLoad:',e);}}
   var sx=ZDATA.session;
@@ -4472,8 +4478,7 @@ var WRITEUP_DOCS={
 };
 function raiseWriteup(offense){
   var doc=WRITEUP_DOCS[offense]||WRITEUP_DOCS.ACCUMULATED;
-  var p=(typeof zLoadPlayer==='function')?zLoadPlayer():{};
-  var who=(p&&(p.handle||((p.email||'').split('@')[0])))||'GUEST';
+  var who=(typeof zWho==='function')?zWho():'GUEST'; // v3.5.76 session-based identity, consistent with the report + lifetime
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('wu-loader',who);set('wu-date',new Date().toISOString().slice(0,10));
   set('wu-num',(S.incidents||[]).length);set('wu-title',doc.t);set('wu-why',doc.w);
@@ -8281,14 +8286,14 @@ function psBuild(lifeState,life){
     H+='<div class="ps-tools"><button onclick="window.print()">\u23cf PRINT</button><button onclick="closePostSort()">\u2715 CLOSE</button></div>';
     H+='<div class="ps-mast"><div style="display:flex;align-items:baseline"><span class="lg">LOCK<b> IN</b></span><span class="doc">POST-SORT REPORT</span></div><span class="stamp">SESSION COMPLETE</span></div><div class="ps-rule"></div>';
     H+='<div class="ps-id">'+
-      '<div><span class="k">LOADER</span><span class="v">'+((p.email||'').split('@')[0]||'GUEST')+'</span></div>'+
+      '<div><span class="k">LOADER</span><span class="v">'+zWho()+'</span></div>'+
       '<div><span class="k">FACILITY</span><span class="v">'+(p.facility||'\u2014')+'</span></div>'+
       '<div><span class="k">MODE</span><span class="v">'+(gameMode||'\u2014').toUpperCase()+'</span></div>'+
       '<div><span class="k">DATE</span><span class="v">'+new Date().toISOString().slice(0,10)+'</span></div>'+
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.75</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.76</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
