@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.68
+   LOCK IN v3.5.69
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.69 - THROW RICOCHET (the hilarious payoff). Tossing a box now launches a tumbling carton up-and-across the trailer that bounces off both walls + the floor, spinning, losing energy on each hit, then settles and fades — pure cosmetic juice on the THROW mechanic (a smalls bag still lands on the belt). Runs on the existing JUICE particle system (spawnThrow → juiceUpdate physics → drawParticles), same canvas space as the placement bursts, capped at 8 in flight. No gameplay/scoring change.
    CHANGE LOG v3.5.68 - THE SAFETY WRITE-UP (paperwork that STOPS the game). Real infractions now raise a clipboard document — LOCK IN letterhead, loader, date, INFRACTION #, the specific violation + WHY IT MATTERS (the rule), and a ✍ SIGN & CONTINUE that resumes play. "Bad the first time" hazards fire it IMMEDIATELY (hazmat-high, hazmat-crush, killer pair, segregation breach, vertical tire-stack); everything else accumulates and gets written up every 3rd violation. It routes through the shared _incidentEscalation so every incident path is covered, pauses via the real loop (paused + cancelAnimationFrame, watchdog + keyboard guards updated), and the hazmat docs spell out the loose-hazmat rule loud and clear. Verified end-to-end in-browser: fires, populates, pauses, signs, resumes. NEXT in the crank: throw ricochet animation, achievement system + the jailbreaker trophy, SmallsSort box-skins, music pass. No grade-math change.
    CHANGE LOG v3.5.67 - THE HEY WINDOW (throw is now a real risk/reward mechanic). Throwing a box grabs you a smalls bag FAST — but the manager sees it: "HEY —" opens a 2-SECOND WINDOW. DRINK WATER inside it and he says "…THANK YOU FOR STAYING HYDRATED" (the toss slides, no violation). Miss it and he escalates: "YOU ARE NOT ALLOWED TO THROW PACKAGES!" → a minor THROW safety that ladders to an incident on repeat. Combined with the cooldowns (throw 5s / drink 6s) + the escalating throw & drink score penalties, the meta is: grab a bag when you need one and get away with it — as long as it isn't every box. Removed the old throw-pardons-a-warning model (drinking is the cover now). THROW added to the minor-offense set + safety labels. NEXT: the clipboard write-up/documentation popup that stops the game to acknowledge an infraction. No grade-math change.
    CHANGE LOG v3.5.66 - COLLAPSE ESCALATION + throw/drink cooldowns + settings de-slop. (1) COLLAPSE IS A LEARNING CURVE now, not an instant violation: 1st-2nd collapse = a playful "whoopsie" (no record), 3rd = the trainer notices ("your wall keeps collapsing — fix it"), 4th = a safety warning on the record, 5th+ = a violation/incident. The narrative escalates like a real floor: trainer notices → says something → manager comes to watch → writes it up. (Hazmat-in-a-collapse still = round over, checked first.) Both collapse paths (column-topple + integrity-crash) route through collapseEscalation(). (2) THROW + DRINK COOLDOWNS: neither can be spammed — throw 5s, drink 6s, the button greys out while cooling. With the escalating score penalties, the escape-valve meta is now strategic (and optional). (3) SETTINGS descriptions de-slopped: dropped the "full recorded set lands later" / "more palettes can follow" unfulfilled-promise lines and the clunky "(fully off when OFF)". NEXT (spec'd, awaiting the nod): the write-up/documentation popup + the throw→HEY→2s mitigation window. No grade-math change.
@@ -1615,7 +1616,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.68 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.69 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1736,7 +1737,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.68 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.69 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1886,7 +1887,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.68 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.69 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2260,7 +2261,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.68
+// LOCK IN v3.5.69
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2885,7 +2886,7 @@ var collapseAnimating=false;
 
 // ── Pass E: JUICE (screen-shake + particles) ──
 // READS: SETTINGS.reducedMotion | WRITES: nothing in grid (cosmetic only)
-var JUICE={shake:0,sx:0,sy:0,parts:[],_lt:0};
+var JUICE={shake:0,sx:0,sy:0,parts:[],thrown:[],_lt:0};
 function juiceOn(){return !(typeof SETTINGS!=='undefined'&&SETTINGS.reducedMotion);}
 function addShake(m){if(juiceOn())JUICE.shake=Math.max(JUICE.shake,m);}
 function hapt(kind){ // v2.6.2 haptics — Android web vibration; iOS web is a no-op (native wrapper only)
@@ -2904,6 +2905,19 @@ function spawnBurst(cx,cy,n,col,spd,life,grav){
   }
   if(JUICE.parts.length>260)JUICE.parts.splice(0,JUICE.parts.length-260);
 }
+// v3.5.69 THROW RICOCHET — a box you toss launches up-and-across, bounces off the trailer walls + floor,
+// tumbling, then settles and fades. Pure cosmetic juice for the THROW mechanic (a bag still spawns on the belt).
+function spawnThrow(){
+  if(!juiceOn())return;
+  JUICE.thrown.push({
+    x:W*0.5+(Math.random()*44-22), y:H*0.86,
+    vx:(Math.random()<0.5?-1:1)*(170+Math.random()*150),
+    vy:-(360+Math.random()*170),
+    rot:0, vrot:(Math.random()*2-1)*11,
+    life:2.4, max:2.4, size:18+Math.random()*8, bounces:0
+  });
+  if(JUICE.thrown.length>8)JUICE.thrown.splice(0,JUICE.thrown.length-8);
+}
 function juiceUpdate(ts){
   var dt=JUICE._lt?Math.min((ts-JUICE._lt)/1000,.05):.016;JUICE._lt=ts;
   if(JUICE.shake>0.2){JUICE.shake*=0.86;JUICE.sx=(Math.random()*2-1)*JUICE.shake;JUICE.sy=(Math.random()*2-1)*JUICE.shake;}
@@ -2914,17 +2928,39 @@ function juiceUpdate(ts){
     if(p.life<=0){JUICE.parts.splice(i,1);continue;}
     p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=p.grav*dt;p.vx*=0.98;
   }
+  for(i=JUICE.thrown.length-1;i>=0;i--){
+    var t=JUICE.thrown[i];t.life-=dt;
+    if(t.life<=0){JUICE.thrown.splice(i,1);continue;}
+    t.x+=t.vx*dt;t.y+=t.vy*dt;t.vy+=980*dt;t.rot+=t.vrot*dt;
+    var s=t.size*0.5;
+    if(t.x<s){t.x=s;t.vx=-t.vx*0.62;t.vrot*=-1;t.bounces++;}
+    else if(t.x>W-s){t.x=W-s;t.vx=-t.vx*0.62;t.vrot*=-1;t.bounces++;}
+    if(t.y<s){t.y=s;t.vy=-t.vy*0.5;}
+    if(t.y>H-s){t.y=H-s;t.vy=-t.vy*0.46;t.vx*=0.72;t.vrot*=0.7;t.bounces++;}
+  }
 }
 function drawParticles(c){
-  if(!JUICE.parts.length)return;
-  c.save();
   var i,p,a;
-  for(i=0;i<JUICE.parts.length;i++){
-    p=JUICE.parts[i];a=Math.max(0,p.life/p.max);
-    c.globalAlpha=a;c.fillStyle=p.col;
-    c.beginPath();c.arc(p.x,p.y,p.r,0,Math.PI*2);c.fill();
+  if(JUICE.parts.length){
+    c.save();
+    for(i=0;i<JUICE.parts.length;i++){
+      p=JUICE.parts[i];a=Math.max(0,p.life/p.max);
+      c.globalAlpha=a;c.fillStyle=p.col;
+      c.beginPath();c.arc(p.x,p.y,p.r,0,Math.PI*2);c.fill();
+    }
+    c.restore();
   }
-  c.restore();
+  // v3.5.69 tumbling thrown boxes
+  for(i=0;i<JUICE.thrown.length;i++){
+    var t=JUICE.thrown[i],s=t.size,h=s*0.5;
+    c.save();
+    c.globalAlpha=Math.min(1,t.life/0.5);
+    c.translate(t.x,t.y);c.rotate(t.rot);
+    c.fillStyle='#b8895a';c.fillRect(-h,-h,s,s);
+    c.fillStyle='rgba(214,182,120,.85)';c.fillRect(-h,-2.2,s,4.4); // tape stripe
+    c.strokeStyle='#6a4a2a';c.lineWidth=2;c.strokeRect(-h,-h,s,s);
+    c.restore();
+  }
 }
 
 // ── Pass E: SFX (procedural WebAudio — no assets, no deps) ──
@@ -4489,6 +4525,7 @@ function throwBox(){
   G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
   S.throws=(S.throws||0)+1;G.throws=(G.throws||0)+1;
   if(typeof spawnBag==='function')spawnBag(); // throwing ALWAYS puts a bag of smalls on the belt
+  if(typeof spawnThrow==='function')spawnThrow(); // v3.5.69 the tumbling-box ricochet
   // v3.5.65 escalating throw penalty \u2014 PERFECT SYMMETRY with the drink rule (4th throw -100, 5th -200, 6th -300...).
   // Kills the "throw forever, place 1000 smalls from bags" exploit: you CAN do it, it just goes deep score-negative.
   var _tpen=0;
@@ -8157,7 +8194,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.68</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.69</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
