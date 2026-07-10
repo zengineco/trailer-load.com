@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.70
+   LOCK IN v3.5.71
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.71 - MUSIC UI + D-PAD/JOYSTICK toggle + more settings de-slop. (1) MUSIC: was 4 track buttons for 13 real songs — now ONE BUTTON PER SONG (AUTO + 1–13, built from the real track list, trimmed the 30 phantom slots) plus a ⏭ SKIP SONG button that jumps to the next track in AUTO or a pinned track. Removed the redundant track hint + the "Slide Music to 0 / SFX always on" slop note. (2) D-PAD/JOYSTICK: new Control Type toggle above the size slider — D-PAD is a 4-way pad that drives the same cursor as the arrow keys (press-and-hold repeats), JOYSTICK is the existing aim stick; choice persists in localStorage, and "Control Size" is now "D-pad / Joystick Size". (3) Coach Voice lost the "(also changeable mid-shift…)" dev-note. Verified in-browser: 14 track buttons + skip render, the toggle flips the widget + persists. No gameplay/scoring change.
    CHANGE LOG v3.5.70 - SETTINGS de-slop (round 2). Dropped the needless "(bigger for larger hands)" under Control Size and "(drag the joystick anywhere you want it)" under Reposition — the labels stand on their own. Music Track hint "AUTO rotates 1 → 2 → 3 → 4" → "AUTO cycles the tracks" (no phantom track count). NEXT (paired build): rename Control Size → "D-pad / Joystick Size" WITH a real D-pad/Joystick touch toggle, and recycle the LOCK IN box skin onto SmallsSort packages. No gameplay change.
    CHANGE LOG v3.5.69 - THROW RICOCHET (the hilarious payoff). Tossing a box now launches a tumbling carton up-and-across the trailer that bounces off both walls + the floor, spinning, losing energy on each hit, then settles and fades — pure cosmetic juice on the THROW mechanic (a smalls bag still lands on the belt). Runs on the existing JUICE particle system (spawnThrow → juiceUpdate physics → drawParticles), same canvas space as the placement bursts, capped at 8 in flight. No gameplay/scoring change.
    CHANGE LOG v3.5.68 - THE SAFETY WRITE-UP (paperwork that STOPS the game). Real infractions now raise a clipboard document — LOCK IN letterhead, loader, date, INFRACTION #, the specific violation + WHY IT MATTERS (the rule), and a ✍ SIGN & CONTINUE that resumes play. "Bad the first time" hazards fire it IMMEDIATELY (hazmat-high, hazmat-crush, killer pair, segregation breach, vertical tire-stack); everything else accumulates and gets written up every 3rd violation. It routes through the shared _incidentEscalation so every incident path is covered, pauses via the real loop (paused + cancelAnimationFrame, watchdog + keyboard guards updated), and the hazmat docs spell out the loose-hazmat rule loud and clear. Verified end-to-end in-browser: fires, populates, pauses, signs, resumes. NEXT in the crank: throw ricochet animation, achievement system + the jailbreaker trophy, SmallsSort box-skins, music pass. No grade-math change.
@@ -986,9 +987,9 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .side-btn.side-r{right:max(10px,calc(50% - 330px));border-color:#c88a2a;}
 .side-btn:hover{filter:brightness(1.12);}
 .side-btn:active{transform:scale(.93);}
-#m-stick,#m-drop,#m-rot{display:none;}
+#m-stick,#m-drop,#m-rot,#m-dpad{display:none;}
 /* v3.5.47 CUSTOM TOUCH CONTROLS — movable + scalable joystick (accessibility for larger hands) */
-body.ctrl-edit #m-stick,body.ctrl-edit #m-drop,body.ctrl-edit #m-rot{display:flex!important;}
+body.ctrl-edit:not(.ctrl-dpad) #m-stick,body.ctrl-edit.ctrl-dpad #m-dpad,body.ctrl-edit #m-drop,body.ctrl-edit #m-rot{display:flex!important;}
 body.ctrl-edit #m-stick{outline:2px dashed var(--acc-bright);outline-offset:4px;}
 #ctrl-edit-bar{display:none;position:fixed;left:0;right:0;bottom:0;z-index:400;background:rgba(20,14,8,.97);border-top:2px solid var(--acc);padding:12px 16px 16px;flex-direction:column;gap:10px;}
 body.ctrl-edit #ctrl-edit-bar{display:flex;}
@@ -1004,10 +1005,17 @@ body.m-portrait #m-pause{display:flex;position:fixed;top:8px;right:8px;z-index:1
   align-items:center;justify-content:center;padding:0;border-radius:8px;font-size:20px;cursor:pointer;
   background:rgba(20,14,8,.80);color:var(--acc-bright);border:1px solid var(--acc);box-shadow:0 2px 10px rgba(0,0,0,.4);}
 /* mobile aim controls appear only while a piece is LOADED (body.m-armed) — when idle they vanish so the belt + slot row stay fully tappable */
-body.m-portrait.m-armed #m-stick{display:block;position:fixed;left:14px;bottom:124px;z-index:120;width:108px;height:108px;
+body.m-portrait.m-armed:not(.ctrl-dpad) #m-stick{display:block;position:fixed;left:14px;bottom:124px;z-index:120;width:108px;height:108px;
   border-radius:50%;background:rgba(18,12,7,.32);border:1.5px solid rgba(224,150,46,.55);box-shadow:0 4px 16px rgba(0,0,0,.42);
   touch-action:none;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);transition:background .15s;}
-body.m-portrait.m-armed #m-stick.grab{background:rgba(18,12,7,.60);}
+body.m-portrait.m-armed:not(.ctrl-dpad) #m-stick.grab{background:rgba(18,12,7,.60);}
+/* v3.5.71 D-PAD alternative to the joystick — a 3x3 grid with 4 directional pads driving the same cursor as the arrow keys */
+body.m-portrait.m-armed.ctrl-dpad #m-dpad{display:grid;position:fixed;left:14px;bottom:124px;z-index:120;width:132px;height:132px;
+  grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);touch-action:none;}
+#m-dpad .dpb{display:flex;align-items:center;justify-content:center;background:rgba(18,12,7,.5);border:1.5px solid rgba(224,150,46,.55);
+  color:var(--acc-bright);font-size:20px;cursor:pointer;padding:0;border-radius:8px;-webkit-user-select:none;user-select:none;touch-action:none;}
+#m-dpad .dpb:active{background:rgba(224,150,46,.35);}
+#m-dpad .dpb-u{grid-area:1/2/2/3;}#m-dpad .dpb-l{grid-area:2/1/3/2;}#m-dpad .dpb-r{grid-area:2/3/3/4;}#m-dpad .dpb-d{grid-area:3/2/4/3;}
 #m-nub{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;
   background:radial-gradient(circle at 38% 35%,var(--acc-bright),var(--acc));border:1px solid var(--acc-dim);
   box-shadow:0 2px 8px rgba(0,0,0,.5);transition:transform .08s ease-out;}
@@ -1317,6 +1325,10 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   padding:8px 16px;cursor:pointer;background:transparent;color:var(--t2);border:none;transition:background .15s,color .15s;}
 .set-seg-btn.active{background:rgba(200,121,30,.20);color:var(--acc);}
 .set-seg-btn.active.teal{background:rgba(19,133,120,.20);color:var(--teal-bright);}
+/* v3.5.71 music-track grid — one button per song, wraps to rows */
+.set-mtrack-grid{flex-wrap:wrap;justify-content:flex-end;max-width:252px;overflow:visible;gap:4px;border:none;}
+.set-mtrack-grid .set-seg-btn{padding:6px 0;min-width:36px;text-align:center;border:1px solid var(--border2);border-radius:5px;}
+.set-mtrack-grid .set-seg-btn.active{border-color:var(--acc);}
 .set-range{-webkit-appearance:none;appearance:none;width:170px;height:6px;border-radius:4px;
   background:var(--bg3);outline:none;cursor:pointer;flex-shrink:0;}
 .set-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
@@ -1600,6 +1612,12 @@ body[data-cb="trit"]{
 <div id="boot-splash"><img src="logo.png" alt="LOCK IN"></div>
 <button id="m-pause" onclick="togglePause()" aria-label="Pause game">⏸</button>
 <div id="m-stick" aria-label="Aim joystick"><div id="m-nub"></div></div>
+<div id="m-dpad" aria-label="D-pad">
+  <button class="dpb dpb-u" onpointerdown="dpadHold('u',event)" aria-label="Up">▲</button>
+  <button class="dpb dpb-l" onpointerdown="dpadHold('l',event)" aria-label="Left">◀</button>
+  <button class="dpb dpb-r" onpointerdown="dpadHold('r',event)" aria-label="Right">▶</button>
+  <button class="dpb dpb-d" onpointerdown="dpadHold('d',event)" aria-label="Down">▼</button>
+</div>
 <button id="m-drop" onclick="mCtl('drop')" aria-label="Drop piece">DROP</button>
 <button id="m-rot" onclick="mCtl('rot')" aria-label="Rotate piece">↻</button>
 <!-- v3.5.47 touch-control customizer (movable + scalable joystick) -->
@@ -1617,7 +1635,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.70 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.71 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1738,7 +1756,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.70 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.71 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1772,7 +1790,14 @@ body[data-cb="trit"]{
       <div class="set-section">
         <div class="set-sec-title">◈ Touch Controls <small style="font-weight:normal;color:var(--t3);">(mobile)</small></div>
         <div class="set-row">
-          <div class="set-lbl">Control Size</div>
+          <div class="set-lbl">Control Type</div>
+          <div class="set-seg">
+            <button class="set-seg-btn" id="set-ctrl-joy" onclick="setCtrlMode('joystick')">JOYSTICK</button>
+            <button class="set-seg-btn" id="set-ctrl-dpad" onclick="setCtrlMode('dpad')">D-PAD</button>
+          </div>
+        </div>
+        <div class="set-row">
+          <div class="set-lbl">D-pad / Joystick Size</div>
           <input class="set-range" id="set-ctrl-scale" type="range" min="70" max="170" value="100" oninput="ctrlSetScale(this.value)">
         </div>
         <div class="set-row">
@@ -1795,17 +1820,13 @@ body[data-cb="trit"]{
           <div class="set-lbl">Music</div>
           <input class="set-range" id="set-vol-music" type="range" min="0" max="100" value="60" oninput="setVolume('music',this.value)">
         </div>
-        <div class="set-row">
-          <div class="set-lbl">Music Track<small>AUTO cycles the tracks</small></div>
-          <div class="set-seg">
-            <button class="set-seg-btn" id="set-mtrack-auto" onclick="setMusicTrack('auto')">AUTO</button>
-            <button class="set-seg-btn" id="set-mtrack-1" onclick="setMusicTrack(1)">1</button>
-            <button class="set-seg-btn" id="set-mtrack-2" onclick="setMusicTrack(2)">2</button>
-            <button class="set-seg-btn" id="set-mtrack-3" onclick="setMusicTrack(3)">3</button>
-            <button class="set-seg-btn" id="set-mtrack-4" onclick="setMusicTrack(4)">4</button>
+        <div class="set-row" style="align-items:flex-start;">
+          <div class="set-lbl">Music Track</div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+            <div class="set-seg set-mtrack-grid" id="set-mtrack-seg"></div>
+            <button class="set-seg-btn" style="padding:7px 16px;" onclick="musicSkip()">⏭ SKIP SONG</button>
           </div>
         </div>
-        <div class="set-note">Slide Music to 0 to mute it. Sound effects are always on.</div>
       </div>
 
       <div class="set-section">
@@ -1836,7 +1857,7 @@ body[data-cb="trit"]{
       <div class="set-section">
         <div class="set-sec-title">◈ Coach Voice</div>
         <div class="set-row">
-          <div class="set-lbl">Voice<small>Also changeable mid-shift from the pause menu</small></div>
+          <div class="set-lbl">Voice</div>
           <div class="set-seg">
             <button class="set-seg-btn teal" id="set-voice-std" onclick="setVoicePref('std')">STANDARD</button>
             <button class="set-seg-btn teal" id="set-voice-hub" onclick="setVoicePref('hub')">HUB MODE</button>
@@ -1888,7 +1909,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.70 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.71 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2262,7 +2283,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.70
+// LOCK IN v3.5.71
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3054,7 +3075,7 @@ function playSfx(name){
   else if(name==='arrowmiss'){tone('square',400,300,0.07,0.14);tone('square',300,240,0.09,0.12);}
 }
 // ── v2.1.30: BACKGROUND MUSIC (HTML5 audio playlist, files served by path) ──
-var MUSIC={list:['1.mp3','2.mp3','3.mp3','4.mp3','5.mp3','6.mp3','7.mp3','8.mp3','9.mp3','10.mp3','11.mp3','12.mp3','13.mp3','14.mp3','15.mp3','16.mp3','17.mp3','18.mp3','19.mp3','20.mp3','21.mp3','22.mp3','23.mp3','24.mp3','25.mp3','26.mp3','27.mp3','28.mp3','29.mp3','30.mp3'],el:null,idx:0,started:false};
+var MUSIC={list:['1.mp3','2.mp3','3.mp3','4.mp3','5.mp3','6.mp3','7.mp3','8.mp3','9.mp3','10.mp3','11.mp3','12.mp3','13.mp3'],el:null,idx:0,started:false}; // v3.5.71 trimmed to the 13 real tracks (was 30 phantom slots)
 function musicVol(){
   var m=(typeof SETTINGS!=='undefined'&&typeof SETTINGS.volMaster==='number')?SETTINGS.volMaster:80;
   var mu=(typeof SETTINGS!=='undefined'&&typeof SETTINGS.volMusic==='number')?SETTINGS.volMusic:60;
@@ -3091,6 +3112,21 @@ function setMusicTrack(t){
   SETTINGS.musicTrack=(t==='auto')?'auto':String(t);
   if(MUSIC.started&&t!=='auto'){musicLoad(parseInt(t,10)-1);musicPlay();}
   refreshSettingsUI();saveSettings();
+}
+// v3.5.71 one button PER song (was a hardcoded 1-4 for 13 tracks), built from the real track list.
+function buildMusicButtons(){
+  var seg=document.getElementById('set-mtrack-seg');if(!seg)return;
+  var mt=(SETTINGS.musicTrack||'auto'),html,i;
+  html='<button class="set-seg-btn'+(mt==='auto'?' active':'')+'" onclick="setMusicTrack(\'auto\')">AUTO</button>';
+  for(i=1;i<=MUSIC.list.length;i++)html+='<button class="set-seg-btn'+(mt===String(i)?' active':'')+'" onclick="setMusicTrack('+i+')">'+i+'</button>';
+  seg.innerHTML=html;
+}
+// v3.5.71 skip the current song (works in AUTO or a pinned track).
+function musicSkip(){
+  sndInit();if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume();
+  if(!MUSIC.started){musicStart();return;}
+  musicLoad(MUSIC.idx+1);musicPlay();
+  if(typeof showBanner==='function')showBanner('⏭ Track '+(MUSIC.idx+1),'',1100);
 }
 // First user gesture unlocks/creates the audio context (browser autoplay policy).
 (function(){
@@ -6863,22 +6899,39 @@ function stickFrom(e){
   STK.dir=(dist<12)?null:((Math.abs(dx)>Math.abs(dy))?(dx<0?'l':'r'):(dy<0?'u':'d'));
 }
 // ── v3.5.47 CUSTOM TOUCH CONTROLS (movable + scalable joystick — accessibility for larger hands) ──
-var CTRL={scale:1,jx:14,jy:124,editing:false,_sx:0,_sy:0,_jx0:0,_jy0:0,_drag:false};
+var CTRL={scale:1,jx:14,jy:124,mode:'joystick',editing:false,_sx:0,_sy:0,_jx0:0,_jy0:0,_drag:false};
 function ctrlLoad(){
-  try{var r=localStorage.getItem('lockinCtrl');if(r){var o=JSON.parse(r);if(o){if(o.scale)CTRL.scale=+o.scale;if(o.jx!=null)CTRL.jx=+o.jx;if(o.jy!=null)CTRL.jy=+o.jy;}}}catch(e){console.error('ctrlLoad:',e);}
+  try{var r=localStorage.getItem('lockinCtrl');if(r){var o=JSON.parse(r);if(o){if(o.scale)CTRL.scale=+o.scale;if(o.jx!=null)CTRL.jx=+o.jx;if(o.jy!=null)CTRL.jy=+o.jy;if(o.mode)CTRL.mode=o.mode;}}}catch(e){console.error('ctrlLoad:',e);}
   ctrlApply();
 }
-function ctrlSave(){try{localStorage.setItem('lockinCtrl',JSON.stringify({scale:CTRL.scale,jx:CTRL.jx,jy:CTRL.jy}));}catch(e){console.error('ctrlSave:',e);}}
+function ctrlSave(){try{localStorage.setItem('lockinCtrl',JSON.stringify({scale:CTRL.scale,jx:CTRL.jx,jy:CTRL.jy,mode:CTRL.mode}));}catch(e){console.error('ctrlSave:',e);}}
 function ctrlApply(){
   var s=CTRL.scale||1;
-  var st=document.getElementById('m-stick'),dr=document.getElementById('m-drop'),rt=document.getElementById('m-rot');
+  document.body.classList.toggle('ctrl-dpad',CTRL.mode==='dpad'); // v3.5.71 gate joystick vs d-pad
+  var st=document.getElementById('m-stick'),dr=document.getElementById('m-drop'),rt=document.getElementById('m-rot'),dp=document.getElementById('m-dpad');
   if(st){st.style.left=CTRL.jx+'px';st.style.bottom=CTRL.jy+'px';st.style.transform='scale('+s+')';st.style.transformOrigin='bottom left';}
+  if(dp){dp.style.left=CTRL.jx+'px';dp.style.bottom=CTRL.jy+'px';dp.style.transform='scale('+s+')';dp.style.transformOrigin='bottom left';}
   if(dr){dr.style.transform='scale('+s+')';dr.style.transformOrigin='bottom right';}
   if(rt){rt.style.transform='scale('+s+')';rt.style.transformOrigin='bottom right';}
   var a=document.getElementById('set-ctrl-scale'),b=document.getElementById('ce-scale');
   if(a)a.value=Math.round(s*100);if(b)b.value=Math.round(s*100);
 }
 function ctrlSetScale(v){v=parseInt(v,10);if(isNaN(v))v=100;CTRL.scale=Math.max(.7,Math.min(1.7,v/100));ctrlApply();ctrlSave();}
+// v3.5.71 JOYSTICK vs D-PAD touch mode.
+function setCtrlMode(m){CTRL.mode=(m==='dpad')?'dpad':'joystick';ctrlApply();ctrlSave();if(typeof refreshSettingsUI==='function')refreshSettingsUI();}
+// v3.5.71 D-PAD press-and-hold — steps the cursor (same kbMove the arrow keys use) and repeats while held.
+var _dpadTimer=null;
+function dpadHold(dir,e){
+  if(e&&e.preventDefault)e.preventDefault();
+  if(typeof kbPlayActive==='function'&&!kbPlayActive())return;
+  var m={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[dir];if(!m)return;
+  var step=function(){if(typeof kbMove==='function')kbMove(m[0],m[1]);};
+  step();
+  if(_dpadTimer)clearInterval(_dpadTimer);
+  _dpadTimer=setInterval(step,130);
+  var end=function(){if(_dpadTimer){clearInterval(_dpadTimer);_dpadTimer=null;}document.removeEventListener('pointerup',end);document.removeEventListener('pointercancel',end);};
+  document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+}
 function ctrlEditStart(){CTRL.editing=true;document.body.classList.add('ctrl-edit');if(typeof closeSettings==='function')closeSettings();ctrlApply();}
 function ctrlEditEnd(){CTRL.editing=false;CTRL._drag=false;document.body.classList.remove('ctrl-edit');ctrlSave();}
 (function(){
@@ -8195,7 +8248,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.70</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.71</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9355,9 +9408,9 @@ function refreshSettingsUI(){
   seg('set-grid-off',!SETTINGS.learnGrid);
   seg('set-boxgrid-on',SETTINGS.boxGrid);
   seg('set-boxgrid-off',!SETTINGS.boxGrid);
-  var _mt=SETTINGS.musicTrack||'auto';
-  seg('set-mtrack-auto',_mt==='auto');
-  seg('set-mtrack-1',_mt==='1');seg('set-mtrack-2',_mt==='2');seg('set-mtrack-3',_mt==='3');seg('set-mtrack-4',_mt==='4');
+  if(typeof buildMusicButtons==='function')buildMusicButtons(); // v3.5.71 one button per song + active highlight
+  var _cm=(typeof CTRL!=='undefined'&&CTRL.mode==='dpad')?'dpad':'joystick';
+  seg('set-ctrl-joy',_cm==='joystick');seg('set-ctrl-dpad',_cm==='dpad');
   seg('set-motion-on',SETTINGS.reducedMotion);
   seg('set-motion-off',!SETTINGS.reducedMotion);
   seg('set-hapt-on',SETTINGS.haptics!==false);
