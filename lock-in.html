@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.88
+   LOCK IN v3.5.89
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.89 - TRAILER-LOAD: THE FLAGSHIP (step 1 of 2 — stand it up, playtest the feel). The one canonical mode, wired into lifetime + the leaderboard. It runs ON the proven shift engine (endless walls, arcade dispatch feel, all working plumbing) so nothing else can break — new global TRAILER_MODE just (a) layers a late-wall gauntlet-spice and (b) rebrands the label. THE MELD: practice-smooth phase gen (shift already used it) + arcade dispatch/fail feel + as each wall fills past ~60%, a ramping chance (16%→~50% near the top) to seed gauntlet-style awkward pieces so the endgame is almost never a layup — and the THROW meta is always the out. New startTrailerLoad(); the menu ARCADE card becomes the TRAILER-LOAD flagship card (now first). Badge / scoreboard MODE / post-sort MODE all read TRAILER-LOAD. Verified in-browser: launch sets the flag, spice fires 112/300 at 85% fill (0 with it off), all three labels correct, gates clean. DECISION: gameMode stays 'shift' internally (zero new mode-branches to audit) — the flagship identity is the flag + labels; a clean data-key rename can come with the step-2 menu collapse. NEXT (step 2, after you play it): collapse the menu to 4 pillars (Trailer-Load · Daily · Training · Mini-Games), demote Practice/Gauntlet/Arcade into Mini-Games, give SmallsSort its own daily board.
    CHANGE LOG v3.5.88 - AUTH SWEEP: LOGIN FIX (regression). The v3.5.85 SOCIAL consolidation could leave TWO identical sign-in forms in the DOM at once — the SOCIAL ▸ ME tab's and the old standalone profile overlay's — both hardcoding #pf-id / #pf-pw / #pf-auth-note. Once the profile overlay rendered even once, getElementById('pf-id') resolved to the FIRST (empty, hidden) copy, so pfDoLogin/pfDoSignup read BLANK fields no matter what the player typed = "logging in is broken." FIX: (1) new pfFormEl() reads auth fields from the currently-VISIBLE profile surface, never a stale duplicate; (2) the standalone ov-profile overlay is RETIRED — openProfile() now routes to openSocial('me'), so exactly one auth form exists. Verified in-browser: #pf-id count 2→1, handler reads the typed username, login fires the real auth request. DECISION: kept the old ov-profile renderer as a dead-code fallback (only runs if openSocial is ever missing) rather than deleting it, to minimize blast radius on a ship-critical path.
    CHANGE LOG v3.5.87 - POST-SORT REPORT ACCURACY (per-wall). Two moneymaker bugs root-caused. (1) PIECE COUNT DRIFT: the per-wall "pieces" read the mutable `placed` counter, which goes -1 on every lift and never re-syncs to what's on the wall, so a wall the loader counts as 43 read as 30. NEW gridPieceCount() counts distinct boxes actually sealed in the grid at finalize — the number you'd count by eye, no drift. Both the WALL and SESSION columns of "Avg pieces / wall" now use this same grid-true method (was WALL=net-of-lifts vs SESSION=gross/walls — two methods in one row). (2) SHELVES/MIN had NO per-wall value (WALL column hardcoded null); now computed per wall (this wall's locks ÷ this wall's seconds), like Pieces/sec. Pipeline confirmed correctly wired per mode (finalizeWall on seal/fail/clock-out/shift, wallBaseline on every wall start). Verified in-browser. OPEN QUESTION for the next pass: does a placed smalls BAG count as 1 piece or its parcel count (FedEx piece-scan semantics) — changes PPH/throughput. No backend change.
    CHANGE LOG v3.5.86 - THE DAILY IS THE CROWN JEWEL. DAILY now LEADS the SOCIAL hub (first tab, the default on open, for everyone). The day's #1 gets a gold CROWN HERO — "👑 TODAY'S #1 LOADER ON EARTH · name · score" — and the note says it plain: win it and you're the day's #1 loader on the planet (the SEO north star). A live UTC-reset COUNTDOWN ("NEW BOARD IN 2h 46m…") makes it feel alive + urgent, and stops when the overlay closes. CONVERSION HOOK: an anonymous run that would crack the daily top 10 now pops "🏆 YOU'D BE #N IN THE WORLD TODAY — sign in from SOCIAL to claim your spot" (lbWouldRankDaily). Verified in-browser: crown + countdown + rank-check all live. No backend change.
@@ -1672,7 +1673,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.88 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.89 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1762,15 +1763,15 @@ body[data-cb="trit"]{
   </div>
   <div id="sm-tagline">SELECT YOUR MODE</div>
   <div id="sm-modes">
+    <div class="sm-card mode-shift mode-flagship" onclick="startTrailerLoad()">
+      <div class="sm-card-ico">🚛</div>
+      <div class="sm-card-name">TRAILER-LOAD</div>
+      <div class="sm-card-desc">The main event. Wall after wall at full tempo — forgiving enough to flow, but the pile gets mean near the top and it's almost never a layup. Your record and your world rank live here.</div>
+    </div>
     <div class="sm-card mode-regular" onclick="startRegular()">
       <div class="sm-card-ico">📦</div>
       <div class="sm-card-name">PRACTICE</div>
       <div class="sm-card-desc">Learn the wall at your own pace. The floor still coaches you, but a slow shift or a piled-up staging lane won't send you home. Start here.</div>
-    </div>
-    <div class="sm-card mode-shift" onclick="startShift()">
-      <div class="sm-card-ico">🚛</div>
-      <div class="sm-card-name">ARCADE</div>
-      <div class="sm-card-desc">Hard Mode. Wall after wall at full tempo, scored on raw speed, precision, and a clean safety record. Push your limits.</div>
     </div>
     <div class="sm-card mode-gauntlet" onclick="startGauntlet()">
       <div class="sm-card-ico">🔥</div>
@@ -1794,7 +1795,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.88 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.89 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1947,7 +1948,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.88 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.89 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2338,7 +2339,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.88
+// LOCK IN v3.5.89
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4113,7 +4114,7 @@ function refillBelt(){
 
 // Belt-only piece generator — never NC or bag
 function genBeltPiece(isPanic){
-  var tmpl;
+  var tmpl,_spice=false;
   if(isPanic){tmpl={...pick(P_PANIC)};}
   else{
     var r=Math.random();
@@ -4130,7 +4131,10 @@ function genBeltPiece(isPanic){
       if(isFrag&&tmpl)tmpl._forceFrag=true;
     } else {
       var fill=G.grid?countFilled()/(GW*GH):0;
-      if(fill<.20){
+      // v3.5.89 TRAILER-LOAD spice: past ~60% fill, seed gauntlet-style awkward pieces so the endgame of each wall
+      // is never a layup. Chance ramps ~16% at 60% to ~50% near the top. Throw is always the out. Forgiving early.
+      if(TRAILER_MODE&&fill>=0.60&&Math.random()<(0.16+(fill-0.60)*0.85)){_spice=true;tmpl={...pick(P_PANIC)};}
+      else if(fill<.20){
         if(r<.15)tmpl={...pickWeighted(P_SMALL)};
         else if(r<.35)tmpl={...pickWeighted(P_LARGE)};
         else tmpl={...pickWeighted(P_REG)};
@@ -4152,7 +4156,7 @@ function genBeltPiece(isPanic){
   if(!tmpl)return null;
   // v2.10.5 CONVEYABILITY AT THE REAL SOURCE — genBeltPiece feeds the belt; genPiece never did. THIS is the gate that counts.
   if(!isConveyable(tmpl.w,tmpl.h)){
-    if(isPanic||gameMode==='gauntlet'){var _cg=0,_cp=isPanic?P_PANIC:P_REG;while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_cg++<24){tmpl=pickWeighted(_cp);}if(tmpl&&!isConveyable(tmpl.w,tmpl.h))tmpl=pickWeighted(P_SMALL);}
+    if(isPanic||_spice||gameMode==='gauntlet'){var _cg=0,_cp=(isPanic||_spice)?P_PANIC:P_REG;while(tmpl&&!isConveyable(tmpl.w,tmpl.h)&&_cg++<24){tmpl=pickWeighted(_cp);}if(tmpl&&!isConveyable(tmpl.w,tmpl.h))tmpl=pickWeighted(P_SMALL);}
     else{
       // v2.10.11 don't flood NC at spawn (was overfilling 8 slots -> SP HAZARD fail before first placement)
       if(G.ncSlots&&G.ncSlots.some(function(s){return!s;})){routeToNC(tmpl);return null;}
@@ -6484,7 +6488,7 @@ function updateHUD(){
   if(scoreEl){scoreEl.textContent=G.score||0;scoreEl.className='sp-big';}
   // v3.5.8: MODE cell on the scoreboard
   var _gm=(typeof gameMode!=='undefined')?gameMode:'shift';
-  var _modeLbl=_gm==='shift'?('SHIFT · W'+((typeof shiftState!=='undefined'&&shiftState.walls)||1))
+  var _modeLbl=_gm==='shift'?((TRAILER_MODE?'TRAILER-LOAD':'SHIFT')+' · W'+((typeof shiftState!=='undefined'&&shiftState.walls)||1))
     :_gm==='daily'?'DAILY'
     :_gm==='level'?'LEVELS'
     :_gm==='practice'?'PRACTICE'
@@ -7683,6 +7687,11 @@ function gaEvent(name,params){
 // BOOT ORDER: start menu shows first. restartGame() called by mode selection.
 
 var gameMode=''; // 'shift' | 'training'
+// v3.5.89 TRAILER-LOAD — the flagship. Runs ON the proven shift engine (endless walls + arcade dispatch feel +
+// already wired to lifetime/leaderboard), so it inherits all working plumbing. TRAILER_MODE just (a) layers the
+// late-wall gauntlet-spice in genBeltPiece and (b) rebrands the badge/report/scoreboard label. gameMode stays
+// 'shift' internally on purpose — zero new branches to break. Cleared on every menu return; set by startTrailerLoad.
+var TRAILER_MODE=false;
 var shiftState={walls:0,totalBoxes:0,sessionStartT:null};
 var trainingState={playing:false,speed:1,stepIdx:0,stepTimer:null,loopCount:0};
 
@@ -7712,6 +7721,7 @@ function stopMenuDemo(){
   if(trainingState.stepTimer){clearTimeout(trainingState.stepTimer);trainingState.stepTimer=null;}
 }
 function showStartMenu(){
+  TRAILER_MODE=false; // v3.5.89 clear the flagship flag on every menu return; the next pick sets it
   var menu=document.getElementById('start-menu');
   if(menu)menu.style.display='flex';
   setVoice(activeVoice);
@@ -8030,7 +8040,19 @@ function startRegular(){
 }
 function startShift(){
   hideStartMenu();
-  gameMode='shift';
+  gameMode='shift';TRAILER_MODE=false; // legacy ARCADE entry stays callable for the mini-games pass; explicitly NOT trailer
+  shiftState={walls:1,totalBoxes:0,sessionStartT:Date.now()};
+  updateShiftBadge();
+  paused=false;
+  if(typeof musicForMode==='function')musicForMode('shift');
+  restartGame();
+}
+// v3.5.89 THE FLAGSHIP. Practice-smooth gen (shift already uses the phase-based curve) + arcade dispatch feel +
+// a little gauntlet spice as each wall fills (genBeltPiece), and the throw meta is always on the table. Endless
+// walls, iterating over and over. Canonical mode wired into lifetime + the leaderboard (runs as gameMode='shift').
+function startTrailerLoad(){
+  hideStartMenu();
+  gameMode='shift';TRAILER_MODE=true;
   shiftState={walls:1,totalBoxes:0,sessionStartT:Date.now()};
   updateShiftBadge();
   paused=false;
@@ -8042,7 +8064,7 @@ function updateShiftBadge(){
   var badge=document.getElementById('shift-badge');
   if(!badge)return;
   if(gameMode==='shift'){
-    badge.textContent='SHIFT · WALL '+shiftState.walls;
+    badge.textContent=(TRAILER_MODE?'TRAILER-LOAD':'SHIFT')+' · WALL '+shiftState.walls; // v3.5.89 flagship rebrand
     badge.classList.add('vis');
   } else if(gameMode==='daily'){
     badge.textContent='DAILY · '+DAILY.key;
@@ -8493,12 +8515,12 @@ function psBuild(lifeState,life){
     H+='<div class="ps-id">'+
       '<div><span class="k">LOADER</span><span class="v">'+zWho()+'</span></div>'+
       '<div><span class="k">FACILITY</span><span class="v">'+(p.facility||'\u2014')+'</span></div>'+
-      '<div><span class="k">MODE</span><span class="v">'+(gameMode||'\u2014').toUpperCase()+'</span></div>'+
+      '<div><span class="k">MODE</span><span class="v">'+(TRAILER_MODE?'TRAILER-LOAD':(gameMode||'\u2014').toUpperCase())+'</span></div>'+
       '<div><span class="k">DATE</span><span class="v">'+new Date().toISOString().slice(0,10)+'</span></div>'+
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.88</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.89</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
