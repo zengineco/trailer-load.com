@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.63
+   LOCK IN v3.5.64
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.64 - SIDEWAYS TIRES + drink penalty + fragile-commentary slop. (1) SIDEWAYS TIRES: tire rotation is now ALLOWED (was hard-blocked with "lay it flat"). Standing a tire on edge is a MINOR manager safety fired on placement (TIRE_SIDEWAYS) — a 2nd unmitigated one escalates to an incident, and water/throw/shelf-lock washes it. A row of 3+ sideways tires draws extra commentary. (2) DRINK PENALTY: over-hydrating to farm warning-washes now costs score — 4th drink -100, 5th -200, 6th -300... (escalating -100). You can still drink your way out of a warning, but it's no longer free (pairs with throw + sideways-tire as a penalized escape valve, not an exploit). (3) FRAGILE COMMENTARY was INVERTED: gy=0 is the CEILING, so a fragile on the FLOOR (large gy) was hitting the "on top, good job" pool. Fixed — a low fragile now correctly gets the frag_bad ("exposed / will get crushed") lines. NOTE (not yet done): smalls-spam-via-throw anti-reward, level-location cleanup, and a broader "responses-only" commentary expansion. No grade-math change.
    CHANGE LOG v3.5.63 - ACCOUNT LOGIN re-skin (was "a weird table"). The worker/facility auth form now reads like a real game sign-in: a lit, softly-pulsing badge + a "CLOCK IN" wordmark hero, and a single glowing amber CLOCK IN primary button (the "something lit up") with a quieter "Create a free account" underneath. All field IDs (pf-id/pf-pw/pf-pw2/pf-tab-w/pf-tab-f/pf-signup-btn/pf-auth-note) are unchanged so pfMode/pfDoLogin/pfDoSignup keep working exactly as before — purely a visual pass. Profile/cohort/leaderboard tables untouched (next enterprise pass). No logic change.
    CHANGE LOG v3.5.62 - PACK % CONSISTENCY + practice-mode cleanup. (1) THE PERCENTAGE SLOP: the scoreboard PACK (cube-fill) and the "WALL COMPLETE — X% PACKED" popup (solidity) were DIFFERENT metrics, and the popup was FROZEN at the first seal - so after Continue Loading it read 49% while the scoreboard read 77% (and 48% vs a 29% wall, 82% vs 22%). Now every displayed "% PACKED" (seal banner, wall-complete popup, re-seal, FINISH) routes through one packPct() = the exact cube-fill the scoreboard shows, computed FRESH every time. Payout still scales by solidity internally; only the DISPLAY was unified. (2) MODE label: the Regular/"PRACTICE" menu card runs with gameMode='' and was rendering a BLANK mode cell - now reads PRACTICE; the safety-kickout trailer reads PRACTICE too. (3) NO DISPATCH in practice/regular/training - the learning modes no longer get the dispatch clock (was firing "DISPATCH IN 16s" in practice). No grade-math change.
    CHANGE LOG v3.5.61 - THE "LOCKED-SHELF MOONSHOT" + throw reachability + post-sort quality slop. (1) COLUMN: the jailbreaker's "if the bottom is supported we can still break your game" was real - worstFreeStack anchored on isRowLockedIn(y), which is true for EVERY row above any locked shelf, so completing one shelf made the freestanding scan break at the very top and you could tower infinitely above it. Now it breaks only AT the actual locked-shelf row (G.tetrisRows[y]); the shelf still anchors what rests on it, but a freestanding tower built on top is evaluated and topples normally. (2) THROW/WATER buttons pulled IN from the far gutters to flank the play field (were unreachable / choppy at the screen edge; throw "didn't work" because the cursor couldn't get to it). (3) POST-SORT LOAD QUALITY de-slopped: snapWall's Support was Math.round(0..1) = always 0 or 1 (that "Support: 1" in the report) - now *100 = a real %; Balance is tracked per wall; and Structure/Balance/Density/Support now read the SEALED WALL + wall-log averages instead of stale live HUD spans, so wall and session columns are real and consistent. No grade-math change.
@@ -1589,7 +1590,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.63 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.64 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1710,7 +1711,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.63 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.64 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1841,7 +1842,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.63 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.64 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2215,7 +2216,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.63
+// LOCK IN v3.5.64
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3661,8 +3662,12 @@ function takeDrink(){
   if(typeof playSfx==='function')playSfx('drink');
   var cleared=(typeof mitigateWarn==='function')&&mitigateWarn('water'); // water clears ONE open minor warning
   if((G.drinks||0)>3){ // over-hydrating to farm warning-washes = sabotage (logged + published)
+    // v3.5.64 escalating SCORE penalty: 4th drink -100, 5th -200, 6th -300... you CAN still drink your way
+    // out of a warning, but it costs you. Keeps the escape valve honest instead of free.
+    var _dpen=(G.drinks-3)*100;
+    G.score=Math.max(0,(G.score||0)-_dpen);
     S.waterSabotage=(S.waterSabotage||0)+1;
-    showBanner('\ud83d\udeab OVER-HYDRATING TO DODGE SAFETIES IS SABOTAGE \u2014 logged.','danger',2200);
+    showBanner('\ud83d\udeab OVER-HYDRATING TO DODGE SAFETIES IS SABOTAGE \u2014 logged. \u2212'+_dpen+' CUBES'+(cleared?' (warning still cleared).':'.'),'danger',2400);
   }else if(cleared){showBanner('\ud83d\udca7 WATER BREAK \u2014 warning cleared (still on the record as washed).','ok',1900);}
   else if(G.drinks===1)showBanner('\ud83d\udca7 HYDRATED \u2014 1 is par. A second nets a bonus.','',1400);
   else if(G.drinks===2)showBanner('\ud83d\udca7 TOPPED OFF \u2014 hydration bonus secured.','ok',1400);
@@ -4078,6 +4083,14 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   if(box.arrow){if((rot||0)===0){S.arrowsUp=(S.arrowsUp||0)+1;}else{S.arrowsMissed=(S.arrowsMissed||0)+1;if(typeof playSfx==='function')playSfx('arrowmiss');}} // v2.10.9 this-side-up tally
   if(_kA&&!_kB)logIncident('KILLER',box.hazClass||'');
   else if(_segA>_segB)logIncident('SEGREGATION',box.hazClass||'');
+  // v3.5.64 SIDEWAYS TIRE — a tire stood on edge (rotated off its natural flat orientation) is a minor safety.
+  // safetyWarn() escalates a 2nd unmitigated one to an incident; water/throw/shelf-lock washes it. A ROW draws extra heat.
+  if(box.cat==='tire'&&(rot%2===1)){
+    safetyWarn('TIRE_SIDEWAYS','tire stood on edge — load tires flat.');
+    var _stc=0,_sy,_sx,_ssn={};
+    for(_sy=0;_sy<GH;_sy++)for(_sx=0;_sx<GW;_sx++){var _scc=G.grid[_sy]&&G.grid[_sy][_sx];if(_scc&&!_ssn[_scc.id]&&_scc.box&&_scc.box.cat==='tire'&&((_scc.rot||0)%2===1)){_ssn[_scc.id]=1;_stc++;}}
+    if(_stc>=3&&typeof showCmtOverlay==='function')showCmtOverlay(activeVoice==='hub'?'A whole ROW of tires on their edge? They roll the second the door cracks. LAY THEM FLAT.':'Row of sideways tires — that’s a rolling load waiting to happen. Flat, every time.',activeVoice==='hub'?'hub':'',3000);
+  }
 
   // Remove from source
   if(source==='belt'){
@@ -6515,14 +6528,14 @@ function rotateSel(){
       rotated=true;
     }
   } else if(selNC>=0&&G.ncSlots[selNC]){
+    // v3.5.64 tire rotation is ALLOWED now (was blocked). Standing a tire on edge is a MANAGER SAFETY
+    // that fires on PLACEMENT (minor → a drink / throw / shelf-lock clears it). Heads-up on rotate.
     var _ncp=G.ncSlots[selNC];
-    if(_ncp&&_ncp.cat==='tire'){
-      if(typeof playSfx==='function')playSfx('deny');
-      showBanner('⚠ LAY IT FLAT — A STANDING TIRE ROLLS WHEN THE DOOR OPENS. Tires load flat.','danger',2000);
-    } else {
-      selNCRot=(selNCRot+1)%2;
-      buildNCPanel();
-      rotated=true;
+    selNCRot=(selNCRot+1)%2;
+    buildNCPanel();
+    rotated=true;
+    if(_ncp&&_ncp.cat==='tire'&&selNCRot===1){
+      showBanner('⚠ SIDEWAYS TIRE — manager won’t love it. It’s a safety warning on placement (a drink clears it).','warn',2400);
     }
   } else if(selBag>=0&&G.bagSlots[selBag]){
     var bs=G.bagSlots[selBag];
@@ -7231,9 +7244,10 @@ function fireCommentary(source,box,gx,gy,rot){
   if(source==='nc'||box.isNC){
     lines=pool.nc;
   } else if(box.isFrag||box.labelDef&&box.labelDef.isFrag){
-    // Check if placed low with space above (risky)
+    // v3.5.64 FIX (was inverted → "fragile on top, good job" for a fragile on the FLOOR):
+    // gy=0 is the CEILING, gy=GH-1 is the FLOOR. Low in the trailer = LARGE gy = risky (stuff stacks above it).
     var pctH=gy/GH;
-    lines=(pctH<0.5)?pool.frag_bad:pool.fragile;
+    lines=(pctH>=0.5)?pool.frag_bad:pool.fragile;
   } else if(activeVoice==='hub'&&G.support&&G.support>0.90&&getPPH()<80&&elapsed()>60){
     // DECISION: "meticulous but slow" context — great wall quality, terrible pace
     // "I need you to pick it up." / "This guy wants to go home."
@@ -7977,7 +7991,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.63</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.64</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
