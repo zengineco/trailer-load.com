@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.72
+   LOCK IN v3.5.73
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.73 - PER-MODE MUSIC + control-strip WATER/THROW + pause tidy + throw polish. (1) PER-MODE MUSIC: each mode opens on its own track then continues the AUTO playlist — Gauntlet 1, Arcade 2, Practice 3, Daily 4, Tour 5 (skipped if you pinned a track in Settings). (2) WATER + THROW moved OUT of the floating side gutters INTO the bottom control strip alongside BREAK JAM / NC / ROT (cooldown-grey still works; kept the IDs). (3) THROW icon 🦵→🤾 (reads like a throw, not a kick). (4) THROW ricochet: bigger box (~36-52 vs ~18) + higher launch (bounce kept). (5) PAUSE MENU reordered to Resume · Settings · Account · Restart · Main Menu · Clock Out, and WARM-DARK MODE removed (it lives in Settings). No grade-math change.
    CHANGE LOG v3.5.72 - FRAGILE-CRUSH warning + HAZMAT nesting + persistent HAZMAT marker. (1) FRAGILE CRUSH is a WARNING first now, not a firing — an autopilot slip. Crushing a fragile fires a minor FRAGILE_CRUSH safety (water/lock/throw-clearable) that ladders to an incident only on repeat; a crushed HAZMAT is still the instant write-up. (2) HAZMAT NESTING: hazmats (NC pieces) can now be seated into a placed tire's hollow — the code rewarded it but the fits-gate blocked all NC pieces. Select a hazmat, tap a tire = leak-shielded in the hollow (big bonus, and it can't fall in a collapse). (3) PERSISTENT HAZMAT MARKER: any LOOSE hazmat on the wall (not capped by a locked shelf above it) now pulses a red warning outline every frame, so the danger is always visible — lock a shelf over it or nest it to clear the marker. No grade-math change.
    CHANGE LOG v3.5.71 - MUSIC UI + D-PAD/JOYSTICK toggle + more settings de-slop. (1) MUSIC: was 4 track buttons for 13 real songs — now ONE BUTTON PER SONG (AUTO + 1–13, built from the real track list, trimmed the 30 phantom slots) plus a ⏭ SKIP SONG button that jumps to the next track in AUTO or a pinned track. Removed the redundant track hint + the "Slide Music to 0 / SFX always on" slop note. (2) D-PAD/JOYSTICK: new Control Type toggle above the size slider — D-PAD is a 4-way pad that drives the same cursor as the arrow keys (press-and-hold repeats), JOYSTICK is the existing aim stick; choice persists in localStorage, and "Control Size" is now "D-pad / Joystick Size". (3) Coach Voice lost the "(also changeable mid-shift…)" dev-note. Verified in-browser: 14 track buttons + skip render, the toggle flips the widget + persists. No gameplay/scoring change.
    CHANGE LOG v3.5.70 - SETTINGS de-slop (round 2). Dropped the needless "(bigger for larger hands)" under Control Size and "(drag the joystick anywhere you want it)" under Reposition — the labels stand on their own. Music Track hint "AUTO rotates 1 → 2 → 3 → 4" → "AUTO cycles the tracks" (no phantom track count). NEXT (paired build): rename Control Size → "D-pad / Joystick Size" WITH a real D-pad/Joystick touch toggle, and recycle the LOCK IN box skin onto SmallsSort packages. No gameplay change.
@@ -1169,6 +1170,12 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .bj-btn{background:var(--acc);border:1px solid var(--acc-bright);color:#1c1206;font-family:'Bebas Neue',cursive;font-size:17px;font-weight:bold;letter-spacing:1.5px;padding:5px 14px;border-radius:4px;cursor:pointer;}
 .bj-btn.bj-warn{background:var(--warn);border-color:#e8a020;color:#1c1206;animation:bjpulse 1s ease-in-out infinite;}
 .bj-btn.bj-crit{background:var(--danger);border-color:#ff5a36;color:#fff;animation:bjblink .5s steps(2) infinite;}
+/* v3.5.73 WATER + THROW live in the bottom control strip now */
+.strip-act{font-family:'Bebas Neue',cursive;font-size:16px;font-weight:bold;letter-spacing:1.5px;padding:5px 13px;border-radius:4px;cursor:pointer;border:1px solid;white-space:nowrap;}
+.strip-act.sa-water{background:#123a4a;border-color:#2f7fd0;color:#bfe4ff;}
+.strip-act.sa-throw{background:#3a2410;border-color:#c88a2a;color:#f3c98a;}
+.strip-act:hover{filter:brightness(1.14);}
+.strip-act:active{transform:scale(.95);}
 @keyframes bjpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
 @keyframes bjblink{0%{opacity:1;}50%{opacity:.4;}}
 .chute-light{width:14px;height:14px;border-radius:50%;display:inline-block;flex:none;background:#1f9d57;box-shadow:0 0 8px #1f9d57;}
@@ -1636,15 +1643,14 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.72 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.73 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
     <button class="pmb pmb-account" onclick="zOpenData()">◈ ACCOUNT &amp; DATA</button>
-    <button class="pmb pmb-theme" id="theme-btn" onclick="toggleTheme()">◑ WARM-DARK MODE</button>
+    <button class="pmb pmb-restart" onclick="pauseRestart()">↺ RESTART</button>
     <button class="pmb" onclick="pauseToMenu()">⌂ MAIN MENU — SWITCH MODE</button>
     <button class="pmb" onclick="clockOut()">⏏ CLOCK OUT — END &amp; SEE STATS</button>
-    <button class="pmb pmb-restart" onclick="pauseRestart()">↺ RESTART</button>
   </div>
   <!-- v3.5.7: COACH lives here now — read it on a break, not over the wall -->
   <div id="fp-tip">
@@ -1757,7 +1763,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.72 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.73 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1910,7 +1916,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.72 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.73 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2093,13 +2099,7 @@ body[data-cb="trit"]{
           <button class="btn-p" onclick="returnToMenu()">⌂ MAIN MENU</button>
         </div>
         <button id="maxpack-finish" onclick="npFinish()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
-        <!-- v3.5.59 SIDE BUTTONS — WATER (left margin) + THROW (right margin). Emoji are placeholders; swap the .side-ic span for <img src="water.png"/> / <img src="throw.png"/> when Goyim's icons land. -->
-        <button id="water-side" class="side-btn side-l" onclick="takeDrink()" title="Water break — clears one open minor warning. Skip it: 75% up the wall dry = warning, top it dry = incident.">
-          <span class="side-ic">💧</span><span class="side-tx">WATER</span>
-        </button>
-        <button id="throw-side" class="side-btn side-r" onclick="throwBox()" title="Throw the current piece — pardons ONE minor safety (never a hazmat), always spawns a bag of smalls.">
-          <span class="side-ic">🦵</span><span class="side-tx">THROW</span>
-        </button>
+        <!-- v3.5.73 WATER + THROW moved into the bottom control strip (see #conv-header) -->
         <!-- v3.5.7: floating in-game coach tip removed — coach is pause-only now -->
       </div>
     </div>
@@ -2116,12 +2116,14 @@ body[data-cb="trit"]{
       <div id="conv-header">
         <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">⚡ BREAK JAM</button></div>
+        <button id="water-side" class="strip-act sa-water" onclick="takeDrink()" title="Water break — clears one open minor warning, and covers a throw in the HEY window. Cooldown 6s.">💧 WATER</button>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:7px;">
           <span class="stg-light" id="stg-nc" onclick="openStagingPopup('nc')" title="Non-conveyable staging — tap to load low"><b>NC</b><span class="stg-pie" id="stg-nc-pie"></span><span id="stg-nc-n">0/8</span></span>
           <span class="stg-sep" id="stg-sep" onclick="stgClose()" style="display:none;"></span>
           <span class="stg-light" id="stg-bag" onclick="openStagingPopup('bag')" title="Smalls staging" style="display:none;"><b>SM</b><span class="stg-pie" id="stg-bag-pie"></span><span id="stg-bag-n">0/8</span></span>
         </div>
         <span class="conv-lbl" id="safety-live" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;" title="Live safety — open warnings / incidents on record"></span>
+        <button id="throw-side" class="strip-act sa-throw" onclick="throwBox()" title="Throw the piece — a smalls bag hits the belt. Cover it with a drink in the 2s HEY window. Cooldown 5s.">🤾 THROW</button>
         <button id="rot-btn" onclick="rotateSel()">↻ ROT [R]</button>
       </div>
       <canvas id="belt-canvas" style="display:none;width:100%;touch-action:none;"></canvas>
@@ -2284,7 +2286,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.72
+// LOCK IN v3.5.73
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2933,11 +2935,11 @@ function spawnBurst(cx,cy,n,col,spd,life,grav){
 function spawnThrow(){
   if(!juiceOn())return;
   JUICE.thrown.push({
-    x:W*0.5+(Math.random()*44-22), y:H*0.86,
-    vx:(Math.random()<0.5?-1:1)*(170+Math.random()*150),
-    vy:-(360+Math.random()*170),
+    x:W*0.5+(Math.random()*44-22), y:H*0.88,
+    vx:(Math.random()<0.5?-1:1)*(190+Math.random()*160),
+    vy:-(600+Math.random()*220), // v3.5.73 launch HIGHER (was ~-360)
     rot:0, vrot:(Math.random()*2-1)*11,
-    life:2.4, max:2.4, size:18+Math.random()*8, bounces:0
+    life:2.9, max:2.9, size:36+Math.random()*16, bounces:0 // v3.5.73 BIGGER box (was ~18)
   });
   if(JUICE.thrown.length>8)JUICE.thrown.splice(0,JUICE.thrown.length-8);
 }
@@ -3108,6 +3110,15 @@ function musicStart(){
   var t=(SETTINGS.musicTrack&&SETTINGS.musicTrack!=='auto')?(parseInt(SETTINGS.musicTrack,10)-1):0;
   if(isNaN(t))t=0;
   musicLoad(t);musicPlay();
+}
+// v3.5.73 each MODE opens on its own track (Gauntlet 1, Arcade 2, Practice 3, Daily 4, Tour 5), then the
+// AUTO playlist continues from there. Skipped if the player has pinned a specific track in Settings.
+function startModeMusic(){
+  if((SETTINGS.musicTrack||'auto')!=='auto')return;
+  var idx={'gauntlet':0,'shift':1,'':2,'daily':3,'level':4,'training':2}[(typeof gameMode!=='undefined')?gameMode:''];
+  if(idx==null)return;
+  try{sndInit();if(SND.ctx&&SND.ctx.state==='suspended')SND.ctx.resume();}catch(e){}
+  MUSIC.started=true;musicLoad(idx);musicPlay();
 }
 function setMusicTrack(t){
   SETTINGS.musicTrack=(t==='auto')?'auto':String(t);
@@ -8272,7 +8283,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.72</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.73</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8577,6 +8588,7 @@ function startLevel(n){
   if(!lv||lv.locked)return;
   currentLevel=n;
   gameMode='level';
+  if(typeof startModeMusic==='function')startModeMusic(); // v3.5.73 Tour opens on track 5, then continues
   document.getElementById('level-select').classList.remove('vis');
   // Apply config to live vars
   // DECISION: store original constants so restartLevel can re-apply without reloading
@@ -9549,6 +9561,7 @@ function restartGame(){
   S={truck:1,totalScore:0,bestPPH:0,trucksDone:0,intHistory:[],densHistory:[],crunches:0,incidents:[],collapses:0,rotations:0,lifts:0,bagsBroken:0,bagsPlaced:0,totalPieces:0,shelvesLocked:0,doubleLocks:0,recoveries:0,bestTrailerAvg:0,rejects:0,sessionStartT:0,hazShelfLocks:0,nests:0,drinks:0,hazViolations:0,ncDwellWarn:0,smallsDwellWarn:0,stagingActions:0,ncSpawned:0,ncPlaced:0,smallsSpawned:0};
   initTruck();
   if(animF)cancelAnimationFrame(animF);lastLoopT=0;animF=requestAnimationFrame(loop);
+  if(typeof startModeMusic==='function')startModeMusic(); // v3.5.73 open on the mode's track, then continue the playlist
   try{if(scene)scene.focus({preventScroll:true});}catch(e){}
 }
 
