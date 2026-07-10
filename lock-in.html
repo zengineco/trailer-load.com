@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.82
+   LOCK IN v3.5.83
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.83 - LEADERBOARD POLISH: THE HALL (Walls of Fame + Walls of Shame). The old ALL-TIME/TOTAL tabs are now one "★ HALL" tab with a Fame/Shame dropdown = 9 boards. FAME: Best Wall, Total Loaded, Fastest Wall, Fewest Pieces, Cleanest Wall. SHAME: Slowest Wall, Most Pieces, Messiest Wall, Most Collapses. Fastest/slowest/fewest/most-pieces are true SINGLE-WALL boards, powered by a NEW backend: lockin_walls table (RLS insert-own) + lockin_log_wall() (posts each SEALED wall, logged-in only, from the v3.5.81 per-wall stats) + a flexible lockin_wall_board(metric) RPC (fastest/fewest/messiest sort ascending; density-gated so a loose bail can't cheese Fastest/Fewest). Tabs are now DAILY / HALL / FRIENDS. Verified in-browser: Best=vince 259k, Total=vince 319k live; per-wall boards show "be the first" until walls seal (they populate as logged-in players play). Additive — existing boards/RPCs untouched. Arcade-chute-6, extra briefing detail, tour/gauntlet swap + socials tab still queued.
    CHANGE LOG v3.5.82 - PRE-SORT BRIEFING rewrite (real instruction, not caveman). Rule #4 was flat wrong — "RED TAG = HEAVY" (HEAVY is a GRAY tag; red tags are fragile/DNS/SP/hazmat) AND it described the NC/SP STAGING mechanic, not "heavy". Rewrote the whole briefing as a professional dock-orientation sheet now that the new clipboard has room: 9 accurate, scannable rules (grab & place / build off the floor / lock shelves / stage the non-cons / fragile & glass on top / hazmat low & locked / lay tires flat / bags spill smalls / pack tight then seal) — sentence case, lighter weight, covers the mechanics that matter now (hazmat, tires, safety). Tightened the type so all 9 seat in the writing area (measured in-browser: 396px content in a 456px area, 60px headroom). No logic change. (Load-stand confirmed a REFERENCE, not a mechanic — removed from the backlog.)
    CHANGE LOG v3.5.81 - POST-SORT REPORT ACCURACY (the monetization core). MECHANICS + SAFETY were showing "—" in the WALL column (hardcoded null — no per-wall data existed) and THROUGHPUT's WALL pph read the EMPTY live wall (=0), not the wall you just sealed. Built a real PER-WALL stats layer: wallBaseline() snapshots the cumulative counters at every wall START (initTruck / shift-advance / practice trailer), and finalizeWall() stores the DELTA (this wall's own rotations/lifts/rejects/staging/crunches/collapses/recoveries/drinks/incidents/warnings/bonuses/bags + quality + pph + duration) into wallLog. The report's WALL column now reads the LAST SEALED wall (lwv()), so MECHANICS/SAFETY/THROUGHPUT/QUALITY all register per-wall AND session. Verified in-browser: Avg PPH W=340 (was 0), Rotations W=8/S=14, Incidents W=2/S=3, etc. Also capped Smalls-utility at 100% (was showing 200%), removed a duplicate wallLog push, relabeled "Avg time/wall" WALL cell to the wall's actual time. THE DASHBOARD reads the same session summary, so this accuracy flows through. No scoring change.
    CHANGE LOG v3.5.80 - LEADERBOARD: TOTAL LOADED board. Split the old single "ALL-TIME" into two: BEST (your top single wall, all-time - the existing max-score board) + NEW TOTAL LOADED (lifetime cumulative - every score you've ever posted, summed). New SECURITY DEFINER RPC lockin_total_board() (anon-callable, mirrors lockin_alltime_board but SUM instead of MAX) ranks the consistency grinders. Tabs are now DAILY / BEST / TOTAL / FRIENDS. Verified in-browser: TOTAL loads live rows (vince 319k lifetime top). Additive - the existing boards + RPCs are untouched.
@@ -1473,6 +1474,9 @@ body[data-cb="trit"]{
 .lb-row.lb-me{background:rgba(200,121,30,.14);border-radius:3px;}
 .lb-empty{color:#a08b6a;font-style:italic;padding:10px 4px;}
 .lb-note{font-family:'Share Tech Mono',monospace;font-size:10.5px;color:#a08b6a;line-height:1.5;margin-top:6px;border-top:1px dashed #d8cdb4;padding-top:8px;}
+.lb-hall-select{width:100%;margin-bottom:11px;padding:9px 10px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.8px;color:#2a1a08;background:#fff;border:1px solid #8b4513;border-radius:5px;cursor:pointer;}
+.lb-hall-select optgroup{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#8b6a3a;}
+.lb-hall-select option{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#2a1a08;letter-spacing:0;}
 .lb-tabs{display:flex;gap:6px;margin-bottom:12px;}
 .lb-tab{flex:1;padding:8px 0;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:#a08b6a;background:#ece7d8;border:1px solid #d8cdb4;border-radius:4px;cursor:pointer;}
 .lb-tab.active{color:#2a1a08;background:#fff;border-color:#8b4513;box-shadow:inset 0 -2px 0 #8b4513;}
@@ -1655,7 +1659,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.82 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.83 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1778,7 +1782,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.82 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.83 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1931,7 +1935,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.82 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.83 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2234,8 +2238,7 @@ body[data-cb="trit"]{
 <div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">LEADERBOARD</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
   <div class="lb-tabs">
     <button class="lb-tab active" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
-    <button class="lb-tab" id="lb-tab-all" onclick="lbTab('all')">★ BEST</button>
-    <button class="lb-tab" id="lb-tab-total" onclick="lbTab('total')">▲ TOTAL</button>
+    <button class="lb-tab" id="lb-tab-hall" onclick="lbTab('hall')">★ HALL</button>
     <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">♦ FRIENDS</button>
   </div>
   <div id="lb-pane-daily">
@@ -2243,15 +2246,25 @@ body[data-cb="trit"]{
     <div class="lb-board" id="lb-daily-board"><div class="lb-empty">Loading…</div></div>
     <div class="lb-note">Play <b>DAILY</b> logged in to post your score. Same pieces worldwide, 00:00–23:59 UTC.</div>
   </div>
-  <div id="lb-pane-all" style="display:none">
-    <div class="lb-tabline">★ BEST WALL · your top single score, all-time</div>
-    <div class="lb-board" id="lb-all-board"><div class="lb-empty">Loading…</div></div>
-    <div class="lb-note">Every logged-in loader's single best wall — one perfect run.</div>
-  </div>
-  <div id="lb-pane-total" style="display:none">
-    <div class="lb-tabline">▲ TOTAL LOADED · lifetime cumulative</div>
-    <div class="lb-board" id="lb-total-board"><div class="lb-empty">Loading…</div></div>
-    <div class="lb-note">Every score you've ever posted, added up. Consistency — not just one big wall.</div>
+  <div id="lb-pane-hall" style="display:none">
+    <select id="lb-hall-metric" class="lb-hall-select" onchange="lbLoadHall(this.value)">
+      <optgroup label="◆ WALLS OF FAME">
+        <option value="best">★ Best Wall — top single score</option>
+        <option value="total">▲ Total Loaded — lifetime cumulative</option>
+        <option value="fastest">⚡ Fastest Wall — quickest seal</option>
+        <option value="fewest">✂ Fewest Pieces — tightest wall</option>
+        <option value="cleanest">✦ Cleanest Wall — highest integrity</option>
+      </optgroup>
+      <optgroup label="✖ WALLS OF SHAME">
+        <option value="slowest">🐌 Slowest Wall — took forever</option>
+        <option value="most_pieces">📦 Most Pieces — the grind</option>
+        <option value="messiest">💀 Messiest Wall — barely sealed</option>
+        <option value="most_collapses">🧱 Most Collapses — one wall</option>
+      </optgroup>
+    </select>
+    <div class="lb-tabline" id="lb-hall-note">★ BEST WALL · top single score, all-time</div>
+    <div class="lb-board" id="lb-hall-board"><div class="lb-empty">Loading…</div></div>
+    <div class="lb-note" id="lb-hall-foot">Every logged-in loader's single best wall.</div>
   </div>
   <div id="lb-pane-friends" style="display:none">
     <div id="lb-friends-auth" class="lb-empty" style="display:none">Log in from <b>◆ PROFILE</b> to follow loaders and track their boards.</div>
@@ -2307,7 +2320,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.82
+// LOCK IN v3.5.83
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -5114,6 +5127,7 @@ function sealWall(reason){
   var _dens=Math.min(1,(typeof wallSolidity==='function')?wallSolidity(G.grid):(countFilled()/(GW*GH))); // v3.5.50 SOLIDITY (gapless fill up to wall height), not raw volume
   var _sealPay=Math.round(LOAD_SEALED_BONUS*_dens); // seal payout SCALED BY FILL \u2014 a loose wall earns a loose payout (kills the panic-bail-at-threshold A+ exploit)
   try{finalizeWall();}catch(_dh){} // v3.5.57 capture this wall's integrity+density once (single source of truth)
+  try{if(typeof zLogWall==='function')zLogWall();}catch(_lw){} // v3.5.83 post this sealed wall to the per-wall boards
   G.score=(G.score||0)+_sealPay; // v2.1.11 #1 payout, v3.5.46 density-scaled
   showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.52em">'+packPct()+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
   if(panicActive&&!panicSealed){
@@ -8138,12 +8152,57 @@ function lbRenderInto(id,rows,emptyMsg){
   el.innerHTML=h;
 }
 function lbTab(which){
-  var panes={daily:'lb-pane-daily',all:'lb-pane-all',total:'lb-pane-total',friends:'lb-pane-friends'};
-  var tabs={daily:'lb-tab-daily',all:'lb-tab-all',total:'lb-tab-total',friends:'lb-tab-friends'};
+  var panes={daily:'lb-pane-daily',hall:'lb-pane-hall',friends:'lb-pane-friends'};
+  var tabs={daily:'lb-tab-daily',hall:'lb-tab-hall',friends:'lb-tab-friends'};
   for(var k in panes){var p=document.getElementById(panes[k]);if(p)p.style.display=(k===which)?'':'none';var t=document.getElementById(tabs[k]);if(t)t.classList.toggle('active',k===which);}
-  if(which==='all'&&!lbTab._allLoaded){lbTab._allLoaded=true;lbLoadAlltime();}
-  if(which==='total'&&!lbTab._totalLoaded){lbTab._totalLoaded=true;lbLoadTotal();} // v3.5.80 lifetime cumulative board
+  if(which==='hall'){var sel=document.getElementById('lb-hall-metric');lbLoadHall(sel?sel.value:'best');} // v3.5.83 fame/shame boards
   if(which==='friends')lbLoadFriends();
+}
+// v3.5.83 THE HALL — Walls of Fame + Walls of Shame, one dropdown, many boards.
+var HALL_META={
+  best:{note:'★ BEST WALL · top single score, all-time',foot:'Every loader’s single highest-scoring wall.',rpc:'lockin_alltime_board',fmt:'num'},
+  total:{note:'▲ TOTAL LOADED · lifetime cumulative',foot:'Every score you’ve ever posted, summed. Consistency wins.',rpc:'lockin_total_board',fmt:'num'},
+  fastest:{note:'⚡ FASTEST WALL · quickest seal (≥35% packed)',foot:'Speed WITH substance — loose bails don’t count.',rpc:'wall',metric:'fastest',fmt:'time'},
+  fewest:{note:'✂ FEWEST PIECES · tightest sealed wall',foot:'Max density from the fewest pieces.',rpc:'wall',metric:'fewest',fmt:'pieces'},
+  cleanest:{note:'✦ CLEANEST WALL · highest integrity',foot:'The most solid wall on record.',rpc:'wall',metric:'cleanest',fmt:'pct'},
+  slowest:{note:'🐌 SLOWEST WALL · took forever',foot:'Molasses. The dispatch clock wept.',rpc:'wall',metric:'slowest',fmt:'time'},
+  most_pieces:{note:'📦 MOST PIECES · the grind',foot:'One wall, and a truly heroic amount of pieces.',rpc:'wall',metric:'most_pieces',fmt:'pieces'},
+  messiest:{note:'💀 MESSIEST WALL · barely held',foot:'Sealed on a prayer and low integrity.',rpc:'wall',metric:'messiest',fmt:'pct'},
+  most_collapses:{note:'🧱 MOST COLLAPSES · one wall',foot:'Kept building pillars. Kept paying for it.',rpc:'wall',metric:'most_collapses',fmt:'num'}
+};
+function lbHallFmt(v,fmt){if(v==null)return '—';if(fmt==='time'){var s=+v,m=Math.floor(s/60),ss=s%60;return m+':'+(ss<10?'0':'')+ss;}if(fmt==='pct')return v+'%';if(fmt==='pieces')return v+' pc';return ''+v;}
+function lbLoadHall(metric){
+  metric=metric||'best';var meta=HALL_META[metric]||HALL_META.best;
+  var n=document.getElementById('lb-hall-note');if(n)n.textContent=meta.note;
+  var f=document.getElementById('lb-hall-foot');if(f)f.textContent=meta.foot;
+  var b=document.getElementById('lb-hall-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
+  var url,body;
+  if(meta.rpc==='wall'){url=ZDATA.endpoint+'/rpc/lockin_wall_board';body=JSON.stringify({p_metric:meta.metric,p_limit:25});}
+  else{url=ZDATA.endpoint+'/rpc/'+meta.rpc;body=JSON.stringify({p_limit:25});}
+  try{
+    fetch(url,{method:'POST',headers:zAuthHeaders(),body:body}).then(function(r){return r.json();})
+      .then(function(j){lbRenderHall(Array.isArray(j)?j:[],meta);})
+      .catch(function(e){console.error('hallBoard:',e);lbRenderHall([],meta);});
+  }catch(e){lbRenderHall([],meta);}
+}
+function lbRenderHall(rows,meta){
+  var el=document.getElementById('lb-hall-board');if(!el)return;
+  if(!rows.length){el.innerHTML='<div class="lb-empty">No walls ranked yet — log in, seal a wall, and claim the spot.</div>';return;}
+  var me=(ZDATA.session&&ZDATA.session.email&&(''+ZDATA.session.email).split('@')[0])||(ZDATA.session&&ZDATA.session.handle)||'';
+  var h='',i;for(i=0;i<rows.length;i++){var r=rows[i];var v=(r.val!=null?r.val:(r.best_score!=null?r.best_score:(r.score!=null?r.score:null)));var mine=(me&&r.username===me)?' lb-me':'';h+='<div class="lb-row'+mine+'"><span>'+(r.rank||(i+1))+'</span><span>'+drEsc(r.username)+'</span><span>'+lbHallFmt(v,meta.fmt)+'</span></div>';}
+  el.innerHTML=h;
+}
+// v3.5.83 send a SEALED wall to the per-wall boards (logged-in only; graceful). Powers fastest/slowest/fewest/most-pieces.
+function zLogWall(){
+  try{
+    if(!(ZDATA.session&&ZDATA.session.uid))return;
+    var wl=S.wallLog||[],w=wl[wl.length-1];if(!w)return;
+    fetch(ZDATA.endpoint+'/rpc/lockin_log_wall',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({
+      p_mode:gameMode||'',p_score:Math.round(w.score||0),p_pieces:Math.round(w.pieces||0),
+      p_dur:Math.round(w.durS||0),p_integrity:Math.round(w.integrity||0),p_density:Math.round(w.cubePct||0),
+      p_incidents:Math.round(w.incidentsWall||0),p_collapses:Math.round(w.collapses||0)
+    })}).catch(function(){});
+  }catch(e){}
 }
 // v3.5.80 TOTAL LOADED — lifetime cumulative score (sum of every session), the consistency board (RPC lockin_total_board)
 function lbLoadTotal(){
@@ -8357,7 +8416,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.82</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.83</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
