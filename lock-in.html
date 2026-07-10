@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.86
+   LOCK IN v3.5.87
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.87 - POST-SORT REPORT ACCURACY (per-wall). Two moneymaker bugs root-caused. (1) PIECE COUNT DRIFT: the per-wall "pieces" read the mutable `placed` counter, which goes -1 on every lift and never re-syncs to what's on the wall, so a wall the loader counts as 43 read as 30. NEW gridPieceCount() counts distinct boxes actually sealed in the grid at finalize — the number you'd count by eye, no drift. Both the WALL and SESSION columns of "Avg pieces / wall" now use this same grid-true method (was WALL=net-of-lifts vs SESSION=gross/walls — two methods in one row). (2) SHELVES/MIN had NO per-wall value (WALL column hardcoded null); now computed per wall (this wall's locks ÷ this wall's seconds), like Pieces/sec. Pipeline confirmed correctly wired per mode (finalizeWall on seal/fail/clock-out/shift, wallBaseline on every wall start). Verified in-browser. OPEN QUESTION for the next pass: does a placed smalls BAG count as 1 piece or its parcel count (FedEx piece-scan semantics) — changes PPH/throughput. No backend change.
    CHANGE LOG v3.5.86 - THE DAILY IS THE CROWN JEWEL. DAILY now LEADS the SOCIAL hub (first tab, the default on open, for everyone). The day's #1 gets a gold CROWN HERO — "👑 TODAY'S #1 LOADER ON EARTH · name · score" — and the note says it plain: win it and you're the day's #1 loader on the planet (the SEO north star). A live UTC-reset COUNTDOWN ("NEW BOARD IN 2h 46m…") makes it feel alive + urgent, and stops when the overlay closes. CONVERSION HOOK: an anonymous run that would crack the daily top 10 now pops "🏆 YOU'D BE #N IN THE WORLD TODAY — sign in from SOCIAL to claim your spot" (lbWouldRankDaily). Verified in-browser: crown + countdown + rank-check all live. No backend change.
    CHANGE LOG v3.5.85 - THE SOCIAL HUB (Profile + Leaderboard + Friends consolidated). The two menu buttons (LEADERBOARD + PROFILE) are now ONE "◆ SOCIAL" button opening one overlay titled SOCIAL with four tabs: ◉ ME (your record, or the sign-in form logged out) / ◈ DAILY / ★ HALL / ♦ FRIENDS. The ME tab reuses the exact profile renderer via a new PF_BODY target var (default 'pf-body' so the standalone profile overlay still works). Daily-board loading moved into lbTab('daily') so any entry path loads it; openLeaderboard() is now an alias → openSocial('daily'); the pause PROFILE button → openSocial('me'). Verified in-browser: title SOCIAL, all 4 tabs, ME shows the auth form when anon, HALL/DAILY load. No backend change. NEXT (social pass 2): daily top-10 "you made it — sign in" CTA, daily-board flesh-out, more leaderboard categories, clipboard-skin the rest of the menus.
    CHANGE LOG v3.5.84 - BRIEFING DETAIL + TOUR/GAUNTLET swap. (2) Every pre-sort rule now has a muted "why" detail line under it — real intermediate instruction (a 4+ freestanding stack topples; locked shelves cap hazmat; hazmat in any collapse ends the round; standing a tire is a warning a drink clears; throw a box to summon a bag; density not just height). Tightened the type so all 9 rules + 9 why-lines seat in the clipboard (measured: 431px in a 456px area, 25px headroom). (3) Menu order swapped: GAUNTLET now sits where TOUR was (after ARCADE) and TOUR moved down (after DAILY). NOTE on Arcade chute (#1): the belt genuinely holds ~12 pieces and the render caps at 10 — there's NO count cap, so a visible "6" is chute-geometry clipping the bottom rows; needs a screenshot to tune the clip precisely (won't guess render geometry blind). No logic change.
@@ -1670,7 +1671,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.86 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.87 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1792,7 +1793,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.86 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.87 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1945,7 +1946,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.86 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.87 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2336,7 +2337,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.86
+// LOCK IN v3.5.87
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3526,6 +3527,10 @@ function countColumnSeams(grid){
 
 function wallH(){for(var y=0;y<GH;y++)for(var x=0;x<GW;x++)if(G.grid[y][x])return GH-y;return 0;}
 function countFilled(){var n=0;for(var r of G.grid)for(var c of r)if(c)n++;return n;}
+// v3.5.87 TRUE per-wall piece count — distinct boxes physically sealed in the grid (NOT the mutable `placed`
+// counter, which drifts: it goes -1 on every lift and never re-syncs to what's actually on the wall). This is
+// the number a loader counts by eye. Fixes the report's "pieces in the wall" reading low after any repositioning.
+function gridPieceCount(){if(typeof G==='undefined'||!G||!G.grid)return 0;var seen={},n=0,ri,ci,r,c;for(ri=0;ri<G.grid.length;ri++){r=G.grid[ri];if(!r)continue;for(ci=0;ci<r.length;ci++){c=r[ci];if(c&&c.id&&!seen[c.id]){seen[c.id]=1;n++;}}}return n;}
 
 function calcIntegrity(grid){
   if(!countFilled())return 100;
@@ -5123,6 +5128,7 @@ function finalizeWall(){
   try{
     var _ws=snapWall(),_b=S._wallBase||{},i;
     for(i=0;i<_WALL_COUNTERS.length;i++){var k=_WALL_COUNTERS[i];_ws[k]=(S[k]||0)-(_b[k]||0);}
+    if(typeof gridPieceCount==='function')_ws.pieces=gridPieceCount(); // v3.5.87 count boxes actually in the sealed wall, not the drift-prone `placed`
     _ws.incidentsWall=(S.incidents||[]).length-(_b.incidents||0);
     _ws.warningsWall=(S.warnings||[]).length-(_b.warnings||0);
     _ws.durS=Math.max(0,Math.round((Date.now()-(_b.startT||Date.now()))/1000));
@@ -8476,16 +8482,17 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.86</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.87</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
     var lwPcsSec=(LW&&LW.durS>0)?((LW.pieces||0)/LW.durS).toFixed(2):null;
+    var lwShMin=(LW&&LW.durS>0)?(((LW.shelvesLocked||0)/LW.durS)*60).toFixed(1):null; // v3.5.87 per-wall shelves/min (WALL column was hardcoded null)
     H+='<div class="ps-block"><h4><span class="d">\u25b8</span> THROUGHPUT</h4>'+
       row('Avg PPH',lwv('pph'),Math.round((typeof avgPPH==='function')?avgPPH():0),'avg_pph')+
       row('Peak PPH',lwv('pph'),S.bestPPH||0,'peak_pph')+
       row('Pieces / sec',lwPcsSec,pcsSec,null)+
-      row('Shelves / min',null,shMin,null)+
+      row('Shelves / min',lwShMin,shMin,null)+
       row('Wall time',(LW&&LW.durS!=null)?psFmtTime(LW.durS):null,tWall,null)+'</div>';
 
     H+='<div class="ps-block"><h4><span class="d">\u25b8</span> SAFETY \u00b7 DOCS RECEIVED</h4>'+
@@ -8516,7 +8523,7 @@ function psBuild(lifeState,life){
       row('\u00b7 Support',lwv('support'),wlAvg('support'),null,true)+
       row('Cube fill %',lwv('cubePct'),wlAvg('cubePct'),'cube_eff','','%')+
       row('Wall height %',lwv('fillPct'),wlAvg('fillPct'),'avg_wall_pct','','%')+
-      row('Avg pieces / wall',lwv('pieces'),(walls>0?Math.round(pieces/walls):'\u2014'),null)+
+      row('Avg pieces / wall',lwv('pieces'),(wl.length?wlAvg('pieces'):(walls>0?Math.round(pieces/walls):'\u2014')),null)+
       row('SP utility %',null,(ncU==null?'\u2014':ncU),'nc_util_pct','','%')+
       row('Smalls utility %',null,(smU==null?'\u2014':smU),'smalls_util_pct','','%')+
       row('Voids (open cells)',lwv('voids'),null,null)+
