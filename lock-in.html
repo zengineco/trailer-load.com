@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.61
+   LOCK IN v3.5.62
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.62 - PACK % CONSISTENCY + practice-mode cleanup. (1) THE PERCENTAGE SLOP: the scoreboard PACK (cube-fill) and the "WALL COMPLETE — X% PACKED" popup (solidity) were DIFFERENT metrics, and the popup was FROZEN at the first seal - so after Continue Loading it read 49% while the scoreboard read 77% (and 48% vs a 29% wall, 82% vs 22%). Now every displayed "% PACKED" (seal banner, wall-complete popup, re-seal, FINISH) routes through one packPct() = the exact cube-fill the scoreboard shows, computed FRESH every time. Payout still scales by solidity internally; only the DISPLAY was unified. (2) MODE label: the Regular/"PRACTICE" menu card runs with gameMode='' and was rendering a BLANK mode cell - now reads PRACTICE; the safety-kickout trailer reads PRACTICE too. (3) NO DISPATCH in practice/regular/training - the learning modes no longer get the dispatch clock (was firing "DISPATCH IN 16s" in practice). No grade-math change.
    CHANGE LOG v3.5.61 - THE "LOCKED-SHELF MOONSHOT" + throw reachability + post-sort quality slop. (1) COLUMN: the jailbreaker's "if the bottom is supported we can still break your game" was real - worstFreeStack anchored on isRowLockedIn(y), which is true for EVERY row above any locked shelf, so completing one shelf made the freestanding scan break at the very top and you could tower infinitely above it. Now it breaks only AT the actual locked-shelf row (G.tetrisRows[y]); the shelf still anchors what rests on it, but a freestanding tower built on top is evaluated and topples normally. (2) THROW/WATER buttons pulled IN from the far gutters to flank the play field (were unreachable / choppy at the screen edge; throw "didn't work" because the cursor couldn't get to it). (3) POST-SORT LOAD QUALITY de-slopped: snapWall's Support was Math.round(0..1) = always 0 or 1 (that "Support: 1" in the report) - now *100 = a real %; Balance is tracked per wall; and Structure/Balance/Density/Support now read the SEALED WALL + wall-log averages instead of stale live HUD spans, so wall and session columns are real and consistent. No grade-math change.
    CHANGE LOG v3.5.60 - COLUMN RULE v5 (dimensional caps + moonshot kill). Two additions to worstFreeStack, both tunable. (1) MOONSHOT FIX: being "sandwiched" (boxed on both sides) now only ANCHORS a stack if at least one side is a real GROUND-CONNECTED pillar (solidBelow: filled continuously down to the floor or a locked shelf) or the trailer wall - two floating towers bracing each other no longer hold each other up above height 4. A genuine solid wall still stands (its neighbors reach the ground); a gap-braced tower now topples. (2) DIMENSIONAL CAP: a freestanding stack has a max CELL height keyed to its narrowest footprint - 1-wide 6, 2-wide 9, 3-wide 7, 4-wide 6, 5-wide+ 5 (strict taper +2). So a wide flat slab tips sooner (his "5x2 shouldn't go 3-high" = 6 cells > cap 5) while a tall-narrow box is allowed higher (his "2x6 up to ~9"). Existing rules kept: freestanding 4+, non-taper 3+, smalls-in-3+ all still collapse. Knobs live in freestandCellCap()/FREESTAND_TAPER_BONUS. No metric-capture change.
    CHANGE LOG v3.5.59 - SAFETY SYSTEM + THROW/WATER side buttons. Two tracked categories now: WARNINGS (recoverable) and INCIDENTS (on the record). Ladder: a warning you DON'T mitigate, repeated as the SAME offense, escalates to an INCIDENT; 5 incidents = sent to a fresh beginner PRACTICE trailer (clean slate, record still stands - NOT game over). Mitigation: lock a shelf (instant neutralize), drink WATER (clears one open minor warning), or THROW the piece (pardons a minor only). HAZMAT-high and COLLAPSES are incidents outright - no pardon (a collapse is now a documented safety incident, so 2 = the talking-to; removed the old separate collapse grade term to avoid double-counting). HYDRATION is now a real safety: 75% up the wall with no water = warning, top it bone-dry = incident; OVER-drinking to farm warning-washes = SABOTAGE (logged). Washed safeties are STILL published (the "1501 safeties, 1490 for throwing boxes" bit - report now shows warnings total, washed, thrown-away, sabotage flags, sent-to-training). NEW side buttons: WATER (left gutter) + THROW (right gutter), emoji placeholders ready for Goyim's icons; THROW always spawns a bag of smalls. Live SAFE meter in the control row. DEFERRED: tire-sideways-as-hazard (needs the tire-orientation model). No change to how grade math reads density/integrity beyond the collapse-term removal.
@@ -1574,7 +1575,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.61 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.62 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1695,7 +1696,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.61 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.62 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1826,7 +1827,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.61 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.62 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2200,7 +2201,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.61
+// LOCK IN v3.5.62
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4642,6 +4643,8 @@ function countVoidsFilled(gx,gy,gw,gh){
 }
 
 function checkPanic(){
+  // v3.5.62 NO DISPATCH in practice/regular/training — the learning modes carry no clock pressure.
+  if((G&&G.practice)||gameMode===''||gameMode==='training'){if(panicActive){panicActive=false;var _pw0=document.getElementById('panic-wrap');if(_pw0)_pw0.classList.remove('vis');}return;}
   var fill=countFilled()/(GW*GH);
   if(!panicActive&&(fill>=PANIC_THRESHOLD||wallH()/GH>=PANIC_THRESHOLD)&&!gOver){
     panicActive=true;panicStartT=Date.now();panicSealed=false;
@@ -4757,9 +4760,13 @@ function finalizeWall(){
   var _fd=Math.min(1,(typeof wallSolidity==='function')?wallSolidity(G.grid):((typeof countFilled==='function'?countFilled():0)/(GW*GH)));
   S.densHistory=S.densHistory||[];S.densHistory.push(_fd);
 }
+// v3.5.62 SINGLE displayed pack % — the SAME cube-fill the scoreboard PACK shows (setEl('sp-eff',Math.round(eff*100))).
+// Every "% PACKED" the player sees (seal banner, wall-complete popup, re-seal, finish) now routes through this,
+// computed FRESH, so scoreboard/popup/report never disagree again (was mixing stale solidity vs live cube-fill).
+function packPct(){return (typeof countFilled==='function'&&typeof GW!=='undefined')?Math.round(countFilled()/(GW*GH)*100):0;}
 function sealWall(reason){
   if(!hydrationOK())return;
-  if(G.sealed){if(gameMode!=='level'){var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ '+reason;}return;} // v3.5.4 EXPLOIT FIX: seal payout ONCE per wall — re-summoning the menu never re-awards the +2500
+  if(G.sealed){if(gameMode!=='level'){var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ WALL COMPLETE — '+packPct()+'% PACKED';}return;} // v3.5.4 EXPLOIT FIX: seal payout ONCE per wall. v3.5.62: badge recomputes fresh so continue-loading updates the % (was frozen at the first seal).
   G.sealed=true;
   if(typeof gcurFlash==='function')gcurFlash('finish',1300); // v3.5.22 finish-glove on sealing the wall
   if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
@@ -4768,7 +4775,7 @@ function sealWall(reason){
   var _sealPay=Math.round(LOAD_SEALED_BONUS*_dens); // seal payout SCALED BY FILL \u2014 a loose wall earns a loose payout (kills the panic-bail-at-threshold A+ exploit)
   try{finalizeWall();}catch(_dh){} // v3.5.57 capture this wall's integrity+density once (single source of truth)
   G.score=(G.score||0)+_sealPay; // v2.1.11 #1 payout, v3.5.46 density-scaled
-  showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.52em">'+Math.round(_dens*100)+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
+  showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.52em">'+packPct()+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
   if(panicActive&&!panicSealed){
     panicSealed=true;
     var rem=Math.max(0,PANIC_DURATION-(Date.now()-panicStartT)/1000);
@@ -6088,7 +6095,9 @@ function updateHUD(){
     :_gm==='level'?'LEVELS'
     :_gm==='practice'?'PRACTICE'
     :_gm==='training'?'TRAINING'
+    :_gm===''?'PRACTICE' // v3.5.62 the Regular/"PRACTICE" menu card runs with gameMode='' — was rendering a BLANK mode cell
     :(''+_gm).toUpperCase();
+  if(typeof G!=='undefined'&&G&&G.practice)_modeLbl='PRACTICE'; // v3.5.62 safety-kickout trailer reads PRACTICE too
   setEl('sp-mode',_modeLbl);
   updateWaterHUD();
   var pphEl=document.getElementById('sp-pph');
@@ -7628,7 +7637,7 @@ function updateShiftBadge(){
 
 // Override nextTrailer for shift mode
 function npKeepLoading(){if(G&&G.wallDone)return;if(G)G.maxPack=true;var p=document.getElementById('next-popup');if(p)p.classList.remove('vis');var f=document.getElementById('maxpack-finish');if(f)f.style.display='';} // v3.5.4 keep filling past the seal; FINISH re-opens the menu
-function npFinish(){if(G)G.maxPack=false;var f=document.getElementById('maxpack-finish');if(f)f.style.display='none';var p=document.getElementById('next-popup');if(p)p.classList.add('vis');}
+function npFinish(){if(G)G.maxPack=false;var f=document.getElementById('maxpack-finish');if(f)f.style.display='none';var nb=document.getElementById('next-popup-badge');if(nb)nb.textContent='✓ WALL COMPLETE — '+packPct()+'% PACKED';/* v3.5.62 recompute on finish — was showing the stale first-seal % after continue-loading */var p=document.getElementById('next-popup');if(p)p.classList.add('vis');}
 function nextTrailer(){
   if(typeof playSfx==='function')playSfx('trailer');
   document.getElementById('next-popup').classList.remove('vis');
@@ -7952,7 +7961,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.61</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.62</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -8339,7 +8348,7 @@ function checkWin(){
     var targetH=(_LV&&gameMode==='level')?_LV.winH:WIN_H;
     var targetD=(_LV&&gameMode==='level')?_LV.winDensity:0.35;
     if(hp>=targetH&&density>=targetD){
-      var _sol=(typeof wallSolidity==='function')?wallSolidity(G.grid):density;sealWall('WALL COMPLETE — '+(_sol>=0.97?'PERFECT LOAD!':Math.round(_sol*100)+'% PACKED')); // v3.5.50 PERFECT gated on SOLIDITY (gapless), not height — no more "perfect load" on a 79% gappy wall
+      var _cf=packPct();sealWall('WALL COMPLETE — '+(_cf>=97?'PERFECT LOAD!':_cf+'% PACKED')); // v3.5.62 display uses the SAME cube-fill as the scoreboard PACK (was solidity — a different number, read as slop)
     } else if(hp>=targetH&&density<targetD){
       // v2.1.17 tall but loose: tell the player WHY it won't seal — never silent limbo
       if(Date.now()-winHintT>5000){
