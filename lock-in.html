@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.85
+   LOCK IN v3.5.86
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.86 - THE DAILY IS THE CROWN JEWEL. DAILY now LEADS the SOCIAL hub (first tab, the default on open, for everyone). The day's #1 gets a gold CROWN HERO — "👑 TODAY'S #1 LOADER ON EARTH · name · score" — and the note says it plain: win it and you're the day's #1 loader on the planet (the SEO north star). A live UTC-reset COUNTDOWN ("NEW BOARD IN 2h 46m…") makes it feel alive + urgent, and stops when the overlay closes. CONVERSION HOOK: an anonymous run that would crack the daily top 10 now pops "🏆 YOU'D BE #N IN THE WORLD TODAY — sign in from SOCIAL to claim your spot" (lbWouldRankDaily). Verified in-browser: crown + countdown + rank-check all live. No backend change.
    CHANGE LOG v3.5.85 - THE SOCIAL HUB (Profile + Leaderboard + Friends consolidated). The two menu buttons (LEADERBOARD + PROFILE) are now ONE "◆ SOCIAL" button opening one overlay titled SOCIAL with four tabs: ◉ ME (your record, or the sign-in form logged out) / ◈ DAILY / ★ HALL / ♦ FRIENDS. The ME tab reuses the exact profile renderer via a new PF_BODY target var (default 'pf-body' so the standalone profile overlay still works). Daily-board loading moved into lbTab('daily') so any entry path loads it; openLeaderboard() is now an alias → openSocial('daily'); the pause PROFILE button → openSocial('me'). Verified in-browser: title SOCIAL, all 4 tabs, ME shows the auth form when anon, HALL/DAILY load. No backend change. NEXT (social pass 2): daily top-10 "you made it — sign in" CTA, daily-board flesh-out, more leaderboard categories, clipboard-skin the rest of the menus.
    CHANGE LOG v3.5.84 - BRIEFING DETAIL + TOUR/GAUNTLET swap. (2) Every pre-sort rule now has a muted "why" detail line under it — real intermediate instruction (a 4+ freestanding stack topples; locked shelves cap hazmat; hazmat in any collapse ends the round; standing a tire is a warning a drink clears; throw a box to summon a bag; density not just height). Tightened the type so all 9 rules + 9 why-lines seat in the clipboard (measured: 431px in a 456px area, 25px headroom). (3) Menu order swapped: GAUNTLET now sits where TOUR was (after ARCADE) and TOUR moved down (after DAILY). NOTE on Arcade chute (#1): the belt genuinely holds ~12 pieces and the render caps at 10 — there's NO count cap, so a visible "6" is chute-geometry clipping the bottom rows; needs a screenshot to tune the clip precisely (won't guess render geometry blind). No logic change.
    CHANGE LOG v3.5.83 - LEADERBOARD POLISH: THE HALL (Walls of Fame + Walls of Shame). The old ALL-TIME/TOTAL tabs are now one "★ HALL" tab with a Fame/Shame dropdown = 9 boards. FAME: Best Wall, Total Loaded, Fastest Wall, Fewest Pieces, Cleanest Wall. SHAME: Slowest Wall, Most Pieces, Messiest Wall, Most Collapses. Fastest/slowest/fewest/most-pieces are true SINGLE-WALL boards, powered by a NEW backend: lockin_walls table (RLS insert-own) + lockin_log_wall() (posts each SEALED wall, logged-in only, from the v3.5.81 per-wall stats) + a flexible lockin_wall_board(metric) RPC (fastest/fewest/messiest sort ascending; density-gated so a loose bail can't cheese Fastest/Fewest). Tabs are now DAILY / HALL / FRIENDS. Verified in-browser: Best=vince 259k, Total=vince 319k live; per-wall boards show "be the first" until walls seal (they populate as logged-in players play). Additive — existing boards/RPCs untouched. Arcade-chute-6, extra briefing detail, tour/gauntlet swap + socials tab still queued.
@@ -1480,6 +1481,13 @@ body[data-cb="trit"]{
 .lb-hall-select{width:100%;margin-bottom:11px;padding:9px 10px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.8px;color:#2a1a08;background:#fff;border:1px solid #8b4513;border-radius:5px;cursor:pointer;}
 .lb-hall-select optgroup{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#8b6a3a;}
 .lb-hall-select option{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#2a1a08;letter-spacing:0;}
+/* v3.5.86 DAILY = the crown jewel: the world's #1 loader gets a hero, + a live reset countdown */
+.lb-daily-crown{background:linear-gradient(135deg,#f6dc90,#e0a838);border:1px solid #b5651a;border-radius:7px;padding:11px 14px;margin-bottom:11px;text-align:center;box-shadow:0 3px 14px rgba(224,150,46,.42);}
+.lb-daily-crown.empty{background:linear-gradient(135deg,#efe7d4,#ddd0b4);box-shadow:none;}
+.lb-daily-crown .dc-lbl{font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:#6a3a08;}
+.lb-daily-crown .dc-name{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;color:#3a1e04;line-height:1;margin:3px 0 2px;word-break:break-all;}
+.lb-daily-crown .dc-score{font-family:'Share Tech Mono',monospace;font-size:12px;color:#6a3a08;font-weight:bold;}
+.lb-daily-reset{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:#8b6a3a;text-align:center;margin-top:7px;}
 .lb-tabs{display:flex;gap:6px;margin-bottom:12px;}
 .lb-tab{flex:1;padding:8px 0;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:#a08b6a;background:#ece7d8;border:1px solid #d8cdb4;border-radius:4px;cursor:pointer;}
 .lb-tab.active{color:#2a1a08;background:#fff;border-color:#8b4513;box-shadow:inset 0 -2px 0 #8b4513;}
@@ -1662,7 +1670,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.85 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.86 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1784,7 +1792,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.85 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.86 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1937,7 +1945,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.85 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.86 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2239,18 +2247,20 @@ body[data-cb="trit"]{
 <!-- v3.5.13 LEADERBOARD -->
 <div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">SOCIAL</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
   <div class="lb-tabs">
-    <button class="lb-tab active" id="lb-tab-me" onclick="lbTab('me')">◉ ME</button>
-    <button class="lb-tab" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
+    <button class="lb-tab active" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
+    <button class="lb-tab" id="lb-tab-me" onclick="lbTab('me')">◉ ME</button>
     <button class="lb-tab" id="lb-tab-hall" onclick="lbTab('hall')">★ HALL</button>
     <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">♦ FRIENDS</button>
   </div>
-  <div id="lb-pane-me">
+  <div id="lb-pane-me" style="display:none">
     <div class="pf-body" id="lb-me-body" style="padding:0"><div class="pf-loading">Loading your record…</div></div>
   </div>
   <div id="lb-pane-daily">
+    <div class="lb-daily-crown" id="lb-daily-crown"></div>
     <div class="lb-tabline" id="lb-daily-date">◈ DAILY · —</div>
     <div class="lb-board" id="lb-daily-board"><div class="lb-empty">Loading…</div></div>
-    <div class="lb-note">Play <b>DAILY</b> logged in to post your score. Same pieces worldwide, 00:00–23:59 UTC.</div>
+    <div class="lb-daily-reset" id="lb-daily-reset"></div>
+    <div class="lb-note">Same seed for everyone on Earth, 00:00–23:59 UTC. <b>Win it and you're the day's #1 loader on the planet.</b></div>
   </div>
   <div id="lb-pane-hall" style="display:none">
     <select id="lb-hall-metric" class="lb-hall-select" onchange="lbLoadHall(this.value)">
@@ -2326,7 +2336,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.85
+// LOCK IN v3.5.86
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8149,7 +8159,7 @@ function openPostSort(){
 function closePostSort(){var ov=document.getElementById('ov-postsort');if(ov)ov.classList.remove('vis');}
 function closeProfile(){var ov=document.getElementById('ov-profile');if(ov)ov.classList.remove('vis');}
 // ── v3.5.13 LEADERBOARD (standalone screen; daily board is public-read) ──
-function closeLeaderboard(){var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.remove('vis');}
+function closeLeaderboard(){var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.remove('vis');if(_dailyCD){clearInterval(_dailyCD);_dailyCD=null;}} // v3.5.86 stop the countdown
 function lbRenderInto(id,rows,emptyMsg){
   var el=document.getElementById(id);if(!el)return;
   if(!rows||!rows.length){el.innerHTML='<div class="lb-empty">'+(emptyMsg||'No scores posted yet today — be the first.')+'</div>';return;}
@@ -8162,18 +8172,46 @@ function lbTab(which){
   var tabs={me:'lb-tab-me',daily:'lb-tab-daily',hall:'lb-tab-hall',friends:'lb-tab-friends'};
   for(var k in panes){var p=document.getElementById(panes[k]);if(p)p.style.display=(k===which)?'':'none';var t=document.getElementById(tabs[k]);if(t)t.classList.toggle('active',k===which);}
   if(which==='me')lbLoadMe(); // v3.5.85 the ME tab = your profile/record, folded into SOCIAL
-  if(which==='daily'){ // v3.5.85 load the daily board whenever the tab is shown (was only in openLeaderboard)
+  if(which==='daily'){ // v3.5.85 load the daily board whenever the tab is shown; v3.5.86 crown + countdown
     var dd=document.getElementById('lb-daily-date');if(dd)dd.textContent='◈ DAILY · '+dailyKey();
     var db=document.getElementById('lb-daily-board');if(db)db.innerHTML='<div class="lb-empty">Loading…</div>';
-    if(typeof zLoadDailyBoard==='function')zLoadDailyBoard(function(rows){lbRenderInto('lb-daily-board',rows);});
+    if(typeof zLoadDailyBoard==='function')zLoadDailyBoard(function(rows){lbRenderDaily(rows);});
+    lbStartDailyCountdown();
   }
   if(which==='hall'){var sel=document.getElementById('lb-hall-metric');lbLoadHall(sel?sel.value:'best');} // v3.5.83 fame/shame boards
   if(which==='friends')lbLoadFriends();
 }
-// v3.5.85 SOCIAL hub entry — one button, one overlay: ME (record) / DAILY / HALL / FRIENDS.
+// v3.5.85 SOCIAL hub entry — one button, one overlay. v3.5.86 DAILY leads (the crown jewel) for everyone.
 function openSocial(tab){
   var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.add('vis');
-  lbTab(tab||((ZDATA.session&&ZDATA.session.uid)?'me':'daily'));
+  lbTab(tab||'daily');
+}
+// v3.5.86 DAILY render: the world's #1 loader gets the crown hero, then the board.
+function lbRenderDaily(rows){
+  rows=rows||[];
+  var crown=document.getElementById('lb-daily-crown');
+  if(crown){
+    if(rows.length){var w=rows[0];crown.className='lb-daily-crown';
+      crown.innerHTML='<div class="dc-lbl">👑 TODAY’S #1 LOADER ON EARTH</div><div class="dc-name">'+drEsc(w.username)+'</div><div class="dc-score">'+(w.score!=null?w.score:'—')+' cubes</div>';}
+    else{crown.className='lb-daily-crown empty';
+      crown.innerHTML='<div class="dc-lbl">👑 THE CROWN IS UNCLAIMED</div><div class="dc-name">BE THE FIRST</div><div class="dc-score">Post today’s top score — be #1 on Earth.</div>';}
+  }
+  lbRenderInto('lb-daily-board',rows,'No scores posted yet today — be the first.');
+}
+var _dailyCD=null;
+function lbDailyCountdown(){
+  var el=document.getElementById('lb-daily-reset');if(!el)return;
+  var now=new Date(),end=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1,0,0,0));
+  var s=Math.max(0,Math.floor((end-now)/1000)),hh=Math.floor(s/3600),mm=Math.floor((s%3600)/60),ss=s%60;
+  el.textContent='⏱ NEW BOARD IN '+hh+'h '+(mm<10?'0':'')+mm+'m '+(ss<10?'0':'')+ss+'s · UTC RESET';
+}
+function lbStartDailyCountdown(){lbDailyCountdown();if(_dailyCD)clearInterval(_dailyCD);_dailyCD=setInterval(lbDailyCountdown,1000);}
+// v3.5.86 would this score crack the daily top 10? returns the 1-based rank (<=10) or 0.
+function lbWouldRankDaily(rows,score){
+  if(!(score>0))return 0;
+  rows=rows||[];var i,rank=1;
+  for(i=0;i<rows.length;i++){if(score>(+rows[i].score||0))break;rank++;}
+  return (rank<=10)?rank:0;
 }
 // ME tab renders the profile (or the sign-in form) into the SOCIAL overlay, reusing the profile renderer via PF_BODY.
 function lbLoadMe(){
@@ -8438,7 +8476,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.85</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.86</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9769,8 +9807,16 @@ function dailyFinish(){
   var score=S.totalScore||0,walls=S.trucksDone||S.truck||1,inc=(S.incidents||[]).length;
   var rk=document.getElementById('dr-rank');
   if(!ZDATA.session||!ZDATA.session.uid){
-    if(rk)rk.innerHTML='<b>LOG IN TO POST YOUR RANK</b>';
-    zLoadDailyBoard(renderDailyBoard);return;
+    // v3.5.86 anon CTA: if this score would crack the daily top 10, prompt to sign in and CLAIM it
+    zLoadDailyBoard(function(rows){
+      renderDailyBoard(rows);
+      var wr=lbWouldRankDaily(rows,score);
+      if(rk){
+        if(wr>0)rk.innerHTML='🏆 <b>YOU’D BE #'+wr+' IN THE WORLD TODAY!</b><br><span style="font-size:.62em">Sign in from ◆ SOCIAL to claim your spot on the daily board.</span>';
+        else rk.innerHTML='<b>LOG IN TO POST YOUR RANK</b>';
+      }
+    });
+    return;
   }
   if(rk)rk.textContent='Posting your score\u2026';
   zSubmitDaily(score,walls,avgInt,inc,function(j){
