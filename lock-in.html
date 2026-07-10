@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.71
+   LOCK IN v3.5.72
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.72 - FRAGILE-CRUSH warning + HAZMAT nesting + persistent HAZMAT marker. (1) FRAGILE CRUSH is a WARNING first now, not a firing — an autopilot slip. Crushing a fragile fires a minor FRAGILE_CRUSH safety (water/lock/throw-clearable) that ladders to an incident only on repeat; a crushed HAZMAT is still the instant write-up. (2) HAZMAT NESTING: hazmats (NC pieces) can now be seated into a placed tire's hollow — the code rewarded it but the fits-gate blocked all NC pieces. Select a hazmat, tap a tire = leak-shielded in the hollow (big bonus, and it can't fall in a collapse). (3) PERSISTENT HAZMAT MARKER: any LOOSE hazmat on the wall (not capped by a locked shelf above it) now pulses a red warning outline every frame, so the danger is always visible — lock a shelf over it or nest it to clear the marker. No grade-math change.
    CHANGE LOG v3.5.71 - MUSIC UI + D-PAD/JOYSTICK toggle + more settings de-slop. (1) MUSIC: was 4 track buttons for 13 real songs — now ONE BUTTON PER SONG (AUTO + 1–13, built from the real track list, trimmed the 30 phantom slots) plus a ⏭ SKIP SONG button that jumps to the next track in AUTO or a pinned track. Removed the redundant track hint + the "Slide Music to 0 / SFX always on" slop note. (2) D-PAD/JOYSTICK: new Control Type toggle above the size slider — D-PAD is a 4-way pad that drives the same cursor as the arrow keys (press-and-hold repeats), JOYSTICK is the existing aim stick; choice persists in localStorage, and "Control Size" is now "D-pad / Joystick Size". (3) Coach Voice lost the "(also changeable mid-shift…)" dev-note. Verified in-browser: 14 track buttons + skip render, the toggle flips the widget + persists. No gameplay/scoring change.
    CHANGE LOG v3.5.70 - SETTINGS de-slop (round 2). Dropped the needless "(bigger for larger hands)" under Control Size and "(drag the joystick anywhere you want it)" under Reposition — the labels stand on their own. Music Track hint "AUTO rotates 1 → 2 → 3 → 4" → "AUTO cycles the tracks" (no phantom track count). NEXT (paired build): rename Control Size → "D-pad / Joystick Size" WITH a real D-pad/Joystick touch toggle, and recycle the LOCK IN box skin onto SmallsSort packages. No gameplay change.
    CHANGE LOG v3.5.69 - THROW RICOCHET (the hilarious payoff). Tossing a box now launches a tumbling carton up-and-across the trailer that bounces off both walls + the floor, spinning, losing energy on each hit, then settles and fades — pure cosmetic juice on the THROW mechanic (a smalls bag still lands on the belt). Runs on the existing JUICE particle system (spawnThrow → juiceUpdate physics → drawParticles), same canvas space as the placement bursts, capped at 8 in flight. No gameplay/scoring change.
@@ -1635,7 +1636,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.71 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.72 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1756,7 +1757,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.71 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.72 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1909,7 +1910,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.71 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.72 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2283,7 +2284,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.71
+// LOCK IN v3.5.72
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3893,11 +3894,12 @@ function getNestUsed(box){
 // v2.1.36 — seat a SMALL into a placed tire's hollow. Returns true if it nested.
 function tryNest(src,idx,tcell){
   var tbox=tcell.box;
-  var sb=(src==='belt')?G.belt[idx]:G.bagSlots[idx];
+  var sb=(src==='belt')?G.belt[idx]:(src==='nc')?G.ncSlots[idx]:G.bagSlots[idx];
   if(!sb)return false;
-  // v3.5.50 REAL BOXES NEST NOW — any compact freight (<=3x3, area<=6) seats in a tire hollow if the cap allows, not just smalls/bags
+  var _isHazNest=!!(sb.labelDef&&sb.labelDef.isHaz)||!!sb.hazClass; // v3.5.72 needed for the fits gate
+  // v3.5.50 REAL BOXES NEST — compact freight (<=3x3, area<=6) seats in a tire hollow; v3.5.72 HAZMATS (NC) may nest too (leak-shielded, and it can't fall in a collapse)
   var _area=sb.cells?sb.cells.length:(sb.w*sb.h);
-  var fits=!sb.isNC&&sb.w<=3&&sb.h<=3&&_area<=6;
+  var fits=(!sb.isNC||_isHazNest)&&sb.w<=3&&sb.h<=3&&_area<=6;
   if(!fits)return false;
   var cost=sb.isBag?2:_area;
   var cap=getNestCap(tbox),used=getNestUsed(tbox);
@@ -3910,6 +3912,7 @@ function tryNest(src,idx,tcell){
   tbox.nest=tbox.nest||[];
   tbox.nest.push({box:{...sb},haz:isHaz,cost:cost});
   if(src==='belt'){G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;}
+  else if(src==='nc'){G.ncSlots[idx]=null;selNC=-1;S.ncPlaced=(S.ncPlaced||0)+1;if(typeof buildNCPanel==='function')buildNCPanel();} // v3.5.72 hazmat/NC nested from the staging tray
   else{G.bagSlots[idx]=null;selBag=-1;if(typeof buildBagPanel==='function')buildBagPanel();}
   var _realBox=!(sb.type==='small'||sb.isBag)&&_area>=2; // a real regular/large box, not a smalls/bag
   var bonus=70+30*cost+(isHaz?120:0)+(_realBox?200*(_area-1):0); // v3.5.50 BIG bonus for stuffing an actual box into the hollow
@@ -4180,9 +4183,10 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     G.crunchCount=(G.crunchCount||0)+crushed.length;playSfx('crunch');addShake(8);
     S.crunches=(S.crunches||0)+crushed.length;
     var _hazCr=false,_cci;for(_cci=0;_cci<crushed.length;_cci++){if(crushed[_cci].box&&crushed[_cci].box.hazClass){_hazCr=true;break;}}
-    if(_hazCr)logIncident('HAZMAT_CRUSH','');
+    if(_hazCr)logIncident('HAZMAT_CRUSH',''); // hazmat crushed = the write-up pool (bad the first time)
+    else if(typeof safetyWarn==='function')safetyWarn('FRAGILE_CRUSH','you crushed a fragile — it rides on TOP.'); // v3.5.72 a WARNING first (autopilot slip, ladders to an incident on repeat), not a firing
     flash('fl-crunch');
-    showBanner('💥 CRUNCH! -'+(CRUNCH_PENALTY*crushed.length)+' CUBES<br><span style="font-size:.5em">FRAGILE GOES ON TOP — LOCK IN A SHELF TO PROTECT!</span>','danger',3000);
+    showBanner('💥 CRUNCH! -'+(CRUNCH_PENALTY*crushed.length)+' CUBES<br><span style="font-size:.5em">'+(_hazCr?'HAZMAT CRUSHED — that’s a write-up.':'FRAGILE goes on TOP — safety warning. Lock a shelf to protect it.')+'</span>','danger',3000);
   }
 
   // Hazmat height check — dangerous goods must load below waist height.
@@ -4433,10 +4437,10 @@ function logIncident(type,cls){
 // or throw the piece (minor only). Hazmat-high and collapses are incidents outright \u2014 no
 // pardon. Washed safeties are STILL published (the "1501 safeties, 1490 for throwing" bit).
 var SAFETY_PRACTICE_THRESHOLD=5;
-var SAFETY_MINOR=['HYDRATION','TIRE_SIDEWAYS','SP_DWELL','SMALLS_DWELL','THROW']; // warn-eligible + water-clearable
+var SAFETY_MINOR=['HYDRATION','TIRE_SIDEWAYS','SP_DWELL','SMALLS_DWELL','THROW','FRAGILE_CRUSH']; // warn-eligible + water-clearable
 function _sfMinor(o){return SAFETY_MINOR.indexOf(o)>=0;}
 function _sfInit(){S.warnings=S.warnings||[];S.incidents=S.incidents||[];}
-function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',TIRE_STACK:'stacked tires',THROW:'thrown package',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
+function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',TIRE_STACK:'stacked tires',THROW:'thrown package',FRAGILE_CRUSH:'crushed fragile',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
 // v3.5.68 WRITE-UP SYSTEM \u2014 some infractions are "bad the first time" (obvious hazards \u2192 instant paperwork);
 // everything else accumulates and gets documented every 3rd violation. The write-up STOPS the game to be signed.
 var WRITEUP_POOL=['HAZMAT_HIGH','HAZMAT_CRUSH','KILLER','SEGREGATION','TIRE_STACK']; // immediate write-up
@@ -4446,6 +4450,7 @@ var WRITEUP_DOCS={
   KILLER:{t:'INCOMPATIBLE HAZMAT CLASSES IN CONTACT',w:'These two classes react with each other. 49 CFR requires separation \u2014 a "killer pair" touching is the write-up every carrier fears.'},
   SEGREGATION:{t:'HAZMAT SEGREGATION BREACH',w:'Different hazmat classes need clear cells between them (49 CFR segregation table). Keep them apart.'},
   TIRE_STACK:{t:'TIRES STACKED VERTICALLY',w:'Tires stacked on their edge ROLL the second the door opens. Lay them flat \u2014 an obvious hazard is an immediate write-up.'},
+  FRAGILE_CRUSH:{t:'REPEATED CRUSHED FRAGILES',w:'Fragile freight rides on TOP, nothing heavy above it. You keep burying them — crushed fragiles are damage claims. Lock a shelf over them or keep them high.'},
   COLLAPSE:{t:'REPEATED WALL COLLAPSES',w:'Your wall keeps coming down. Taper your stacks (wide base, narrow top) and lock shelves. Repeated collapses get documented.'},
   ACCUMULATED:{t:'MULTIPLE SAFETY VIOLATIONS',w:'You have stacked up safety violations this session. The manager is now documenting each one. Slow down and load it clean.'}
 };
@@ -5682,6 +5687,23 @@ function drawWallBoxes(c){
     c.restore();
   }
 
+  // PASS 4 (v3.5.72): PERSISTENT HAZMAT MARKER — a LOOSE hazmat on the wall (not capped by a locked shelf above it)
+  // pulses a red warning outline so the danger is always visible. Lock a shelf over it — or nest it in a tire — to clear it.
+  var _hzSeen={},_hzP=0.5+0.5*Math.sin(Date.now()/280),hzi;
+  for(hzi=0;hzi<cells.length;hzi++){
+    var hzc=cells[hzi];
+    if(_hzSeen[hzc.id]||!hzc.box||!(hzc.box.isHaz||hzc.box.hazClass))continue;
+    _hzSeen[hzc.id]=1;
+    var _capped=false,_cy;for(_cy=0;_cy<=hzc.ry;_cy++){if(G.tetrisRows&&G.tetrisRows[_cy]){_capped=true;break;}}
+    if(_capped)continue; // under a locked shelf = safe, no marker
+    var h1=gridToCanvas(hzc.rx,hzc.ry),h2=gridToCanvas(hzc.rx+hzc.w,hzc.ry),h3=gridToCanvas(hzc.rx+hzc.w,hzc.ry+hzc.h),h4=gridToCanvas(hzc.rx,hzc.ry+hzc.h);
+    c.save();
+    c.fillStyle='rgba(230,60,30,'+(0.07+_hzP*0.11)+')';
+    c.beginPath();c.moveTo(h1.x,h1.y);c.lineTo(h2.x,h2.y);c.lineTo(h3.x,h3.y);c.lineTo(h4.x,h4.y);c.closePath();c.fill();
+    c.strokeStyle='rgba(235,55,25,'+(0.5+_hzP*0.45)+')';c.lineWidth=2.5+_hzP*1.6;c.stroke();
+    c.restore();
+  }
+
   c.restore();
 }
 
@@ -6679,6 +6701,7 @@ scene.addEventListener('pointerup',function(e){
   var _tgt=G.grid[g.y]&&G.grid[g.y][g.x];
   if(_tgt&&_tgt.box&&_tgt.box.cat==='tire'){
     if(selBeltIdx!==null&&tryNest('belt',selBeltIdx,_tgt))return;
+    if(selNC>=0&&tryNest('nc',selNC,_tgt))return; // v3.5.72 seat a hazmat/NC into the hollow
     if(selBag>=0&&tryNest('bag',selBag,_tgt))return;
   }
   if(selBeltIdx!==null){placeBox('belt',selBeltIdx,g.x,g.y,selBeltRot);return;}
@@ -6873,6 +6896,7 @@ function kbPlace(){
   var _t=G.grid[gy]&&G.grid[gy][gx];
   if(_t&&_t.box&&_t.box.cat==='tire'){
     if(selBeltIdx!==null&&typeof tryNest==='function'&&tryNest('belt',selBeltIdx,_t))return;
+    if(selNC>=0&&typeof tryNest==='function'&&tryNest('nc',selNC,_t))return; // v3.5.72 seat a hazmat/NC into the hollow
     if(selBag>=0&&typeof tryNest==='function'&&tryNest('bag',selBag,_t))return;
   }
   if(selBeltIdx!==null){placeBox('belt',selBeltIdx,gx,gy,selBeltRot);return;}
@@ -8248,7 +8272,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.71</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.72</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
