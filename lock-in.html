@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.65
+   LOCK IN v3.5.66
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.66 - COLLAPSE ESCALATION + throw/drink cooldowns + settings de-slop. (1) COLLAPSE IS A LEARNING CURVE now, not an instant violation: 1st-2nd collapse = a playful "whoopsie" (no record), 3rd = the trainer notices ("your wall keeps collapsing — fix it"), 4th = a safety warning on the record, 5th+ = a violation/incident. The narrative escalates like a real floor: trainer notices → says something → manager comes to watch → writes it up. (Hazmat-in-a-collapse still = round over, checked first.) Both collapse paths (column-topple + integrity-crash) route through collapseEscalation(). (2) THROW + DRINK COOLDOWNS: neither can be spammed — throw 5s, drink 6s, the button greys out while cooling. With the escalating score penalties, the escape-valve meta is now strategic (and optional). (3) SETTINGS descriptions de-slopped: dropped the "full recorded set lands later" / "more palettes can follow" unfulfilled-promise lines and the clunky "(fully off when OFF)". NEXT (spec'd, awaiting the nod): the write-up/documentation popup + the throw→HEY→2s mitigation window. No grade-math change.
    CHANGE LOG v3.5.65 - VERTICAL-TIRE PHYSICS + hazmat-collapse + throw penalty + level-name cleanup. (1) VERTICAL TIRE = unstable base: a rotated (on-edge) tire can't bear a load, so ANY piece placed one higher TOPPLES (onVerticalTire). (2) VERTICAL TIRE-STACKING ladder: stacking a tire on top of another tire escalates — 1st warning, 2nd incident, 3rd practice trailer, 4th round OVER ("your wall came down — you got hurt"). (3) HAZMAT in ANY collapse = round over ("you're going to hurt somebody") — a dropped hazmat is a hurt-somebody event, no matter the stack. (4) THROW PENALTY (perfect symmetry with the drink rule): 4th throw -100, 5th -200, 6th -300... per wall — kills the "throw forever → 1000 smalls from bags" exploit (you CAN, it just goes deep negative). (5) COMMENTARY: the abusive "use your brain" smalls line → "Fill the gaps." (6) LEVEL NAMES: L1 hub was a duplicate of its city (both "Columbus, OH · CMH") → "John Glenn Columbus Intl"; L5 was "THE INCHEON OVERNIGHT" (dupe of L7 Chicago) set in "Seoul" → "THE INCHEON RUSH" / "Incheon, South Korea · ICN". No grade-math change.
    CHANGE LOG v3.5.64 - SIDEWAYS TIRES + drink penalty + fragile-commentary slop. (1) SIDEWAYS TIRES: tire rotation is now ALLOWED (was hard-blocked with "lay it flat"). Standing a tire on edge is a MINOR manager safety fired on placement (TIRE_SIDEWAYS) — a 2nd unmitigated one escalates to an incident, and water/throw/shelf-lock washes it. A row of 3+ sideways tires draws extra commentary. (2) DRINK PENALTY: over-hydrating to farm warning-washes now costs score — 4th drink -100, 5th -200, 6th -300... (escalating -100). You can still drink your way out of a warning, but it's no longer free (pairs with throw + sideways-tire as a penalized escape valve, not an exploit). (3) FRAGILE COMMENTARY was INVERTED: gy=0 is the CEILING, so a fragile on the FLOOR (large gy) was hitting the "on top, good job" pool. Fixed — a low fragile now correctly gets the frag_bad ("exposed / will get crushed") lines. NOTE (not yet done): smalls-spam-via-throw anti-reward, level-location cleanup, and a broader "responses-only" commentary expansion. No grade-math change.
    CHANGE LOG v3.5.63 - ACCOUNT LOGIN re-skin (was "a weird table"). The worker/facility auth form now reads like a real game sign-in: a lit, softly-pulsing badge + a "CLOCK IN" wordmark hero, and a single glowing amber CLOCK IN primary button (the "something lit up") with a quieter "Create a free account" underneath. All field IDs (pf-id/pf-pw/pf-pw2/pf-tab-w/pf-tab-f/pf-signup-btn/pf-auth-note) are unchanged so pfMode/pfDoLogin/pfDoSignup keep working exactly as before — purely a visual pass. Profile/cohort/leaderboard tables untouched (next enterprise pass). No logic change.
@@ -1591,7 +1592,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.65 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.66 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1712,7 +1713,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.65 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.66 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1760,7 +1761,7 @@ body[data-cb="trit"]{
             <button class="set-seg-btn" id="set-mtrack-4" onclick="setMusicTrack(4)">4</button>
           </div>
         </div>
-        <div class="set-note">Music plays from your tracks (slider to 0 = off). Procedural SFX are live; the full recorded set lands later.</div>
+        <div class="set-note">Slide Music to 0 to mute it. Sound effects are always on.</div>
       </div>
 
       <div class="set-section">
@@ -1773,7 +1774,7 @@ body[data-cb="trit"]{
           </div>
         </div>
         <div class="set-row">
-          <div class="set-lbl">Trailer Grid<small>Faint cell grid on the empty trailer wall (fully off when OFF)</small></div>
+          <div class="set-lbl">Trailer Grid<small>A faint cell grid on the empty trailer wall</small></div>
           <div class="set-seg">
             <button class="set-seg-btn" id="set-grid-on" onclick="setLearnGrid(true)">ON</button>
             <button class="set-seg-btn" id="set-grid-off" onclick="setLearnGrid(false)">OFF</button>
@@ -1832,7 +1833,7 @@ body[data-cb="trit"]{
             <button class="set-seg-btn" id="set-hapt-off" onclick="setHaptics(false)">OFF</button>
           </div>
         </div>
-        <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards; more palettes can follow.</div>
+        <div class="set-note">Hazmat shows a colorblind-safe diamond placard with its class number. Colorblind Mode forces high-contrast placards.</div>
       </div>
 
       <div class="set-section">
@@ -1843,7 +1844,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.65 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.66 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2217,7 +2218,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.65
+// LOCK IN v3.5.66
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3656,8 +3657,14 @@ function breakdownBeltBag(idx){
 // but never send a beginner home. The building physics (collapse) stays everywhere.
 function isForgiving(){return gameMode!=='shift';}
 // ── v2.1.37 HYDRATION ──
+// v3.5.66 THROW + DRINK COOLDOWNS — neither can be spammed. The escape-valve meta (throw/drink) is
+// optional and now has to be STRATEGIC: a real cooldown + the escalating score penalties keep it honest.
+var THROW_CD=5000,DRINK_CD=6000,_lastThrowT=0,_lastDrinkT=0;
+function _coolBtn(id,ms){var b=document.getElementById(id);if(!b)return;b.style.opacity='.4';b.style.pointerEvents='none';setTimeout(function(){var e=document.getElementById(id);if(e){e.style.opacity='';e.style.pointerEvents='';}},ms);}
 function takeDrink(){
   if(gOver)return;
+  if(Date.now()-_lastDrinkT<DRINK_CD){showBanner('💧 EASY — you just drank. Give it a few seconds.','',1100);return;}
+  _lastDrinkT=Date.now();_coolBtn('water-side',DRINK_CD);
   G.drinks=(G.drinks||0)+1;
   S.drinks=(S.drinks||0)+1;
   if(typeof playSfx==='function')playSfx('drink');
@@ -4383,6 +4390,8 @@ function checkHydrationSafety(){
 // on); pardons a MINOR safety only (hazmat is an incident, never a warning, so it can't be thrown away).
 function throwBox(){
   if(gOver||typeof G==='undefined'||!G||!G.belt||!G.belt.length){if(typeof showBanner==='function'&&(!G||!G.belt||!G.belt.length))showBanner('Nothing in hand to throw.','',1200);return;}
+  if(Date.now()-_lastThrowT<THROW_CD){showBanner('🦵 THROW ON COOLDOWN — you can’t chuck packages back-to-back.','warn',1200);return;}
+  _lastThrowT=Date.now();_coolBtn('throw-side',THROW_CD);
   var idx=(selBeltIdx!=null)?selBeltIdx:0;if(idx<0||idx>=G.belt.length)idx=0;
   G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
   S.throws=(S.throws||0)+1;G.throws=(G.throws||0)+1;
@@ -4551,10 +4560,20 @@ function tireStackStrike(){
   else if(n===3){showBanner('⛔ THIRD TIME — off to a practice trailer to reset your habits.','danger',2800);if(typeof sendToPractice==='function')sendToPractice();}
   else if(!gOver&&typeof endGame==='function'){endGame('YOUR WALL CAME DOWN — stacked tires rolled the load. You got hurt.',false);}
 }
+// v3.5.66 COLLAPSE ESCALATION — a collapse is a LEARNING CURVE, not an instant violation.
+// 1-2 = whoopsie (no record), 3 = the trainer notices, 4 = a safety warning (on record),
+// 5+ = a violation/incident (the manager came over and saw it). Hazmat-in-collapse is handled
+// at the call site (round over) BEFORE this runs, so this ladder is for ordinary learning-curve drops.
+function collapseEscalation(){
+  var n=(S.collapses||0);
+  if(n<=2){showBanner('😅 WHOOPSIE — that stack came down. Wide base, narrow top, or lock a shelf. Everyone drops a few early.','warn',2800);}
+  else if(n===3){showBanner('👀 HEY — your wall keeps collapsing. The trainer noticed. Tighten the stacking before the manager comes over.','warn',3400);}
+  else if(n===4){safetyWarn('COLLAPSE','the manager came to watch — your wall keeps coming down. That’s a safety warning.');}
+  else{safetyIncident('COLLAPSE','repeated collapses with the manager watching — that’s a violation on your record.');}
+}
 function collapseFreeStack(st){
   if(!st||!st.boxes)return;
   S.collapses=(S.collapses||0)+1;
-  S.incidents=S.incidents||[];S.incidents.push({type:'COLLAPSE',cls:'',wall:(S.truck||1),t:Date.now()});if(typeof _incidentEscalation==='function')_incidentEscalation(); // v3.5.59 a collapse is a documented safety incident
   var n=0;
   st.boxes.forEach(function(cell){
     var cs=cell.cells||makeRect(cell.w,cell.h),i;
@@ -4575,7 +4594,7 @@ function collapseFreeStack(st){
     setTimeout(function(){endGame('HAZMAT IN A COLLAPSE — you’re going to hurt somebody.',false);},700);
     return;
   }
-  showBanner('⚠ COLUMN COLLAPSED — the freestanding stack toppled back to the belt.<br><span style="font-size:.5em">Same-width or top-heavy stacks fall. Taper it (wide base → narrow top) or lock a shelf. RECOVER FAST FOR BONUS.</span>','danger',3200);
+  collapseEscalation(); // v3.5.66 whoopsie → trainer heads-up → safety warning → violation (was an instant incident)
 }
 
 // ── BONUS CHECKS ──
@@ -4748,8 +4767,7 @@ function checkPanic(){
 function triggerCollapse(){
   if(collapseAnimating)return;
   collapseAnimating=true;
-  S.collapses=(S.collapses||0)+1; // v2.1.7
-  S.incidents=S.incidents||[];S.incidents.push({type:'COLLAPSE',cls:'',wall:(S.truck||1),t:Date.now()});if(typeof _incidentEscalation==='function')_incidentEscalation(); // v3.5.59 documented safety incident
+  S.collapses=(S.collapses||0)+1; // v2.1.7 — escalation handled at the end (v3.5.66 ladder), not an instant incident
   var candidates=[];var seen={};
   for(var y=0;y<Math.floor(GH*.65);y++)for(var x=0;x<GW;x++){
     var c=G.grid[y][x];
@@ -4780,7 +4798,12 @@ function triggerCollapse(){
   recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
   addShake(22);playSfx('collapse');hapt('collapse');if(typeof gridToCanvas==='function'){var _cc=gridToCanvas(GW/2,GH*0.5);spawnBurst(_cc.x,_cc.y,40,'rgba(120,90,60,.95)',180,0.7,280);}
   flash('fl-danger');
-  showBanner('⚠ COLLAPSE!<br><span style="font-size:.52em">RECOVER FAST FOR BONUS!</span>','danger',2500);
+  // v3.5.66 hazmat in this collapse = round over; otherwise the learning-curve ladder.
+  var _tHaz=false;toRemove.forEach(function(c){if(c&&c.box&&(c.box.isHaz||c.box.hazClass))_tHaz=true;});
+  if(_tHaz&&!gOver&&typeof endGame==='function'){
+    showBanner('⛔ HAZMAT DOWN — you’re going to hurt somebody. Keep hazmat low and locked.','danger',3600);
+    setTimeout(function(){endGame('HAZMAT IN A COLLAPSE — you’re going to hurt somebody.',false);},700);
+  } else { collapseEscalation(); }
   setTimeout(function(){collapseAnimating=false;},700);
 }
 
@@ -8045,7 +8068,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.65</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.66</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
