@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.87
+   LOCK IN v3.5.88
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.88 - AUTH SWEEP: LOGIN FIX (regression). The v3.5.85 SOCIAL consolidation could leave TWO identical sign-in forms in the DOM at once — the SOCIAL ▸ ME tab's and the old standalone profile overlay's — both hardcoding #pf-id / #pf-pw / #pf-auth-note. Once the profile overlay rendered even once, getElementById('pf-id') resolved to the FIRST (empty, hidden) copy, so pfDoLogin/pfDoSignup read BLANK fields no matter what the player typed = "logging in is broken." FIX: (1) new pfFormEl() reads auth fields from the currently-VISIBLE profile surface, never a stale duplicate; (2) the standalone ov-profile overlay is RETIRED — openProfile() now routes to openSocial('me'), so exactly one auth form exists. Verified in-browser: #pf-id count 2→1, handler reads the typed username, login fires the real auth request. DECISION: kept the old ov-profile renderer as a dead-code fallback (only runs if openSocial is ever missing) rather than deleting it, to minimize blast radius on a ship-critical path.
    CHANGE LOG v3.5.87 - POST-SORT REPORT ACCURACY (per-wall). Two moneymaker bugs root-caused. (1) PIECE COUNT DRIFT: the per-wall "pieces" read the mutable `placed` counter, which goes -1 on every lift and never re-syncs to what's on the wall, so a wall the loader counts as 43 read as 30. NEW gridPieceCount() counts distinct boxes actually sealed in the grid at finalize — the number you'd count by eye, no drift. Both the WALL and SESSION columns of "Avg pieces / wall" now use this same grid-true method (was WALL=net-of-lifts vs SESSION=gross/walls — two methods in one row). (2) SHELVES/MIN had NO per-wall value (WALL column hardcoded null); now computed per wall (this wall's locks ÷ this wall's seconds), like Pieces/sec. Pipeline confirmed correctly wired per mode (finalizeWall on seal/fail/clock-out/shift, wallBaseline on every wall start). Verified in-browser. OPEN QUESTION for the next pass: does a placed smalls BAG count as 1 piece or its parcel count (FedEx piece-scan semantics) — changes PPH/throughput. No backend change.
    CHANGE LOG v3.5.86 - THE DAILY IS THE CROWN JEWEL. DAILY now LEADS the SOCIAL hub (first tab, the default on open, for everyone). The day's #1 gets a gold CROWN HERO — "👑 TODAY'S #1 LOADER ON EARTH · name · score" — and the note says it plain: win it and you're the day's #1 loader on the planet (the SEO north star). A live UTC-reset COUNTDOWN ("NEW BOARD IN 2h 46m…") makes it feel alive + urgent, and stops when the overlay closes. CONVERSION HOOK: an anonymous run that would crack the daily top 10 now pops "🏆 YOU'D BE #N IN THE WORLD TODAY — sign in from SOCIAL to claim your spot" (lbWouldRankDaily). Verified in-browser: crown + countdown + rank-check all live. No backend change.
    CHANGE LOG v3.5.85 - THE SOCIAL HUB (Profile + Leaderboard + Friends consolidated). The two menu buttons (LEADERBOARD + PROFILE) are now ONE "◆ SOCIAL" button opening one overlay titled SOCIAL with four tabs: ◉ ME (your record, or the sign-in form logged out) / ◈ DAILY / ★ HALL / ♦ FRIENDS. The ME tab reuses the exact profile renderer via a new PF_BODY target var (default 'pf-body' so the standalone profile overlay still works). Daily-board loading moved into lbTab('daily') so any entry path loads it; openLeaderboard() is now an alias → openSocial('daily'); the pause PROFILE button → openSocial('me'). Verified in-browser: title SOCIAL, all 4 tabs, ME shows the auth form when anon, HALL/DAILY load. No backend change. NEXT (social pass 2): daily top-10 "you made it — sign in" CTA, daily-board flesh-out, more leaderboard categories, clipboard-skin the rest of the menus.
@@ -1671,7 +1672,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.87 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.88 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1793,7 +1794,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.87 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.88 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1946,7 +1947,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.87 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.88 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2337,7 +2338,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.87
+// LOCK IN v3.5.88
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8373,8 +8374,17 @@ function pfAuthFormHTML(){
     '<div class="pf-auth-foot">Gameplay is always free \u2014 your record is yours. Workers never pay.</div></div>';
 }
 function pfFootHTML(){var sx=ZDATA.session||{};return '<div class="pf-foot"><span class="pf-who">'+pfEsc(sx.handle||sx.email||'')+(sx.facility?' \u00b7 '+pfEsc(sx.facility):'')+'</span><button class="pf-signout" onclick="pfDoLogout()">SIGN OUT</button></div>';}
+// v3.5.87 AUTH SWEEP: read auth-form fields from the CURRENTLY VISIBLE profile surface, never a stale hidden
+// duplicate. The v3.5.85 SOCIAL consolidation could put TWO identical sign-in forms in the DOM (the ME tab's +
+// the old standalone profile's), so getElementById('pf-id') grabbed the first (empty, hidden) one and login read
+// blank — "logging in is broken." Scoped lookup + retiring the second surface (openProfile below) kills it.
+function pfFormEl(id){
+  var surfaces=[document.getElementById('ov-leaderboard'),document.getElementById('ov-profile')],i,ov,el;
+  for(i=0;i<surfaces.length;i++){ov=surfaces[i];if(ov&&ov.classList.contains('vis')){el=ov.querySelector('#'+id);if(el)return el;}}
+  return document.getElementById(id);
+}
 function pfDoLogin(){
-  var em=document.getElementById('pf-id'),pw=document.getElementById('pf-pw'),nt=document.getElementById('pf-auth-note');
+  var em=pfFormEl('pf-id'),pw=pfFormEl('pf-pw'),nt=pfFormEl('pf-auth-note');
   var idv=em?em.value.trim():'',pass=pw?pw.value:'',fac=(PF_MODE==='facility');
   var handle=fac?'':zHandleClean(idv),email=fac?idv:zHandleEmail(idv);
   if(!idv||!pass){if(nt)nt.textContent=fac?'Enter facility email + password.':'Enter username + password.';return;}
@@ -8389,12 +8399,12 @@ function pfDoLogin(){
 }
 function pfDoSignup(){
   if(PF_MODE==='facility'){if(typeof showBanner==='function')showBanner('Facility logins are issued by the publisher.','warn',1800);return;}
-  var em=document.getElementById('pf-id'),pw=document.getElementById('pf-pw'),nt=document.getElementById('pf-auth-note');
+  var em=pfFormEl('pf-id'),pw=pfFormEl('pf-pw'),nt=pfFormEl('pf-auth-note');
   var idv=em?em.value.trim():'',pass=pw?pw.value:'';
   var handle=zHandleClean(idv),email=zHandleEmail(idv);
   if(!handle||handle.length<3){if(nt)nt.textContent='Pick a username (3+ chars: letters, numbers, underscore).';return;}
   if(pass.length<6){if(nt)nt.textContent='Password needs 6+ characters.';return;}
-  var _pw2=document.getElementById('pf-pw2');if(_pw2&&_pw2.value!==pass){if(nt)nt.textContent='Passwords don\u2019t match \u2014 re-type to confirm (a typo here = an account you can\u2019t recover).';return;} // v3.5.48
+  var _pw2=pfFormEl('pf-pw2');if(_pw2&&_pw2.value!==pass){if(nt)nt.textContent='Passwords don\u2019t match \u2014 re-type to confirm (a typo here = an account you can\u2019t recover).';return;} // v3.5.48
   if(nt)nt.textContent='Creating your handle\u2026';
   try{fetch(ZDATA.endpoint+'/rpc/lockin_worker_signup',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey,'Authorization':'Bearer '+ZDATA.anonKey},body:JSON.stringify({p_username:handle,p_password:pass})})
     .then(function(r){return r.json();}).then(function(j){
@@ -8411,7 +8421,13 @@ function pfDoSignup(){
 }
 function pfDoLogout(){if(typeof zAuthLogout==='function')zAuthLogout();PF_MODE='worker';openProfile();}
 var PF_BODY='pf-body'; // v3.5.85 render target so the SOCIAL "ME" tab can reuse the profile renderer
-function openProfile(){PF_BODY='pf-body';var ov=document.getElementById('ov-profile');if(!ov)return;ov.classList.add('vis');
+// v3.5.87 AUTH SWEEP: the standalone ov-profile overlay is retired \u2014 SOCIAL \u25b8 ME is the ONE profile+sign-in
+// surface. Routing here (post-login/logout refresh, pause PROFILE) to openSocial('me') guarantees exactly one
+// auth form in the DOM, so no duplicate #pf-id can hijack the login read. Old ov-profile renderer kept only as a
+// defensive fallback if openSocial is ever unavailable.
+function openProfile(){
+  if(typeof openSocial==='function'){openSocial('me');return;}
+  PF_BODY='pf-body';var ov=document.getElementById('ov-profile');if(!ov)return;ov.classList.add('vis');
   var body=document.getElementById(PF_BODY),tt=document.getElementById('pf-title'),sx=ZDATA.session;
   if(!sx||!sx.uid){if(tt)tt.textContent='SIGN IN';if(body)body.innerHTML=pfAuthFormHTML();pfMode(PF_MODE||'worker');return;}
   if(body)body.innerHTML='<div class="pf-loading">Loading your record\u2026</div>';
@@ -8482,7 +8498,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.87</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.88</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
