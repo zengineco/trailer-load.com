@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.73
+   LOCK IN v3.5.74
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.74 - PROFILE/COHORT enterprise reskin. The worker record + facility roster now read like a real HR/competency report: sticky uppercase column headers on a toned bar, zebra rows + hover, tabular-lining numbers, polished metric tiles (subtle gradient + inset highlight), stronger section rules, and a highlighted "you" row hook. Pure CSS on the existing markup — no data/logic change. NEXT: put clipboard.png behind ALL menus (pause/end/profile/write-up), like the briefing.
    CHANGE LOG v3.5.73 - PER-MODE MUSIC + control-strip WATER/THROW + pause tidy + throw polish. (1) PER-MODE MUSIC: each mode opens on its own track then continues the AUTO playlist — Gauntlet 1, Arcade 2, Practice 3, Daily 4, Tour 5 (skipped if you pinned a track in Settings). (2) WATER + THROW moved OUT of the floating side gutters INTO the bottom control strip alongside BREAK JAM / NC / ROT (cooldown-grey still works; kept the IDs). (3) THROW icon 🦵→🤾 (reads like a throw, not a kick). (4) THROW ricochet: bigger box (~36-52 vs ~18) + higher launch (bounce kept). (5) PAUSE MENU reordered to Resume · Settings · Account · Restart · Main Menu · Clock Out, and WARM-DARK MODE removed (it lives in Settings). No grade-math change.
    CHANGE LOG v3.5.72 - FRAGILE-CRUSH warning + HAZMAT nesting + persistent HAZMAT marker. (1) FRAGILE CRUSH is a WARNING first now, not a firing — an autopilot slip. Crushing a fragile fires a minor FRAGILE_CRUSH safety (water/lock/throw-clearable) that ladders to an incident only on repeat; a crushed HAZMAT is still the instant write-up. (2) HAZMAT NESTING: hazmats (NC pieces) can now be seated into a placed tire's hollow — the code rewarded it but the fits-gate blocked all NC pieces. Select a hazmat, tap a tire = leak-shielded in the hollow (big bonus, and it can't fall in a collapse). (3) PERSISTENT HAZMAT MARKER: any LOOSE hazmat on the wall (not capped by a locked shelf above it) now pulses a red warning outline every frame, so the danger is always visible — lock a shelf over it or nest it to clear the marker. No grade-math change.
    CHANGE LOG v3.5.71 - MUSIC UI + D-PAD/JOYSTICK toggle + more settings de-slop. (1) MUSIC: was 4 track buttons for 13 real songs — now ONE BUTTON PER SONG (AUTO + 1–13, built from the real track list, trimmed the 30 phantom slots) plus a ⏭ SKIP SONG button that jumps to the next track in AUTO or a pinned track. Removed the redundant track hint + the "Slide Music to 0 / SFX always on" slop note. (2) D-PAD/JOYSTICK: new Control Type toggle above the size slider — D-PAD is a 4-way pad that drives the same cursor as the arrow keys (press-and-hold repeats), JOYSTICK is the existing aim stick; choice persists in localStorage, and "Control Size" is now "D-pad / Joystick Size". (3) Coach Voice lost the "(also changeable mid-shift…)" dev-note. Verified in-browser: 14 track buttons + skip render, the toggle flips the widget + persists. No gameplay/scoring change.
@@ -1496,16 +1497,21 @@ body[data-cb="trit"]{
 .pf-hero{margin-bottom:16px;padding-bottom:12px;border-bottom:1px dashed #c8b898;}
 .pf-hero-id{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;color:#2a1a08;word-break:break-all;}
 .pf-hero-sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:#9a8a6e;}
-.pf-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:18px;}
-.pf-tile{background:#ece7d8;border:1px solid #c8b898;border-radius:4px;padding:11px 6px;text-align:center;}
-.pf-tval{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#8b4513;line-height:1;}
-.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.5px;color:#7a6a52;margin-top:4px;}
-.pf-sec{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;color:#8b4513;border-bottom:1px solid #c8b898;padding-bottom:5px;margin:18px 0 10px;}
-.pf-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:17px;}
-.pf-table th{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:#9a8a6e;text-align:left;padding:6px 8px;border-bottom:1px solid #c8b898;}
-.pf-table td{padding:7px 8px;color:#2a1a08;border-bottom:1px solid #ddd3bf;}
-.pf-cohort .pf-handle{font-family:'Share Tech Mono',monospace;color:#8b4513;}
+/* v3.5.74 ENTERPRISE reskin — the profile/cohort read like a real HR/competency report */
+.pf-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;}
+.pf-tile{background:linear-gradient(180deg,#f1ebde,#e3dbc7);border:1px solid #cbbca0;border-radius:6px;padding:12px 6px 9px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 2px rgba(80,54,30,.08);}
+.pf-tval{font-family:'Bebas Neue',sans-serif;font-size:29px;color:#7a4a12;line-height:1;letter-spacing:.5px;font-variant-numeric:tabular-nums;}
+.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:8.5px;letter-spacing:1px;color:#8a7a5c;margin-top:5px;text-transform:uppercase;}
+.pf-sec{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#7a4a12;text-transform:uppercase;border-bottom:2px solid #8b4513;padding-bottom:5px;margin:20px 0 9px;}
+.pf-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:16px;}
+.pf-table th{font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#6a5a3e;text-transform:uppercase;text-align:left;padding:8px 8px;background:#e2dac4;border-bottom:1.5px solid #b8a582;position:sticky;top:0;z-index:1;}
+.pf-table td{padding:8px 8px;color:#2a1a08;border-bottom:1px solid #e2d8c2;}
+.pf-table td:not(:first-child){font-variant-numeric:tabular-nums;}
+.pf-table tr:nth-child(2n) td{background:rgba(160,130,80,.06);}
+.pf-table tbody tr:hover td,.pf-table tr:hover td{background:rgba(139,69,19,.09);}
+.pf-cohort .pf-handle{font-family:'Share Tech Mono',monospace;color:#7a4a12;font-weight:bold;}
 .pf-table td.pf-flag{color:#c23a1a;font-weight:bold;}
+.pf-table tr.pf-me td{background:rgba(224,150,46,.14)!important;box-shadow:inset 3px 0 0 #c8791e;}
 .pf-note{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#9a8a6e;margin-top:14px;line-height:1.4;}
 .pf-auth{padding:6px 2px 4px;}
 .pf-tabs{display:flex;margin-bottom:16px;border:1px solid #c8b898;border-radius:5px;overflow:hidden;}
@@ -1643,7 +1649,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.73 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.74 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1763,7 +1769,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.73 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.74 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1916,7 +1922,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.73 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.74 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2286,7 +2292,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.73
+// LOCK IN v3.5.74
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8283,7 +8289,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.73</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.74</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
