@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.59
+   LOCK IN v3.5.60
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.60 - COLUMN RULE v5 (dimensional caps + moonshot kill). Two additions to worstFreeStack, both tunable. (1) MOONSHOT FIX: being "sandwiched" (boxed on both sides) now only ANCHORS a stack if at least one side is a real GROUND-CONNECTED pillar (solidBelow: filled continuously down to the floor or a locked shelf) or the trailer wall - two floating towers bracing each other no longer hold each other up above height 4. A genuine solid wall still stands (its neighbors reach the ground); a gap-braced tower now topples. (2) DIMENSIONAL CAP: a freestanding stack has a max CELL height keyed to its narrowest footprint - 1-wide 6, 2-wide 9, 3-wide 7, 4-wide 6, 5-wide+ 5 (strict taper +2). So a wide flat slab tips sooner (his "5x2 shouldn't go 3-high" = 6 cells > cap 5) while a tall-narrow box is allowed higher (his "2x6 up to ~9"). Existing rules kept: freestanding 4+, non-taper 3+, smalls-in-3+ all still collapse. Knobs live in freestandCellCap()/FREESTAND_TAPER_BONUS. No metric-capture change.
    CHANGE LOG v3.5.59 - SAFETY SYSTEM + THROW/WATER side buttons. Two tracked categories now: WARNINGS (recoverable) and INCIDENTS (on the record). Ladder: a warning you DON'T mitigate, repeated as the SAME offense, escalates to an INCIDENT; 5 incidents = sent to a fresh beginner PRACTICE trailer (clean slate, record still stands - NOT game over). Mitigation: lock a shelf (instant neutralize), drink WATER (clears one open minor warning), or THROW the piece (pardons a minor only). HAZMAT-high and COLLAPSES are incidents outright - no pardon (a collapse is now a documented safety incident, so 2 = the talking-to; removed the old separate collapse grade term to avoid double-counting). HYDRATION is now a real safety: 75% up the wall with no water = warning, top it bone-dry = incident; OVER-drinking to farm warning-washes = SABOTAGE (logged). Washed safeties are STILL published (the "1501 safeties, 1490 for throwing boxes" bit - report now shows warnings total, washed, thrown-away, sabotage flags, sent-to-training). NEW side buttons: WATER (left gutter) + THROW (right gutter), emoji placeholders ready for Goyim's icons; THROW always spawns a bag of smalls. Live SAFE meter in the control row. DEFERRED: tire-sideways-as-hazard (needs the tire-orientation model). No change to how grade math reads density/integrity beyond the collapse-term removal.
    CHANGE LOG v3.5.58 - QUALITY-OF-LIFE batch. (1) SmallsSort (/ss/) now shares the LOCK IN account: it reads the same localStorage session, shows your handle, and finally has a SIGN OUT in its header (was the reported gap) - sign-IN links back to the game profile (#signin auto-opens it). (2) NEW Settings > Session > QUICK RESET - restart the current load from an empty trailer without leaving the game. (3) Next-trailer popup reordered: "CONTINUE LOADING - MAX PACK" now sits directly under "NEXT TRAILER" (was below the report link). No metric-capture change.
    CHANGE LOG v3.5.57 - GRADE HONESTY (the "A on a broken wall" bug). The POST-SORT REPORT hero grade was STILL running the old v2.1.39 lenient formula (no density gate, A at 85, collapse only -10) while the strict density-gated sessionGrade() only fed the live OPERATIONS drawer. That two-formula split is how a 48%-dense, 78-integrity, 6-collapse wall read as an A. The report now runs the SAME strict sessionGrade() as ops. Also fixed the stale SESSION integrity (100% while the wall was 78%): sealWall captured density but never integrity, so a sealed wall's real number never entered the session average and it defaulted toward the seed 100. NEW finalizeWall() is now the single source of truth - captures EXACTLY one integrity+density sample per wall (idempotent via G._finalized) the moment it's sealed / clocked-out / failed; every other push site now routes through it. And relabeled the report's "Wall fill %" to "Wall height %" - it measured ceiling-reach, not fill (one column to the roof read 100%); "Cube fill %" stays the true density. No new gameplay, just honest numbers.
@@ -1571,7 +1572,7 @@ body[data-cb="trit"]{
   <!-- v3.5.39 ADMIN: the pause menu now renders on the CLIPBOARD; ACCOUNT & DATA folds the old DATA tab in here -->
   <div class="pause-clip">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.59 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.60 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1692,7 +1693,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.59 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.60 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SETTINGS OVERLAY (v2.1.24) ═══════════════════ -->
@@ -1823,7 +1824,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.59 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.60 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2197,7 +2198,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.59
+// LOCK IN v3.5.60
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4378,6 +4379,28 @@ function hasLateralSupport(cell){
   return leftSupport&&rightSupport;
 }
 
+// v3.5.60 is column cx filled continuously from row y DOWN to the floor (or to a locked shelf)?
+// True = a real ground-connected pillar (solid mass). False = there's a gap under it = a floating box.
+// This is what separates a solid wall (neighbors reach the ground) from a moonshoot (towers bracing towers).
+function solidBelow(cx,y){
+  var yy;
+  for(yy=y;yy<GH;yy++){
+    if(typeof isRowLockedIn==='function'&&isRowLockedIn(yy))return true; // a locked shelf under it = anchored
+    if(!(G.grid[yy]&&G.grid[yy][cx]))return false; // gap beneath = floating, not solid
+  }
+  return true; // reached the floor with no gap
+}
+// v3.5.60 DIMENSIONAL height cap (in CELLS) for a freestanding stack, keyed to the narrowest footprint in it.
+// Narrower boxes tolerate a taller stack; wide flat slabs tip sooner. Tunable — these are the knobs.
+//   1-wide -> 6   2-wide -> 9   3-wide -> 7   4-wide -> 6   5-wide+ -> 5   (strict taper adds FREESTAND_TAPER_BONUS)
+var FREESTAND_TAPER_BONUS=2;
+function freestandCellCap(minW){
+  if(minW<=1)return 6;
+  if(minW===2)return 9;
+  if(minW===3)return 7;
+  if(minW===4)return 6;
+  return 5;
+}
 // v3.5.54 COLUMN STABILITY (taper-aware). Scan EVERY column for its freestanding stack: the DISTINCT boxes
 // stacked top-down that have NO lateral neighbor at their level (a locked shelf or tire anchors + ends the run).
 // A stack is STABLE only if it strictly TAPERS (each box narrower than the one directly below — the 4x4/3x3/2x2/1x1
@@ -4396,19 +4419,29 @@ function worstFreeStack(){
         var bl=(y+1>=GH)?'floor':(G.grid[y+1]&&G.grid[y+1][cx]);
         if(bl==='floor'||(bl&&bl.box&&bl.box.cat==='tire'))break;
       }
-      // SANDWICHED — boxes on BOTH sides (trailer wall counts) = solidly boxed-in = anchored (a real solid wall stands).
-      // v3.5.55 FIX: a SINGLE neighbor is NOT support (parallel pillars don't hold each other up) — this is why combs never fell.
+      // SANDWICHED — boxes on BOTH sides (trailer wall counts) = boxed-in.
+      // v3.5.55: a SINGLE neighbor is NOT support (parallel pillars don't hold each other up).
+      // v3.5.60 MOONSHOT FIX: being boxed-in only ANCHORS if at least one side is a real ground-connected
+      // pillar (solidBelow) or the trailer wall — two floating towers bracing each other no longer hold.
       var L=(cx===0)||!!(G.grid[y]&&G.grid[y][cx-1]);
       var R=(cx===GW-1)||!!(G.grid[y]&&G.grid[y][cx+1]);
-      if(L&&R)break;
+      var leftSolid=(cx===0)||(G.grid[y]&&G.grid[y][cx-1]&&solidBelow(cx-1,y));
+      var rightSolid=(cx===GW-1)||(G.grid[y]&&G.grid[y][cx+1]&&solidBelow(cx+1,y));
+      if(L&&R&&(leftSolid||rightSolid))break;
       if(c.box&&!seen[c.id]){seen[c.id]=1;boxes.push(c);if(c.box.isBag||c.box.type==='small')hasSmall=true;}
     }
     if(boxes.length<2)continue;
     var tapering=true,i;
     for(i=0;i<boxes.length-1;i++){var wu=(boxes[i].box&&boxes[i].box.w)||1,wl=(boxes[i+1].box&&boxes[i+1].box.w)||1;if(wu>=wl){tapering=false;break;}} // upper must be strictly narrower
-    // unstable: any freestanding 4+ (even tapered — the n-1 rule), OR non-taper 3+, OR a smalls/bag inside a 3+ stack
-    var bad=(boxes.length>=4)||(!tapering&&boxes.length>=3)||(hasSmall&&boxes.length>=3);
-    var rec={cx:cx,boxes:boxes,h:boxes.length,tapering:tapering,hasSmall:hasSmall,unstable:bad};
+    // v3.5.60 DIMENSIONAL cap: narrowest footprint in the run sets a max CELL height (wide slabs tip sooner).
+    var minW=99,_bi;for(_bi=0;_bi<boxes.length;_bi++){var _bw=(boxes[_bi].box&&boxes[_bi].box.w)||1;if(_bw<minW)minW=_bw;}
+    var minRy=1e9,maxRy=-1e9;for(_bi=0;_bi<boxes.length;_bi++){var _b=boxes[_bi],_ry=(_b.ry!=null?_b.ry:0),_bh=(_b.box&&_b.box.h)||1;if(_ry<minRy)minRy=_ry;if(_ry+_bh>maxRy)maxRy=_ry+_bh;}
+    var runCellH=(maxRy>minRy)?(maxRy-minRy):boxes.length;
+    var cellCap=freestandCellCap(minW)+(tapering?FREESTAND_TAPER_BONUS:0);
+    // unstable: any freestanding 4+ (even tapered — the n-1 rule), OR non-taper 3+, OR a smalls/bag in a 3+ stack,
+    // OR the run is TALLER (in cells) than its footprint tolerates — the "5x2 to the moon" / wide-slab case.
+    var bad=(boxes.length>=4)||(!tapering&&boxes.length>=3)||(hasSmall&&boxes.length>=3)||(boxes.length>=2&&runCellH>cellCap);
+    var rec={cx:cx,boxes:boxes,h:boxes.length,tapering:tapering,hasSmall:hasSmall,runCellH:runCellH,minW:minW,unstable:bad};
     if((bad&&(!worst||!worst.unstable||rec.h>worst.h))||!worst)worst=rec;
   }
   return worst;
@@ -7916,7 +7949,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.59</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.60</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
