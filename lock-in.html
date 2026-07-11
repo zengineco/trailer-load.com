@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.91
+   LOCK IN v3.5.92
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.92 - PHYSICS SWEEP #1: TIRE FLOOR-RESET NERF (kills the tire moonshot). Two surgical changes to worstFreeStack(). (1) A tire acts as a floor — resetting the freestack for whatever rests above — ONLY when genuinely GROUNDED: on the real floor OR a flat locked-in wall row. Tire-on-tire and tire-on-box no longer reset (that chain was the exploit: stack tires to reset the tower forever, then freight rode up "grounded"). (2) Tires are now TRANSPARENT to the freestack — they never count toward the topple length, so a pure tire tower stacks as high as you want and never self-topples, while freight above a non-grounded tire reads as ONE continuous tower (no reset). Verified in-browser on reloaded code: legit 2-tire+box = stable; 5-tire+3-box moonshot = UNSTABLE (freight counted, tires skipped); pure 8-tire tower = stable; tapered pyramid + 4-box control unchanged. Sweep item #1 of 6 (tire-floor-reset → column-integrity → heavy-freight-collapse → locked-tire/lift rules → diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.91 - MENU COLLAPSE: THE FOUR PILLARS (step 2). The start menu is now four cards — TRAILER-LOAD (flagship) · DAILY (favored son) · TRAINING (the teacher, now a real top-level pillar) · MINI-GAMES — instead of six scattered modes. PRACTICE, GAUNTLET, TOUR and SMALLS SORT moved into a new MINI-GAMES submenu (#ov-minigames overlay, reuses .sm-card, same z-layer as profile/leaderboard); each side-game closes the submenu then launches. openMiniGames()/closeMiniGames() added. This is the minimalist front door — one clear flagship, the daily as its own star, and the side games tucked where they belong (no world rank there). Verified in-browser: pillars = TRAILER-LOAD/DAILY/TRAINING/MINI-GAMES, submenu opens with all 4 side games, closes clean, launching Practice hides both layers and starts the mode. No mode-start logic changed — pure menu re-wire. DAILY chute confirmed 10 (BELT_PIECE_COUNT, daily included) — standing rule.
    CHANGE LOG v3.5.90 - PPH = REAL FREIGHT + PRODUCTIVITY WRITE-UPS. The moneymaker metric now counts what a hub actually counts: REAL FREIGHT (boxes). Smalls and bags NO LONGER count toward PPH — and because they still eat the clock, stopping to break down a bag to chink your gaps genuinely DRAGS your pace (the rookie who "loaded 400" really moved 80). New S.boxPieces (gross) + per-wall delta via _WALL_COUNTERS; getPPH()/avgPPH()/peak all read freight. THE HUB STANDARD = 250 pph. A substantial wall (≥6 freight, ≥20s) sealed below standard in a non-forgiving mode is a PRODUCTIVITY incident: 1st = a PACE FLAGGED banner, every 2nd = a signed WRITE-UP ("PACE BELOW HUB STANDARD"), mirroring the safety docs. Post-sort THROUGHPUT block is now "PRODUCTIVITY · REAL FREIGHT" — Avg/Peak PPH, Hub standard 250, met-standard? ✓/✕ per wall + session, Productivity write-ups, and Pieces/sec relabeled "(all)" so hand-tempo stays honest but separate. Verified in-browser: 8 boxes+12 smalls+3 bags/90s = 320 pph real (vs 920 if everything counted); slow walls ding then write up on the 2nd, fast walls stay clean; gates clean. DECISION: raiseWriteup() gained an optional count arg so productivity docs show the productivity tally, not the safety one.
    CHANGE LOG v3.5.89 - TRAILER-LOAD: THE FLAGSHIP (step 1 of 2 — stand it up, playtest the feel). The one canonical mode, wired into lifetime + the leaderboard. It runs ON the proven shift engine (endless walls, arcade dispatch feel, all working plumbing) so nothing else can break — new global TRAILER_MODE just (a) layers a late-wall gauntlet-spice and (b) rebrands the label. THE MELD: practice-smooth phase gen (shift already used it) + arcade dispatch/fail feel + as each wall fills past ~60%, a ramping chance (16%→~50% near the top) to seed gauntlet-style awkward pieces so the endgame is almost never a layup — and the THROW meta is always the out. New startTrailerLoad(); the menu ARCADE card becomes the TRAILER-LOAD flagship card (now first). Badge / scoreboard MODE / post-sort MODE all read TRAILER-LOAD. Verified in-browser: launch sets the flag, spice fires 112/300 at 85% fill (0 with it off), all three labels correct, gates clean. DECISION: gameMode stays 'shift' internally (zero new mode-branches to audit) — the flagship identity is the flag + labels; a clean data-key rename can come with the step-2 menu collapse. NEXT (step 2, after you play it): collapse the menu to 4 pillars (Trailer-Load · Daily · Training · Mini-Games), demote Practice/Gauntlet/Arcade into Mini-Games, give SmallsSort its own daily board.
@@ -1686,7 +1687,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.91 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.92 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1799,7 +1800,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.91 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.92 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1952,7 +1953,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.91 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.92 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2370,7 +2371,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.91
+// LOCK IN v3.5.92
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4765,9 +4766,14 @@ function worstFreeStack(){
       if(!c){if(hit)break;continue;}
       hit=true;
       if(G.tetrisRows&&G.tetrisRows[y])break; // v3.5.61 MOONSHOT FIX: break only AT the locked-shelf row itself — isRowLockedIn(y) was ALSO true for every row ABOVE any shelf, so locking one shelf granted infinite height above it. The shelf anchors what rests ON it; a freestanding tower built on top is still evaluated below.
-      if(c.box&&c.box.cat==='tire'){ // a tire anchors ONLY if it sits on the floor or another tire (not on a box)
+      // v3.5.92 TIRE FLOOR-RESET NERF (kills the tire moonshot). A tire acts as a floor — resetting the freestack
+      // for whatever rests above it — ONLY when it is genuinely grounded: sitting on the real floor OR a flat
+      // LOCKED-IN wall row. Tire-on-tire and tire-on-box no longer reset (that was the exploit: chain tires to
+      // reset the tower forever). A non-grounded tire is TRANSPARENT (below) so freight above+below it reads as ONE
+      // continuous tower, and its own height counts against the cap.
+      if(c.box&&c.box.cat==='tire'){
         var bl=(y+1>=GH)?'floor':(G.grid[y+1]&&G.grid[y+1][cx]);
-        if(bl==='floor'||(bl&&bl.box&&bl.box.cat==='tire'))break;
+        if(bl==='floor'||(y+1<GH&&G.tetrisRows&&G.tetrisRows[y+1]))break; // grounded tire = a real floor reset
       }
       // SANDWICHED — boxes on BOTH sides (trailer wall counts) = boxed-in.
       // v3.5.55: a SINGLE neighbor is NOT support (parallel pillars don't hold each other up).
@@ -4778,7 +4784,7 @@ function worstFreeStack(){
       var leftSolid=(cx===0)||(G.grid[y]&&G.grid[y][cx-1]&&solidBelow(cx-1,y));
       var rightSolid=(cx===GW-1)||(G.grid[y]&&G.grid[y][cx+1]&&solidBelow(cx+1,y));
       if(L&&R&&(leftSolid||rightSolid))break;
-      if(c.box&&!seen[c.id]){seen[c.id]=1;boxes.push(c);if(c.box.isBag||c.box.type==='small')hasSmall=true;}
+      if(c.box&&!seen[c.id]&&c.box.cat!=='tire'){seen[c.id]=1;boxes.push(c);if(c.box.isBag||c.box.type==='small')hasSmall=true;} // v3.5.92 tires are TRANSPARENT to the freestack — they stack as high as you want and never self-topple; freight above a non-grounded tire is still one continuous tower (no moonshot reset), and the tire's height still counts in runCellH via the ry span
     }
     if(boxes.length<2)continue;
     var tapering=true,i;
@@ -8576,7 +8582,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.91</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.92</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
