@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.102
+   LOCK IN v3.5.103
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.103 - MENU BRAND ACCENTS. The four pillars were monotone amber (slop) — now each carries its own brand color: TRAILER-LOAD amber (flagship), DAILY CYAN (the load-rate cyan), TRAINING green, MINI-GAMES PINK. Border + name color per pillar; verified in-browser (daily=rgb(42,169,160), mini-games=rgb(224,85,159)). Cyan and pink are back in the menu.
    CHANGE LOG v3.5.102 - DAILY-SUBMIT BUG FIX (score not saving) + briefing text. THE BUG (Goyim: signed in, played daily, still got prompted to "sign in to share your score," signed in again, nothing saved): zSaveSession set uid from j.user.id ONLY — but a token-refresh response omits j.user, so a background refresh wiped ZDATA.session.uid to null while you were still signed in. dailyFinish keys on uid → saw you as anonymous → the anon "sign in to claim" CTA, and zSubmitDaily bailed without posting. FIX: new zJwtSub() reads the uid from the access token's `sub` claim (always present); uid now = j.user.id OR the token sub OR the prior uid — it can never be wiped by a refresh. PLUS: signing in while a just-finished daily sits on the anon CTA now auto-reposts the score (zSaveSession re-runs dailyFinish when the daily-result panel is up). Verified in-browser: a refresh response with no j.user keeps uid + zLoggedIn()=true; fresh token-only session decodes uid from sub. Also: briefing rule 7 no longer reveals "a water break clears it" (a hidden feature) — now "lay it flat before the door opens." Gates clean.
    CHANGE LOG v3.5.101 - TIRES REDRAWN (rounded rect + real skins + see-through hole). Goyim's exact spec: a tire viewed straight-on 2D is a ROUNDED-CORNER RECTANGLE, not an oval — so the render now CLIPS THE CORNERS of the cell rect (roundRect, radius ~26% of the short side) and fills it with the submitted tire skin (tire1-5.png, seed-picked), instead of the old ellipse-clip that squashed the skin into an oval. The hollow is now a SEE-THROUGH hole (destination-out punch at ~60% so the wall/box/nested layer behind shows through — the same semi-transparent authenticity as the bags), with a hub rim and nested-contents dots inside it. Fully guarded: falls back to a dark fill if a skin isn't loaded, to a plain rect if roundRect is unavailable, try/catch around every draw. Verified NON-BREAKING in-browser: all 5 tire skins load, roundRect supported, the draw frame runs with no thrown error. NEEDS GOYIM'S EYEBALL for the actual look — screenshots are wedged this session, so the visual is unconfirmed (the mechanism is his spec exactly; tuning the radius/hole-size is a quick follow-up). Retired the card11 gray-box tire backdrop (the skin now fills the cell).
    CHANGE LOG v3.5.100 - CHUTE-LEAK BUG FIX + SMALLS-CRUSH RULE. (1) THE CHUTE BUG (Smokeh: "any game mode"): BELT_PIECE_COUNT is a mutable global, and level mode's initMechanic()/clearMechanic() slam it to 6 and NEVER restore it — so after Tour (or the menu demo touching a mechanic), a 6-piece chute leaked into every mode after, incl. a fresh Trailer-Load. FIX: new BELT_DEFAULT=10; restartGame() restores it for every non-level start (`if(gameMode!=='level')BELT_PIECE_COUNT=BELT_DEFAULT`); level still sets its own after. Verified: leaked 6 → 10 on Trailer-Load/Practice/Gauntlet/Daily, chute refills to 10. (2) SMALLS-CRUSH: heavy freight (wc>=5) dropped on an UNSUPPORTED smalls bag now crushes it exactly like a fragile — you're smashing the customers' packages inside. checkFragileCrush() targets isFrag OR isBag/small; same protections (locked row / lateral support = safe); routes through the FRAGILE_CRUSH warning + crunch penalty with a smalls-aware callout. Verified: heavy-on-bag/small crushes, heavy-on-regular doesn't, locked/supported bag is safe, light freight is fine. Gates clean. NOTE: tire skins (tire1-5.png) confirmed present for the tire cosmetic — pending working screenshots to verify the redraw.
@@ -619,6 +620,15 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .sm-card.mode-daily .sm-card-name{color:#d8c89a;}
 .sm-card.mode-smalls{border-left-color:#3aa0c0;}
 .sm-card.mode-smalls .sm-card-name{color:#6cc4de;}
+/* v3.5.103 THE FOUR PILLARS get their own brand accents — no more monotone amber. Flagship amber · DAILY cyan · Training green · Mini-Games pink. */
+.sm-card.mode-flagship{border-left-color:#e0a838;}
+.sm-card.mode-flagship .sm-card-name{color:#f4cd72;}
+.sm-card.mode-daily{border-left-color:#2aa9a0;}
+.sm-card.mode-daily .sm-card-name{color:#5fd6cd;}
+.sm-card.mode-training{border-left-color:#4fbf7a;}
+.sm-card.mode-training .sm-card-name{color:#84e0a6;}
+.sm-card.mode-minigames{border-left-color:#e0559f;}
+.sm-card.mode-minigames .sm-card-name{color:#f480c4;}
 .sm-card-desc{display:none;}
 /* Version / copyright footer */
 #sm-footer{
@@ -1700,7 +1710,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.102 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.103 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1813,7 +1823,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.102 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.103 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1966,7 +1976,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.102 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.103 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2384,7 +2394,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.102
+// LOCK IN v3.5.103
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8779,7 +8789,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.102</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.103</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
