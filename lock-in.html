@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.105
+   LOCK IN v3.5.106
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.106 - NC BRIEFING TEXT FIX. Rule 4 said tires/SP/oversize "wait in the side panel" — but the staging tray is at the BOTTOM, not the side. Text now reads "wait in the staging tray at the bottom." (Slop = the words not matching the actual layout.) Also verified end-to-end on live: the DAILY sign-in + submit pipeline works top to bottom (fresh account signup->signin->submit->on the board; real players on today board), and the v3.5.102 uid-from-sub fix is deployed. No logic change here beyond the text.
    CHANGE LOG v3.5.105 - THE CLIPBOARD IS THE BACKGROUND (finally). Goyim asked ~20 times: the SOCIAL/leaderboard, PROFILE, and MINI-GAMES menus now sit on the REAL clipboard.png — the same metal-board art as the pause menu + briefing — instead of the plain drawn cream card. .pf-card (in ov-leaderboard/ov-profile) and .mg-wrap (ov-minigames) get the clipboard bg at its true 619:905 aspect, drop-shadow, drawn-clip pseudo-elements hidden; the title sits just below the metal clip (~22.5%) and the content lives in the clear WRITING AREA (a scrollable region from ~30% to 95%, inside the frame). Verified by measurement (same method as the pause fit): bg=clipboard.png, aspect matches, the writing area is fully within the card bounds below the clip. Pure CSS — no markup/logic change.
    CHANGE LOG v3.5.104 - LEADERBOARD WIRED: THE WORLD BOARD IN-GAME (pass 1). The in-game HALL is no longer a one-at-a-time dropdown of dog-shit rows — it is now the approved World Board as a scrollable CATEGORICAL LEDGER: WALLS OF FAME (Best / Total Loaded / Fastest / Cleanest / Fewest Pieces) stacked over WALLS OF SHAME (Slowest / Most Collapses / The Grind / Barely Held), every board loaded at once as its own card. Each card: emoji header, one-line note, TOP 5 with medal rows — gold #1, 🥇🥈🥉 podium, 💀 for the shame #1, tabular values. New lbLoadAllBoards/lbBoardCard + a shared lbMedalRows() renderer (also upgrades the DAILY board to medal rows under the crown hero). Cream-paper cards in the real Bebas/Share-Tech-Mono type, fame amber rail / shame rust rail. Pure presentation over the existing per-board RPCs (lockin_alltime_board/lockin_total_board/lockin_wall_board). Verified in-browser: 5 fame + 4 shame cards build, medal rows render with gold #1, daily uses medal rows. NEXT (pass 2+): all-time-daily strip (needs a daily-scoped wall RPC), /me/ made comprehensive, SmallsSort feeding the board. The dropdown-era lbLoadHall/lbRenderHall are now dead code (harmless).
    CHANGE LOG v3.5.103 - MENU BRAND ACCENTS. The four pillars were monotone amber (slop) — now each carries its own brand color: TRAILER-LOAD amber (flagship), DAILY CYAN (the load-rate cyan), TRAINING green, MINI-GAMES PINK. Border + name color per pillar; verified in-browser (daily=rgb(42,169,160), mini-games=rgb(224,85,159)). Cyan and pink are back in the menu.
@@ -1751,7 +1752,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.105 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.106 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1782,7 +1783,7 @@ body[data-cb="trit"]{
       <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt"><b>Grab &amp; place.</b> Pull a box off the chute, click the wall to set it. <b>[R]</b> rotates.<span class="brief-why">Pieces queue in the chute — rotate before you place to fit tighter.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Build off the floor.</b> Every piece needs support under it — nothing floats.<span class="brief-why">A freestanding stack 4+ high with no wall beside it topples back to the belt.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt"><b>Lock your shelves.</b> Fill a full row to lock it; a locked shelf braces the wall above.<span class="brief-why">Locked shelves also cap a hazmat safely beneath them.</span></div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>Stage the non-cons.</b> Tires, SP &amp; oversize wait in the side panel — click, then wall it.<span class="brief-why">Non-conveyables are the irregular freight the belt can't carry.</span></div></div>
+      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>Stage the non-cons.</b> Tires, SP &amp; oversize wait in the staging tray at the bottom — click, then wall it.<span class="brief-why">Non-conveyables are the irregular freight the belt can't carry.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile &amp; glass ride on top.</b> Never bury them — a crush is a write-up.<span class="brief-why">Load them near the top with only light pieces above.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Hazmat low &amp; locked.</b> Floor it, cap it under a shelf.<span class="brief-why">A hazmat in ANY collapse ends the round — keep it stable.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Lay tires flat.</b> On its edge, a tire rolls the second the door opens.<span class="brief-why">Standing one up is a safety warning — lay it flat before the door opens.</span></div></div>
@@ -1864,7 +1865,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.105 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.106 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2017,7 +2018,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.105 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.106 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2423,7 +2424,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.105
+// LOCK IN v3.5.106
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8857,7 +8858,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.105</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.106</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
