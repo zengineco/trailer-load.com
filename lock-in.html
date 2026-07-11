@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.103
+   LOCK IN v3.5.104
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.104 - LEADERBOARD WIRED: THE WORLD BOARD IN-GAME (pass 1). The in-game HALL is no longer a one-at-a-time dropdown of dog-shit rows — it is now the approved World Board as a scrollable CATEGORICAL LEDGER: WALLS OF FAME (Best / Total Loaded / Fastest / Cleanest / Fewest Pieces) stacked over WALLS OF SHAME (Slowest / Most Collapses / The Grind / Barely Held), every board loaded at once as its own card. Each card: emoji header, one-line note, TOP 5 with medal rows — gold #1, 🥇🥈🥉 podium, 💀 for the shame #1, tabular values. New lbLoadAllBoards/lbBoardCard + a shared lbMedalRows() renderer (also upgrades the DAILY board to medal rows under the crown hero). Cream-paper cards in the real Bebas/Share-Tech-Mono type, fame amber rail / shame rust rail. Pure presentation over the existing per-board RPCs (lockin_alltime_board/lockin_total_board/lockin_wall_board). Verified in-browser: 5 fame + 4 shame cards build, medal rows render with gold #1, daily uses medal rows. NEXT (pass 2+): all-time-daily strip (needs a daily-scoped wall RPC), /me/ made comprehensive, SmallsSort feeding the board. The dropdown-era lbLoadHall/lbRenderHall are now dead code (harmless).
    CHANGE LOG v3.5.103 - MENU BRAND ACCENTS. The four pillars were monotone amber (slop) — now each carries its own brand color: TRAILER-LOAD amber (flagship), DAILY CYAN (the load-rate cyan), TRAINING green, MINI-GAMES PINK. Border + name color per pillar; verified in-browser (daily=rgb(42,169,160), mini-games=rgb(224,85,159)). Cyan and pink are back in the menu.
    CHANGE LOG v3.5.102 - DAILY-SUBMIT BUG FIX (score not saving) + briefing text. THE BUG (Goyim: signed in, played daily, still got prompted to "sign in to share your score," signed in again, nothing saved): zSaveSession set uid from j.user.id ONLY — but a token-refresh response omits j.user, so a background refresh wiped ZDATA.session.uid to null while you were still signed in. dailyFinish keys on uid → saw you as anonymous → the anon "sign in to claim" CTA, and zSubmitDaily bailed without posting. FIX: new zJwtSub() reads the uid from the access token's `sub` claim (always present); uid now = j.user.id OR the token sub OR the prior uid — it can never be wiped by a refresh. PLUS: signing in while a just-finished daily sits on the anon CTA now auto-reposts the score (zSaveSession re-runs dailyFinish when the daily-result panel is up). Verified in-browser: a refresh response with no j.user keeps uid + zLoggedIn()=true; fresh token-only session decodes uid from sub. Also: briefing rule 7 no longer reveals "a water break clears it" (a hidden feature) — now "lay it flat before the door opens." Gates clean.
    CHANGE LOG v3.5.101 - TIRES REDRAWN (rounded rect + real skins + see-through hole). Goyim's exact spec: a tire viewed straight-on 2D is a ROUNDED-CORNER RECTANGLE, not an oval — so the render now CLIPS THE CORNERS of the cell rect (roundRect, radius ~26% of the short side) and fills it with the submitted tire skin (tire1-5.png, seed-picked), instead of the old ellipse-clip that squashed the skin into an oval. The hollow is now a SEE-THROUGH hole (destination-out punch at ~60% so the wall/box/nested layer behind shows through — the same semi-transparent authenticity as the bags), with a hub rim and nested-contents dots inside it. Fully guarded: falls back to a dark fill if a skin isn't loaded, to a plain rect if roundRect is unavailable, try/catch around every draw. Verified NON-BREAKING in-browser: all 5 tire skins load, roundRect supported, the draw frame runs with no thrown error. NEEDS GOYIM'S EYEBALL for the actual look — screenshots are wedged this session, so the visual is unconfirmed (the mechanism is his spec exactly; tuning the radius/hole-size is a quick follow-up). Retired the card11 gray-box tire backdrop (the skin now fills the cell).
@@ -1521,6 +1522,32 @@ body[data-cb="trit"]{
 .lb-hall-select{width:100%;margin-bottom:11px;padding:9px 10px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.8px;color:#2a1a08;background:#fff;border:1px solid #8b4513;border-radius:5px;cursor:pointer;}
 .lb-hall-select optgroup{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#8b6a3a;}
 .lb-hall-select option{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#2a1a08;letter-spacing:0;}
+/* v3.5.104 THE HALL LEDGER — World-Board fame/shame cards + medal rows, cream-paper style */
+.lb-colhd{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;margin:16px 0 9px;display:flex;align-items:center;gap:8px;}
+.lb-colhd:first-child{margin-top:0;}
+.lb-colhd::after{content:'';flex:1;height:1px;background:#cebf9c;}
+.lb-colhd.fame{color:#b07a12;}
+.lb-colhd.shame{color:#a33f1c;}
+.lb-cardgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:520px){.lb-cardgrid{grid-template-columns:1fr;}}
+.lb-card{background:linear-gradient(180deg,#efe8d7,#e2d8bf);border:1px solid #cebf9c;border-radius:8px;padding:10px 10px 9px;}
+.lb-card.fame{box-shadow:inset 3px 0 0 #e0a838;}
+.lb-card.shame{box-shadow:inset 3px 0 0 #b3401f;}
+.lb-card-hd{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.6px;color:#2a1a08;display:flex;align-items:center;gap:7px;line-height:1;}
+.lb-card-hd .em{font-size:16px;}
+.lb-card-sub{font-family:'Share Tech Mono',monospace;font-size:8.5px;letter-spacing:.2px;color:#9a8763;margin:2px 0 8px;line-height:1.35;}
+.lb-card-rows{display:flex;flex-direction:column;gap:2px;}
+.lb-crow{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:7px;padding:4px 7px;border-radius:5px;background:rgba(255,255,255,.5);}
+.lb-crow .rk{font-family:'Bebas Neue',sans-serif;font-size:15px;color:#a08b6a;text-align:center;line-height:1;}
+.lb-crow .who{display:flex;align-items:center;gap:5px;min-width:0;}
+.lb-crow .med{font-size:13px;flex:none;}
+.lb-crow .nm{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;color:#2a1a08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.2px;}
+.lb-crow .v{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#8b4513;font-variant-numeric:tabular-nums;letter-spacing:.3px;}
+.lb-crow.r1{background:linear-gradient(90deg,rgba(246,220,144,.6),rgba(255,255,255,.5));}
+.lb-crow.r1 .rk{color:#d99a2b;}
+.lb-crow.r1 .nm{color:#3a2708;}
+.lb-crow.lb-me{outline:2px solid rgba(200,121,30,.5);outline-offset:-1px;}
+#lb-daily-board .lb-crow{background:rgba(255,255,255,.55);}
 /* v3.5.86 DAILY = the crown jewel: the world's #1 loader gets a hero, + a live reset countdown */
 .lb-daily-crown{background:linear-gradient(135deg,#f6dc90,#e0a838);border:1px solid #b5651a;border-radius:7px;padding:11px 14px;margin-bottom:11px;text-align:center;box-shadow:0 3px 14px rgba(224,150,46,.42);}
 .lb-daily-crown.empty{background:linear-gradient(135deg,#efe7d4,#ddd0b4);box-shadow:none;}
@@ -1710,7 +1737,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.103 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.104 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1823,7 +1850,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.103 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.104 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1976,7 +2003,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.103 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.104 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2320,25 +2347,13 @@ body[data-cb="trit"]{
     <div class="lb-daily-reset" id="lb-daily-reset"></div>
     <div class="lb-note">Same seed for everyone on Earth, 00:00–23:59 UTC. <b>Win it and you're the day's #1 loader on the planet.</b></div>
   </div>
+  <!-- v3.5.104 THE HALL — a scrollable categorical ledger (Walls of Fame over Walls of Shame), every board at once. No dropdown. -->
   <div id="lb-pane-hall" style="display:none">
-    <select id="lb-hall-metric" class="lb-hall-select" onchange="lbLoadHall(this.value)">
-      <optgroup label="◆ WALLS OF FAME">
-        <option value="best">★ Best Wall — top single score</option>
-        <option value="total">▲ Total Loaded — lifetime cumulative</option>
-        <option value="fastest">⚡ Fastest Wall — quickest seal</option>
-        <option value="fewest">✂ Fewest Pieces — tightest wall</option>
-        <option value="cleanest">✦ Cleanest Wall — highest integrity</option>
-      </optgroup>
-      <optgroup label="✖ WALLS OF SHAME">
-        <option value="slowest">🐌 Slowest Wall — took forever</option>
-        <option value="most_pieces">📦 Most Pieces — the grind</option>
-        <option value="messiest">💀 Messiest Wall — barely sealed</option>
-        <option value="most_collapses">🧱 Most Collapses — one wall</option>
-      </optgroup>
-    </select>
-    <div class="lb-tabline" id="lb-hall-note">★ BEST WALL · top single score, all-time</div>
-    <div class="lb-board" id="lb-hall-board"><div class="lb-empty">Loading…</div></div>
-    <div class="lb-note" id="lb-hall-foot">Every logged-in loader's single best wall.</div>
+    <div class="lb-colhd fame">◆ WALLS OF FAME</div>
+    <div class="lb-cardgrid" id="lb-fame-grid"></div>
+    <div class="lb-colhd shame">✖ WALLS OF SHAME</div>
+    <div class="lb-cardgrid" id="lb-shame-grid"></div>
+    <div class="lb-note">Rank everyone, every way — one wall, all-time. 🥇 the podium · 💀 the hall of shame.</div>
   </div>
   <div id="lb-pane-friends" style="display:none">
     <div id="lb-friends-auth" class="lb-empty" style="display:none">Log in from <b>◆ PROFILE</b> to follow loaders and track their boards.</div>
@@ -2394,7 +2409,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.103
+// LOCK IN v3.5.104
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8476,7 +8491,7 @@ function lbTab(which){
     if(typeof zLoadDailyBoard==='function')zLoadDailyBoard(function(rows){lbRenderDaily(rows);});
     lbStartDailyCountdown();
   }
-  if(which==='hall'){var sel=document.getElementById('lb-hall-metric');lbLoadHall(sel?sel.value:'best');} // v3.5.83 fame/shame boards
+  if(which==='hall'){lbLoadAllBoards();} // v3.5.104 the whole fame/shame ledger, every board at once
   if(which==='friends')lbLoadFriends();
 }
 // v3.5.85 SOCIAL hub entry — one button, one overlay. v3.5.86 DAILY leads (the crown jewel) for everyone.
@@ -8494,7 +8509,7 @@ function lbRenderDaily(rows){
     else{crown.className='lb-daily-crown empty';
       crown.innerHTML='<div class="dc-lbl">👑 THE CROWN IS UNCLAIMED</div><div class="dc-name">BE THE FIRST</div><div class="dc-score">Post today’s top score — be #1 on Earth.</div>';}
   }
-  lbRenderInto('lb-daily-board',rows,'No scores posted yet today — be the first.');
+  var db=document.getElementById('lb-daily-board');if(db)db.innerHTML=(rows.length?lbMedalRows(rows,'num','fame',10):'<div class="lb-empty">No scores posted yet today — be the first.</div>'); // v3.5.104 medal rows
 }
 var _dailyCD=null;
 function lbDailyCountdown(){
@@ -8555,6 +8570,45 @@ function lbRenderHall(rows,meta){
   var me=(ZDATA.session&&ZDATA.session.email&&(''+ZDATA.session.email).split('@')[0])||(ZDATA.session&&ZDATA.session.handle)||'';
   var h='',i;for(i=0;i<rows.length;i++){var r=rows[i];var v=(r.val!=null?r.val:(r.best_score!=null?r.best_score:(r.score!=null?r.score:null)));var mine=(me&&r.username===me)?' lb-me':'';h+='<div class="lb-row'+mine+'"><span>'+(r.rank||(i+1))+'</span><span>'+drEsc(r.username)+'</span><span>'+lbHallFmt(v,meta.fmt)+'</span></div>';}
   el.innerHTML=h;
+}
+// v3.5.104 THE HALL as a categorical ledger — every board at once, World-Board style (emoji medals, top 5, gold #1).
+var HALL_FAME=['best','total','fastest','cleanest','fewest'];
+var HALL_SHAME=['slowest','most_collapses','most_pieces','messiest'];
+var HALL_EMOJI={best:'🏆',total:'▲',fastest:'⚡',cleanest:'✦',fewest:'✂',slowest:'🐌',most_collapses:'🧱',most_pieces:'📦',messiest:'💀'};
+var HALL_TITLE={best:'BEST WALL',total:'TOTAL LOADED',fastest:'FASTEST WALL',cleanest:'CLEANEST WALL',fewest:'FEWEST PIECES',slowest:'SLOWEST WALL',most_collapses:'MOST COLLAPSES',most_pieces:'THE GRIND',messiest:'BARELY HELD'};
+// shared row renderer — medals for the podium (💀 for #1 shame), gold #1, tabular values. Reused by the daily board too.
+function lbMedalRows(rows,fmt,side,cap){
+  rows=rows||[];var lim=cap||5;
+  if(!rows.length)return '<div class="lb-empty">'+(side==='shame'?'No one ranked yet.':'No one ranked yet — be the first.')+'</div>';
+  var me=(ZDATA.session&&ZDATA.session.email&&(''+ZDATA.session.email).split('@')[0])||(ZDATA.session&&ZDATA.session.handle)||'';
+  var medals=['🥇','🥈','🥉'],h='',i;
+  for(i=0;i<rows.length&&i<lim;i++){var r=rows[i];
+    var v=(r.val!=null?r.val:(r.best_score!=null?r.best_score:(r.score!=null?r.score:null)));
+    var rank=r.rank||(i+1),mine=(me&&r.username===me)?' lb-me':'';
+    var med=(side==='shame')?(i===0?'💀':''):(medals[i]||'');
+    h+='<div class="lb-crow'+(rank===1?' r1':'')+mine+'"><span class="rk">'+rank+'</span><span class="who">'+(med?'<span class="med">'+med+'</span>':'')+'<span class="nm">'+drEsc(r.username)+'</span></span><span class="v">'+lbHallFmt(v,fmt)+'</span></div>';
+  }
+  return h;
+}
+function lbLoadAllBoards(){
+  var fg=document.getElementById('lb-fame-grid'),sg=document.getElementById('lb-shame-grid');
+  if(fg)fg.innerHTML=''; if(sg)sg.innerHTML='';
+  HALL_FAME.forEach(function(k){lbBoardCard(fg,k,'fame');});
+  HALL_SHAME.forEach(function(k){lbBoardCard(sg,k,'shame');});
+}
+function lbBoardCard(grid,key,side){
+  if(!grid)return;var meta=HALL_META[key];if(!meta)return;var cardId='lb-card-'+key;
+  var card=document.createElement('div');card.className='lb-card '+side;card.id=cardId;
+  card.innerHTML='<div class="lb-card-hd"><span class="em">'+(HALL_EMOJI[key]||'')+'</span>'+(HALL_TITLE[key]||key)+'</div><div class="lb-card-sub">'+drEsc(meta.foot||'')+'</div><div class="lb-card-rows"><div class="lb-empty">Loading…</div></div>';
+  grid.appendChild(card);
+  var url,body;
+  if(meta.rpc==='wall'){url=ZDATA.endpoint+'/rpc/lockin_wall_board';body=JSON.stringify({p_metric:meta.metric,p_limit:5});}
+  else{url=ZDATA.endpoint+'/rpc/'+meta.rpc;body=JSON.stringify({p_limit:5});}
+  try{
+    fetch(url,{method:'POST',headers:zAuthHeaders(),body:body}).then(function(r){return r.json();})
+      .then(function(j){var box=document.getElementById(cardId);if(box){var rb=box.querySelector('.lb-card-rows');if(rb)rb.innerHTML=lbMedalRows(Array.isArray(j)?j:[],meta.fmt,side,5);}})
+      .catch(function(){var box=document.getElementById(cardId);if(box){var rb=box.querySelector('.lb-card-rows');if(rb)rb.innerHTML='<div class="lb-empty">Board offline.</div>';}});
+  }catch(e){}
 }
 // v3.5.83 send a SEALED wall to the per-wall boards (logged-in only; graceful). Powers fastest/slowest/fewest/most-pieces.
 function zLogWall(){
@@ -8789,7 +8843,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.103</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.104</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
