@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.100
+   LOCK IN v3.5.101
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.101 - TIRES REDRAWN (rounded rect + real skins + see-through hole). Goyim's exact spec: a tire viewed straight-on 2D is a ROUNDED-CORNER RECTANGLE, not an oval — so the render now CLIPS THE CORNERS of the cell rect (roundRect, radius ~26% of the short side) and fills it with the submitted tire skin (tire1-5.png, seed-picked), instead of the old ellipse-clip that squashed the skin into an oval. The hollow is now a SEE-THROUGH hole (destination-out punch at ~60% so the wall/box/nested layer behind shows through — the same semi-transparent authenticity as the bags), with a hub rim and nested-contents dots inside it. Fully guarded: falls back to a dark fill if a skin isn't loaded, to a plain rect if roundRect is unavailable, try/catch around every draw. Verified NON-BREAKING in-browser: all 5 tire skins load, roundRect supported, the draw frame runs with no thrown error. NEEDS GOYIM'S EYEBALL for the actual look — screenshots are wedged this session, so the visual is unconfirmed (the mechanism is his spec exactly; tuning the radius/hole-size is a quick follow-up). Retired the card11 gray-box tire backdrop (the skin now fills the cell).
    CHANGE LOG v3.5.100 - CHUTE-LEAK BUG FIX + SMALLS-CRUSH RULE. (1) THE CHUTE BUG (Smokeh: "any game mode"): BELT_PIECE_COUNT is a mutable global, and level mode's initMechanic()/clearMechanic() slam it to 6 and NEVER restore it — so after Tour (or the menu demo touching a mechanic), a 6-piece chute leaked into every mode after, incl. a fresh Trailer-Load. FIX: new BELT_DEFAULT=10; restartGame() restores it for every non-level start (`if(gameMode!=='level')BELT_PIECE_COUNT=BELT_DEFAULT`); level still sets its own after. Verified: leaked 6 → 10 on Trailer-Load/Practice/Gauntlet/Daily, chute refills to 10. (2) SMALLS-CRUSH: heavy freight (wc>=5) dropped on an UNSUPPORTED smalls bag now crushes it exactly like a fragile — you're smashing the customers' packages inside. checkFragileCrush() targets isFrag OR isBag/small; same protections (locked row / lateral support = safe); routes through the FRAGILE_CRUSH warning + crunch penalty with a smalls-aware callout. Verified: heavy-on-bag/small crushes, heavy-on-regular doesn't, locked/supported bag is safe, light freight is fine. Gates clean. NOTE: tire skins (tire1-5.png) confirmed present for the tire cosmetic — pending working screenshots to verify the redraw.
    CHANGE LOG v3.5.99 - PRODUCTIVITY PASS: THE AUTOCLICKER KILLER. Two prongs against the pick-up/put-down PPH exploit (Smokeh's 20019 peak). (1) NO REWARD: a re-placed box earns ZERO pph — S.boxPieces only counts a box's FIRST placement (tracked via box._gen, the pick-up generation). Lift-and-replace spam now gains nothing, so the incentive is gone. (2) THE LADDER: grabbing the SAME box over and over escalates like the real floor — 3rd pick-up the SP guy notices, 4th the trainer, 5th the manager, 6th "I've seen you do the wrong thing over and over", 7th = a PRODUCTIVITY WRITE-UP (CHURN, "REPEATED PICK-UP / PUT-DOWN", PIP territory) rendered on the clipboard via raiseWriteup. New productivityLadder() + WRITEUP_DOCS.CHURN; box._gen accumulates across place→lift cycles so it precisely tracks churning ONE box. Verified in-browser: banners fire SP→trainer→manager in order, the 7th pick-up pops the clipboard write-up, and a re-placed box does NOT add to boxPieces (fresh=1, churn=0). NEXT: leaderboard consolidation (one board — smalls feeds it, not a separate board). Gates clean.
    CHANGE LOG v3.5.98 - NEXT-TRAILER RHYTHM FIX (menu doesn't interrupt). The always-on centered end-popup used to ambush you the instant you hit ~85% — right in the flow. NEW RULE (Goyim's): when end-conditions are met but KEEP-LOADING is still an option (the wall isn't full), sealWall() no longer pops the menu — it just EMPHASIZES the FINISH TRAILER button (top-right, now pulsing) and enters keep-loading mode. Dispatching at 85% is allowed and unpenalized (whatever's in the chute makes the next truck); staying only earns more score. The centered popup is now reserved for a FULL wall (nothing left to load) — the real end of the wall. FINISH TRAILER now calls nextTrailer() directly (was re-opening the menu); the pulse clears on advance. Verified in-browser: a tall-but-not-full seal shows NO popup + a pulsing button + maxPack on; a 100% wall still pops the menu. Next: PRODUCTIVITY PASS (repeated-pickup ladder → write-up to kill the autoclicker; productivity docs on the clipboard) → then leaderboard consolidation. Gates clean.
@@ -1698,7 +1699,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.100 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.101 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1811,7 +1812,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.100 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.101 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1964,7 +1965,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.100 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.101 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2382,7 +2383,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.100
+// LOCK IN v3.5.101
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -6165,33 +6166,37 @@ function renderWallBox(c,cell){
     c.restore();
   }
 
-  // v2.1.35 — TIRES render rounded: rubber tread ring + hollow centre (the nest target, Pass 2).
+  // v3.5.101 TIRES = a ROUNDED-CORNER RECTANGLE (a tire straight-on, 2D — clip the corners, NOT an oval), skinned
+  // with tire{n}.png, with a SEE-THROUGH hollow so the layer behind shows through (authenticity, like the bags).
   if(cell.box.shape==='tire'){
-    var _txc=(tl.x+tr.x+bl.x+br.x)/4,_tyc=(tl.y+tr.y+bl.y+br.y)/4;
-    var _trx=(Math.abs(tr.x-tl.x)+Math.abs(br.x-bl.x))/4;
-    var _tryy=(Math.abs(bl.y-tl.y)+Math.abs(br.y-tr.y))/4;
-    // v2.4.0 — guard: a non-finite radius makes ellipse()/arc() throw and froze the loop. Math.max(3,NaN)===NaN.
-    if(!isFinite(_txc))_txc=0; if(!isFinite(_tyc))_tyc=0;
-    if(!isFinite(_trx)||_trx<=0)_trx=4; if(!isFinite(_tryy)||_tryy<=0)_tryy=4;
+    var _x0=Math.min(tl.x,bl.x),_x1=Math.max(tr.x,br.x),_y0=Math.min(tl.y,tr.y),_y1=Math.max(bl.y,br.y);
+    var _tw=_x1-_x0,_th=_y1-_y0;
+    if(!isFinite(_x0))_x0=0; if(!isFinite(_y0))_y0=0; if(!isFinite(_tw)||_tw<=0)_tw=8; if(!isFinite(_th)||_th<=0)_th=8;
+    var _pad=Math.max(1,Math.min(_tw,_th)*0.05),_rx=_x0+_pad,_ry=_y0+_pad,_rw=Math.max(2,_tw-_pad*2),_rh=Math.max(2,_th-_pad*2);
+    var _rad=Math.max(3,Math.min(_rw,_rh)*0.26); // corner radius — rounded rect, not an ellipse
     c.save();
-    // v3.0.2 gray-box backdrop (card11) so the tire reads as a real tire seated in a box matching the wall
-    if(typeof TIRE_BG!=='undefined'&&TIRE_BG&&TIRE_BG.okk){var _bgx0=Math.min(tl.x,bl.x),_bgx1=Math.max(tr.x,br.x),_bgy0=Math.min(tl.y,tr.y),_bgy1=Math.max(bl.y,br.y);try{c.drawImage(TIRE_BG,_bgx0,_bgy0,_bgx1-_bgx0,_bgy1-_bgy0);}catch(_be){}}
-    c.strokeStyle='rgba(15,15,15,.92)';c.lineWidth=Math.max(2,_trx*0.13);
-    c.beginPath();c.ellipse(_txc,_tyc,Math.max(3,_trx*0.92),Math.max(3,_tryy*0.82),0,0,Math.PI*2);c.stroke();
-    c.strokeStyle='rgba(40,40,40,.7)';c.lineWidth=1.5;
-    c.beginPath();c.ellipse(_txc,_tyc,Math.max(2,_trx*0.62),Math.max(2,_tryy*0.55),0,0,Math.PI*2);c.stroke();
-    c.beginPath();c.ellipse(_txc,_tyc,Math.max(2,_trx*0.40),Math.max(2,_tryy*0.38),0,0,Math.PI*2);
-    c.fillStyle='rgba(74,76,82,.96)';c.fill();
-    c.strokeStyle='rgba(15,15,15,.9)';c.lineWidth=2;c.stroke();
-    var _tt=loadedTireTex();
-    if(_tt.length){var _ti=_tt[(((cell.box.seed)||1)>>>0)%_tt.length];c.save();c.beginPath();c.ellipse(_txc,_tyc,Math.max(3,_trx*0.92),Math.max(3,_tryy*0.82),0,0,Math.PI*2);c.clip();try{c.drawImage(_ti,_txc-_trx*0.92,_tyc-_tryy*0.82,_trx*1.84,_tryy*1.64);}catch(_te){}c.restore();}
+    // BODY — skin clipped to the rounded rect
+    try{c.beginPath();if(c.roundRect)c.roundRect(_rx,_ry,_rw,_rh,_rad);else c.rect(_rx,_ry,_rw,_rh);}catch(_re){c.beginPath();c.rect(_rx,_ry,_rw,_rh);}
+    c.save();c.clip();
+    var _tt=(typeof loadedTireTex==='function')?loadedTireTex():[];
+    if(_tt.length){var _ti=_tt[(((cell.box.seed)||1)>>>0)%_tt.length];try{c.drawImage(_ti,_rx,_ry,_rw,_rh);}catch(_te){c.fillStyle='#262626';c.fillRect(_rx,_ry,_rw,_rh);}}
+    else{c.fillStyle='#262626';c.fillRect(_rx,_ry,_rw,_rh);}
+    c.restore();
+    // rubber edge
+    c.strokeStyle='rgba(12,12,12,.92)';c.lineWidth=Math.max(1.5,Math.min(_rw,_rh)*0.055);try{c.beginPath();if(c.roundRect)c.roundRect(_rx,_ry,_rw,_rh,_rad);else c.rect(_rx,_ry,_rw,_rh);c.stroke();}catch(_se){}
+    // SEE-THROUGH hollow — destination-out punches the skin so the wall/box behind shows through (semi-transparent)
+    var _hcx=_rx+_rw/2,_hcy=_ry+_rh/2,_hr=Math.min(_rw,_rh)*0.24;
+    c.save();c.globalCompositeOperation='destination-out';c.globalAlpha=0.6;c.beginPath();c.ellipse(_hcx,_hcy,_hr,_hr,0,0,Math.PI*2);c.fill();c.restore();
+    // hub rim
+    c.strokeStyle='rgba(18,18,18,.85)';c.lineWidth=Math.max(1,Math.min(_rw,_rh)*0.03);c.beginPath();c.ellipse(_hcx,_hcy,_hr,_hr,0,0,Math.PI*2);c.stroke();
+    // nested contents show inside the hollow
     if(cell.box.nest&&cell.box.nest.length){
       var _nn=cell.box.nest.length,_nk;
       for(_nk=0;_nk<_nn;_nk++){
         var _na=(_nk/_nn)*Math.PI*2-Math.PI/2;
-        var _nox=_txc+(_nn>1?Math.cos(_na)*_trx*0.17:0);
-        var _noy=_tyc+(_nn>1?Math.sin(_na)*_tryy*0.17:0);
-        c.beginPath();c.arc(_nox,_noy,Math.max(2,_trx*0.13),0,Math.PI*2);
+        var _nox=_hcx+(_nn>1?Math.cos(_na)*_hr*0.6:0);
+        var _noy=_hcy+(_nn>1?Math.sin(_na)*_hr*0.6:0);
+        c.beginPath();c.arc(_nox,_noy,Math.max(2,_hr*0.42),0,Math.PI*2);
         c.fillStyle=cell.box.nest[_nk].haz?'#d23a1a':'#d8c18a';c.fill();
         c.strokeStyle='rgba(10,10,10,.85)';c.lineWidth=1;c.stroke();
       }
@@ -8767,7 +8772,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.100</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.101</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
