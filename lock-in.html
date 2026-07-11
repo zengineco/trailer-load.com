@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.101
+   LOCK IN v3.5.102
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.102 - DAILY-SUBMIT BUG FIX (score not saving) + briefing text. THE BUG (Goyim: signed in, played daily, still got prompted to "sign in to share your score," signed in again, nothing saved): zSaveSession set uid from j.user.id ONLY — but a token-refresh response omits j.user, so a background refresh wiped ZDATA.session.uid to null while you were still signed in. dailyFinish keys on uid → saw you as anonymous → the anon "sign in to claim" CTA, and zSubmitDaily bailed without posting. FIX: new zJwtSub() reads the uid from the access token's `sub` claim (always present); uid now = j.user.id OR the token sub OR the prior uid — it can never be wiped by a refresh. PLUS: signing in while a just-finished daily sits on the anon CTA now auto-reposts the score (zSaveSession re-runs dailyFinish when the daily-result panel is up). Verified in-browser: a refresh response with no j.user keeps uid + zLoggedIn()=true; fresh token-only session decodes uid from sub. Also: briefing rule 7 no longer reveals "a water break clears it" (a hidden feature) — now "lay it flat before the door opens." Gates clean.
    CHANGE LOG v3.5.101 - TIRES REDRAWN (rounded rect + real skins + see-through hole). Goyim's exact spec: a tire viewed straight-on 2D is a ROUNDED-CORNER RECTANGLE, not an oval — so the render now CLIPS THE CORNERS of the cell rect (roundRect, radius ~26% of the short side) and fills it with the submitted tire skin (tire1-5.png, seed-picked), instead of the old ellipse-clip that squashed the skin into an oval. The hollow is now a SEE-THROUGH hole (destination-out punch at ~60% so the wall/box/nested layer behind shows through — the same semi-transparent authenticity as the bags), with a hub rim and nested-contents dots inside it. Fully guarded: falls back to a dark fill if a skin isn't loaded, to a plain rect if roundRect is unavailable, try/catch around every draw. Verified NON-BREAKING in-browser: all 5 tire skins load, roundRect supported, the draw frame runs with no thrown error. NEEDS GOYIM'S EYEBALL for the actual look — screenshots are wedged this session, so the visual is unconfirmed (the mechanism is his spec exactly; tuning the radius/hole-size is a quick follow-up). Retired the card11 gray-box tire backdrop (the skin now fills the cell).
    CHANGE LOG v3.5.100 - CHUTE-LEAK BUG FIX + SMALLS-CRUSH RULE. (1) THE CHUTE BUG (Smokeh: "any game mode"): BELT_PIECE_COUNT is a mutable global, and level mode's initMechanic()/clearMechanic() slam it to 6 and NEVER restore it — so after Tour (or the menu demo touching a mechanic), a 6-piece chute leaked into every mode after, incl. a fresh Trailer-Load. FIX: new BELT_DEFAULT=10; restartGame() restores it for every non-level start (`if(gameMode!=='level')BELT_PIECE_COUNT=BELT_DEFAULT`); level still sets its own after. Verified: leaked 6 → 10 on Trailer-Load/Practice/Gauntlet/Daily, chute refills to 10. (2) SMALLS-CRUSH: heavy freight (wc>=5) dropped on an UNSUPPORTED smalls bag now crushes it exactly like a fragile — you're smashing the customers' packages inside. checkFragileCrush() targets isFrag OR isBag/small; same protections (locked row / lateral support = safe); routes through the FRAGILE_CRUSH warning + crunch penalty with a smalls-aware callout. Verified: heavy-on-bag/small crushes, heavy-on-regular doesn't, locked/supported bag is safe, light freight is fine. Gates clean. NOTE: tire skins (tire1-5.png) confirmed present for the tire cosmetic — pending working screenshots to verify the redraw.
    CHANGE LOG v3.5.99 - PRODUCTIVITY PASS: THE AUTOCLICKER KILLER. Two prongs against the pick-up/put-down PPH exploit (Smokeh's 20019 peak). (1) NO REWARD: a re-placed box earns ZERO pph — S.boxPieces only counts a box's FIRST placement (tracked via box._gen, the pick-up generation). Lift-and-replace spam now gains nothing, so the incentive is gone. (2) THE LADDER: grabbing the SAME box over and over escalates like the real floor — 3rd pick-up the SP guy notices, 4th the trainer, 5th the manager, 6th "I've seen you do the wrong thing over and over", 7th = a PRODUCTIVITY WRITE-UP (CHURN, "REPEATED PICK-UP / PUT-DOWN", PIP territory) rendered on the clipboard via raiseWriteup. New productivityLadder() + WRITEUP_DOCS.CHURN; box._gen accumulates across place→lift cycles so it precisely tracks churning ONE box. Verified in-browser: banners fire SP→trainer→manager in order, the 7th pick-up pops the clipboard write-up, and a re-placed box does NOT add to boxPieces (fresh=1, churn=0). NEXT: leaderboard consolidation (one board — smalls feeds it, not a separate board). Gates clean.
@@ -1699,7 +1700,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.101 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.102 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1733,7 +1734,7 @@ body[data-cb="trit"]{
       <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>Stage the non-cons.</b> Tires, SP &amp; oversize wait in the side panel — click, then wall it.<span class="brief-why">Non-conveyables are the irregular freight the belt can't carry.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile &amp; glass ride on top.</b> Never bury them — a crush is a write-up.<span class="brief-why">Load them near the top with only light pieces above.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Hazmat low &amp; locked.</b> Floor it, cap it under a shelf.<span class="brief-why">A hazmat in ANY collapse ends the round — keep it stable.</span></div></div>
-      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Lay tires flat.</b> On its edge, a tire rolls the second the door opens.<span class="brief-why">Standing one up is a safety warning — a water break clears it.</span></div></div>
+      <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Lay tires flat.</b> On its edge, a tire rolls the second the door opens.<span class="brief-why">Standing one up is a safety warning — lay it flat before the door opens.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>Bags spill smalls.</b> Double-click a bag to fill the gaps a box can't reach.<span class="brief-why">Out of smalls? Throw a box to summon a bag in a pinch.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">9</div><div class="brief-rule-txt"><b>Pack tight, then seal.</b> Density is the job — fill, seal at height, beat the clock.<span class="brief-why">Cube fill, not just height — the manager calls the target.</span></div></div>
     </div>
@@ -1812,7 +1813,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.101 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.102 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1965,7 +1966,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.101 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.102 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2383,7 +2384,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.101
+// LOCK IN v3.5.102
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2890,13 +2891,19 @@ function zAuthStatus(){
   if(sx&&sx.email){if(el){el.textContent='\u2713 Signed in as '+(sx.handle||sx.email)+(sx.facility?(' \u00b7 FACILITY '+sx.facility):'');el.style.display='block';}if(so)so.style.display='';}
   else{if(el)el.style.display='none';if(so)so.style.display='none';}
 }
+// v3.5.102 DAILY-SUBMIT BUG FIX: read the user id from the access token's `sub` claim (always present) — NOT just
+// j.user, which a refresh-token response omits. Without this a token refresh wiped uid to null while you were still
+// signed in, so dailyFinish saw you as anonymous ("sign in to claim") and zSubmitDaily bailed without posting.
+function zJwtSub(tok){try{var p=(''+tok).split('.')[1];if(!p)return null;p=p.replace(/-/g,'+').replace(/_/g,'/');var m=p.length%4;if(m)p+=new Array(5-m).join('=');var o=JSON.parse(atob(p));return o.sub||null;}catch(e){return null;}}
 function zSaveSession(j,email,handle){
   ZDATA.session={access_token:j.access_token,refresh_token:j.refresh_token,email:email,handle:(handle||(ZDATA.session&&ZDATA.session.handle)||email),
-    uid:(j.user&&j.user.id)||null,
+    uid:(j.user&&j.user.id)||zJwtSub(j.access_token)||(ZDATA.session&&ZDATA.session.uid)||null,
     facility:(j.user&&j.user.app_metadata&&j.user.app_metadata.facility)||null,
     exp:Date.now()+((j.expires_in||3600)*1000)};
   try{localStorage.setItem('liAuth',JSON.stringify(ZDATA.session));}catch(e){console.error('zSaveSession:',e);}
   zAuthStatus();
+  // v3.5.102 if a just-finished DAILY is sitting on the anon "sign in to claim" CTA, post it NOW that we're signed in
+  try{if(ZDATA.session&&ZDATA.session.uid&&typeof gameMode!=='undefined'&&gameMode==='daily'){var _dr=document.getElementById('daily-result');if(_dr&&_dr.style.display==='block'&&typeof dailyFinish==='function')dailyFinish();}}catch(_dz){}
 }
 // v3.5.76 SINGLE identity source. "Logged in" = a live auth session (ZDATA.session.uid) — the SAME check the
 // lifetime / profile / leaderboards already use. Prevents the report showing a local handle at the top while the
@@ -8772,7 +8779,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.101</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.102</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
