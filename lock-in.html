@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.98
+   LOCK IN v3.5.99
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.99 - PRODUCTIVITY PASS: THE AUTOCLICKER KILLER. Two prongs against the pick-up/put-down PPH exploit (Smokeh's 20019 peak). (1) NO REWARD: a re-placed box earns ZERO pph — S.boxPieces only counts a box's FIRST placement (tracked via box._gen, the pick-up generation). Lift-and-replace spam now gains nothing, so the incentive is gone. (2) THE LADDER: grabbing the SAME box over and over escalates like the real floor — 3rd pick-up the SP guy notices, 4th the trainer, 5th the manager, 6th "I've seen you do the wrong thing over and over", 7th = a PRODUCTIVITY WRITE-UP (CHURN, "REPEATED PICK-UP / PUT-DOWN", PIP territory) rendered on the clipboard via raiseWriteup. New productivityLadder() + WRITEUP_DOCS.CHURN; box._gen accumulates across place→lift cycles so it precisely tracks churning ONE box. Verified in-browser: banners fire SP→trainer→manager in order, the 7th pick-up pops the clipboard write-up, and a re-placed box does NOT add to boxPieces (fresh=1, churn=0). NEXT: leaderboard consolidation (one board — smalls feeds it, not a separate board). Gates clean.
    CHANGE LOG v3.5.98 - NEXT-TRAILER RHYTHM FIX (menu doesn't interrupt). The always-on centered end-popup used to ambush you the instant you hit ~85% — right in the flow. NEW RULE (Goyim's): when end-conditions are met but KEEP-LOADING is still an option (the wall isn't full), sealWall() no longer pops the menu — it just EMPHASIZES the FINISH TRAILER button (top-right, now pulsing) and enters keep-loading mode. Dispatching at 85% is allowed and unpenalized (whatever's in the chute makes the next truck); staying only earns more score. The centered popup is now reserved for a FULL wall (nothing left to load) — the real end of the wall. FINISH TRAILER now calls nextTrailer() directly (was re-opening the menu); the pulse clears on advance. Verified in-browser: a tall-but-not-full seal shows NO popup + a pulsing button + maxPack on; a 100% wall still pops the menu. Next: PRODUCTIVITY PASS (repeated-pickup ladder → write-up to kill the autoclicker; productivity docs on the clipboard) → then leaderboard consolidation. Gates clean.
    CHANGE LOG v3.5.97 - PHYSICS SWEEP #5: DIAGONAL / STAIRCASE (sweep COMPLETE, 6/6). Case-A confirmed by the jailbreaker's staircase screenshot. RULE: a box is "overhanging" if any bottom cell hangs over air (less than full support). ONE overhang is legal (you're squeezing a piece in); an overhang stacked ON ANOTHER overhang is the staircase/diagonal lean → BOTH packages fall. EXEMPT: wide flat slabs (>=2.2x wider than tall) overhang safely, so neither a slab load nor a slab support triggers it. New isOverhanging()/isWideSlab()/diagonalViolation(); slots into the post-place chain (heavy → tall-thin → diagonal → freestack). CRITICAL: does NOT touch running-bond — those bricks are FULLY supported (offset seams, nothing over air) so isOverhanging() is false. Verified in-browser: staircase second-hang FAILS, running-bond does NOT fire, single-overhang-on-solid allowed, wide-slab stacked overhangs exempt. THE PHYSICS SWEEP IS DONE — all six mechanics (tire-floor-reset, column-integrity, heavy-freight, tire-rules, diagonals, collapse-win) shipped + verified. Gates clean.
    CHANGE LOG v3.5.96 - PHYSICS SWEEP #6: COLLAPSE-WIN FIX. The exploit: placeBox SCHEDULES a collapse (collapseAnimating=true, fires ~220ms later) BEFORE calling checkWin(), so a doomed tower still stood at win-height when the seal fired — reach threshold with a side column, click NEXT TRAILER, and you advanced before it fell ("I shouldn't have won that"). FIX: checkWin() now returns early while collapseAnimating — a seal can't beat a collapse in motion. The wall re-checks on the next placement, on its honest post-collapse height. Verified in-browser: a 100%-height/density wall with a collapse in motion does NOT seal; the instant the collapse resolves, the honest wall seals. Physics sweep now 5 of 6 (done: tire-floor-reset, column-integrity, heavy-freight, tire-rules, collapse-win). REMAINING: #5 DIAGONALS — deferred: there is NO diagonal code, so it's an emergent staircase-lean and a blind fix risks breaking legit running-bond (offset brick-laying is rewarded). Needs the exact exploit shape before build. Gates clean.
@@ -1696,7 +1697,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.98 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.99 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1809,7 +1810,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.98 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.99 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1962,7 +1963,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.98 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.99 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2380,7 +2381,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.98
+// LOCK IN v3.5.99
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4103,6 +4104,8 @@ function liftBox(cell){
   var box={...cell.box};
   box.cells=(box.cells||makeRect(box.w,box.h)).map(function(c){return[c[0],c[1]];});
   box.id=uid('L');
+  var _pk=(cell.box._gen||0)+1;box._gen=_pk; // v3.5.99 churn generation — times THIS exact box has been picked up
+  if(_pk>=3)productivityLadder(_pk);
 
   // DECISION: NCs go back to staging panel, not conveyor belt.
   if(cell.box.isNC){
@@ -4381,7 +4384,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   placed++;
   if(typeof gcurFlash==='function')gcurFlash('drop',420); // v3.5.20 drop-glove on a successful place
   S.totalPieces=(S.totalPieces||0)+1; if(source==='bag')S.bagsPlaced=(S.bagsPlaced||0)+1; // v2.1.7
-  if(!(box.type==='small'||box.isBag))S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 PPH counts REAL freight only — smalls/bags excluded
+  if(!(box.type==='small'||box.isBag)&&!((box._gen||0)>0))S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 PPH = REAL freight only; v3.5.99 first placement ONLY — a re-placed (churned) box earns ZERO pph, so the autoclicker's place-lift-place spam gains nothing
   if(typeof zLog==='function')zLog('place',{x:gx,y:gy,n:box.n||box.label||'?',r:rot||0,src:source});
   if(!S.sessionStartT)S.sessionStartT=startT||Date.now(); // v2.1.9 session clock
   S.bestPPH=Math.max(S.bestPPH||0,getPPH()); // v2.1.9 PEAK pph (fixes the 0 bug)
@@ -4620,8 +4623,23 @@ var WRITEUP_DOCS={
   FRAGILE_CRUSH:{t:'REPEATED CRUSHED FRAGILES',w:'Fragile freight rides on TOP, nothing heavy above it. You keep burying them — crushed fragiles are damage claims. Lock a shelf over them or keep them high.'},
   COLLAPSE:{t:'REPEATED WALL COLLAPSES',w:'Your wall keeps coming down. Taper your stacks (wide base, narrow top) and lock shelves. Repeated collapses get documented.'},
   ACCUMULATED:{t:'MULTIPLE SAFETY VIOLATIONS',w:'You have stacked up safety violations this session. The manager is now documenting each one. Slow down and load it clean.'},
-  PRODUCTIVITY:{t:'PACE BELOW HUB STANDARD',w:'The hub runs a ~250 pph standard, counted in REAL FREIGHT — boxes. Smalls and bags don’t count, and breaking a bag down to chink gaps is time you’re not moving freight. Your pace is under the line. Keep the belt fed and move the boxes.'}
+  PRODUCTIVITY:{t:'PACE BELOW HUB STANDARD',w:'The hub runs a ~250 pph standard, counted in REAL FREIGHT — boxes. Smalls and bags don’t count, and breaking a bag down to chink gaps is time you’re not moving freight. Your pace is under the line. Keep the belt fed and move the boxes.'},
+  CHURN:{t:'REPEATED PICK-UP / PUT-DOWN',w:'You keep grabbing the same freight and setting it right back down. That is not loading — it is churn, and on the floor it reads as not understanding the job (or not caring). An unproductive loader gets buried and becomes a safety problem. Place the piece, move to the next. This is a documented productivity conversation — PIP territory.'}
 };
+// v3.5.99 REPEATED PICK-UP LADDER — grabbing the SAME box over and over is churn: the autoclicker's tell, and a
+// real "this person doesn't get what we do → unsafe" flag. 3rd pickup the SP guy notices, 4th the trainer, 5th the
+// manager, 6th a direct word, 7th = a productivity WRITE-UP (PIP territory). Re-placed boxes also earn ZERO pph.
+function productivityLadder(pk){
+  if(typeof showBanner!=='function')return;
+  if(pk===3)showBanner('👀 The SP guy just clocked you grabbing the same piece again — set it and move.','warn',2600);
+  else if(pk===4)showBanner('👀 Your trainer noticed too. Same box, over and over, isn’t loading.','warn',2800);
+  else if(pk===5)showBanner('⚠ The manager’s watching now. Pick-up-put-down doesn’t move freight.','warn',3000);
+  else if(pk===6)showBanner('⚠ “I’ve seen you do the wrong thing over and over.” — the manager. Last nudge.','danger',3400);
+  else if(pk>=7){
+    S.prodIncidents=S.prodIncidents||[];S.prodIncidents.push({type:'CHURN',t:Date.now(),wall:(S.truck||1)});
+    if(typeof raiseWriteup==='function')raiseWriteup('CHURN',S.prodIncidents.length);
+  }
+}
 function raiseWriteup(offense,num){
   var doc=WRITEUP_DOCS[offense]||WRITEUP_DOCS.ACCUMULATED;
   var who=(typeof zWho==='function')?zWho():'GUEST'; // v3.5.76 session-based identity, consistent with the report + lifetime
@@ -8744,7 +8762,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.98</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.99</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
