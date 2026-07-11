@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.97
+   LOCK IN v3.5.98
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.98 - NEXT-TRAILER RHYTHM FIX (menu doesn't interrupt). The always-on centered end-popup used to ambush you the instant you hit ~85% — right in the flow. NEW RULE (Goyim's): when end-conditions are met but KEEP-LOADING is still an option (the wall isn't full), sealWall() no longer pops the menu — it just EMPHASIZES the FINISH TRAILER button (top-right, now pulsing) and enters keep-loading mode. Dispatching at 85% is allowed and unpenalized (whatever's in the chute makes the next truck); staying only earns more score. The centered popup is now reserved for a FULL wall (nothing left to load) — the real end of the wall. FINISH TRAILER now calls nextTrailer() directly (was re-opening the menu); the pulse clears on advance. Verified in-browser: a tall-but-not-full seal shows NO popup + a pulsing button + maxPack on; a 100% wall still pops the menu. Next: PRODUCTIVITY PASS (repeated-pickup ladder → write-up to kill the autoclicker; productivity docs on the clipboard) → then leaderboard consolidation. Gates clean.
    CHANGE LOG v3.5.97 - PHYSICS SWEEP #5: DIAGONAL / STAIRCASE (sweep COMPLETE, 6/6). Case-A confirmed by the jailbreaker's staircase screenshot. RULE: a box is "overhanging" if any bottom cell hangs over air (less than full support). ONE overhang is legal (you're squeezing a piece in); an overhang stacked ON ANOTHER overhang is the staircase/diagonal lean → BOTH packages fall. EXEMPT: wide flat slabs (>=2.2x wider than tall) overhang safely, so neither a slab load nor a slab support triggers it. New isOverhanging()/isWideSlab()/diagonalViolation(); slots into the post-place chain (heavy → tall-thin → diagonal → freestack). CRITICAL: does NOT touch running-bond — those bricks are FULLY supported (offset seams, nothing over air) so isOverhanging() is false. Verified in-browser: staircase second-hang FAILS, running-bond does NOT fire, single-overhang-on-solid allowed, wide-slab stacked overhangs exempt. THE PHYSICS SWEEP IS DONE — all six mechanics (tire-floor-reset, column-integrity, heavy-freight, tire-rules, diagonals, collapse-win) shipped + verified. Gates clean.
    CHANGE LOG v3.5.96 - PHYSICS SWEEP #6: COLLAPSE-WIN FIX. The exploit: placeBox SCHEDULES a collapse (collapseAnimating=true, fires ~220ms later) BEFORE calling checkWin(), so a doomed tower still stood at win-height when the seal fired — reach threshold with a side column, click NEXT TRAILER, and you advanced before it fell ("I shouldn't have won that"). FIX: checkWin() now returns early while collapseAnimating — a seal can't beat a collapse in motion. The wall re-checks on the next placement, on its honest post-collapse height. Verified in-browser: a 100%-height/density wall with a collapse in motion does NOT seal; the instant the collapse resolves, the honest wall seals. Physics sweep now 5 of 6 (done: tire-floor-reset, column-integrity, heavy-freight, tire-rules, collapse-win). REMAINING: #5 DIAGONALS — deferred: there is NO diagonal code, so it's an emergent staircase-lean and a blind fix risks breaking legit running-bond (offset brick-laying is rewarded). Needs the exact exploit shape before build. Gates clean.
    CHANGE LOG v3.5.95 - PHYSICS SWEEP #4: TIRE RULES (locked-freight + lift discipline). THREE sub-rules. (4a) A vertical (on-edge) tire rolls and can't bear a load — UNLESS it's LOCKED IN: pinned in a locked shelf row OR braced on BOTH sides (a neighbor or the trailer wall). onVerticalTire() now exempts a locked vertical tire (new tireLockedIn helper) so a pinned tire legitimately carries freight. (4b) SET-IN tires don't budge to a lift: a tire that's part of a stack (a tire directly above/below) OR has any load resting on top now refuses liftBox with a banner — clear what's on top first (new tireSetIn helper). A lone, unloaded tire still lifts fine. (4c) A NESTED tire is STUCK — a tire with anything nested in its hollow can't be lifted ("something's in there"). Verified in-browser: unbraced vertical tire topples its load / braced + locked-row tires bear freight; lifting the top of a 2-tire stack is blocked while a lone tire lifts; a nested tire won't lift. Sweep item #4 of 6 (done: tire-floor-reset, column-integrity, heavy-freight, tire-rules; next: diagonals → collapse-win). Gates clean.
@@ -992,6 +993,9 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   border:none;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;
   padding:6px 8px;border-radius:4px;pointer-events:auto;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.3);line-height:1.05;}
 #next-popup-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(40,184,112,.45);}
+/* v3.5.98 FINISH TRAILER emphasis — pulses when a partial seal makes dispatch available (no interrupting menu) */
+#maxpack-finish.pulse{animation:mpfpulse 1.15s ease-in-out infinite;}
+@keyframes mpfpulse{0%,100%{box-shadow:0 0 14px rgba(40,184,112,.45);transform:scale(1);}50%{box-shadow:0 0 26px 4px rgba(80,216,144,.85);transform:scale(1.06);}}
 
 /* ── PAUSE OVERLAY ── */
 #ov-pause{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;
@@ -1692,7 +1696,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.97 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.98 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1805,7 +1809,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.97 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.98 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1958,7 +1962,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.97 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.98 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2140,7 +2144,7 @@ body[data-cb="trit"]{
           <button class="btn-p" onclick="openPostSort()">◆ POST-SORT REPORT</button>
           <button class="btn-p" onclick="returnToMenu()">⌂ MAIN MENU</button>
         </div>
-        <button id="maxpack-finish" onclick="npFinish()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
+        <button id="maxpack-finish" onclick="nextTrailer()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
         <!-- v3.5.73 WATER + THROW moved into the bottom control strip (see #conv-header) -->
         <!-- v3.5.7: floating in-game coach tip removed — coach is pause-only now -->
       </div>
@@ -2376,7 +2380,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.97
+// LOCK IN v3.5.98
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -5349,7 +5353,11 @@ function finalizeWall(){
 function packPct(){return (typeof countFilled==='function'&&typeof GW!=='undefined')?Math.round(countFilled()/(GW*GH)*100):0;}
 function sealWall(reason){
   if(!hydrationOK())return;
-  if(G.sealed){if(gameMode!=='level'){var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ WALL COMPLETE — '+packPct()+'% PACKED';}return;} // v3.5.4 EXPLOIT FIX: seal payout ONCE per wall. v3.5.62: badge recomputes fresh so continue-loading updates the % (was frozen at the first seal).
+  if(G.sealed){if(gameMode!=='level'){ // v3.5.4 seal payout ONCE per wall. v3.5.98: re-seal respects the rhythm rule too
+    var _kl0=(typeof countFilled==='function')&&countFilled()<GW*GH&&!(G&&G.wallDone);
+    if(_kl0){var _mf0=document.getElementById('maxpack-finish');if(_mf0){_mf0.style.display='';_mf0.classList.add('pulse');}G.maxPack=true;}
+    else{var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ WALL COMPLETE — '+packPct()+'% PACKED';}
+  }return;}
   G.sealed=true;
   if(typeof gcurFlash==='function')gcurFlash('finish',1300); // v3.5.22 finish-glove on sealing the wall
   if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
@@ -5377,9 +5385,19 @@ function sealWall(reason){
     setTimeout(function(){showLevelEnd(reason,false);},800);
     return;
   }
-  // v3.5.81 wallLog is pushed by finalizeWall() (called above) with the rich per-wall stats — no duplicate here.
-  document.getElementById('next-popup').classList.add('vis');
-  document.getElementById('next-popup-badge').textContent='✓ '+reason;
+  // v3.5.98 RHYTHM FIX: a partial seal (there's still room to load = keep-loading is an option) must NOT interrupt
+  // with the full centered menu. Just EMPHASIZE the FINISH TRAILER button so the loader keeps their flow —
+  // dispatching at 85% is allowed, whatever's in the chute makes the next truck; staying only earns more score.
+  // The centered popup is reserved for a FULL wall (nothing left to load) — the real end of the wall.
+  var _keepLoadable=(typeof countFilled==='function')&&countFilled()<GW*GH&&!(G&&G.wallDone);
+  if(_keepLoadable){
+    G.maxPack=true; // stay in the wall — keep filling past the seal, no re-seal spam (checkWin is maxPack-guarded)
+    var _mf=document.getElementById('maxpack-finish');if(_mf){_mf.style.display='';_mf.classList.add('pulse');}
+    showBanner('✓ SEALED — TRAILER CAN DISPATCH.<br><span style="font-size:.52em">Keep loading for score, or hit ✓ FINISH TRAILER (top right) to roll out.</span>','ok',2600);
+  } else {
+    document.getElementById('next-popup').classList.add('vis');
+    document.getElementById('next-popup-badge').textContent='✓ '+reason;
+  }
 }
 
 // nextTrailer() defined in mode system section — handles both shift and standard modes
@@ -8286,7 +8304,7 @@ function npFinish(){if(G)G.maxPack=false;var f=document.getElementById('maxpack-
 function nextTrailer(){
   if(typeof playSfx==='function')playSfx('trailer');
   document.getElementById('next-popup').classList.remove('vis');
-  if(G){G.sealed=false;G.maxPack=false;G.wallDone=false;}var _mf=document.getElementById('maxpack-finish');if(_mf)_mf.style.display='none'; // v3.5.4 reset seal/max-pack for the new wall
+  if(G){G.sealed=false;G.maxPack=false;G.wallDone=false;}var _mf=document.getElementById('maxpack-finish');if(_mf){_mf.style.display='none';_mf.classList.remove('pulse');} // v3.5.4 reset seal/max-pack for the new wall; v3.5.98 clear the pulse
   var _kl2=document.querySelector('#next-popup button[onclick="npKeepLoading()"]');if(_kl2)_kl2.style.display=''; // v3.5.24 restore keep-loading for the next wall
   S.bestTrailerAvg=Math.max(S.bestTrailerAvg||0,getPPH()); // v2.1.9 best single-trailer rate
   if(gameMode==='shift'){
@@ -8726,7 +8744,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.97</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.98</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
