@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.95
+   LOCK IN v3.5.96
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.96 - PHYSICS SWEEP #6: COLLAPSE-WIN FIX. The exploit: placeBox SCHEDULES a collapse (collapseAnimating=true, fires ~220ms later) BEFORE calling checkWin(), so a doomed tower still stood at win-height when the seal fired — reach threshold with a side column, click NEXT TRAILER, and you advanced before it fell ("I shouldn't have won that"). FIX: checkWin() now returns early while collapseAnimating — a seal can't beat a collapse in motion. The wall re-checks on the next placement, on its honest post-collapse height. Verified in-browser: a 100%-height/density wall with a collapse in motion does NOT seal; the instant the collapse resolves, the honest wall seals. Physics sweep now 5 of 6 (done: tire-floor-reset, column-integrity, heavy-freight, tire-rules, collapse-win). REMAINING: #5 DIAGONALS — deferred: there is NO diagonal code, so it's an emergent staircase-lean and a blind fix risks breaking legit running-bond (offset brick-laying is rewarded). Needs the exact exploit shape before build. Gates clean.
    CHANGE LOG v3.5.95 - PHYSICS SWEEP #4: TIRE RULES (locked-freight + lift discipline). THREE sub-rules. (4a) A vertical (on-edge) tire rolls and can't bear a load — UNLESS it's LOCKED IN: pinned in a locked shelf row OR braced on BOTH sides (a neighbor or the trailer wall). onVerticalTire() now exempts a locked vertical tire (new tireLockedIn helper) so a pinned tire legitimately carries freight. (4b) SET-IN tires don't budge to a lift: a tire that's part of a stack (a tire directly above/below) OR has any load resting on top now refuses liftBox with a banner — clear what's on top first (new tireSetIn helper). A lone, unloaded tire still lifts fine. (4c) A NESTED tire is STUCK — a tire with anything nested in its hollow can't be lifted ("something's in there"). Verified in-browser: unbraced vertical tire topples its load / braced + locked-row tires bear freight; lifting the top of a 2-tire stack is blocked while a lone tire lifts; a nested tire won't lift. Sweep item #4 of 6 (done: tire-floor-reset, column-integrity, heavy-freight, tire-rules; next: diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.94 - PHYSICS SWEEP #3: HEAVY FREIGHT DEMANDS A FULL BASE. isLegal() grants up to 25% overhang; heavy freight (wc>=4, non-tire) no longer gets that grace. If ANY of a heavy box's bottom cells sits over air (less than FULL support from below), it auto-collapses — itself AND the box it was crushing — sheds to the belt with a HEAVY FREIGHT, NO FULL BASE banner. New heavyUnsupported(cell); runs FIRST in the post-place priority chain (heavy → tall-thin → freestack). Light freight (wc<4: smalls/bags/fills) keeps the 25% grace; tires exempt (own rules). Verified in-browser: heavy-on-floor holds, heavy-overhang collapses + takes the box under it, light overhang holds, heavy-full-base holds, tire-overhang exempt. Sweep item #3 of 6 (done: tire-floor-reset, column-integrity, heavy-freight-collapse; next: locked-tire/lift rules → diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.93 - PHYSICS SWEEP #2: COLUMN INTEGRITY (tall-thin verticals). A FREESTANDING tall-thin pillar (≤2 wide, ≥4 tall, not braced on both sides by a neighbor OR the trailer wall) can only bear a vertical load of height floor(0.5·pillarHeight) on top. A 2×5 holds a 2×2 (floor 2.5); a 2×3 up there snaps the column and the load sheds back to the belt with a COLUMN INTEGRITY banner. New tallThinViolation(cell) runs FIRST in the post-place stability check (before worstFreeStack). Braced/walled pillars are exempt (no false positives on real walls). Constrains moonshots to true outliers and chokes the sideways-NC-for-height exploit. Verified in-browser: 2×3-on-2×5 snaps, 2×2-on-2×5 holds, 2×3-on-2×6 holds, 2×4-on-2×6 snaps, 2×5-on-2×4 snaps, braced-pillar exempt, short-pillar exempt. Sweep item #2 of 6 (done: tire-floor-reset, column-integrity; next: heavy-freight-collapse → locked-tire/lift rules → diagonals → collapse-win). Gates clean.
@@ -1690,7 +1691,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.95 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.96 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1803,7 +1804,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.95 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.96 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1956,7 +1957,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.95 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.96 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2374,7 +2375,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.95
+// LOCK IN v3.5.96
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8687,7 +8688,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.95</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.96</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9068,6 +9069,11 @@ var _LV=null; // current level active config (null = not in a level)
 // ── CHECK WIN — LEVEL MODE ──
 // In level mode, uses _LV thresholds instead of global WIN_H / density 0.35
 function checkWin(){
+  // v3.5.96 SWEEP #6 COLLAPSE-WIN FIX: a seal can NOT beat a collapse that's already in motion. placeBox schedules
+  // the collapse (collapseAnimating=true, fires ~220ms later) BEFORE calling checkWin — so without this guard the
+  // doomed tower still counts toward the win height and the player advances before it falls. Block the seal until
+  // the collapse resolves; the wall re-checks on the next placement (honest, post-collapse height).
+  if(collapseAnimating)return;
   // v3.5.23 DETERMINISTIC PERFECT LOAD: a 100%-full wall (zero empty cells) always completes — even mid keep-loading
   if(!gOver&&G&&G.grid&&countFilled()>=GW*GH&&!document.getElementById('next-popup').classList.contains('vis')){
     if(G.maxPack){G.maxPack=false;var _mf=document.getElementById('maxpack-finish');if(_mf)_mf.style.display='none';}
