@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.94
+   LOCK IN v3.5.95
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.95 - PHYSICS SWEEP #4: TIRE RULES (locked-freight + lift discipline). THREE sub-rules. (4a) A vertical (on-edge) tire rolls and can't bear a load — UNLESS it's LOCKED IN: pinned in a locked shelf row OR braced on BOTH sides (a neighbor or the trailer wall). onVerticalTire() now exempts a locked vertical tire (new tireLockedIn helper) so a pinned tire legitimately carries freight. (4b) SET-IN tires don't budge to a lift: a tire that's part of a stack (a tire directly above/below) OR has any load resting on top now refuses liftBox with a banner — clear what's on top first (new tireSetIn helper). A lone, unloaded tire still lifts fine. (4c) A NESTED tire is STUCK — a tire with anything nested in its hollow can't be lifted ("something's in there"). Verified in-browser: unbraced vertical tire topples its load / braced + locked-row tires bear freight; lifting the top of a 2-tire stack is blocked while a lone tire lifts; a nested tire won't lift. Sweep item #4 of 6 (done: tire-floor-reset, column-integrity, heavy-freight, tire-rules; next: diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.94 - PHYSICS SWEEP #3: HEAVY FREIGHT DEMANDS A FULL BASE. isLegal() grants up to 25% overhang; heavy freight (wc>=4, non-tire) no longer gets that grace. If ANY of a heavy box's bottom cells sits over air (less than FULL support from below), it auto-collapses — itself AND the box it was crushing — sheds to the belt with a HEAVY FREIGHT, NO FULL BASE banner. New heavyUnsupported(cell); runs FIRST in the post-place priority chain (heavy → tall-thin → freestack). Light freight (wc<4: smalls/bags/fills) keeps the 25% grace; tires exempt (own rules). Verified in-browser: heavy-on-floor holds, heavy-overhang collapses + takes the box under it, light overhang holds, heavy-full-base holds, tire-overhang exempt. Sweep item #3 of 6 (done: tire-floor-reset, column-integrity, heavy-freight-collapse; next: locked-tire/lift rules → diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.93 - PHYSICS SWEEP #2: COLUMN INTEGRITY (tall-thin verticals). A FREESTANDING tall-thin pillar (≤2 wide, ≥4 tall, not braced on both sides by a neighbor OR the trailer wall) can only bear a vertical load of height floor(0.5·pillarHeight) on top. A 2×5 holds a 2×2 (floor 2.5); a 2×3 up there snaps the column and the load sheds back to the belt with a COLUMN INTEGRITY banner. New tallThinViolation(cell) runs FIRST in the post-place stability check (before worstFreeStack). Braced/walled pillars are exempt (no false positives on real walls). Constrains moonshots to true outliers and chokes the sideways-NC-for-height exploit. Verified in-browser: 2×3-on-2×5 snaps, 2×2-on-2×5 holds, 2×3-on-2×6 holds, 2×4-on-2×6 snaps, 2×5-on-2×4 snaps, braced-pillar exempt, short-pillar exempt. Sweep item #2 of 6 (done: tire-floor-reset, column-integrity; next: heavy-freight-collapse → locked-tire/lift rules → diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.92 - PHYSICS SWEEP #1: TIRE FLOOR-RESET NERF (kills the tire moonshot). Two surgical changes to worstFreeStack(). (1) A tire acts as a floor — resetting the freestack for whatever rests above — ONLY when genuinely GROUNDED: on the real floor OR a flat locked-in wall row. Tire-on-tire and tire-on-box no longer reset (that chain was the exploit: stack tires to reset the tower forever, then freight rode up "grounded"). (2) Tires are now TRANSPARENT to the freestack — they never count toward the topple length, so a pure tire tower stacks as high as you want and never self-topples, while freight above a non-grounded tire reads as ONE continuous tower (no reset). Verified in-browser on reloaded code: legit 2-tire+box = stable; 5-tire+3-box moonshot = UNSTABLE (freight counted, tires skipped); pure 8-tire tower = stable; tapered pyramid + 4-box control unchanged. Sweep item #1 of 6 (tire-floor-reset → column-integrity → heavy-freight-collapse → locked-tire/lift rules → diagonals → collapse-win). Gates clean.
@@ -1689,7 +1690,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.94 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.95 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1802,7 +1803,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.94 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.95 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1955,7 +1956,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.94 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.95 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2373,7 +2374,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.94
+// LOCK IN v3.5.95
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4067,6 +4068,17 @@ function isLoadBearing(cell){
 }
 function liftBox(cell){
   if(G&&G.wallDone)return; // v3.5.24 perfect load = wall locked
+  // v3.5.95 SWEEP #4 tire lift rules — a nested tire is STUCK; a set-in tire load doesn't budge.
+  if(cell&&cell.box&&cell.box.cat==='tire'){
+    if(cell.box.nest&&cell.box.nest.length){
+      if(typeof showBanner==='function')showBanner('THAT TIRE HAS SOMETHING NESTED IN IT — it’s stuck. Can’t lift it now.','warn',2100);
+      if(typeof playSfx==='function')playSfx('error');return;
+    }
+    if(typeof tireSetIn==='function'&&tireSetIn(cell)){
+      if(typeof showBanner==='function')showBanner('SET-IN TIRES DON’T BUDGE — their weight anchors the load. Clear what’s on top (or the tire above) first.','warn',2300);
+      if(typeof playSfx==='function')playSfx('error');return;
+    }
+  }
   if(typeof playSfx==='function')playSfx('lift');
   S.lifts=(S.lifts||0)+1; // v2.1.7
   // v2.1.34: lifting a piece OUT of a locked shelf unseals it = penalty
@@ -4900,8 +4912,38 @@ function onVerticalTire(cell){
   var cs=cell.cells||makeRect(cell.w,cell.h),i,low={},k;
   for(i=0;i<cs.length;i++){var cx=cell.rx+cs[i][0],cy=cell.ry+cs[i][1];if(low[cx]===undefined||cy>low[cx])low[cx]=cy;}
   for(k in low){var by=low[k],bx=+k;var below=G.grid[by+1]&&G.grid[by+1][bx];
-    if(below&&below.id!==cell.id&&below.box&&below.box.cat==='tire'&&((below.rot||0)%2===1))return below;}
+    if(below&&below.id!==cell.id&&below.box&&below.box.cat==='tire'&&((below.rot||0)%2===1)){
+      if(typeof tireLockedIn==='function'&&tireLockedIn(below))continue; // v3.5.95 SWEEP #4a: a LOCKED-IN vertical tire is pinned — it CAN bear freight
+      return below;
+    }}
   return null;
+}
+// v3.5.95 SWEEP #4a — a vertical (on-edge) tire is "locked in" (pinned, can't roll) if it sits in a locked shelf
+// row OR is braced on BOTH sides (a neighbor or the trailer wall). Only then may it carry freight on top.
+function tireLockedIn(tire){
+  if(!tire)return false;
+  var cs=tire.cells||makeRect(tire.w,tire.h),i,ax,ay,leftBr=false,rightBr=false;
+  for(i=0;i<cs.length;i++){
+    ay=tire.ry+cs[i][1];
+    if(G.tetrisRows&&G.tetrisRows[ay])return true;
+    ax=tire.rx+cs[i][0];
+    if(ax<=0||(G.grid[ay]&&G.grid[ay][ax-1]&&G.grid[ay][ax-1].id!==tire.id))leftBr=true;
+    if(ax>=GW-1||(G.grid[ay]&&G.grid[ay][ax+1]&&G.grid[ay][ax+1].id!==tire.id))rightBr=true;
+  }
+  return leftBr&&rightBr;
+}
+// v3.5.95 SWEEP #4b — a tire is "set in" (its weight anchors the load; lifting must not disturb it) if it is part
+// of a stack (a tire directly above or below) OR has any load resting directly on top of it.
+function tireSetIn(cell){
+  if(!cell||!cell.box||cell.box.cat!=='tire')return false;
+  var cs=cell.cells||makeRect(cell.w,cell.h),i,ax,ay,loadOnTop=false,tireAdj=false;
+  for(i=0;i<cs.length;i++){ax=cell.rx+cs[i][0];ay=cell.ry+cs[i][1];
+    var up=(ay-1>=0)?(G.grid[ay-1]&&G.grid[ay-1][ax]):null;
+    if(up&&up.id!==cell.id){if(up.box&&up.box.cat==='tire')tireAdj=true;else loadOnTop=true;}
+    var dn=(ay+1<GH)?(G.grid[ay+1]&&G.grid[ay+1][ax]):null;
+    if(dn&&dn.id!==cell.id&&dn.box&&dn.box.cat==='tire')tireAdj=true;
+  }
+  return loadOnTop||tireAdj;
 }
 // v3.5.65 shed specific cells straight back to the belt (no collapse-incident) — used for the tire-stack ladder.
 function _shedToBelt(cells){
@@ -8645,7 +8687,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.94</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.95</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
