@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.107
+   LOCK IN v3.5.108
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.108 - LOGIN PERSISTENCE FIX (THE largest gap) + USERNAME BUTTON. THE BUG: zAuthLoad() — which restores the saved session from localStorage — was ONLY called inside zOpenData() (the ADMIN account overlay). It was NEVER called at boot. So every page load/reload read as logged-OUT even with a valid saved session; the daily then played as ANONYMOUS and nothing posted. "Zero persistence," exactly as reported. FIX: call zAuthLoad() in the boot sequence (after initTruck) so the session restores on every load. Verified: seed a session -> reload -> loggedIn=true on boot, uid+handle restored. USERNAME BUTTON: the top-corner "SOCIAL" button is now the login indicator — shows your NAME (cyan "signed-in" style) when logged in, "CLOCK-IN" when not; click it -> your record (openSocial(me)). zAuthStatus updates it on login/logout/boot. (Ranking-in-the-button = a couple weeks out.) This unblocks the whole daily->leaderboard chain.
    CHANGE LOG v3.5.107 - ALL-TIME DAILY STRIP (pass 2). New Supabase RPC lockin_daily_alltime() (SECURITY DEFINER, anon+authenticated EXECUTE) returns the daily records that stand: Highest score + Cleanest from lockin_daily, Fastest complete + Slowest winner from lockin_walls WHERE mode=daily AND density>=85 (joined to lockin_handles for the name). Wired as a strip under the daily crown (lb-alltime): 4 cards, fame amber rail, shame rust rail on Slowest Winner. Verified live: Highest=vince 259,008, Cleanest=vince 100%, Fastest/Slowest=kreminal 2:45. NOTE: "Most nested" is intentionally omitted — nests aren't stored per wall yet (would need a schema column); everything shown is real, nothing faked.
    CHANGE LOG v3.5.106 - NC BRIEFING TEXT FIX. Rule 4 said tires/SP/oversize "wait in the side panel" — but the staging tray is at the BOTTOM, not the side. Text now reads "wait in the staging tray at the bottom." (Slop = the words not matching the actual layout.) Also verified end-to-end on live: the DAILY sign-in + submit pipeline works top to bottom (fresh account signup->signin->submit->on the board; real players on today board), and the v3.5.102 uid-from-sub fix is deployed. No logic change here beyond the text.
    CHANGE LOG v3.5.105 - THE CLIPBOARD IS THE BACKGROUND (finally). Goyim asked ~20 times: the SOCIAL/leaderboard, PROFILE, and MINI-GAMES menus now sit on the REAL clipboard.png — the same metal-board art as the pause menu + briefing — instead of the plain drawn cream card. .pf-card (in ov-leaderboard/ov-profile) and .mg-wrap (ov-minigames) get the clipboard bg at its true 619:905 aspect, drop-shadow, drawn-clip pseudo-elements hidden; the title sits just below the metal clip (~22.5%) and the content lives in the clear WRITING AREA (a scrollable region from ~30% to 95%, inside the frame). Verified by measurement (same method as the pause fit): bg=clipboard.png, aspect matches, the writing area is fully within the card bounds below the clip. Pure CSS — no markup/logic change.
@@ -592,8 +593,11 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .2s,color .2s;
 }
 .sm-iconbtn{font-size:22px;padding:7px 12px;}
-.sm-loginbtn{font-size:14px;letter-spacing:1px;padding:9px 16px;}
+.sm-loginbtn{font-size:14px;letter-spacing:1px;padding:9px 16px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sm-iconbtn:hover,.sm-loginbtn:hover{background:var(--acc-bright);color:#140c04;}
+/* v3.5.108 signed-in = your name, in the cyan "load-rate" tone so it reads as a live account, not a CTA */
+.sm-loginbtn.signed-in{background:#123f3a;color:#5fd6cd;border-color:#2aa9a0;}
+.sm-loginbtn.signed-in:hover{background:#18514a;color:#8be6de;}
 .sm-soon{font-size:10px;letter-spacing:1px;color:var(--t3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;}
 /* Mode cards — VERTICAL, brick-laid, LARGE legible text */
 #sm-modes{display:flex;flex-direction:column;gap:11px;width:360px;max-width:46vw;margin:0;padding:0 0 0 34px;}
@@ -1764,7 +1768,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.107 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.108 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1834,7 +1838,7 @@ body[data-cb="trit"]{
 <!-- ═══════════════════ START MENU ═══════════════════ -->
 <div id="start-menu" style="display:none;">
   <div id="sm-topright">
-    <button class="sm-loginbtn" title="Your record, the boards & friends" onclick="openSocial()">◆ SOCIAL</button>
+    <button class="sm-loginbtn" id="sm-loginbtn" title="Your record & the boards" onclick="openSocial('me')">◆ CLOCK-IN</button>
     <button class="sm-iconbtn" title="Settings" onclick="openSettings()">⚙</button>
   </div>
   <div id="sm-logo">
@@ -1877,7 +1881,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.107 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.108 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2030,7 +2034,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.107 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.108 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2440,7 +2444,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.107
+// LOCK IN v3.5.108
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2946,6 +2950,9 @@ function zAuthStatus(){
   var sx=ZDATA.session,el=document.getElementById('auth-status'),so=document.getElementById('auth-signout');
   if(sx&&sx.email){if(el){el.textContent='\u2713 Signed in as '+(sx.handle||sx.email)+(sx.facility?(' \u00b7 FACILITY '+sx.facility):'');el.style.display='block';}if(so)so.style.display='';}
   else{if(el)el.style.display='none';if(so)so.style.display='none';}
+  // v3.5.108 TOP-CORNER LOGIN INDICATOR: your NAME when signed in (the persistence you can SEE), CLOCK-IN when not.
+  var lb=document.getElementById('sm-loginbtn');
+  if(lb){var on=!!(sx&&sx.uid);lb.textContent=on?('\u25c6 '+((typeof zWho==='function')?zWho():(sx.handle||'YOU'))):'\u25c6 CLOCK-IN';lb.classList.toggle('signed-in',on);}
 }
 // v3.5.102 DAILY-SUBMIT BUG FIX: read the user id from the access token's `sub` claim (always present) — NOT just
 // j.user, which a refresh-token response omits. Without this a token refresh wiped uid to null while you were still
@@ -8897,7 +8904,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.107</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.108</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10336,6 +10343,12 @@ applyPortrait();
 // BOOT ORDER: resize() → initTruck() → check briefing → show briefing OR start menu
 resize();
 initTruck();
+
+// v3.5.108 LOGIN PERSISTENCE FIX (the largest gap): restore the saved auth session on EVERY page load. Was only
+// restored inside zOpenData() (the ADMIN → ACCOUNT & DATA overlay), so a login NEVER persisted across a reload —
+// every fresh load read as logged-OUT, the daily played as anonymous, and nothing posted. Now the session comes
+// back on boot and the top-corner button shows your name.
+try{zAuthLoad();}catch(e){console.error('auth persistence boot:',e);}
 
 // Restore voice from session
 try{var _bv=sessionStorage.getItem('liVoice');if(_bv)activeVoice=_bv;}catch(e){}
