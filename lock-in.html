@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.90
+   LOCK IN v3.5.91
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.91 - MENU COLLAPSE: THE FOUR PILLARS (step 2). The start menu is now four cards — TRAILER-LOAD (flagship) · DAILY (favored son) · TRAINING (the teacher, now a real top-level pillar) · MINI-GAMES — instead of six scattered modes. PRACTICE, GAUNTLET, TOUR and SMALLS SORT moved into a new MINI-GAMES submenu (#ov-minigames overlay, reuses .sm-card, same z-layer as profile/leaderboard); each side-game closes the submenu then launches. openMiniGames()/closeMiniGames() added. This is the minimalist front door — one clear flagship, the daily as its own star, and the side games tucked where they belong (no world rank there). Verified in-browser: pillars = TRAILER-LOAD/DAILY/TRAINING/MINI-GAMES, submenu opens with all 4 side games, closes clean, launching Practice hides both layers and starts the mode. No mode-start logic changed — pure menu re-wire. DAILY chute confirmed 10 (BELT_PIECE_COUNT, daily included) — standing rule.
    CHANGE LOG v3.5.90 - PPH = REAL FREIGHT + PRODUCTIVITY WRITE-UPS. The moneymaker metric now counts what a hub actually counts: REAL FREIGHT (boxes). Smalls and bags NO LONGER count toward PPH — and because they still eat the clock, stopping to break down a bag to chink your gaps genuinely DRAGS your pace (the rookie who "loaded 400" really moved 80). New S.boxPieces (gross) + per-wall delta via _WALL_COUNTERS; getPPH()/avgPPH()/peak all read freight. THE HUB STANDARD = 250 pph. A substantial wall (≥6 freight, ≥20s) sealed below standard in a non-forgiving mode is a PRODUCTIVITY incident: 1st = a PACE FLAGGED banner, every 2nd = a signed WRITE-UP ("PACE BELOW HUB STANDARD"), mirroring the safety docs. Post-sort THROUGHPUT block is now "PRODUCTIVITY · REAL FREIGHT" — Avg/Peak PPH, Hub standard 250, met-standard? ✓/✕ per wall + session, Productivity write-ups, and Pieces/sec relabeled "(all)" so hand-tempo stays honest but separate. Verified in-browser: 8 boxes+12 smalls+3 bags/90s = 320 pph real (vs 920 if everything counted); slow walls ding then write up on the 2nd, fast walls stay clean; gates clean. DECISION: raiseWriteup() gained an optional count arg so productivity docs show the productivity tally, not the safety one.
    CHANGE LOG v3.5.89 - TRAILER-LOAD: THE FLAGSHIP (step 1 of 2 — stand it up, playtest the feel). The one canonical mode, wired into lifetime + the leaderboard. It runs ON the proven shift engine (endless walls, arcade dispatch feel, all working plumbing) so nothing else can break — new global TRAILER_MODE just (a) layers a late-wall gauntlet-spice and (b) rebrands the label. THE MELD: practice-smooth phase gen (shift already used it) + arcade dispatch/fail feel + as each wall fills past ~60%, a ramping chance (16%→~50% near the top) to seed gauntlet-style awkward pieces so the endgame is almost never a layup — and the THROW meta is always the out. New startTrailerLoad(); the menu ARCADE card becomes the TRAILER-LOAD flagship card (now first). Badge / scoreboard MODE / post-sort MODE all read TRAILER-LOAD. Verified in-browser: launch sets the flag, spice fires 112/300 at 85% fill (0 with it off), all three labels correct, gates clean. DECISION: gameMode stays 'shift' internally (zero new mode-branches to audit) — the flagship identity is the flag + labels; a clean data-key rename can come with the step-2 menu collapse. NEXT (step 2, after you play it): collapse the menu to 4 pillars (Trailer-Load · Daily · Training · Mini-Games), demote Practice/Gauntlet/Arcade into Mini-Games, give SmallsSort its own daily board.
    CHANGE LOG v3.5.88 - AUTH SWEEP: LOGIN FIX (regression). The v3.5.85 SOCIAL consolidation could leave TWO identical sign-in forms in the DOM at once — the SOCIAL ▸ ME tab's and the old standalone profile overlay's — both hardcoding #pf-id / #pf-pw / #pf-auth-note. Once the profile overlay rendered even once, getElementById('pf-id') resolved to the FIRST (empty, hidden) copy, so pfDoLogin/pfDoSignup read BLANK fields no matter what the player typed = "logging in is broken." FIX: (1) new pfFormEl() reads auth fields from the currently-VISIBLE profile surface, never a stale duplicate; (2) the standalone ov-profile overlay is RETIRED — openProfile() now routes to openSocial('me'), so exactly one auth form exists. Verified in-browser: #pf-id count 2→1, handler reads the typed username, login fires the real auth request. DECISION: kept the old ov-profile renderer as a dead-code fallback (only runs if openSocial is ever missing) rather than deleting it, to minimize blast radius on a ship-critical path.
@@ -1471,6 +1472,17 @@ body[data-cb="trit"]{
 /* ── v2.5.0 PROFILE DASHBOARD ── */
 /* v2.11.0 PROFILE = trusty clipboard popup (warm paper + metal clip), same stats logic */
 #ov-profile,#ov-leaderboard{position:fixed;inset:0;z-index:560;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}/* v3.5.31 above the start menu (400) so they're interactive from the menu */
+/* v3.5.91 MINI-GAMES submenu overlay — same layering as the profile/leaderboard, reuses .sm-card */
+#ov-minigames{position:fixed;inset:0;z-index:560;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.95);overflow:auto;padding:34px 12px 30px;}
+#ov-minigames.vis{display:flex;}
+.mg-wrap{max-width:660px;width:100%;}
+.mg-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.mg-title{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:#f0e6d2;}
+.mg-x{background:none;border:1px solid #6b5637;color:#c9b48c;border-radius:6px;padding:6px 13px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;}
+.mg-x:hover{color:#fff;border-color:#a07c48;}
+.mg-sub{font-family:'Share Tech Mono',monospace;font-size:12px;color:#9a7e52;letter-spacing:.05em;margin-bottom:14px;}
+.mg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.mg-grid{grid-template-columns:1fr;}}
 #ov-profile.vis,#ov-leaderboard.vis{display:flex;}
 /* v3.5.13 LEADERBOARD board rows — dark on the cream clipboard card */
 .lb-tabline{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:#8b6a3a;margin:0 0 6px;font-weight:bold;}
@@ -1674,7 +1686,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.90 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.91 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1763,40 +1775,31 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="sm-tagline">SELECT YOUR MODE</div>
+  <!-- v3.5.91 THE FOUR PILLARS. Trailer-Load (flagship) · Daily (favored son) · Training (the teacher) · Mini-Games (the side games). Practice/Gauntlet/Tour/Smalls Sort live inside Mini-Games. -->
   <div id="sm-modes">
     <div class="sm-card mode-shift mode-flagship" onclick="startTrailerLoad()">
       <div class="sm-card-ico">🚛</div>
       <div class="sm-card-name">TRAILER-LOAD</div>
       <div class="sm-card-desc">The main event. Wall after wall at full tempo — forgiving enough to flow, but the pile gets mean near the top and it's almost never a layup. Your record and your world rank live here.</div>
     </div>
-    <div class="sm-card mode-regular" onclick="startRegular()">
-      <div class="sm-card-ico">📦</div>
-      <div class="sm-card-name">PRACTICE</div>
-      <div class="sm-card-desc">Learn the wall at your own pace. The floor still coaches you, but a slow shift or a piled-up staging lane won't send you home. Start here.</div>
-    </div>
-    <div class="sm-card mode-gauntlet" onclick="startGauntlet()">
-      <div class="sm-card-ico">🔥</div>
-      <div class="sm-card-name">GAUNTLET</div>
-      <div class="sm-card-desc">No tray, no bags — just the belt and the wall. Pure stacking, no mercy. For when you want to be tested.</div>
-    </div>
     <div class="sm-card mode-daily" onclick="startDaily()">
       <div class="sm-card-ico">📅</div>
       <div class="sm-card-name">DAILY</div>
-      <div class="sm-card-desc">Same pieces, same timer, everyone on Earth — one shared board, 00:00–23:59 UTC. Compare against the world.</div>
+      <div class="sm-card-desc">Same pieces, same timer, everyone on Earth — one shared board, 00:00–23:59 UTC. Win it and you're the day's #1 loader on the planet.</div>
     </div>
-    <div class="sm-card mode-levels" onclick="openLevelSelect()">
-      <div class="sm-card-ico">🏆</div>
-      <div class="sm-card-name">TOUR</div>
-      <div class="sm-card-desc">Graduating scenarios from Day One to Nightmare Mode. Real hubs, real pressure. Earn your stars.</div>
+    <div class="sm-card mode-training" onclick="startTraining()">
+      <div class="sm-card-ico">🎓</div>
+      <div class="sm-card-name">TRAINING</div>
+      <div class="sm-card-desc">Watch a perfect wall build itself, then load one yourself. Every placement teaches a real hub rule — no clock, no fails. New here? Start on this.</div>
     </div>
-    <div class="sm-card mode-smalls" onclick="location.href='/ss/'">
-      <div class="sm-card-ico">🧩</div>
-      <div class="sm-card-name">SMALLS SORT</div>
-      <div class="sm-card-desc">The companion mini-game — sort and stack the smalls. Speed and accuracy on the small-parcel line.</div>
+    <div class="sm-card mode-minigames" onclick="openMiniGames()">
+      <div class="sm-card-ico">🎮</div>
+      <div class="sm-card-name">MINI-GAMES</div>
+      <div class="sm-card-desc">The side games — Practice, Gauntlet, Tour &amp; Smalls Sort. No world rank, just reps and fun. Tap to pick one.</div>
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.90 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.91 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1949,7 +1952,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.90 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.91 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2248,6 +2251,33 @@ body[data-cb="trit"]{
 <div id="ov-postsort"><div class="ps-card" id="ps-card"></div></div>
 <div id="ov-recover"><div class="rec-card"><div class="rec-icon">⚠</div><div class="rec-title">WE'RE SORRY — THE SCREEN STALLED</div><div class="rec-sub">The display stopped updating. Your session is safe. Tap RESUME to retry — and if it stays stuck, do a HARD REFRESH (Ctrl+Shift+R, or Cmd+Shift+R on Mac) for a clean reset.</div><div class="rec-btns"><button class="btn-p" onclick="recoverResume()">▶ RESUME</button><button class="btn-p" onclick="recoverMenu()">CHOOSE MODE</button><button class="btn-p" onclick="location.reload()">⟳ HARD REFRESH</button></div><div class="rec-dbg" id="rec-dbg"></div></div></div>
 <div id="ov-profile"><div class="pf-card"><div class="pf-top"><div class="pf-title" id="pf-title">PROFILE</div><button class="pf-x" onclick="closeProfile()">✕</button></div><div class="pf-body" id="pf-body"></div></div></div>
+<!-- v3.5.91 MINI-GAMES submenu — the side games, off the main pillars -->
+<div id="ov-minigames"><div class="mg-wrap">
+  <div class="mg-head"><div class="mg-title">🎮 MINI-GAMES</div><button class="mg-x" onclick="closeMiniGames()">✕ BACK</button></div>
+  <div class="mg-sub">Side games — no world rank, just reps and fun.</div>
+  <div class="mg-grid">
+    <div class="sm-card mode-regular" onclick="closeMiniGames();startRegular()">
+      <div class="sm-card-ico">📦</div>
+      <div class="sm-card-name">PRACTICE</div>
+      <div class="sm-card-desc">Learn the wall at your own pace. The floor still coaches you, but a slow shift or a piled-up staging lane won't send you home.</div>
+    </div>
+    <div class="sm-card mode-gauntlet" onclick="closeMiniGames();startGauntlet()">
+      <div class="sm-card-ico">🔥</div>
+      <div class="sm-card-name">GAUNTLET</div>
+      <div class="sm-card-desc">No tray, no bags — just the belt and the wall. Pure stacking, no mercy. For when you want to be tested.</div>
+    </div>
+    <div class="sm-card mode-levels" onclick="closeMiniGames();openLevelSelect()">
+      <div class="sm-card-ico">🏆</div>
+      <div class="sm-card-name">TOUR</div>
+      <div class="sm-card-desc">Graduating scenarios from Day One to Nightmare Mode. Real hubs, real pressure. Earn your stars.</div>
+    </div>
+    <div class="sm-card mode-smalls" onclick="location.href='/ss/'">
+      <div class="sm-card-ico">🧩</div>
+      <div class="sm-card-name">SMALLS SORT</div>
+      <div class="sm-card-desc">The companion game — sort and stack the smalls. Speed and accuracy on the small-parcel line.</div>
+    </div>
+  </div>
+</div></div>
 <!-- v3.5.13 LEADERBOARD -->
 <div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">SOCIAL</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
   <div class="lb-tabs">
@@ -2340,7 +2370,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.90
+// LOCK IN v3.5.91
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8083,6 +8113,9 @@ function startTrailerLoad(){
   restartGame();
 }
 
+// v3.5.91 MINI-GAMES submenu — opened from the 4-pillar menu; each side-game closes it then launches.
+function openMiniGames(){var ov=document.getElementById('ov-minigames');if(ov)ov.classList.add('vis');}
+function closeMiniGames(){var ov=document.getElementById('ov-minigames');if(ov)ov.classList.remove('vis');}
 function updateShiftBadge(){
   var badge=document.getElementById('shift-badge');
   if(!badge)return;
@@ -8543,7 +8576,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.90</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.91</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
