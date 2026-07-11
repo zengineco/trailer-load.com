@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.106
+   LOCK IN v3.5.107
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.107 - ALL-TIME DAILY STRIP (pass 2). New Supabase RPC lockin_daily_alltime() (SECURITY DEFINER, anon+authenticated EXECUTE) returns the daily records that stand: Highest score + Cleanest from lockin_daily, Fastest complete + Slowest winner from lockin_walls WHERE mode=daily AND density>=85 (joined to lockin_handles for the name). Wired as a strip under the daily crown (lb-alltime): 4 cards, fame amber rail, shame rust rail on Slowest Winner. Verified live: Highest=vince 259,008, Cleanest=vince 100%, Fastest/Slowest=kreminal 2:45. NOTE: "Most nested" is intentionally omitted — nests aren't stored per wall yet (would need a schema column); everything shown is real, nothing faked.
    CHANGE LOG v3.5.106 - NC BRIEFING TEXT FIX. Rule 4 said tires/SP/oversize "wait in the side panel" — but the staging tray is at the BOTTOM, not the side. Text now reads "wait in the staging tray at the bottom." (Slop = the words not matching the actual layout.) Also verified end-to-end on live: the DAILY sign-in + submit pipeline works top to bottom (fresh account signup->signin->submit->on the board; real players on today board), and the v3.5.102 uid-from-sub fix is deployed. No logic change here beyond the text.
    CHANGE LOG v3.5.105 - THE CLIPBOARD IS THE BACKGROUND (finally). Goyim asked ~20 times: the SOCIAL/leaderboard, PROFILE, and MINI-GAMES menus now sit on the REAL clipboard.png — the same metal-board art as the pause menu + briefing — instead of the plain drawn cream card. .pf-card (in ov-leaderboard/ov-profile) and .mg-wrap (ov-minigames) get the clipboard bg at its true 619:905 aspect, drop-shadow, drawn-clip pseudo-elements hidden; the title sits just below the metal clip (~22.5%) and the content lives in the clear WRITING AREA (a scrollable region from ~30% to 95%, inside the frame). Verified by measurement (same method as the pause fit): bg=clipboard.png, aspect matches, the writing area is fully within the card bounds below the clip. Pure CSS — no markup/logic change.
    CHANGE LOG v3.5.104 - LEADERBOARD WIRED: THE WORLD BOARD IN-GAME (pass 1). The in-game HALL is no longer a one-at-a-time dropdown of dog-shit rows — it is now the approved World Board as a scrollable CATEGORICAL LEDGER: WALLS OF FAME (Best / Total Loaded / Fastest / Cleanest / Fewest Pieces) stacked over WALLS OF SHAME (Slowest / Most Collapses / The Grind / Barely Held), every board loaded at once as its own card. Each card: emoji header, one-line note, TOP 5 with medal rows — gold #1, 🥇🥈🥉 podium, 💀 for the shame #1, tabular values. New lbLoadAllBoards/lbBoardCard + a shared lbMedalRows() renderer (also upgrades the DAILY board to medal rows under the crown hero). Cream-paper cards in the real Bebas/Share-Tech-Mono type, fame amber rail / shame rust rail. Pure presentation over the existing per-board RPCs (lockin_alltime_board/lockin_total_board/lockin_wall_board). Verified in-browser: 5 fame + 4 shame cards build, medal rows render with gold #1, daily uses medal rows. NEXT (pass 2+): all-time-daily strip (needs a daily-scoped wall RPC), /me/ made comprehensive, SmallsSort feeding the board. The dropdown-era lbLoadHall/lbRenderHall are now dead code (harmless).
@@ -1557,6 +1558,17 @@ body[data-cb="trit"]{
 .lb-daily-crown .dc-name{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;color:#3a1e04;line-height:1;margin:3px 0 2px;word-break:break-all;}
 .lb-daily-crown .dc-score{font-family:'Share Tech Mono',monospace;font-size:12px;color:#6a3a08;font-weight:bold;}
 .lb-daily-reset{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:#8b6a3a;text-align:center;margin-top:7px;}
+/* v3.5.107 ALL-TIME DAILY records strip */
+.lb-alltime{margin-top:12px;padding-top:11px;border-top:2px dashed #cebf9c;}
+.lb-at-hd{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#b07a12;margin:0 0 9px;display:flex;align-items:center;gap:7px;}
+.lb-at-hd::after{content:'';flex:1;height:1px;background:#cebf9c;}
+.lb-at-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.lb-at{background:linear-gradient(180deg,#efe8d7,#e2d8bf);border:1px solid #cebf9c;border-radius:8px;padding:9px 10px;box-shadow:inset 3px 0 0 #e0a838;}
+.lb-at.shame{box-shadow:inset 3px 0 0 #b3401f;}
+.lb-at-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:#8a7a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-at-val{font-family:'Bebas Neue',cursive;font-size:24px;line-height:1;color:#2a1a08;margin:5px 0 2px;font-variant-numeric:tabular-nums;}
+.lb-at.shame .lb-at-val{color:#b3401f;}
+.lb-at-nm{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;color:#5c4a30;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lb-tabs{display:flex;gap:6px;margin-bottom:12px;}
 .lb-tab{flex:1;padding:8px 0;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:#a08b6a;background:#ece7d8;border:1px solid #d8cdb4;border-radius:4px;cursor:pointer;}
 .lb-tab.active{color:#2a1a08;background:#fff;border-color:#8b4513;box-shadow:inset 0 -2px 0 #8b4513;}
@@ -1752,7 +1764,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.106 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.107 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1865,7 +1877,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.106 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.107 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2018,7 +2030,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.106 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.107 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2360,6 +2372,10 @@ body[data-cb="trit"]{
     <div class="lb-tabline" id="lb-daily-date">◈ DAILY · —</div>
     <div class="lb-board" id="lb-daily-board"><div class="lb-empty">Loading…</div></div>
     <div class="lb-daily-reset" id="lb-daily-reset"></div>
+    <div class="lb-alltime">
+      <div class="lb-at-hd">🏛 All-time daily — records that stand</div>
+      <div class="lb-at-grid" id="lb-daily-alltime"></div>
+    </div>
     <div class="lb-note">Same seed for everyone on Earth, 00:00–23:59 UTC. <b>Win it and you're the day's #1 loader on the planet.</b></div>
   </div>
   <!-- v3.5.104 THE HALL — a scrollable categorical ledger (Walls of Fame over Walls of Shame), every board at once. No dropdown. -->
@@ -2424,7 +2440,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.106
+// LOCK IN v3.5.107
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8505,6 +8521,7 @@ function lbTab(which){
     var db=document.getElementById('lb-daily-board');if(db)db.innerHTML='<div class="lb-empty">Loading…</div>';
     if(typeof zLoadDailyBoard==='function')zLoadDailyBoard(function(rows){lbRenderDaily(rows);});
     lbStartDailyCountdown();
+    lbLoadDailyAlltime(); // v3.5.107 the all-time daily records strip
   }
   if(which==='hall'){lbLoadAllBoards();} // v3.5.104 the whole fame/shame ledger, every board at once
   if(which==='friends')lbLoadFriends();
@@ -8534,6 +8551,28 @@ function lbDailyCountdown(){
   el.textContent='⏱ NEW BOARD IN '+hh+'h '+(mm<10?'0':'')+mm+'m '+(ss<10?'0':'')+ss+'s · UTC RESET';
 }
 function lbStartDailyCountdown(){lbDailyCountdown();if(_dailyCD)clearInterval(_dailyCD);_dailyCD=setInterval(lbDailyCountdown,1000);}
+// v3.5.107 ALL-TIME DAILY records — the records that stand (RPC lockin_daily_alltime: highest score, cleanest, fastest complete, slowest winner). "Most nested" isn't stored yet, so it's not shown.
+function lbLoadDailyAlltime(){
+  var el=document.getElementById('lb-daily-alltime');if(!el)return;
+  el.innerHTML='<div class="lb-empty" style="grid-column:1/-1">Loading…</div>';
+  try{fetch(ZDATA.endpoint+'/rpc/lockin_daily_alltime',{method:'POST',headers:zAuthHeaders(),body:'{}'})
+    .then(function(r){return r.json();}).then(function(j){lbRenderDailyAlltime(j||{});})
+    .catch(function(){lbRenderDailyAlltime({});});}catch(e){lbRenderDailyAlltime({});}
+}
+function lbRenderDailyAlltime(d){
+  var el=document.getElementById('lb-daily-alltime');if(!el)return;
+  function fmtT(s){s=+s||0;var m=Math.floor(s/60),ss=s%60;return m+':'+(ss<10?'0':'')+ss;}
+  function at(em,lbl,rec,fmt,shame){
+    var has=rec&&rec.val!=null;
+    var v=has?(fmt==='time'?fmtT(rec.val):(fmt==='pct'?rec.val+'%':(+rec.val).toLocaleString())):'—';
+    var nm=(has&&rec.username)?drEsc(rec.username):'—';
+    return '<div class="lb-at'+(shame?' shame':'')+'"><div class="lb-at-lbl">'+em+' '+lbl+'</div><div class="lb-at-val">'+v+'</div><div class="lb-at-nm">'+nm+'</div></div>';
+  }
+  el.innerHTML=at('🏆','Highest score',d.highest_score,'num',false)
+    +at('⚡','Fastest complete',d.fastest,'time',false)
+    +at('✦','Cleanest',d.cleanest,'pct',false)
+    +at('🐌','Slowest winner',d.slowest_winner,'time',true);
+}
 // v3.5.86 would this score crack the daily top 10? returns the 1-based rank (<=10) or 0.
 function lbWouldRankDaily(rows,score){
   if(!(score>0))return 0;
@@ -8858,7 +8897,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.106</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.107</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
