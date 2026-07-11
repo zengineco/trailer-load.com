@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.92
+   LOCK IN v3.5.93
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.93 - PHYSICS SWEEP #2: COLUMN INTEGRITY (tall-thin verticals). A FREESTANDING tall-thin pillar (≤2 wide, ≥4 tall, not braced on both sides by a neighbor OR the trailer wall) can only bear a vertical load of height floor(0.5·pillarHeight) on top. A 2×5 holds a 2×2 (floor 2.5); a 2×3 up there snaps the column and the load sheds back to the belt with a COLUMN INTEGRITY banner. New tallThinViolation(cell) runs FIRST in the post-place stability check (before worstFreeStack). Braced/walled pillars are exempt (no false positives on real walls). Constrains moonshots to true outliers and chokes the sideways-NC-for-height exploit. Verified in-browser: 2×3-on-2×5 snaps, 2×2-on-2×5 holds, 2×3-on-2×6 holds, 2×4-on-2×6 snaps, 2×5-on-2×4 snaps, braced-pillar exempt, short-pillar exempt. Sweep item #2 of 6 (done: tire-floor-reset, column-integrity; next: heavy-freight-collapse → locked-tire/lift rules → diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.92 - PHYSICS SWEEP #1: TIRE FLOOR-RESET NERF (kills the tire moonshot). Two surgical changes to worstFreeStack(). (1) A tire acts as a floor — resetting the freestack for whatever rests above — ONLY when genuinely GROUNDED: on the real floor OR a flat locked-in wall row. Tire-on-tire and tire-on-box no longer reset (that chain was the exploit: stack tires to reset the tower forever, then freight rode up "grounded"). (2) Tires are now TRANSPARENT to the freestack — they never count toward the topple length, so a pure tire tower stacks as high as you want and never self-topples, while freight above a non-grounded tire reads as ONE continuous tower (no reset). Verified in-browser on reloaded code: legit 2-tire+box = stable; 5-tire+3-box moonshot = UNSTABLE (freight counted, tires skipped); pure 8-tire tower = stable; tapered pyramid + 4-box control unchanged. Sweep item #1 of 6 (tire-floor-reset → column-integrity → heavy-freight-collapse → locked-tire/lift rules → diagonals → collapse-win). Gates clean.
    CHANGE LOG v3.5.91 - MENU COLLAPSE: THE FOUR PILLARS (step 2). The start menu is now four cards — TRAILER-LOAD (flagship) · DAILY (favored son) · TRAINING (the teacher, now a real top-level pillar) · MINI-GAMES — instead of six scattered modes. PRACTICE, GAUNTLET, TOUR and SMALLS SORT moved into a new MINI-GAMES submenu (#ov-minigames overlay, reuses .sm-card, same z-layer as profile/leaderboard); each side-game closes the submenu then launches. openMiniGames()/closeMiniGames() added. This is the minimalist front door — one clear flagship, the daily as its own star, and the side games tucked where they belong (no world rank there). Verified in-browser: pillars = TRAILER-LOAD/DAILY/TRAINING/MINI-GAMES, submenu opens with all 4 side games, closes clean, launching Practice hides both layers and starts the mode. No mode-start logic changed — pure menu re-wire. DAILY chute confirmed 10 (BELT_PIECE_COUNT, daily included) — standing rule.
    CHANGE LOG v3.5.90 - PPH = REAL FREIGHT + PRODUCTIVITY WRITE-UPS. The moneymaker metric now counts what a hub actually counts: REAL FREIGHT (boxes). Smalls and bags NO LONGER count toward PPH — and because they still eat the clock, stopping to break down a bag to chink your gaps genuinely DRAGS your pace (the rookie who "loaded 400" really moved 80). New S.boxPieces (gross) + per-wall delta via _WALL_COUNTERS; getPPH()/avgPPH()/peak all read freight. THE HUB STANDARD = 250 pph. A substantial wall (≥6 freight, ≥20s) sealed below standard in a non-forgiving mode is a PRODUCTIVITY incident: 1st = a PACE FLAGGED banner, every 2nd = a signed WRITE-UP ("PACE BELOW HUB STANDARD"), mirroring the safety docs. Post-sort THROUGHPUT block is now "PRODUCTIVITY · REAL FREIGHT" — Avg/Peak PPH, Hub standard 250, met-standard? ✓/✕ per wall + session, Productivity write-ups, and Pieces/sec relabeled "(all)" so hand-tempo stays honest but separate. Verified in-browser: 8 boxes+12 smalls+3 bags/90s = 320 pph real (vs 920 if everything counted); slow walls ding then write up on the 2nd, fast walls stay clean; gates clean. DECISION: raiseWriteup() gained an optional count arg so productivity docs show the productivity tally, not the safety one.
@@ -1687,7 +1688,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.92 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.93 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1800,7 +1801,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.92 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.93 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1953,7 +1954,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.92 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.93 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2371,7 +2372,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.92
+// LOCK IN v3.5.93
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4399,6 +4400,13 @@ function placeBox(source,sourceIdx,gx,gy,rot){
       collapseAnimating=false;
     },200);
   } else {
+    // v3.5.93 SWEEP #2 — column integrity for tall-thin verticals fires FIRST (a too-heavy load on a thin pillar snaps it).
+    var _tt=(typeof tallThinViolation==='function')?tallThinViolation(cell):null;
+    if(_tt&&!collapseAnimating&&!gOver){
+      collapseAnimating=true;
+      if(typeof showBanner==='function')showBanner('COLUMN INTEGRITY — a 2×'+_tt.Bh+' pillar holds a 2×'+_tt.maxTop+' at most. A 2×'+_tt.Th+' up there snaps the column.','warn',2600);
+      setTimeout(function(){collapseFreeStack({boxes:[cell],cx:cell.rx});collapseAnimating=false;},220);
+    } else {
     // v3.5.54 COLUMN RULE (taper-aware) — a freestanding stack topples if it's NON-tapering & 3+ high, or any stack 5+ high.
     // Strict taper (4x4/3x3/2x2/1x1) is exempt. The whole stack sheds back to the belt at once (resolves — no per-placement re-fire).
     var _st=worstFreeStack();
@@ -4409,6 +4417,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     } else if(_st&&!_st.tapering&&_st.h===2){
       if(!G._col2||Date.now()-G._col2>2600){G._col2=Date.now();showBanner('TWO HIGH, SAME WIDTH, NO SUPPORT — that’s the limit. Taper it (narrower on top) or lock the shelf before one more.','warn',1900);}
     }
+    } // v3.5.93 close the tall-thin else
   }
 
   if((G.integrity||100)<=8&&!collapseAnimating)scheduleCollapse();
@@ -4804,6 +4813,33 @@ function worstFreeStack(){
 }
 // v3.5.54 topple the WHOLE freestanding stack back to the belt at once, so it's resolved and doesn't re-fire each placement
 // v3.5.56 does a box have anything under it (floor or another box)? Used to sweep floaters after a collapse.
+// v3.5.93 PHYSICS SWEEP #2 — COLUMN INTEGRITY for tall-thin verticals. A FREESTANDING tall-thin pillar (≤2 wide,
+// ≥4 tall, not braced on both sides) can only bear a vertical box of height floor(0.5·pillarHeight) on top: a 2×5
+// holds a 2×2 (floor 2.5), a 2×3 up there snaps the column. Constrains moonshots to true outliers and chokes the
+// sideways-NC-for-height exploit. A pillar braced on both sides (neighbor or trailer wall) is held — exempt.
+// Returns the offending record (topple the load) or null.
+function tallThinViolation(cell){
+  if(!cell)return null;
+  var Tw=cell.w||1,Th=cell.h||1;
+  if(Tw>2)return null; // only a thin/vertical LOAD is constrained
+  var cs=cell.cells||makeRect(Tw,Th),i,maxCy=-1;
+  for(i=0;i<cs.length;i++){if(cs[i][1]>maxCy)maxCy=cs[i][1];}
+  var by=cell.ry+maxCy+1; if(by>=GH)return null; // on the floor = fine
+  var under=null,cx;
+  for(i=0;i<cs.length;i++){if(cs[i][1]!==maxCy)continue;cx=cell.rx+cs[i][0];var u=G.grid[by]&&G.grid[by][cx];if(u&&u.id!==cell.id&&u.box&&u.box.cat!=='tire'){under=u;break;}}
+  if(!under)return null;
+  var Bw=under.w||1,Bh=under.h||1;
+  if(Bw>2||Bh<4)return null; // not a tall-thin pillar
+  var ucs=under.cells||makeRect(Bw,Bh),leftBr=false,rightBr=false,ax,ay;
+  for(i=0;i<ucs.length;i++){ax=under.rx+ucs[i][0];ay=under.ry+ucs[i][1];
+    if(ax<=0||(G.grid[ay]&&G.grid[ay][ax-1]&&G.grid[ay][ax-1].id!==under.id))leftBr=true;
+    if(ax>=GW-1||(G.grid[ay]&&G.grid[ay][ax+1]&&G.grid[ay][ax+1].id!==under.id))rightBr=true;
+  }
+  if(leftBr&&rightBr)return null; // braced pillar = held, not a moonshot
+  var maxTop=Math.floor(0.5*Bh);
+  if(Th>maxTop)return {cell:cell,support:under,maxTop:maxTop,Bh:Bh,Th:Th,cx:cell.rx};
+  return null;
+}
 function boxHasSupport(c){
   var cs=c.cells||makeRect(c.w,c.h),low={},i,cx,cy;
   for(i=0;i<cs.length;i++){cx=c.rx+cs[i][0];cy=c.ry+cs[i][1];if(low[cx]===undefined||cy>low[cx])low[cx]=cy;}
@@ -8582,7 +8618,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.92</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.93</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
