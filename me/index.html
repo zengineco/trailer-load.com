@@ -82,6 +82,26 @@ tr:hover td{background:#fbf9f4;}
 .lb-unfollow{background:transparent;border:none;color:var(--ink3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;}
 .lb-unfollow:hover{color:var(--danger);}
 .lb-msg{font-family:'Share Tech Mono',monospace;font-size:12px;min-height:16px;margin-bottom:6px;}
+/* the hall — fame/shame ledger, every board we track */
+.hall-colhd{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;margin:16px 0 9px;display:flex;align-items:center;gap:8px;}
+.hall-colhd:first-child{margin-top:0;}
+.hall-colhd::after{content:'';flex:1;height:1px;background:var(--line2);}
+.hall-colhd.fame{color:var(--acc-dim);}
+.hall-colhd.shame{color:var(--danger);}
+.hall-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;}
+.hall-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 13px;box-shadow:0 3px 12px rgba(40,28,14,.05);}
+.hall-card.fame{box-shadow:inset 3px 0 0 var(--acc),0 3px 12px rgba(40,28,14,.05);}
+.hall-card.shame{box-shadow:inset 3px 0 0 var(--danger),0 3px 12px rgba(40,28,14,.05);}
+.hall-card h3{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:.6px;color:var(--ink);display:flex;align-items:center;gap:7px;margin:0 0 8px;line-height:1;}
+.hall-card h3 .em{font-size:18px;}
+.hc-row{display:grid;grid-template-columns:24px 1fr auto;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;}
+.hc-row .rk{font-family:'Bebas Neue',cursive;font-size:16px;color:var(--ink3);text-align:center;line-height:1;}
+.hc-row .nm{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.hc-row .val{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:bold;color:var(--acc-dim);font-variant-numeric:tabular-nums;}
+.hc-row.r1{background:linear-gradient(90deg,rgba(224,150,46,.15),transparent);}
+.hc-row.r1 .rk{color:var(--acc);}
+.hc-row.mine{outline:2px solid rgba(200,121,30,.4);outline-offset:-1px;}
+.hc-empty{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--ink3);padding:8px 4px;font-style:italic;}
 @media(max-width:560px){.brand{font-size:24px;letter-spacing:4px;}.me-hero .handle{font-size:32px;}}
 </style>
 </head>
@@ -132,11 +152,16 @@ tr:hover td{background:#fbf9f4;}
   <h2 style="margin-top:28px;">Leaderboards</h2>
   <div class="lb-tabs">
     <button class="lb-tab active" id="lt-daily" onclick="mTab('daily')">Daily</button>
-    <button class="lb-tab" id="lt-all" onclick="mTab('all')">All-Time</button>
+    <button class="lb-tab" id="lt-hall" onclick="mTab('hall')">The Hall</button>
     <button class="lb-tab" id="lt-friends" onclick="mTab('friends')">Friends</button>
   </div>
   <div class="lb-pane" id="lp-daily"><div id="lb-daily" class="lb-board"></div></div>
-  <div class="lb-pane" id="lp-all" style="display:none;"><div id="lb-all" class="lb-board"></div></div>
+  <div class="lb-pane" id="lp-hall" style="display:none;">
+    <div class="hall-colhd fame">◆ Walls of Fame</div>
+    <div class="hall-grid" id="hall-fame"></div>
+    <div class="hall-colhd shame">✖ Walls of Shame</div>
+    <div class="hall-grid" id="hall-shame"></div>
+  </div>
   <div class="lb-pane" id="lp-friends" style="display:none;">
     <div class="lb-add">
       <input id="lb-follow-user" type="text" placeholder="follow a loader by username">
@@ -165,6 +190,7 @@ var ME={
 function mHeaders(){var h={'apikey':ME.anonKey,'Content-Type':'application/json'};h['Authorization']='Bearer '+((ME.session&&ME.session.access_token)||ME.anonKey);return h;}
 function mMsg(t,cls){var e=document.getElementById('login-msg');if(e){e.textContent=t||'';e.className=cls||'';}}
 function mClean(u){return (''+(u||'')).toLowerCase().replace(/[^a-z0-9_]/g,'');}
+function mJwtSub(tok){try{var p=(''+tok).split('.')[1];if(!p)return null;p=p.replace(/-/g,'+').replace(/_/g,'/');var m=p.length%4;if(m)p+=new Array(5-m).join('=');return (JSON.parse(atob(p)).sub)||null;}catch(e){return null;}}
 function mNum(v){return (v==null||isNaN(v))?0:(+v);}
 function mLogin(){
   var uEl=document.getElementById('li-user'),pEl=document.getElementById('li-pw');
@@ -177,7 +203,7 @@ function mLogin(){
     fetch(ME.authUrl+'/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':ME.anonKey},body:JSON.stringify({email:email,password:pass})})
       .then(function(r){return r.json();}).then(function(j){
         if(j&&j.access_token){
-          ME.session={access_token:j.access_token,refresh_token:j.refresh_token,uid:(j.user&&j.user.id)||null,handle:(raw.indexOf('@')>=0?raw:mClean(raw))};
+          ME.session={access_token:j.access_token,refresh_token:j.refresh_token,uid:(j.user&&j.user.id)||mJwtSub(j.access_token)||null,handle:(raw.indexOf('@')>=0?raw:mClean(raw))};
           try{localStorage.setItem('lockinMeAuth',JSON.stringify(ME.session));}catch(e){}
           mMsg('','');mEnter();
         } else {
@@ -196,9 +222,40 @@ function mEnter(){
 function mEsc(s){return (''+(s==null?'':s)).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 // ── LEADERBOARDS + FRIENDS (reuse the game's daily view + all-time/friends/follow RPCs) ──
 function mTab(which){
-  var panes={daily:'lp-daily',all:'lp-all',friends:'lp-friends'},tabs={daily:'lt-daily',all:'lt-all',friends:'lt-friends'},k;
+  var panes={daily:'lp-daily',hall:'lp-hall',friends:'lp-friends'},tabs={daily:'lt-daily',hall:'lt-hall',friends:'lt-friends'},k;
   for(k in panes){var p=document.getElementById(panes[k]);if(p)p.style.display=(k===which)?'':'none';var t=document.getElementById(tabs[k]);if(t)t.classList.toggle('active',k===which);}
-  if(which==='daily')mDaily();else if(which==='all')mAlltime();else mFriends();
+  if(which==='daily')mDaily();else if(which==='hall')mHall();else mFriends();
+}
+// THE HALL — every board we track (Walls of Fame + Walls of Shame), medal rows. Same RPCs as the game.
+var M_FAME=[{k:'best',e:'🏆',t:'BEST WALL',rpc:'lockin_alltime_board',fmt:'num'},{k:'total',e:'▲',t:'TOTAL LOADED',rpc:'lockin_total_board',fmt:'num'},{k:'fastest',e:'⚡',t:'FASTEST WALL',rpc:'wall',metric:'fastest',fmt:'time'},{k:'cleanest',e:'✦',t:'CLEANEST',rpc:'wall',metric:'cleanest',fmt:'pct'},{k:'fewest',e:'✂',t:'FEWEST PIECES',rpc:'wall',metric:'fewest',fmt:'pieces'}];
+var M_SHAME=[{k:'slowest',e:'🐌',t:'SLOWEST WALL',rpc:'wall',metric:'slowest',fmt:'time'},{k:'most_collapses',e:'🧱',t:'MOST COLLAPSES',rpc:'wall',metric:'most_collapses',fmt:'num'},{k:'most_pieces',e:'📦',t:'THE GRIND',rpc:'wall',metric:'most_pieces',fmt:'pieces'},{k:'messiest',e:'💀',t:'BARELY HELD',rpc:'wall',metric:'messiest',fmt:'pct'}];
+function mHallFmt(v,fmt){if(v==null)return '—';if(fmt==='time'){var s=+v,mm=Math.floor(s/60),ss=s%60;return mm+':'+(ss<10?'0':'')+ss;}if(fmt==='pct')return v+'%';if(fmt==='pieces')return v+' pc';return mNum(v).toLocaleString();}
+function mHallRows(rows,fmt,side){
+  if(!rows||!rows.length)return '<div class="hc-empty">'+(side==='shame'?'No one ranked yet.':'No one ranked yet — be the first.')+'</div>';
+  var me=(ME.session&&ME.session.handle)||'',medals=['🥇','🥈','🥉'],h='',i;
+  for(i=0;i<rows.length&&i<5;i++){var r=rows[i];
+    var v=(r.val!=null?r.val:(r.best_score!=null?r.best_score:(r.score!=null?r.score:null)));
+    var rank=r.rank||(i+1),mine=(me&&r.username===me)?' mine':'';
+    var med=(side==='shame')?(i===0?'💀 ':''):((medals[i]||'')+' ');
+    h+='<div class="hc-row'+(rank===1?' r1':'')+mine+'"><span class="rk">'+rank+'</span><span class="nm">'+med+mEsc(r.username)+(mine?' (you)':'')+'</span><span class="val">'+mHallFmt(v,fmt)+'</span></div>';}
+  return h;
+}
+function mHallCard(grid,m,side){
+  var id='hc-'+m.k,card=document.createElement('div');card.className='hall-card '+side;card.id=id;
+  card.innerHTML='<h3><span class="em">'+m.e+'</span>'+m.t+'</h3><div class="hc-rows"><div class="hc-empty">Loading…</div></div>';
+  grid.appendChild(card);
+  var url,body;
+  if(m.rpc==='wall'){url=ME.endpoint+'/rpc/lockin_wall_board';body=JSON.stringify({p_metric:m.metric,p_limit:5});}
+  else{url=ME.endpoint+'/rpc/'+m.rpc;body=JSON.stringify({p_limit:5});}
+  try{fetch(url,{method:'POST',headers:mHeaders(),body:body}).then(function(r){return r.json();})
+    .then(function(j){var c=document.getElementById(id);if(c){var rb=c.querySelector('.hc-rows');if(rb)rb.innerHTML=mHallRows(Array.isArray(j)?j:[],m.fmt,side);}})
+    .catch(function(){var c=document.getElementById(id);if(c){var rb=c.querySelector('.hc-rows');if(rb)rb.innerHTML='<div class="hc-empty">Board offline.</div>';}});}catch(e){}
+}
+function mHall(){
+  var fg=document.getElementById('hall-fame'),sg=document.getElementById('hall-shame');
+  if(!fg||!sg)return; fg.innerHTML=''; sg.innerHTML='';
+  var i;for(i=0;i<M_FAME.length;i++)mHallCard(fg,M_FAME[i],'fame');
+  for(i=0;i<M_SHAME.length;i++)mHallCard(sg,M_SHAME[i],'shame');
 }
 function mBoardRows(id,rows,empty,friends){
   var el=document.getElementById(id);if(!el)return;
@@ -279,6 +336,8 @@ function mRender(){
     +card('BEST SCORE',bestScore.toLocaleString(),'personal best','teal')
     +card('PEAK PPH',peak||'—','fastest pace','teal')
     +card('AVG INTEGRITY',(ai?ai+'%':'—'),'attention to detail',intCls)
+    +card('SHELVES',shelves.toLocaleString(),'locked in','')
+    +card('PIECES',pieces.toLocaleString(),'total moved','')
     +card('INCIDENTS',inc,'lifetime safety',inc>=2?'danger':inc>=1?'warn':'ok');
   var emp=document.getElementById('empty');
   if(!rows.length){document.getElementById('tbody').innerHTML='';if(emp){emp.style.display='block';emp.innerHTML='No walls on record yet. <a href="/lock-in.html">Load one</a> — with stats saving on — and it shows up here.';}return;}
