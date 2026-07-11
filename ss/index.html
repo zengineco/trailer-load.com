@@ -516,7 +516,7 @@ function updateHUD(){
 function updateTimer(){var s=Math.ceil(STATE.timeLeft);var m=Math.floor(s/60),ss=s%60;document.getElementById('s-time').textContent=m+':'+(ss<10?'0'+ss:ss);}
 
 function startGame(){
-  STATE.running=true;STATE.timeLeft=TUNE.shiftSec;STATE.lastTick=0;
+  STATE.running=true;STATE.timeLeft=TUNE.shiftSec;STATE.lastTick=0;STATE.startT=Date.now();
   STATE.score=0;STATE.sorted=0;STATE.miss=0;STATE.attempts=0;STATE.combo=0;STATE.bestCombo=0;STATE.qaCaught=0;
   STATE.belt=[];STATE.pool=[];STATE.beltSpeed=TUNE.beltSpeedStart;STATE.spawnGap=TUNE.spawnGapStart;STATE.lastSpawn=0;
   STATE.drag=null;STATE.stopped=false;STATE.stopStart=0;STATE.downtime=0;STATE.stoppages=0;
@@ -545,6 +545,31 @@ function endGame(){
   document.getElementById('r-stop').textContent=STATE.stoppages;
   var rd=document.getElementById('r-down');rd.textContent=dts+'s';rd.className='res-val '+(dts>=10?'danger':dts>=3?'warn':'ok');
   document.getElementById('ov-end').classList.add('vis');
+  smSubmitSession(acc,tput,gr[0]); // v1.1 post the smalls run to the ONE shared lifetime (signed-in only)
+}
+// v1.1 SMALLS -> the unified lifetime. A signed-in run posts a session (mode='smalls') to the SAME lockin_sessions
+// table the main game uses — RLS self-insert via the shared liAuth token — so smalls feeds the one record + boards.
+var SM_ENDPOINT='https://igqpgsqogfrpujdgvefs.supabase.co/rest/v1';
+var SM_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlncXBnc3FvZ2ZycHVqZGd2ZWZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Njc1MzQsImV4cCI6MjA5NjQ0MzUzNH0.8Pn459HUFkqZu7ORSX15E13u9fWSD96OKR0w6yiuJQo';
+function smSubmitSession(acc,tput,grade){
+  try{
+    var s=smReadAuth();
+    if(!s||!s.uid||!s.access_token)return; // signed-in only — the same account as the game
+    var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
+    var rec={
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.1',
+      consent_self:true, consent_share:false, opt_in_share:false,
+      started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
+      duration_s:dur,
+      total_score:STATE.score||0, best_pph:tput||0, walls_loaded:0, avg_integrity:acc||0, incident_count:STATE.miss||0,
+      summary:{ game:'smalls', grade:grade||'', score:STATE.score||0, accuracy:acc||0, sortRate:tput||0,
+        sorted:STATE.sorted||0, misroutes:STATE.miss||0, bestCombo:STATE.bestCombo||0, qaCaught:STATE.qaCaught||0,
+        stoppages:STATE.stoppages||0, downtime:Math.round(STATE.downtime||0) },
+      incidents:[], events:[]
+    };
+    var h={'apikey':SM_ANON,'Authorization':'Bearer '+s.access_token,'Content-Type':'application/json','Prefer':'return=minimal'};
+    fetch(SM_ENDPOINT+'/lockin_sessions',{method:'POST',headers:h,body:JSON.stringify(rec)}).catch(function(e){console.error('smSubmitSession net:',e);});
+  }catch(e){console.error('smSubmitSession:',e);}
 }
 function copyResult(){
   var acc=STATE.attempts>0?Math.round((STATE.sorted/STATE.attempts)*100):0;var dts=Math.round(STATE.downtime);
