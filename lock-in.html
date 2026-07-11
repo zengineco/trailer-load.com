@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.104
+   LOCK IN v3.5.105
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.105 - THE CLIPBOARD IS THE BACKGROUND (finally). Goyim asked ~20 times: the SOCIAL/leaderboard, PROFILE, and MINI-GAMES menus now sit on the REAL clipboard.png — the same metal-board art as the pause menu + briefing — instead of the plain drawn cream card. .pf-card (in ov-leaderboard/ov-profile) and .mg-wrap (ov-minigames) get the clipboard bg at its true 619:905 aspect, drop-shadow, drawn-clip pseudo-elements hidden; the title sits just below the metal clip (~22.5%) and the content lives in the clear WRITING AREA (a scrollable region from ~30% to 95%, inside the frame). Verified by measurement (same method as the pause fit): bg=clipboard.png, aspect matches, the writing area is fully within the card bounds below the clip. Pure CSS — no markup/logic change.
    CHANGE LOG v3.5.104 - LEADERBOARD WIRED: THE WORLD BOARD IN-GAME (pass 1). The in-game HALL is no longer a one-at-a-time dropdown of dog-shit rows — it is now the approved World Board as a scrollable CATEGORICAL LEDGER: WALLS OF FAME (Best / Total Loaded / Fastest / Cleanest / Fewest Pieces) stacked over WALLS OF SHAME (Slowest / Most Collapses / The Grind / Barely Held), every board loaded at once as its own card. Each card: emoji header, one-line note, TOP 5 with medal rows — gold #1, 🥇🥈🥉 podium, 💀 for the shame #1, tabular values. New lbLoadAllBoards/lbBoardCard + a shared lbMedalRows() renderer (also upgrades the DAILY board to medal rows under the crown hero). Cream-paper cards in the real Bebas/Share-Tech-Mono type, fame amber rail / shame rust rail. Pure presentation over the existing per-board RPCs (lockin_alltime_board/lockin_total_board/lockin_wall_board). Verified in-browser: 5 fame + 4 shame cards build, medal rows render with gold #1, daily uses medal rows. NEXT (pass 2+): all-time-daily strip (needs a daily-scoped wall RPC), /me/ made comprehensive, SmallsSort feeding the board. The dropdown-era lbLoadHall/lbRenderHall are now dead code (harmless).
    CHANGE LOG v3.5.103 - MENU BRAND ACCENTS. The four pillars were monotone amber (slop) — now each carries its own brand color: TRAILER-LOAD amber (flagship), DAILY CYAN (the load-rate cyan), TRAINING green, MINI-GAMES PINK. Border + name color per pillar; verified in-browser (daily=rgb(42,169,160), mini-games=rgb(224,85,159)). Cyan and pink are back in the menu.
    CHANGE LOG v3.5.102 - DAILY-SUBMIT BUG FIX (score not saving) + briefing text. THE BUG (Goyim: signed in, played daily, still got prompted to "sign in to share your score," signed in again, nothing saved): zSaveSession set uid from j.user.id ONLY — but a token-refresh response omits j.user, so a background refresh wiped ZDATA.session.uid to null while you were still signed in. dailyFinish keys on uid → saw you as anonymous → the anon "sign in to claim" CTA, and zSubmitDaily bailed without posting. FIX: new zJwtSub() reads the uid from the access token's `sub` claim (always present); uid now = j.user.id OR the token sub OR the prior uid — it can never be wiped by a refresh. PLUS: signing in while a just-finished daily sits on the anon CTA now auto-reposts the score (zSaveSession re-runs dailyFinish when the daily-result panel is up). Verified in-browser: a refresh response with no j.user keeps uid + zLoggedIn()=true; fresh token-only session decodes uid from sub. Also: briefing rule 7 no longer reveals "a water break clears it" (a hidden feature) — now "lay it flat before the door opens." Gates clean.
@@ -1576,6 +1577,19 @@ body[data-cb="trit"]{
 .pf-x:hover{background:rgba(0,0,0,.12);color:#5a3f1a;border-color:#b89a6a;}
 .pf-x:hover{color:#c23a1a;}
 .pf-body{padding:18px 26px 20px;overflow-y:auto;flex:1;}
+/* v3.5.105 THE CLIPBOARD behind the SOCIAL / PROFILE / MINI-GAMES menus — the REAL clipboard.png (like pause + briefing). Content lives in the clear writing area below the clip (~top 22%). */
+#ov-leaderboard .pf-card,#ov-profile .pf-card{background:url('clipboard.png') center/contain no-repeat;width:min(440px,94vw);aspect-ratio:619/905;max-height:none;box-shadow:none;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));border-radius:0;position:relative;display:block;overflow:visible;}
+#ov-leaderboard .pf-card::before,#ov-leaderboard .pf-card::after,#ov-profile .pf-card::before,#ov-profile .pf-card::after{display:none;}
+#ov-leaderboard .pf-top,#ov-profile .pf-top{position:absolute;left:7%;right:7%;top:22.5%;background:transparent;border:none;padding:0 0 4px;z-index:2;}
+#ov-leaderboard .pf-title,#ov-profile .pf-title{color:#2a1a08;font-size:23px;letter-spacing:2px;}
+#ov-leaderboard .pf-x,#ov-profile .pf-x{width:34px;height:34px;min-width:34px;background:rgba(0,0,0,.06);}
+#ov-leaderboard .pf-body,#ov-profile .pf-body{position:absolute;left:6.5%;right:6.5%;top:30%;bottom:5%;overflow-y:auto;padding:0;}
+#ov-minigames .mg-wrap{background:url('clipboard.png') center/contain no-repeat;width:min(440px,94vw);aspect-ratio:619/905;position:relative;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));}
+#ov-minigames .mg-head{position:absolute;left:7%;right:7%;top:22%;margin:0;}
+#ov-minigames .mg-title{color:#2a1a08;font-size:26px;}
+#ov-minigames .mg-x{color:#5a3f1a;border-color:#b89a6a;background:rgba(0,0,0,.05);}
+#ov-minigames .mg-sub{position:absolute;left:7%;right:7%;top:29%;color:#7a6748;margin:0;}
+#ov-minigames .mg-grid{position:absolute;left:6.5%;right:6.5%;top:34%;bottom:5%;overflow-y:auto;}
 .pf-loading{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:#7a6a52;text-align:center;padding:30px 10px;line-height:1.5;}
 .pf-anon{text-align:center;padding:24px 10px;}
 .pf-anon-icon{font-size:44px;color:#8b4513;}
@@ -1737,7 +1751,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.104 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.105 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1850,7 +1864,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.104 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.105 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2003,7 +2017,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.104 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.105 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2409,7 +2423,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.104
+// LOCK IN v3.5.105
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8843,7 +8857,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.104</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.105</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
