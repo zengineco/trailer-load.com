@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.119
+   LOCK IN v3.5.120
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.120 - JAILBREAK KILL pt.3: TRUNCATED MODE NAMES ("PRACTIC"/"GAUNTLE"). In the MINI-GAMES clipboard the mode names were clipped by the card edge — a 34px flex-ROW name sharing a ~185px 2-column cell with the icon + a description, under overflow:hidden. On the clipboard launcher the card now stacks (icon over name), the name WRAPS and is sized to fit (26px), and the description (which wasn't showing anyway) is hidden. Verified: PRACTICE / GAUNTLET / TOUR / SMALLS SORT all render in full, none clipped, all within the card. NEXT: infinite daily score, stuck WORK STOPPAGE, post-sort false incidents, box labels.
    CHANGE LOG v3.5.119 - JAILBREAK KILL pt.2: HOLD-R ON THE HOME SCREEN + the _shown() root cause. kremsicle: "holding r makes the home-screen chat go crazy; hold r and right-click on home screen, site reloads." The R (rotate) and B (break-jam) key handlers sat ABOVE the kbPlayActive() gate, so they fired on the menu. Moved them below the gate — BUT that alone didn't fix it, because the real bug was deeper: _shown(id) tested e.offsetParent!==null, and offsetParent is ALWAYS null for position:fixed elements. Every fixed overlay (start-menu, pause, end, post-sort, write-up...) was therefore reported as HIDDEN, so kbPlayActive's start-menu guard never tripped — keyboard play leaked behind the menu. _shown now uses offsetWidth/offsetHeight (0 on display:none, >0 when visible, correct for fixed). Verified: on the home menu R/B fire 0 times (were 10/5) and kbPlayActive is false; in-game R still rotates. This also hardens the loop watchdog's overlay check, which used the same broken _shown. (Also confirmed pt.4 from the ledger — the write-up SENT-HOME cap at 4 — is already live since v3.5.109 and fires end-to-end across churn/collapse/productivity; the #23 screenshot was the pre-fix v3.5.108.) NEXT: infinite daily score, stuck WORK STOPPAGE, post-sort false incidents, box labels, truncated mode names.
    CHANGE LOG v3.5.118 - JAILBREAK KILL pt.1: AFK FARM + LOW-RATE WARNING (kremsicle's pen-test). (1) AFK FARM DEAD: he sat in a trailer 44:37 with 0 placed to farm the "longest time" stat — immune because with nothing placed PPH reads 0 and the old checkPPHFail only accumulated when pph>0. New AFK kill: no placement for AFK_LIMIT (5 min) ends the session ("AFK — NO FREIGHT PLACED IN 5 MIN"), with a one-minute warning first. Implemented as a placed-delta inside checkPPHFail so it auto-resets on ANY placement and on a new game (placed drops to 0) — no hooks needed in the placement/start paths — and it's dt-accumulated so it correctly freezes during pause/stoppage. Applies in all modes (you can't farm anywhere). (2) "NO WARNING FOR LOW LOAD RATE": the sub-55 kick fired silently. Now the manager gives a heads-up at the halfway mark ("load rate's under 55 — pick up the pace or you're off the trailer") before the kick, and the kick message reports the real window (3 MINUTES, matching LOW_PPH_FAIL, not the stale hardcoded "2"). Verified: AFK warns at 241s + kicks at 300s, a placement resets the clock, low-rate warns at 90s + kicks at 180s. NEXT jailbreaks: infinite daily score, write-up cap dead at #23, stuck WORK STOPPAGE, post-sort false incidents, hold-R on home screen, box labels, truncated mode names.
    CHANGE LOG v3.5.117 - MOBILE PASS pt.8: TRAINING WAS A SIDEBAR OVER THE WALL. Training runs clean (18-step scripted demo, principle cards advance, wall builds to a seal) — but on a phone the teaching panel was a 290px OPAQUE RIGHT SIDEBAR (top:0 right:0 bottom:0), so it covered 77% of a 375px screen: you literally could not watch the demo wall it was narrating (and it's the side-panel pattern we're killing everywhere else). On m-portrait it's now a BOTTOM SHEET (full width, bottom-anchored, max 47vh) so the wall shows in the top ~60% while the principle/reason/controls sit below. Desktop sidebar unchanged (rule gated to m-portrait). Verified at 375x812: overlay is full-width bottom-anchored, 60% wall visible above (was 0%), and the game auto-adds m-portrait at phone width. NEXT: smalls, measure-everything + density overhaul (awaiting the 15 pics).
@@ -1629,6 +1630,11 @@ body[data-cb="trit"]{
 #ov-minigames .mg-x{color:#5a3f1a;border-color:#b89a6a;background:rgba(0,0,0,.05);}
 #ov-minigames .mg-sub{position:absolute;left:7%;right:7%;top:29%;color:#7a6748;margin:0;}
 #ov-minigames .mg-grid{position:absolute;left:6.5%;right:6.5%;top:34%;bottom:5%;overflow-y:auto;}
+/* v3.5.120 mode names were CLIPPED ("PRACTIC"/"GAUNTLE"): a 34px flex-row name + icon + desc jammed into a ~185px 2-col cell with overflow:hidden. On the clipboard launcher, stack the card (icon over name), WRAP the name, size it to fit, hide the desc. */
+#ov-minigames .sm-card{flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;padding:16px 18px;}
+#ov-minigames .sm-card-ico{font-size:32px;width:auto;}
+#ov-minigames .sm-card-name{font-size:26px;letter-spacing:1px;white-space:normal;line-height:1.0;flex:none;min-width:0;}
+#ov-minigames .sm-card-desc{display:none;}
 .pf-loading{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:#7a6a52;text-align:center;padding:30px 10px;line-height:1.5;}
 .pf-anon{text-align:center;padding:24px 10px;}
 .pf-anon-icon{font-size:44px;color:#8b4513;}
@@ -1790,7 +1796,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.119 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.120 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1903,7 +1909,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.119 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.120 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2056,7 +2062,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.119 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.120 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2467,7 +2473,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.119
+// LOCK IN v3.5.120
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8967,7 +8973,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.119</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.120</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
