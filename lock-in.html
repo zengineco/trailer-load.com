@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.111
+   LOCK IN v3.5.112
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.112 - MOBILE PASS pt.3: BOTTOM BAR (the "unbearable" strip). BREAK JAM icon lightning->box (a jam is boxes, not a lightning bolt). THROW -> FLAG (the reframe: "flag a hand" — wave a coworker down for help reaching a top gap; they toss you a smalls bag; overuse draws heat — zero "throwing packages" language; internal throwBox() unchanged). SAFETY indicator legible: 11px -> 14px BOLD. NC/staging pill sized to match the strip buttons (11px -> 13px bold) so it stops looking like "a different game." Verified in-browser. NEXT: reframe the throw MESSAGES (HEY/toss language) to match FLAG, linehaul-as-a-line, the NC-covers-d-pad game-breaker.
    CHANGE LOG v3.5.111 - MOBILE PASS pt.2: SOCIAL TABS 2x2 + LEGIBILITY. The four SOCIAL tabs were a gray-on-gray row. Now a 2x2 grid: ME + FRIENDS on top (you first), DAILY + HALL below; ME is the default tab (openSocial defaults to me). Dark ink text (#4a3620 / active #241608) on cream/white with a 1.5px border + amber active underline — real contrast on the clipboard. Verified: order ME/FRIENDS/DAILY/HALL, 2 columns, ME active, dark text.
    CHANGE LOG v3.5.110 - MOBILE PASS pt.1: GRADE + LINEHAUL SLOP. (1) EMPTY WALL = F: a 0-piece wall was grading D "Trailer sealed, but loose" (the density gate uses avg SEALED density = 1 before any seal, so an empty live wall read full-density). Now countFilled()<=0 -> hard F "NOT LOADED" ("showing up is half the job — loading it is the other half"). Also reworded the D verdict off the false "Trailer sealed" (the OPS drawer is a LIVE mid-load check, not a seal). (2) LINEHAUL double-label + mislabel fix: pushMsg now reads the speaker OUT of the body ("👷 MANAGER: HEY" -> label MANAGER + body "HEY"), so no more "MANAGER: MANAGER" and no more COWORKER-labeled manager lines. Back-to-back DUPLICATE dispatch lines are skipped (no spam). Removed the "(the toss slides — this time)" exploit tell from the hydration-cover line. Verified in-browser. NEXT in the mobile pass: SOCIAL tabs 2x2 + legibility (gray-on-gray), the bottom button bar (break-jam icon, throw/nc sizing, safety legibility), linehaul-as-a-line, throw reframing.
    CHANGE LOG v3.5.109 - SENT-HOME AT 4 WRITE-UPS + leaderboard cleanup. The write-up popup just resumed forever — the jailbreaker stacked 23 with no consequence. NOW: every documented write-up counts (S.writeups); the 4th this shift = SENT HOME (WRITEUP_SENT_HOME=4). The 4th write-up shows the SENT_HOME doc ("too many write-ups... clocked out for the day, come back and load it clean"), the button flips to SIGN — CLOCK OUT, and signing it ends the game (endGame). Verified: writeups 1-3 continue, #4 = sent-home doc + game-over on sign. Also (DB, no code): removed the autoclicker exploit sessions — kreminal's impossible 20,019 + 16,927 pph placements deleted; peak-pph ceiling is now a sane 2,665.
@@ -1233,8 +1234,9 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .chute-light.cl-warn{background:#d4820f;box-shadow:0 0 9px #d4820f;}
 .chute-light.cl-crit{background:#c23a1a;box-shadow:0 0 12px #c23a1a;animation:bjblink .5s steps(2) infinite;}
 /* v3.4.12 NC/SMALLS pie-chart lights + wheel HUD */
-.stg-light{display:inline-flex;align-items:center;gap:5px;cursor:pointer;padding:3px 8px;border-radius:4px;background:rgba(0,0,0,.28);border:1px solid rgba(200,121,30,.32);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t2);user-select:none;}
-.stg-light b{color:var(--acc-bright);font-weight:bold;letter-spacing:.5px;}
+/* v3.5.112 NC/staging pill sized to match the strip buttons (was tiny 11px = "different game") */
+.stg-light{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 11px;border-radius:5px;background:rgba(0,0,0,.34);border:1px solid rgba(200,121,30,.42);font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#e8d6b0;user-select:none;}
+.stg-light b{color:var(--acc-bright);font-weight:bold;letter-spacing:.5px;font-size:14px;}
 .stg-pie{width:20px;height:20px;border-radius:50%;background:conic-gradient(#1f9d57 0%, rgba(255,255,255,.13) 0);border:1px solid rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
 .stg-light.s-crit{border-color:#c23a1a;animation:bjblink .5s steps(2) infinite;}
 #ov-staging{position:fixed;inset:0;z-index:400;display:none;pointer-events:none;}
@@ -1772,7 +1774,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.111 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.112 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1885,7 +1887,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.111 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.112 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2038,7 +2040,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.111 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.112 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2237,15 +2239,15 @@ body[data-cb="trit"]{
       </div>
       <div id="conv-header">
         <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
-        <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">⚡ BREAK JAM</button></div>
+        <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">📦 BREAK JAM</button></div>
         <button id="water-side" class="strip-act sa-water" onclick="takeDrink()" title="Water break — clears one open minor warning, and covers a throw in the HEY window. Cooldown 6s.">💧 WATER</button>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:7px;">
           <span class="stg-light" id="stg-nc" onclick="openStagingPopup('nc')" title="Non-conveyable staging — tap to load low"><b>NC</b><span class="stg-pie" id="stg-nc-pie"></span><span id="stg-nc-n">0/8</span></span>
           <span class="stg-sep" id="stg-sep" onclick="stgClose()" style="display:none;"></span>
           <span class="stg-light" id="stg-bag" onclick="openStagingPopup('bag')" title="Smalls staging" style="display:none;"><b>SM</b><span class="stg-pie" id="stg-bag-pie"></span><span id="stg-bag-n">0/8</span></span>
         </div>
-        <span class="conv-lbl" id="safety-live" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;" title="Live safety — open warnings / incidents on record"></span>
-        <button id="throw-side" class="strip-act sa-throw" onclick="throwBox()" title="Throw the piece — a smalls bag hits the belt. Cover it with a drink in the 2s HEY window. Cooldown 5s.">🤾 THROW</button>
+        <span class="conv-lbl" id="safety-live" style="font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:bold;letter-spacing:.5px;" title="Live safety — open warnings / incidents on record"></span>
+        <button id="throw-side" class="strip-act sa-throw" onclick="throwBox()" title="Flag a hand — wave down a coworker for help reaching a top gap; they toss you a smalls bag to finesse it. Overusing it draws heat. Cooldown 5s.">🙋 FLAG</button>
         <button id="rot-btn" onclick="rotateSel()">↻ ROT [R]</button>
       </div>
       <canvas id="belt-canvas" style="display:none;width:100%;touch-action:none;"></canvas>
@@ -2449,7 +2451,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.111
+// LOCK IN v3.5.112
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8927,7 +8929,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.111</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.112</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
