@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.123
+   LOCK IN v3.5.124
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.124 - END-GAME MENU: UNIFORM + LEGIBLE, ZERO SMALL TEXT. Vince: "every single bit of text needs to be legible and large. zero small text. why would we have 'fine print' in a video game about loading boxes." The end screen's buttons were mismatched flex widths (42%/42%/100%) with no descriptions. Now a uniform grid of ACTION CARDS — each a big 24px label + a 16px description line: TRY AGAIN (mode-aware: "Same wall — another crack at today's" in daily) / MAIN MENU ("Back to mode select") / FULL REPORT / SOCIAL / SETTINGS. Every small font bumped: stat labels 12->14, section titles 13->16, verdict 15->17 (and to --t1), daily-board header 11->14, next-popup sub 10px@45%-opacity -> 14px@95% (killed the low-contrast "wonky color"). Every banner "fine print" sub (.5/.52/.55em, 21 of them) -> .72em. Verified: 5 uniform cards at 24px/16px, daily TRY AGAIN says "Same wall", all bumped fonts confirmed. NEXT: the 1-2 piece "slip" collapse threshold, box labels, sign-in prompt.
    CHANGE LOG v3.5.123 - JAILBREAK KILL pt.6: DAILY IS ONE WALL (infinite score dead). kremsicle: "you can keep playing daily for infinite score." Daily used the same NEXT-TRAILER flow as shift — seal a wall, get a fresh trailer, repeat forever, stack an unbounded score. Per the spec, DAILY IS NOW ONE RUN: sealing/finishing the daily wall ENDS the run (sealWall + nextTrailer both route daily -> endGame 'DAILY COMPLETE' -> submit + board), and the end screen's button is TRY AGAIN, which REPLAYS THE SAME SEEDED WALL from scratch (new tryAgain() -> startDaily resets DAILY.ptr=0 + reseeds off today's key). Same wall over and over, try-again not next-trailer — exactly the daily mechanic. Verified: daily nextTrailer makes no new trailer (ends 'DAILY COMPLETE'), tryAgain replays the identical seed and resumes play. NEXT (per Vince): end-game menu legibility + uniform buttons (zero small text, no fine print), the 1-2 piece "slip" collapse threshold, box labels, sign-in prompt.
    CHANGE LOG v3.5.122 - JAILBREAK KILL pt.5: POST-SORT LIED (the "29 PCS" integrity + 100%-on-empty). kremsicle: "load quality... walls sealed are wrong, didnt even play/place anything." Two truthfulness bugs on the SHIFT COMPLETE screen: (1) the AVG INTEGRITY tile was fed shiftState.totalBoxes+' PCS' — a piece count in the integrity slot ("29 PCS"). It now shows the real average integrity %. (2) integrity AND final-support defaulted to a lying 100% (and clockOut's avgInt defaulted to 100) when NOTHING was sealed — so an empty/near-empty session read as a perfect wall. Empty session now reads 0% integrity + 0% support, not 100%. Verified: filled wall shows real 90% integrity, empty shows 0%/0% (was "29 PCS"/100%). STILL OPEN, flagged for Vince's call: the "1 COLLAPSE / 1 HAZ INCIDENT on a run with neither" is the PHYSICS sweep counting a single-piece shed (collapseFreeStack) as a "collapse" on the record — real to the engine, invisible to the player. Design question: should a 1-piece physics shed count as a logged collapse, or only a multi-piece wall failure? NEXT: infinite daily score, box labels, sign-in prompt.
    CHANGE LOG v3.5.121 - JAILBREAK KILL pt.4: THE STUCK WORK STOPPAGE. kremsicle: "if this screen pops up during tour and you go to admin then click reset, it stays on this screen into main menu and into other gamemodes" + "timer doesnt move." The WORK STOPPAGE overlay's .vis is removed ONLY inside the level "strike" tick (when the freeze timer expires) — but reset/menu/mode-change stop that tick, so the frozen full-screen overlay persisted everywhere and its countdown froze at its last value. New _killStoppage() (hides #work-stoppage + #strike-wrap, thaws _M.frozen) is now called from EVERY exit path: quickReset (the admin reset), restartGame (TRY AGAIN), returnToMenu (via clearMechanic), and showStartMenu (belt-and-suspenders). Verified: forced visible, then quickReset / returnToMenu / showStartMenu / startTrailerLoad each clear it (all false). (Confirms the v3.5.119 _shown fix too — a fixed overlay now reads as visible.) NEXT: infinite daily score, post-sort false incidents, box labels.
@@ -1032,7 +1033,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 #next-popup-btn{background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;
   border:none;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;
   padding:6px 8px;border-radius:4px;pointer-events:auto;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.3);line-height:1.05;}
-#next-popup-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(40,184,112,.45);}
+#next-popup-sub{font-family:'Share Tech Mono',monospace;font-size:14px;color:rgba(120,224,168,.95);}
 /* v3.5.98 FINISH TRAILER emphasis — pulses when a partial seal makes dispatch available (no interrupting menu) */
 #maxpack-finish.pulse{animation:mpfpulse 1.15s ease-in-out infinite;}
 @keyframes mpfpulse{0%,100%{box-shadow:0 0 14px rgba(40,184,112,.45);transform:scale(1);}50%{box-shadow:0 0 26px 4px rgba(80,216,144,.85);transform:scale(1.06);}}
@@ -1192,7 +1193,7 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   color:var(--t2);text-align:center;max-width:320px;line-height:1.7;}
 .es-scroll{width:100%;max-width:760px;display:flex;flex-direction:column;gap:15px;}
 .es-sec{width:100%;}
-.es-sec-t{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--acc);font-weight:bold;margin:0 0 8px 2px;border-bottom:1px solid var(--border2);padding-bottom:5px;}
+.es-sec-t{font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:2px;color:var(--acc);font-weight:bold;margin:0 0 8px 2px;border-bottom:1px solid var(--border2);padding-bottom:5px;}
 .es-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
 .sgrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;width:100%;max-width:300px;}
 .sg{background:rgba(18,14,8,.9);border:1px solid var(--border);border-radius:5px;padding:9px 12px;}
@@ -1201,12 +1202,24 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .es-grade-ring span{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;color:var(--ok);}
 .es-hero-txt{display:flex;flex-direction:column;gap:4px;}
 .es-rank{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.06em;color:var(--t1);}
-.es-verdict{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--t2);line-height:1.3;}
-.sg .v{font-family:'Bebas Neue',cursive;font-size:27px;color:var(--acc);letter-spacing:1px;display:block;line-height:1;}
-.sg .l{font-size:12px;color:var(--t2);letter-spacing:1px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;display:block;margin-top:3px;}
+.es-verdict{font-family:'Barlow Condensed',sans-serif;font-size:17px;color:var(--t1);line-height:1.3;}
+.sg .v{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--acc);letter-spacing:1px;display:block;line-height:1;}
+.sg .l{font-size:14px;color:var(--t2);letter-spacing:.5px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;display:block;margin-top:3px;}
 .btn-p{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;
   border:none;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:5px;
   padding:10px 40px;border-radius:3px;cursor:pointer;box-shadow:0 0 28px rgba(200,121,30,.22);}
+/* v3.5.124 END-GAME MENU: uniform action cards (label + description), zero small text. Vince: "every bit of text
+   legible and large, no fine print." */
+.es-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.end-act{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;
+  background:rgba(20,14,8,.97);color:var(--acc-bright);border:1.5px solid var(--acc);
+  padding:13px 16px;border-radius:8px;cursor:pointer;transition:background .15s,border-color .15s;}
+.end-act:hover{background:rgba(34,23,12,1);border-color:var(--acc-bright);}
+.end-act.primary{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;border-color:var(--acc-bright);}
+.end-act.wide{grid-column:1 / -1;}
+.ea-t{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;line-height:1;}
+.ea-d{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;line-height:1.15;color:var(--t2);}
+.end-act.primary .ea-d{color:rgba(10,6,0,.72);}
 
 /* Score pop */
 .spp{position:fixed;font-family:'Bebas Neue',cursive;pointer-events:none;z-index:65;
@@ -1705,11 +1718,11 @@ body[data-cb="trit"]{
 /* ── v2.8.0 DAILY RESULT ── */
 #daily-result{margin:10px 0;padding:12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border2);text-align:left;}
 .dr-head{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc);letter-spacing:1px;}
-.dr-rank{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--t1);margin:6px 0;}
+.dr-rank{font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--t1);margin:6px 0;}
 .dr-rank b{color:var(--acc-bright);font-size:18px;}
 .dr-share{margin:4px 0 10px;width:100%;}
-.dr-board-h{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t2);letter-spacing:1px;margin-bottom:4px;}
-.dr-board{font-family:'Share Tech Mono',monospace;font-size:13px;}
+.dr-board-h{font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--acc);letter-spacing:1px;margin-bottom:4px;}
+.dr-board{font-family:'Share Tech Mono',monospace;font-size:15px;}
 .dr-row{display:flex;justify-content:space-between;padding:3px 6px;border-bottom:1px solid var(--bg2);}
 .dr-row span:first-child{color:var(--t3);width:30px;}
 .dr-row span:nth-child(2){flex:1;color:var(--t1);text-align:left;padding-left:8px;}
@@ -1799,7 +1812,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.123 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.124 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1912,7 +1925,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.123 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.124 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2065,7 +2078,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.123 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.124 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2352,12 +2365,12 @@ body[data-cb="trit"]{
     <div class="dr-board-h">TODAY’S BOARD</div>
     <div id="dr-board" class="dr-board"></div>
   </div>
-  <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px;">
-    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="tryAgain()">↻ TRY AGAIN</button>
-    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="returnToMenu()">⌂ MAIN MENU</button>
-    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="openSettings()">⚙ SETTINGS</button>
-    <button class="btn-p" style="flex:1 1 42%;min-width:130px" onclick="openSocial('me')">◊ SOCIAL</button>
-    <button class="btn-p" style="flex:1 1 100%" onclick="openPostSort()">◆ POST-SORT REPORT</button>
+  <div class="es-actions">
+    <button class="end-act primary" onclick="tryAgain()"><span class="ea-t">↻ TRY AGAIN</span><span class="ea-d" id="ea-tryagain-d">Reload and run it again</span></button>
+    <button class="end-act" onclick="returnToMenu()"><span class="ea-t">⌂ MAIN MENU</span><span class="ea-d">Back to mode select</span></button>
+    <button class="end-act" onclick="openPostSort()"><span class="ea-t">◆ FULL REPORT</span><span class="ea-d">Every number from this run</span></button>
+    <button class="end-act" onclick="openSocial('me')"><span class="ea-t">◊ SOCIAL</span><span class="ea-d">Your record &amp; the boards</span></button>
+    <button class="end-act wide" onclick="openSettings()"><span class="ea-t">⚙ SETTINGS</span><span class="ea-d">Sound, theme, and controls</span></button>
   </div>
 </div>
 
@@ -2476,7 +2489,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.123
+// LOCK IN v3.5.124
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4055,7 +4068,7 @@ function triggerNCHazard(){
   if((placed||0)<1)return; // v2.10.11 no fail before first placement
   ncHazardFired=true;
   S.ncDwellWarn=(S.ncDwellWarn||0)+1;if(typeof playSfx==='function')playSfx('dwell'); // v2.4.3 count + audible SP dwell warning
-  showBanner('⚠ SP SAFETY HAZARD!<br><span style="font-size:.55em">STAGING AREA BLOCKED — UNSAFE CONDITIONS</span>','danger',3000);
+  showBanner('⚠ SP SAFETY HAZARD!<br><span style="font-size:.72em">STAGING AREA BLOCKED — UNSAFE CONDITIONS</span>','danger',3000);
   flash('fl-danger');
   if(isForgiving()){ncHazardTO=setTimeout(function(){ncHazardFired=false;},6000);return;} // v2.1.10 coach, don't guillotine
   ncHazardTO=setTimeout(function(){
@@ -4071,7 +4084,7 @@ function triggerBagDwell(){
   if((placed||0)<1)return; // v2.10.11 no fail before first placement
   bagDwellFired=true;
   S.smallsDwellWarn=(S.smallsDwellWarn||0)+1;if(typeof playSfx==='function')playSfx('dwell'); // v2.4.3 count + audible smalls dwell warning
-  showBanner('⏱ BAG DWELL TIME!<br><span style="font-size:.55em">TOO MANY BAGS SITTING — CLEAR THE LINE</span>','panic',3000);
+  showBanner('⏱ BAG DWELL TIME!<br><span style="font-size:.72em">TOO MANY BAGS SITTING — CLEAR THE LINE</span>','panic',3000);
   flash('fl-panic');
   if(isForgiving()){bagDwellTO=setTimeout(function(){bagDwellFired=false;},6000);return;} // v2.1.10 coach, don't guillotine
   bagDwellTO=setTimeout(function(){
@@ -4097,7 +4110,7 @@ function breakdownBag(idx){
   // v3.5.12: spill the smalls INTO THE CHUTE (unified feed) — same as a chute-bag breakdown, not back into the slots
   var cubes=spillBag();                            // 3x 2x1 + 3x 1x1 = 9 cubes into the chute
   if(cubes>0){
-    showBanner('BAG BROKEN DOWN! 🎁<br><span style="font-size:.52em">SMALLS SPILLED INTO THE CHUTE — FILL THOSE VOIDS!</span>','ok',2500);
+    showBanner('BAG BROKEN DOWN! 🎁<br><span style="font-size:.72em">SMALLS SPILLED INTO THE CHUTE — FILL THOSE VOIDS!</span>','ok',2500);
     flash('fl-ok');
   }
   buildBagPanel();
@@ -4164,7 +4177,7 @@ function tryNest(src,idx,tcell){
   if(typeof playSfx==='function')playSfx(isHaz?'bonus':'nest');
   if(!G._nestTaught){
     G._nestTaught=true;
-    showBanner('\ud83d\udccb THAT\u2019S NOT IN THE TRAINING \u2014 YOU LEARNED THAT.<br><span style="font-size:.5em">Stuffing the tire hollow reclaims dead air. +'+bonus+' CUBES'+(isHaz?' \u00b7 HAZMAT LEAK-SHIELDED':'')+'</span>','ok',3200);
+    showBanner('\ud83d\udccb THAT\u2019S NOT IN THE TRAINING \u2014 YOU LEARNED THAT.<br><span style="font-size:.72em">Stuffing the tire hollow reclaims dead air. +'+bonus+' CUBES'+(isHaz?' \u00b7 HAZMAT LEAK-SHIELDED':'')+'</span>','ok',3200);
   } else if(!G._nestLine||Date.now()-G._nestLine>4000){
     G._nestLine=Date.now();
     showBanner((isHaz?'\u2622 SHIELDED IN THE HOLLOW':'\ud83d\udd29 STUFFED THE HOLLOW')+' \u2014 +'+bonus+' CUBES (dead air reclaimed).','ok',1500);
@@ -4440,7 +4453,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     if(_hazCr)logIncident('HAZMAT_CRUSH',''); // hazmat crushed = the write-up pool (bad the first time)
     else if(typeof safetyWarn==='function')safetyWarn('FRAGILE_CRUSH',_smCr?'you smashed a bag of smalls — those are customers’ packages.':'you crushed a fragile — it rides on TOP.'); // v3.5.72 warning first; v3.5.100 smalls-aware
     flash('fl-crunch');
-    showBanner('💥 CRUNCH! -'+(CRUNCH_PENALTY*crushed.length)+' CUBES<br><span style="font-size:.5em">'+(_hazCr?'HAZMAT CRUSHED — that’s a write-up.':_smCr?'NOTHING HEAVY ON SMALLS — you just smashed customers’ packages. Lock a shelf over them or keep them up top.':'FRAGILE goes on TOP — safety warning. Lock a shelf to protect it.')+'</span>','danger',3000);
+    showBanner('💥 CRUNCH! -'+(CRUNCH_PENALTY*crushed.length)+' CUBES<br><span style="font-size:.72em">'+(_hazCr?'HAZMAT CRUSHED — that’s a write-up.':_smCr?'NOTHING HEAVY ON SMALLS — you just smashed customers’ packages. Lock a shelf over them or keep them up top.':'FRAGILE goes on TOP — safety warning. Lock a shelf to protect it.')+'</span>','danger',3000);
   }
 
   // Hazmat height check — dangerous goods must load below waist height.
@@ -4449,7 +4462,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     S.hazViolations=(S.hazViolations||0)+1;playSfx('hazard');addShake(8);
     logIncident('HAZMAT_HIGH',box.hazClass||'');
     flash('fl-crunch');
-    showBanner('☢ HAZMAT TOO HIGH! SCORE HALVED<br><span style="font-size:.5em">DANGEROUS GOODS LOAD LOW — BELOW WAIST (49 CFR). MOVE IT DOWN TO RESTORE.</span>','danger',3200);
+    showBanner('☢ HAZMAT TOO HIGH! SCORE HALVED<br><span style="font-size:.72em">DANGEROUS GOODS LOAD LOW — BELOW WAIST (49 CFR). MOVE IT DOWN TO RESTORE.</span>','danger',3200);
   }
 
   var d=getDims(box,rot);
@@ -4788,7 +4801,7 @@ function safetyWarn(offense,msg){
   for(i=0;i<S.warnings.length;i++){if(S.warnings[i].offense===offense&&!S.warnings[i].mitigated){prior=S.warnings[i];break;}}
   if(prior){safetyIncident(offense,'Repeat '+_sfLabel(offense)+' \u2014 an unmitigated warning became an incident.');return;}
   S.warnings.push({offense:offense,t:Date.now(),wall:(S.truck||1),mitigated:false,washedBy:null});
-  showBanner('\u26a0 SAFETY WARNING \u2014 '+msg+'<br><span style="font-size:.5em">MITIGATE: lock a shelf, drink water, or throw the piece. Same offense left open = an INCIDENT.</span>','warn',3200);
+  showBanner('\u26a0 SAFETY WARNING \u2014 '+msg+'<br><span style="font-size:.72em">MITIGATE: lock a shelf, drink water, or throw the piece. Same offense left open = an INCIDENT.</span>','warn',3200);
   if(typeof playSfx==='function')playSfx('dwell');
   updateSafetyHUD();
 }
@@ -4812,7 +4825,7 @@ function mitigateWarn(source){
 function sendToPractice(){
   if(G&&G._practiceSent)return;if(G)G._practiceSent=true;
   S.practiceKicks=(S.practiceKicks||0)+1;
-  showBanner('\u26d4 SENT TO TRAINING \u2014 too many incidents.<br><span style="font-size:.5em">Fresh, clean practice trailer. Reset your habits \u2014 your record still stands.</span>','danger',4200);
+  showBanner('\u26d4 SENT TO TRAINING \u2014 too many incidents.<br><span style="font-size:.72em">Fresh, clean practice trailer. Reset your habits \u2014 your record still stands.</span>','danger',4200);
   setTimeout(function(){
     S.warnings=[]; // new wall, warnings reset (incidents/record persist)
     G.grid=makeGrid();placed=0;G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;G._practiceSent=false;
@@ -4852,7 +4865,7 @@ var _throwPending=false,_throwWinTO=null;
 function _openThrowWindow(pen){
   _throwPending=true;
   if(_throwWinTO)clearTimeout(_throwWinTO);
-  showBanner('\ud83d\udc77 MANAGER: HEY \u2014'+((pen>0)?(' (\u2212'+pen+' cubes)'):'')+'<br><span style="font-size:.5em">you flagged a coworker for a hand. DRINK WATER in the next 2s to play it off as a quick breather.</span>','warn',2200);
+  showBanner('\ud83d\udc77 MANAGER: HEY \u2014'+((pen>0)?(' (\u2212'+pen+' cubes)'):'')+'<br><span style="font-size:.72em">you flagged a coworker for a hand. DRINK WATER in the next 2s to play it off as a quick breather.</span>','warn',2200);
   _throwWinTO=setTimeout(function(){
     _throwWinTO=null;
     if(!_throwPending||gOver)return;
@@ -5207,7 +5220,7 @@ function checkTetris(){
       if(_hzc>0){
         G.score=(G.score||0)+HAZMAT_SHELF_BONUS;
         G.hazShelfLocks=(G.hazShelfLocks||0)+1;S.hazShelfLocks=(S.hazShelfLocks||0)+1;if(typeof playSfx==='function')playSfx('hazmatlock');
-        showBanner('\u2622 HAZMAT SHELF LOCKED +'+HAZMAT_SHELF_BONUS+'<br><span style="font-size:.52em">LOADED LOW, CAPPED, SECURED \u2014 THE VET MOVE.</span>','ok',3400);
+        showBanner('\u2622 HAZMAT SHELF LOCKED +'+HAZMAT_SHELF_BONUS+'<br><span style="font-size:.72em">LOADED LOW, CAPPED, SECURED \u2014 THE VET MOVE.</span>','ok',3400);
       }
       } // v2.10.2 end lock-pay guard
     }
@@ -5257,7 +5270,7 @@ function checkBrickLock(){
   }
   if(stagger>=4){
     G.brickAwarded=true;if(typeof playSfx==='function')playSfx('brick');
-    showBanner('BRICK LOCK! 🏗<br><span style="font-size:.55em">+'+BRICK_BONUS+' CUBES — STAGGERED WALL!</span>','ok',2200);
+    showBanner('BRICK LOCK! 🏗<br><span style="font-size:.72em">+'+BRICK_BONUS+' CUBES — STAGGERED WALL!</span>','ok',2200);
     flash('fl-ok');
   }
 }
@@ -5270,7 +5283,7 @@ function checkRecovery(){
   if(recoveryCount>=3){
     recoveryActive=false;
     G.recoveryCount=(G.recoveryCount||0)+1;S.recoveries=(S.recoveries||0)+1; // v2.1.8
-    if(typeof playSfx==='function')playSfx('recovery');showBanner('RECOVERY! 💪<br><span style="font-size:.55em">+'+RECOVERY_BONUS+' CUBES</span>','ok',2000);
+    if(typeof playSfx==='function')playSfx('recovery');showBanner('RECOVERY! 💪<br><span style="font-size:.72em">+'+RECOVERY_BONUS+' CUBES</span>','ok',2000);
     flash('fl-ok');
   }
 }
@@ -5286,7 +5299,7 @@ function checkKeystoneBonus(gx,gy,rot,box){
     // First NC on this trailer — Cornerstone
     bonus=400;
     if(typeof playSfx==='function')playSfx('bonus');
-    msg='CORNERSTONE! 🧱<br><span style="font-size:.52em">+'+bonus+' CUBES — FIRST SP LOCKED IN!</span>';
+    msg='CORNERSTONE! 🧱<br><span style="font-size:.72em">+'+bonus+' CUBES — FIRST SP LOCKED IN!</span>';
   } else {
     var atLeft=(gx===0);
     var atRight=(gx+d.w===GW);
@@ -5294,15 +5307,15 @@ function checkKeystoneBonus(gx,gy,rot,box){
     var edgeCount=(atLeft?1:0)+(atRight?1:0)+(atFloor?1:0);
     if(edgeCount>=2){
       bonus=350;
-      msg='CORNER LOCK! 🔩<br><span style="font-size:.52em">+'+bonus+' CUBES — SP ANCHORED IN CORNER!</span>';
+      msg='CORNER LOCK! 🔩<br><span style="font-size:.72em">+'+bonus+' CUBES — SP ANCHORED IN CORNER!</span>';
     } else if(edgeCount===1){
       bonus=150;
-      msg='WALL ANCHOR! ⚓<br><span style="font-size:.52em">+'+bonus+' CUBES — SP FLUSH TO WALL!</span>';
+      msg='WALL ANCHOR! ⚓<br><span style="font-size:.72em">+'+bonus+' CUBES — SP FLUSH TO WALL!</span>';
     } else {
       var vf=countVoidsFilled(gx,gy,d.w,d.h);
       if(vf>=2){
         bonus=200;
-        msg='VOID FILLER! 🎯<br><span style="font-size:.52em">+'+bonus+' CUBES — SP PLUGGED '+vf+' GAPS!</span>';
+        msg='VOID FILLER! 🎯<br><span style="font-size:.72em">+'+bonus+' CUBES — SP PLUGGED '+vf+' GAPS!</span>';
       }
     }
   }
@@ -5333,7 +5346,7 @@ function checkPanic(){
     document.getElementById('panic-wrap').classList.add('vis');
     flash('fl-panic');
     if(typeof playSfx==='function')playSfx('panic');
-    showBanner('DISPATCH IN 60s! ⚡<br><span style="font-size:.52em">SEAL THE WALL — BONUS IF YOU BEAT THE CLOCK!</span>','panic',3000);
+    showBanner('DISPATCH IN 60s! ⚡<br><span style="font-size:.72em">SEAL THE WALL — BONUS IF YOU BEAT THE CLOCK!</span>','panic',3000);
     for(var i=0;i<3;i++){if(G.belt.length<BELT_PIECE_COUNT)G.belt.push(genPiece(true,false));}
   }
   if(panicActive&&!panicSealed&&!gOver){
@@ -5478,7 +5491,7 @@ function finalizeWall(){
       _ws.prodFlag=1;
       var _pn=S.prodIncidents.length;
       if(_pn%2===0&&typeof raiseWriteup==='function'){raiseWriteup('PRODUCTIVITY',_pn);}
-      else if(typeof showBanner==='function')showBanner('⚠ PACE FLAGGED — '+_wpph+' pph, under the '+STANDARD_PPH+' hub standard.<br><span style="font-size:.5em">Smalls & bags don’t count. Move real freight, keep the belt fed.</span>','warn',3600);
+      else if(typeof showBanner==='function')showBanner('⚠ PACE FLAGGED — '+_wpph+' pph, under the '+STANDARD_PPH+' hub standard.<br><span style="font-size:.72em">Smalls & bags don’t count. Move real freight, keep the belt fed.</span>','warn',3600);
     }
   }catch(_e){}
 }
@@ -5502,14 +5515,14 @@ function sealWall(reason){
   try{finalizeWall();}catch(_dh){} // v3.5.57 capture this wall's integrity+density once (single source of truth)
   try{if(typeof zLogWall==='function')zLogWall();}catch(_lw){} // v3.5.83 post this sealed wall to the per-wall boards
   G.score=(G.score||0)+_sealPay; // v2.1.11 #1 payout, v3.5.46 density-scaled
-  showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.52em">'+packPct()+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
+  showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.72em">'+packPct()+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
   if(panicActive&&!panicSealed){
     panicSealed=true;
     var rem=Math.max(0,PANIC_DURATION-(Date.now()-panicStartT)/1000);
     if(rem>0){
       var bonus=Math.round(PANIC_BONUS_MAX*(rem/PANIC_DURATION)*_dens); // v3.5.46 dispatch bonus also scaled by fill — no reward for speed-bailing a loose wall
       G.score+=bonus;
-      showBanner('DISPATCH BONUS! ⚡<br><span style="font-size:.52em">+'+bonus+' CUBES — SEALED WITH '+Math.ceil(rem)+'s LEFT!</span>','ok',3000);
+      showBanner('DISPATCH BONUS! ⚡<br><span style="font-size:.72em">+'+bonus+' CUBES — SEALED WITH '+Math.ceil(rem)+'s LEFT!</span>','ok',3000);
     }
     document.getElementById('panic-wrap').classList.remove('vis');
   }
@@ -5528,7 +5541,7 @@ function sealWall(reason){
   if(_keepLoadable){
     G.maxPack=true; // stay in the wall — keep filling past the seal, no re-seal spam (checkWin is maxPack-guarded)
     var _mf=document.getElementById('maxpack-finish');if(_mf){_mf.style.display='';_mf.classList.add('pulse');}
-    showBanner('✓ SEALED — TRAILER CAN DISPATCH.<br><span style="font-size:.52em">Keep loading for score, or hit ✓ FINISH TRAILER (top right) to roll out.</span>','ok',2600);
+    showBanner('✓ SEALED — TRAILER CAN DISPATCH.<br><span style="font-size:.72em">Keep loading for score, or hit ✓ FINISH TRAILER (top right) to roll out.</span>','ok',2600);
   } else if(gameMode==='daily'){
     // v3.5.123 DAILY IS ONE WALL. Sealing the daily wall ENDS the run (no NEXT TRAILER = no infinite-score farming).
     // The end screen submits the score and offers TRY AGAIN, which replays the SAME seeded wall (startDaily).
@@ -8988,7 +9001,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.123</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.124</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10076,6 +10089,9 @@ function fillTelemetryTiles(){
   set('es-grade-big',_sg.g);set('es-rank',_sg.rank);set('es-verdict',_sg.verd);
   var _grg=document.getElementById('es-grade-ring');if(_grg)_grg.style.borderColor=_sg.clr;
   var _gbg=document.getElementById('es-grade-big');if(_gbg)_gbg.style.color=_sg.clr;
+  // v3.5.124 TRY AGAIN description tells the truth per mode: daily replays the SAME seeded wall.
+  var _ead=document.getElementById('ea-tryagain-d');
+  if(_ead)_ead.textContent=(gameMode==='daily')?'Same wall — another crack at today’s':'Reload and run it again';
 }
 // v2.1.8 CLOCK OUT — voluntary end. Keeps score, shows the full readout.
 function clockOut(){
