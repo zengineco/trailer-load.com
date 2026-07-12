@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.124
+   LOCK IN v3.5.125
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.125 - SLIP vs COLLAPSE (Vince's call: "slips are okay, that's how you learn"). collapseFreeStack logged EVERY physics shed as a "collapse" on the record — so a single loose piece read as a collapse (kremsicle's "1 collapse on a run I never collapsed"). Now 1-2 pieces coming loose is a SLIP: its own counter (S.slips), a light touch (integrity -5 not -18, small shake, gentle "😅 SLIP — piece came loose, back on the belt" nudge), and it does NOT hit the record or the collapse-escalation ladder. Only 3+ pieces is a real COLLAPSE (full cost + escalation). A dropped HAZMAT is a hurt-somebody event at ANY size and still ends the run. Verified: 1pc + 2pc = slip (0 collapses), 3pc = 1 collapse, hazmat slip still schedules sent-home. (Slips are tracked now so levels/achievements can farm them out later.) NEXT: box labels reflect real box attributes, sign-in prompt.
    CHANGE LOG v3.5.124 - END-GAME MENU: UNIFORM + LEGIBLE, ZERO SMALL TEXT. Vince: "every single bit of text needs to be legible and large. zero small text. why would we have 'fine print' in a video game about loading boxes." The end screen's buttons were mismatched flex widths (42%/42%/100%) with no descriptions. Now a uniform grid of ACTION CARDS — each a big 24px label + a 16px description line: TRY AGAIN (mode-aware: "Same wall — another crack at today's" in daily) / MAIN MENU ("Back to mode select") / FULL REPORT / SOCIAL / SETTINGS. Every small font bumped: stat labels 12->14, section titles 13->16, verdict 15->17 (and to --t1), daily-board header 11->14, next-popup sub 10px@45%-opacity -> 14px@95% (killed the low-contrast "wonky color"). Every banner "fine print" sub (.5/.52/.55em, 21 of them) -> .72em. Verified: 5 uniform cards at 24px/16px, daily TRY AGAIN says "Same wall", all bumped fonts confirmed. NEXT: the 1-2 piece "slip" collapse threshold, box labels, sign-in prompt.
    CHANGE LOG v3.5.123 - JAILBREAK KILL pt.6: DAILY IS ONE WALL (infinite score dead). kremsicle: "you can keep playing daily for infinite score." Daily used the same NEXT-TRAILER flow as shift — seal a wall, get a fresh trailer, repeat forever, stack an unbounded score. Per the spec, DAILY IS NOW ONE RUN: sealing/finishing the daily wall ENDS the run (sealWall + nextTrailer both route daily -> endGame 'DAILY COMPLETE' -> submit + board), and the end screen's button is TRY AGAIN, which REPLAYS THE SAME SEEDED WALL from scratch (new tryAgain() -> startDaily resets DAILY.ptr=0 + reseeds off today's key). Same wall over and over, try-again not next-trailer — exactly the daily mechanic. Verified: daily nextTrailer makes no new trailer (ends 'DAILY COMPLETE'), tryAgain replays the identical seed and resumes play. NEXT (per Vince): end-game menu legibility + uniform buttons (zero small text, no fine print), the 1-2 piece "slip" collapse threshold, box labels, sign-in prompt.
    CHANGE LOG v3.5.122 - JAILBREAK KILL pt.5: POST-SORT LIED (the "29 PCS" integrity + 100%-on-empty). kremsicle: "load quality... walls sealed are wrong, didnt even play/place anything." Two truthfulness bugs on the SHIFT COMPLETE screen: (1) the AVG INTEGRITY tile was fed shiftState.totalBoxes+' PCS' — a piece count in the integrity slot ("29 PCS"). It now shows the real average integrity %. (2) integrity AND final-support defaulted to a lying 100% (and clockOut's avgInt defaulted to 100) when NOTHING was sealed — so an empty/near-empty session read as a perfect wall. Empty session now reads 0% integrity + 0% support, not 100%. Verified: filled wall shows real 90% integrity, empty shows 0%/0% (was "29 PCS"/100%). STILL OPEN, flagged for Vince's call: the "1 COLLAPSE / 1 HAZ INCIDENT on a run with neither" is the PHYSICS sweep counting a single-piece shed (collapseFreeStack) as a "collapse" on the record — real to the engine, invisible to the player. Design question: should a 1-piece physics shed count as a logged collapse, or only a multi-piece wall failure? NEXT: infinite daily score, box labels, sign-in prompt.
@@ -1812,7 +1813,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.124 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.125 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1925,7 +1926,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.124 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.125 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2078,7 +2079,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.124 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.125 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2489,7 +2490,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.124
+// LOCK IN v3.5.125
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -5168,7 +5169,11 @@ function collapseEscalation(){
 }
 function collapseFreeStack(st){
   if(!st||!st.boxes)return;
-  S.collapses=(S.collapses||0)+1;
+  // v3.5.125 SLIP vs COLLAPSE (Vince's call): 1-2 pieces coming loose is a SLIP — how you learn, NOT a logged collapse
+  // and NOT on the record/escalation ladder. Only 3+ pieces is a real COLLAPSE. (A dropped HAZMAT is a hurt-somebody
+  // event at ANY size and still ends the run.) Slips get a light touch: small integrity ding, gentle feedback, no juice.
+  var _slip=(st.boxes.length<=2);
+  if(_slip){S.slips=(S.slips||0)+1;}else{S.collapses=(S.collapses||0)+1;}
   var n=0;
   st.boxes.forEach(function(cell){
     var cs=cell.cells||makeRect(cell.w,cell.h),i;
@@ -5176,19 +5181,23 @@ function collapseFreeStack(st){
     if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)+(n++)});
   });
   settleFloaters(); // v3.5.56 sweep anything left hanging by the topple
-  G.integrity=clamp((G.integrity||100)-COLLAPSE_INT_COST,0,100);
+  G.integrity=clamp((G.integrity||100)-(_slip?5:COLLAPSE_INT_COST),0,100);
   G.cog=calcCOG(G.grid);G.support=supportScore(G.grid);
-  recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
-  addShake(18);if(typeof playSfx==='function')playSfx('collapse');hapt('collapse');
-  if(typeof gridToCanvas==='function'){var _c=gridToCanvas((st.cx||Math.floor(GW/2))+0.5,GH*0.4);spawnBurst(_c.x,_c.y,32,'rgba(120,90,60,.95)',170,0.7,240);}
-  flash('fl-danger');
-  // v3.5.65 HAZMAT in ANY collapse = you're sent home. A dropped hazmat is a hurt-somebody event.
+  addShake(_slip?7:18);if(typeof playSfx==='function')playSfx(_slip?'gaplock':'collapse');hapt(_slip?'error':'collapse');
+  if(typeof gridToCanvas==='function'){var _c=gridToCanvas((st.cx||Math.floor(GW/2))+0.5,GH*0.4);spawnBurst(_c.x,_c.y,_slip?12:32,'rgba(120,90,60,.95)',170,0.7,_slip?90:240);}
+  if(!_slip)flash('fl-danger');
+  // v3.5.65 HAZMAT in ANY collapse OR slip = you're sent home. A dropped hazmat is a hurt-somebody event.
   var _cHaz=false;st.boxes.forEach(function(c){if(c&&c.box&&(c.box.isHaz||c.box.hazClass))_cHaz=true;});
   if(_cHaz&&!gOver&&typeof endGame==='function'){
     showBanner('⛔ HAZMAT DOWN — you’re going to hurt somebody. Keep hazmat low and locked.','danger',3600);
     setTimeout(function(){endGame('HAZMAT IN A COLLAPSE — you’re going to hurt somebody.',false);},700);
     return;
   }
+  if(_slip){ // a slip is forgiving: piece back on the belt, quick nudge, no record, no recovery lockout
+    if(typeof showBanner==='function')showBanner('😅 SLIP — a piece came loose, back on the belt. Widen the base and it holds.','warn',2000);
+    return;
+  }
+  recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
   collapseEscalation(); // v3.5.66 whoopsie → trainer heads-up → safety warning → violation (was an instant incident)
 }
 
@@ -9001,7 +9010,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.124</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.125</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
