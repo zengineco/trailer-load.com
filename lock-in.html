@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.131
+   LOCK IN v3.5.132
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.132 - MEASUREMENT WHOLE + TOTAL (the raw per-action timeline). zLog captured ONLY placements — the max-resolution layer under the dashboard was blind to everything else. Now every action is logged to the per-session event stream, timestamped (deciseconds from sessionStartT): place, reject, rotate, lift, flag(throw), water, bagbreak, seal (with density/fill/pph/pieces), slip, collapse, safety warn, safety incident, writeup. The stream RESETS per session (was accumulating across sessions in the same tab — timestamps are relative to sessionStartT, so it must zero at the session boundary; reset happens right before the first place is logged so nothing is dropped). Combined with the v3.5.128 unified density and the v3.5.129 telemetry-accuracy pass, the dashboard can now reconstruct exactly how any wall was built AND every number (grade / seal payout / per-wall board / session summary) is one consistent figure. Verified: a mixed action burst logs rotate/water/warn/incident/flag/writeup/reject/slip/collapse/seal, each as [decisec, kind, data]. Measurement is complete.
    CHANGE LOG v3.5.131 - TWO VISUAL BUGS: GREEN F + CUT-OFF ACCOUNT BUTTONS. (1) "f is green???" — the post-sort report's grade ring (.ps-ring) was hardcoded green (#1f9d57) regardless of grade, so an F sat in a green ring. It's now colored by the actual grade: A=green, B=teal, C/D=amber, F=red. Verified: F ring rgb(204,56,32) red, A green, B teal, D amber. (2) "cant see what bottom buttons say in the account and data part of admin menu" — the DATA & PRIVACY card (.data-card) had no max-height and no scroll and dropped from the top, so on a normal viewport the bottom (SIGN OUT / SAVE / NOT NOW) overflowed off-screen with no way to reach it. Card now caps at 94vh with overflow-y:auto (+ the overlay scrolls) so every button is reachable. NEXT: the raw event stream (measure everything, whole + total).
    CHANGE LOG v3.5.130 - THE ADMIN/MENU/PAUSE CLUSTER (kremsicle's PC+mobile report). Root cause of "can not reach admin/linehaul": the #briefing clipboard (position:fixed, inset:0, z-index:600) was left covering the WHOLE screen and invisibly eating every click on the bottom bar — the OPERATIONS/LINEHAUL/ADMIN functions worked when called, but the clicks never landed. Fixes: (1) hideStartMenu() force-dismisses the briefing on every mode start (a running mode is never under it) + #briefing.gone gets pointer-events:none as belt-and-suspenders — LINEHAUL/ADMIN reachable again on PC and mobile. (2) Admin RESTART now restarts the CURRENT mode via tryAgain() (was hard-coded to dump you to the main menu). (3) The live HUD (scoreboard + control bar) is hidden on the menu and restored on mode start — no more "back to lobby with my score still up on the scoreboard." (4) togglePause() FREEZES the clock: it advances startT + wall + session clocks past the paused span so elapsed/PPH/session-time never count paused seconds (kremsicle: "the timer doesn't pause"). (5) The NC/smalls wheel now closes when a drawer OR the pause/admin opens (kremsicle: "the nc menu showing when the admin tab opens"). Verified: buttons reachable with briefing dismissed, restart keeps the mode, menu hides the HUD, 400ms real pause = 0s elapsed drift. NEXT: F-grade ring color + cut-off account buttons, then the raw event stream.
    CHANGE LOG v3.5.129 - MEASUREMENT SPOT-ON (the telemetry the dashboard/boards actually run on). Audited the whole capture chain against the new density metric and found four inaccuracies, all fixed: (1) the per-wall board (lockin_walls) posted RAW cube-fill as "density" — it now posts the STRUCTURED density (the same wallSolidity that drives the grade), so board density == grade density. (2) The session summary posted avgWallPct / cubeEff / densityPct as NULL — now computed from the per-wall log (avg wall height %, avg raw cube-fill %, avg structured density %). (3) app_ver was frozen at a stale '2.4.2' (~40 versions old) so EVERY posted session was mislabeled and unsegmentable — now a single LI_APP_VER stamp that bumps with the game. (4) snapWall never captured the structured density — it does now, so the per-wall log, the board, and the session summary all read the same number the grade does. Verified: snapWall carries density, summary computes avgWallPct=50/cubeEff=45/densityPct=85 from a wall log (no nulls), app_ver=3.5.129. Grade, seal payout, per-wall board, and session summary are now one consistent density. NEXT: placement ghost (release blocker), leaderboard pass-2, tire nesting.
@@ -1826,7 +1827,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.131 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.132 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1939,7 +1940,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.131 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.132 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2092,7 +2093,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.131 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.132 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2514,7 +2515,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.131
+// LOCK IN v3.5.132
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2964,7 +2965,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.131'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.132'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4065,6 +4066,7 @@ function takeDrink(){
   if(gOver)return;
   if(Date.now()-_lastDrinkT<DRINK_CD){showBanner('💧 EASY — you just drank. Give it a few seconds.','',1100);return;}
   _lastDrinkT=Date.now();_coolBtn('water-side',DRINK_CD);
+  if(typeof zLog==='function')zLog('water',{n:(S.drinks||0)+1}); // v3.5.132 raw timeline
   G.drinks=(G.drinks||0)+1;
   S.drinks=(S.drinks||0)+1;
   if(typeof playSfx==='function')playSfx('drink');
@@ -4140,6 +4142,7 @@ function breakdownBag(idx){
   var slot=G.bagSlots[idx];
   if(!slot||!slot.isBag)return;
   S.bagsBroken=(S.bagsBroken||0)+1;if(typeof playSfx==='function')playSfx('bagbreak'); // v2.1.7
+  if(typeof zLog==='function')zLog('bagbreak',{n:S.bagsBroken}); // v3.5.132 raw timeline
   // Remove bag
   G.bagSlots[idx]=null;
   // v3.5.12: spill the smalls INTO THE CHUTE (unified feed) — same as a chute-bag breakdown, not back into the slots
@@ -4243,6 +4246,7 @@ function liftBox(cell){
   }
   if(typeof playSfx==='function')playSfx('lift');
   S.lifts=(S.lifts||0)+1; // v2.1.7
+  if(typeof zLog==='function')zLog('lift',{n:S.lifts}); // v3.5.132 raw timeline
   // v2.1.34: lifting a piece OUT of a locked shelf unseals it = penalty
   G.tetrisRows=G.tetrisRows||{};
   var _lc=cell.cells||makeRect(cell.w,cell.h),_lci,_lbroke=false;
@@ -4475,7 +4479,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   else if(source==='nc')box=G.ncSlots[sourceIdx];
   else if(source==='bag')box=G.bagSlots[sourceIdx];
   if(!box)return false;
-  if(!isLegal(G.grid,box,gx,gy,rot)){S.rejects=(S.rejects||0)+1;if(typeof gcurFlash==='function')gcurFlash('bad',420);if(typeof playSfx==='function')playSfx('error');if(typeof addShake==='function')addShake(7);if(typeof spawnBurst==='function'&&typeof gridToCanvas==='function'){var _rj=gridToCanvas(gx+0.5,gy+0.5);spawnBurst(_rj.x,_rj.y,14,'rgba(214,64,40,.92)',150,0.5,60);} /* v3.5.24 misplace red shards */hapt('error');if(typeof showBanner==='function'&&(!G._rejWarn||Date.now()-G._rejWarn>2500)){G._rejWarn=Date.now();showBanner('\u2715 NO SUPPORT THERE \u2014 every box needs something solid under it.','warn',1800);}return false;} // v2.1.9 / v2.1.33 reject feedback
+  if(!isLegal(G.grid,box,gx,gy,rot)){S.rejects=(S.rejects||0)+1;if(typeof zLog==='function')zLog('reject',{x:gx,y:gy});if(typeof gcurFlash==='function')gcurFlash('bad',420);if(typeof playSfx==='function')playSfx('error');if(typeof addShake==='function')addShake(7);if(typeof spawnBurst==='function'&&typeof gridToCanvas==='function'){var _rj=gridToCanvas(gx+0.5,gy+0.5);spawnBurst(_rj.x,_rj.y,14,'rgba(214,64,40,.92)',150,0.5,60);} /* v3.5.24 misplace red shards */hapt('error');if(typeof showBanner==='function'&&(!G._rejWarn||Date.now()-G._rejWarn>2500)){G._rejWarn=Date.now();showBanner('\u2715 NO SUPPORT THERE \u2014 every box needs something solid under it.','warn',1800);}return false;} // v2.1.9 / v2.1.33 reject feedback
   var _segB=countSegregationViolations(G.grid),_kB=anyKillerTooClose(G.grid); // v2.1.6 pre-commit state
 
   // Fragile crush check — only fires for wc>=5, locked rows protect boxes
@@ -4540,8 +4544,8 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   if(typeof gcurFlash==='function')gcurFlash('drop',420); // v3.5.20 drop-glove on a successful place
   S.totalPieces=(S.totalPieces||0)+1; if(source==='bag')S.bagsPlaced=(S.bagsPlaced||0)+1; // v2.1.7
   if(!(box.type==='small'||box.isBag)&&!((box._gen||0)>0))S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 PPH = REAL freight only; v3.5.99 first placement ONLY — a re-placed (churned) box earns ZERO pph, so the autoclicker's place-lift-place spam gains nothing
+  if(!S.sessionStartT){S.sessionStartT=startT||Date.now();ZDATA.events=[];} // v2.1.9 session clock; v3.5.132 reset the raw event timeline per session (timestamps are relative to sessionStartT) so it never accumulates across sessions — BEFORE the first place is logged
   if(typeof zLog==='function')zLog('place',{x:gx,y:gy,n:box.n||box.label||'?',r:rot||0,src:source});
-  if(!S.sessionStartT)S.sessionStartT=startT||Date.now(); // v2.1.9 session clock
   S.bestPPH=Math.max(S.bestPPH||0,getPPH()); // v2.1.9 PEAK pph (fixes the 0 bug)
   // LV10: Drain strike bar on every successful placement
   onPlaceMechanic();
@@ -4802,6 +4806,7 @@ function productivityLadder(pk){
 var WRITEUP_SENT_HOME=4; // v3.5.109 the Nth documented write-up this shift = SENT HOME (game over)
 function raiseWriteup(offense,num){
   S.writeups=(S.writeups||0)+1; // v3.5.109 count every documented write-up
+  if(typeof zLog==='function')zLog('writeup',{offense:offense,n:S.writeups}); // v3.5.132 raw timeline
   var terminal=(S.writeups>=WRITEUP_SENT_HOME);
   var doc=terminal?WRITEUP_DOCS.SENT_HOME:(WRITEUP_DOCS[offense]||WRITEUP_DOCS.ACCUMULATED);
   var who=(typeof zWho==='function')?zWho():'GUEST'; // v3.5.76 session-based identity, consistent with the report + lifetime
@@ -4832,6 +4837,7 @@ function _incidentEscalation(){ // shared by logIncident + safetyIncident + coll
 }
 function safetyWarn(offense,msg){
   _sfInit();
+  if(typeof zLog==='function')zLog('warn',{offense:offense}); // v3.5.132 raw timeline
   var i,prior=null;
   for(i=0;i<S.warnings.length;i++){if(S.warnings[i].offense===offense&&!S.warnings[i].mitigated){prior=S.warnings[i];break;}}
   if(prior){safetyIncident(offense,'Repeat '+_sfLabel(offense)+' \u2014 an unmitigated warning became an incident.');return;}
@@ -4842,6 +4848,7 @@ function safetyWarn(offense,msg){
 }
 function safetyIncident(offense,msg){
   _sfInit();
+  if(typeof zLog==='function')zLog('incident',{offense:offense}); // v3.5.132 raw timeline
   S.incidents.push({type:offense,cls:'',wall:(S.truck||1),t:Date.now()});
   showBanner('\u26d4 SAFETY INCIDENT \u2014 '+msg,'danger',3400);
   if(typeof playSfx==='function')playSfx('lose');
@@ -4914,6 +4921,7 @@ function throwBox(){
   if(gOver||typeof G==='undefined'||!G||!G.belt||!G.belt.length){if(typeof showBanner==='function'&&(!G||!G.belt||!G.belt.length))showBanner('Nothing in hand to flag for.','',1200);return;}
   if(Date.now()-_lastThrowT<THROW_CD){showBanner('🙋 FLAG ON COOLDOWN — you can’t wave a coworker over back-to-back.','warn',1200);return;}
   _lastThrowT=Date.now();_coolBtn('throw-side',THROW_CD);
+  if(typeof zLog==='function')zLog('flag',{n:(S.throws||0)+1}); // v3.5.132 raw timeline
   var idx=(selBeltIdx!=null)?selBeltIdx:0;if(idx<0||idx>=G.belt.length)idx=0;
   G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
   S.throws=(S.throws||0)+1;G.throws=(G.throws||0)+1;
@@ -5208,6 +5216,7 @@ function collapseFreeStack(st){
   // event at ANY size and still ends the run.) Slips get a light touch: small integrity ding, gentle feedback, no juice.
   var _slip=(st.boxes.length<=2);
   if(_slip){S.slips=(S.slips||0)+1;}else{S.collapses=(S.collapses||0)+1;}
+  if(typeof zLog==='function')zLog(_slip?'slip':'collapse',{n:st.boxes.length}); // v3.5.132 raw timeline
   var n=0;
   st.boxes.forEach(function(cell){
     var cs=cell.cells||makeRect(cell.w,cell.h),i;
@@ -5550,6 +5559,7 @@ function sealWall(reason){
     else{var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ WALL COMPLETE — '+packPct()+'% PACKED';}
   }return;}
   G.sealed=true;
+  if(typeof zLog==='function')zLog('seal',{density:Math.round((typeof wallSolidity==='function'?wallSolidity(G.grid):0)*100),fill:packPct(),pph:getPPH(),pieces:(typeof gridPieceCount==='function'?gridPieceCount():placed)}); // v3.5.132 raw timeline
   if(typeof gcurFlash==='function')gcurFlash('finish',1300); // v3.5.22 finish-glove on sealing the wall
   if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
   if(typeof playSfx==='function')playSfx('win');
@@ -7332,6 +7342,7 @@ belt.addEventListener('contextmenu',function(e){e.preventDefault();rotateSel();}
 
 function rotateSel(){
   S.rotations=(S.rotations||0)+1; // v2.1.7
+  if(typeof zLog==='function')zLog('rotate',{n:S.rotations}); // v3.5.132 raw timeline
   var rotated=false;
   if(selBeltIdx!==null&&selBeltIdx<G.belt.length){
     var b=G.belt[selBeltIdx];
@@ -9084,7 +9095,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.131</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.132</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
