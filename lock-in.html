@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.130
+   LOCK IN v3.5.131
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.131 - TWO VISUAL BUGS: GREEN F + CUT-OFF ACCOUNT BUTTONS. (1) "f is green???" — the post-sort report's grade ring (.ps-ring) was hardcoded green (#1f9d57) regardless of grade, so an F sat in a green ring. It's now colored by the actual grade: A=green, B=teal, C/D=amber, F=red. Verified: F ring rgb(204,56,32) red, A green, B teal, D amber. (2) "cant see what bottom buttons say in the account and data part of admin menu" — the DATA & PRIVACY card (.data-card) had no max-height and no scroll and dropped from the top, so on a normal viewport the bottom (SIGN OUT / SAVE / NOT NOW) overflowed off-screen with no way to reach it. Card now caps at 94vh with overflow-y:auto (+ the overlay scrolls) so every button is reachable. NEXT: the raw event stream (measure everything, whole + total).
    CHANGE LOG v3.5.130 - THE ADMIN/MENU/PAUSE CLUSTER (kremsicle's PC+mobile report). Root cause of "can not reach admin/linehaul": the #briefing clipboard (position:fixed, inset:0, z-index:600) was left covering the WHOLE screen and invisibly eating every click on the bottom bar — the OPERATIONS/LINEHAUL/ADMIN functions worked when called, but the clicks never landed. Fixes: (1) hideStartMenu() force-dismisses the briefing on every mode start (a running mode is never under it) + #briefing.gone gets pointer-events:none as belt-and-suspenders — LINEHAUL/ADMIN reachable again on PC and mobile. (2) Admin RESTART now restarts the CURRENT mode via tryAgain() (was hard-coded to dump you to the main menu). (3) The live HUD (scoreboard + control bar) is hidden on the menu and restored on mode start — no more "back to lobby with my score still up on the scoreboard." (4) togglePause() FREEZES the clock: it advances startT + wall + session clocks past the paused span so elapsed/PPH/session-time never count paused seconds (kremsicle: "the timer doesn't pause"). (5) The NC/smalls wheel now closes when a drawer OR the pause/admin opens (kremsicle: "the nc menu showing when the admin tab opens"). Verified: buttons reachable with briefing dismissed, restart keeps the mode, menu hides the HUD, 400ms real pause = 0s elapsed drift. NEXT: F-grade ring color + cut-off account buttons, then the raw event stream.
    CHANGE LOG v3.5.129 - MEASUREMENT SPOT-ON (the telemetry the dashboard/boards actually run on). Audited the whole capture chain against the new density metric and found four inaccuracies, all fixed: (1) the per-wall board (lockin_walls) posted RAW cube-fill as "density" — it now posts the STRUCTURED density (the same wallSolidity that drives the grade), so board density == grade density. (2) The session summary posted avgWallPct / cubeEff / densityPct as NULL — now computed from the per-wall log (avg wall height %, avg raw cube-fill %, avg structured density %). (3) app_ver was frozen at a stale '2.4.2' (~40 versions old) so EVERY posted session was mislabeled and unsegmentable — now a single LI_APP_VER stamp that bumps with the game. (4) snapWall never captured the structured density — it does now, so the per-wall log, the board, and the session summary all read the same number the grade does. Verified: snapWall carries density, summary computes avgWallPct=50/cubeEff=45/densityPct=85 from a wall log (no nulls), app_ver=3.5.129. Grade, seal payout, per-wall board, and session summary are now one consistent density. NEXT: placement ghost (release blocker), leaderboard pass-2, tire nesting.
    CHANGE LOG v3.5.128 - DENSITY/INTEGRITY OVERHAUL (grade credibility — now the boards take real signed-in data). Density was raw fill up to wall height (the v3.5.50 solidity), so two walls with the same integrity graded the same even if one was a loose tower of pillars and floaters. Density is now the BLEND of two axes (Vince's spec): the SHELF axis (row fill inside the bounding box — full shelves beat scattered columns) TIMES the COLUMN axis (each occupied column's fill from the floor up to its own top — punishes floating pieces and buried voids). You can't max one axis to hide the other; a perfect wall (full shelves, all grounded) still = 1.0. This single wallSolidity() feeds both the grade gate (densHistory) AND the seal payout, so the reward is honest too. Verified metric: perfect=1.0, two full shelves=1.0, lone pillar=0.06, floating slab=0.008, five spread columns=0.29, a good wall w/ a few gaps=0.96. Verified grade at equal integrity: elite grounded wall (0.97 dens)=A, good (0.90)=B, loose/floaty (0.42)=D, cheap pillars (0.29)=F — structure now decides the grade, and A is reserved for elite loads. Does NOT touch the WIN/PERFECT-LOAD gate (that uses raw pack% — unchanged). NEXT: placement ghost (release blocker), leaderboard pass-2, tire nesting.
@@ -578,9 +579,9 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .ops-pts span{font-size:13px;color:var(--t3);}
 .ops-sec{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--acc);text-transform:uppercase;font-weight:bold;margin:12px 0 7px;}
 .ops-sec.first{margin-top:0;}
-.ov-data{position:fixed;inset:0;z-index:600;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);}/* v3.5.39 120->600 so ACCOUNT & DATA shows above the pause/menu (was buried) */
+.ov-data{position:fixed;inset:0;z-index:600;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);overflow-y:auto;}/* v3.5.39 120->600 so ACCOUNT & DATA shows above the pause/menu (was buried); v3.5.131 scrollable so the bottom buttons are never clipped */
 .ov-data.vis{display:flex;}
-.data-card{margin-top:0;max-width:440px;width:92%;background:var(--bg2);border:1px solid var(--acc);border-top:none;border-radius:0 0 12px 12px;padding:18px 20px 20px;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:dataDrop .28s ease;}
+.data-card{margin-top:0;max-width:440px;width:92%;max-height:94vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--acc);border-top:none;border-radius:0 0 12px 12px;padding:18px 20px 24px;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:dataDrop .28s ease;}/* v3.5.131 cap height + scroll so SIGN OUT / SAVE / NOT NOW are always reachable (kremsicle: "cant see what bottom buttons say") */
 @keyframes dataDrop{from{transform:translateY(-100%);}to{transform:translateY(0);}}
 .data-hdr{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--acc);margin-bottom:8px;}
 .data-p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--t2);line-height:1.35;margin:0 0 14px;}
@@ -1825,7 +1826,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.130 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.131 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1938,7 +1939,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.130 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.131 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2091,7 +2092,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.130 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.131 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2513,7 +2514,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.130
+// LOCK IN v3.5.131
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2963,7 +2964,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.130'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.131'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9083,7 +9084,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.130</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.131</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9151,8 +9152,10 @@ function psBuild(lifeState,life){
     H+='</div>'; // end blocks
 
     var g=psTxt('es-grade-big'),rk=psTxt('es-rank'),vd=psTxt('es-verdict');
+    // v3.5.131 the ps-ring was hardcoded GREEN — an F showed a green ring ("f is green???"). Color it by the actual grade.
+    var _g0=(g||'').charAt(0), _gclr=(g==='F')?'#cc3820':(_g0==='A')?'#1f9d57':(g==='B')?'#2a7d9a':(_g0==='C'||_g0==='D')?'#b8760f':(_g0==='F')?'#cc3820':'#1f9d57';
     var lifeSum=(lifeState==='ok'&&life&&life.sessions)?((life.avg_pph||'\u2014')+' PPH \u00b7 '+(life.avg_integrity||'\u2014')+' INTEG \u00b7 '+(life.incidents||0)+' INC \u00b7 '+(life.sessions||0)+' SESS'):(lifeState==='anon'?'\u2014 log in to track \u2014':'\u2026');
-    H+='<div class="ps-verdict"><div class="ps-ring"><span>'+g+'</span></div>'+
+    H+='<div class="ps-verdict"><div class="ps-ring" style="border-color:'+_gclr+'"><span style="color:'+_gclr+'">'+g+'</span></div>'+
       '<div class="ps-vmid"><div class="rk">'+rk+'</div><div class="ln">'+vd+'</div></div>'+
       '<div class="ps-vsum"><div class="vr s"><span class="lb">SESSION</span><span class="va">'+g+' \u00b7 '+Math.round((typeof avgPPH==='function')?avgPPH():0)+' PPH \u00b7 '+avgInt+' INTEG \u00b7 '+inc.length+' INC</span></div>'+
       '<div class="vr l"><span class="lb">LIFETIME</span><span class="va">'+lifeSum+'</span></div></div></div>';
