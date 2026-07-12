@@ -26,7 +26,7 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.110
+   LOCK IN v3.5.111
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
@@ -1575,10 +1575,11 @@ body[data-cb="trit"]{
 .lb-at-val{font-family:'Bebas Neue',cursive;font-size:24px;line-height:1;color:#2a1a08;margin:5px 0 2px;font-variant-numeric:tabular-nums;}
 .lb-at.shame .lb-at-val{color:#b3401f;}
 .lb-at-nm{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;color:#5c4a30;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.lb-tabs{display:flex;gap:6px;margin-bottom:12px;}
-.lb-tab{flex:1;padding:8px 0;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:#a08b6a;background:#ece7d8;border:1px solid #d8cdb4;border-radius:4px;cursor:pointer;}
-.lb-tab.active{color:#2a1a08;background:#fff;border-color:#8b4513;box-shadow:inset 0 -2px 0 #8b4513;}
-.lb-tab:hover{color:#2a1a08;}
+/* v3.5.111 2x2 grid, high-contrast (no more gray-on-gray) */
+.lb-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
+.lb-tab{padding:11px 0;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:#4a3620;background:#fbf7ec;border:1.5px solid #c2b291;border-radius:6px;cursor:pointer;}
+.lb-tab.active{color:#241608;background:#fff;border-color:#8b4513;box-shadow:inset 0 -3px 0 #d4820f;}
+.lb-tab:hover{color:#241608;border-color:#a07c48;}
 .lb-follow-row{display:flex;gap:6px;margin-bottom:12px;}
 #lb-follow-input{flex:1;min-width:0;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:14px;color:#2a1a08;background:#fff;border:1px solid #c8b898;border-radius:4px;}
 #lb-follow-input:focus{outline:none;border-color:#8b4513;}
@@ -1770,7 +1771,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.110 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.111 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1883,7 +1884,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.110 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.111 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2036,7 +2037,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.110 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.111 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2364,11 +2365,12 @@ body[data-cb="trit"]{
 </div></div>
 <!-- v3.5.13 LEADERBOARD -->
 <div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">SOCIAL</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
+  <!-- v3.5.111 2x2 tabs: ME + FRIENDS on top (you first), DAILY + HALL below -->
   <div class="lb-tabs">
-    <button class="lb-tab active" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
-    <button class="lb-tab" id="lb-tab-me" onclick="lbTab('me')">◉ ME</button>
-    <button class="lb-tab" id="lb-tab-hall" onclick="lbTab('hall')">★ HALL</button>
+    <button class="lb-tab active" id="lb-tab-me" onclick="lbTab('me')">◉ ME</button>
     <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">♦ FRIENDS</button>
+    <button class="lb-tab" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
+    <button class="lb-tab" id="lb-tab-hall" onclick="lbTab('hall')">★ HALL</button>
   </div>
   <div id="lb-pane-me" style="display:none">
     <div class="pf-body" id="lb-me-body" style="padding:0"><div class="pf-loading">Loading your record…</div></div>
@@ -2446,7 +2448,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.110
+// LOCK IN v3.5.111
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8556,7 +8558,7 @@ function lbTab(which){
 // v3.5.85 SOCIAL hub entry — one button, one overlay. v3.5.86 DAILY leads (the crown jewel) for everyone.
 function openSocial(tab){
   var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.add('vis');
-  lbTab(tab||'daily');
+  lbTab(tab||'me'); // v3.5.111 ME first
 }
 // v3.5.86 DAILY render: the world's #1 loader gets the crown hero, then the board.
 function lbRenderDaily(rows){
@@ -8924,7 +8926,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.110</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.111</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
