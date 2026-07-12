@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.112
+   LOCK IN v3.5.113
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.113 - MOBILE PASS pt.4: THE D-PAD GAME-BREAKER. On mobile the NC/staging tile wheel fanned out from screen-center at bottom:112px, +/-162px wide, overlapping BOTH bottom-corner controls: the left d-pad/stick (it sat right on the DOWN button, so you literally could not aim down) and the right DROP/ROT. Fix: on m-portrait the wheel anchor is raised to bottom:288px so tiles fan in the clear band ABOVE the control stack (wall still tappable between them). Verified at 375x812: staging tiles occupy screen-y 430-533, every control starts at 566+ (a 33px clear gap, ZERO overlaps with the d-pad down button, DROP, or ROT). NEXT: a real touch mechanic for breaking a smalls bag (double-click doesn't exist on touch), linehaul-as-a-line, throw-message reframe to match FLAG.
    CHANGE LOG v3.5.112 - MOBILE PASS pt.3: BOTTOM BAR (the "unbearable" strip). BREAK JAM icon lightning->box (a jam is boxes, not a lightning bolt). THROW -> FLAG (the reframe: "flag a hand" — wave a coworker down for help reaching a top gap; they toss you a smalls bag; overuse draws heat — zero "throwing packages" language; internal throwBox() unchanged). SAFETY indicator legible: 11px -> 14px BOLD. NC/staging pill sized to match the strip buttons (11px -> 13px bold) so it stops looking like "a different game." Verified in-browser. NEXT: reframe the throw MESSAGES (HEY/toss language) to match FLAG, linehaul-as-a-line, the NC-covers-d-pad game-breaker.
    CHANGE LOG v3.5.111 - MOBILE PASS pt.2: SOCIAL TABS 2x2 + LEGIBILITY. The four SOCIAL tabs were a gray-on-gray row. Now a 2x2 grid: ME + FRIENDS on top (you first), DAILY + HALL below; ME is the default tab (openSocial defaults to me). Dark ink text (#4a3620 / active #241608) on cream/white with a 1.5px border + amber active underline — real contrast on the clipboard. Verified: order ME/FRIENDS/DAILY/HALL, 2 columns, ME active, dark text.
    CHANGE LOG v3.5.110 - MOBILE PASS pt.1: GRADE + LINEHAUL SLOP. (1) EMPTY WALL = F: a 0-piece wall was grading D "Trailer sealed, but loose" (the density gate uses avg SEALED density = 1 before any seal, so an empty live wall read full-density). Now countFilled()<=0 -> hard F "NOT LOADED" ("showing up is half the job — loading it is the other half"). Also reworded the D verdict off the false "Trailer sealed" (the OPS drawer is a LIVE mid-load check, not a seal). (2) LINEHAUL double-label + mislabel fix: pushMsg now reads the speaker OUT of the body ("👷 MANAGER: HEY" -> label MANAGER + body "HEY"), so no more "MANAGER: MANAGER" and no more COWORKER-labeled manager lines. Back-to-back DUPLICATE dispatch lines are skipped (no spam). Removed the "(the toss slides — this time)" exploit tell from the hydration-cover line. Verified in-browser. NEXT in the mobile pass: SOCIAL tabs 2x2 + legibility (gray-on-gray), the bottom button bar (break-jam icon, throw/nc sizing, safety legibility), linehaul-as-a-line, throw reframing.
@@ -1242,6 +1243,8 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 #ov-staging{position:fixed;inset:0;z-index:400;display:none;pointer-events:none;}
 #ov-staging.vis{display:block;}
 .stg-wheel{position:fixed;left:50%;bottom:112px;width:0;height:0;pointer-events:none;}
+/* v3.5.113 MOBILE GAME-BREAKER FIX: at bottom:112 the staging fan (±162px) overlapped BOTH bottom-corner controls — the left d-pad/stick (blocked the DOWN button) and the right DROP/ROT. Raise the anchor above the control stack (d-pad tops at ~256px) so tiles fan in clear space; the wall stays tappable between them. */
+body.m-portrait .stg-wheel{bottom:288px;}
 .stg-tiles{position:absolute;left:0;top:0;}
 .stg-tile{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;width:58px;height:54px;border-radius:50% 50% 9px 9px/64% 64% 9px 9px;border:1px solid rgba(200,121,30,.5);background:rgba(24,16,9,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--t1);text-align:center;line-height:1.12;box-shadow:0 3px 14px rgba(0,0,0,.55);}
 .stg-tile:hover{border-color:var(--acc-bright);}
@@ -1774,7 +1777,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.112 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.113 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1887,7 +1890,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.112 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.113 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2040,7 +2043,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.112 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.113 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2451,7 +2454,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.112
+// LOCK IN v3.5.113
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8929,7 +8932,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.112</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.113</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
