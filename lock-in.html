@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.127
+   LOCK IN v3.5.128
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.128 - DENSITY/INTEGRITY OVERHAUL (grade credibility — now the boards take real signed-in data). Density was raw fill up to wall height (the v3.5.50 solidity), so two walls with the same integrity graded the same even if one was a loose tower of pillars and floaters. Density is now the BLEND of two axes (Vince's spec): the SHELF axis (row fill inside the bounding box — full shelves beat scattered columns) TIMES the COLUMN axis (each occupied column's fill from the floor up to its own top — punishes floating pieces and buried voids). You can't max one axis to hide the other; a perfect wall (full shelves, all grounded) still = 1.0. This single wallSolidity() feeds both the grade gate (densHistory) AND the seal payout, so the reward is honest too. Verified metric: perfect=1.0, two full shelves=1.0, lone pillar=0.06, floating slab=0.008, five spread columns=0.29, a good wall w/ a few gaps=0.96. Verified grade at equal integrity: elite grounded wall (0.97 dens)=A, good (0.90)=B, loose/floaty (0.42)=D, cheap pillars (0.29)=F — structure now decides the grade, and A is reserved for elite loads. Does NOT touch the WIN/PERFECT-LOAD gate (that uses raw pack% — unchanged). NEXT: placement ghost (release blocker), leaderboard pass-2, tire nesting.
    CHANGE LOG v3.5.127 - SIGN-IN PROMPT (kremsicle: "add a confirmation when you click a game while not signed in — log in or continue as guest"). Launching any scored game while not clocked in (Trailer-Load, Daily, Practice, Gauntlet, Tour, Smalls Sort) now pops a prompt: CLOCK IN / SIGN UP (opens the account tab) or CONTINUE AS GUEST (plays now, nothing saved). guardLaunch() gates each menu card; picking guest sets _guestAck so it never nags again this session, and if you sign in later isSignedIn() short-circuits the gate entirely. Training (a no-score demo) is not gated. Large legible copy, uniform action cards, no fine print. Verified: signed-out shows the prompt (no launch), CONTINUE AS GUEST runs the pending game + stops nagging, signed-in launches straight through, CLOCK IN opens the account tab. This closes kremsicle's entire pen-test list. NEXT: back to Vince.
    CHANGE LOG v3.5.126 - TRUTHFUL BOX LABELS (kremsicle: "labels say 'hvy' when they aren't heavy... no correlation with the boxes"). Two lies fixed. (1) The pickLabel pool handed out DO NOT STACK and KEEP DRY — handling claims the game NEVER models (they're only cosmetic tape). Removed; what's left all corresponds to a real mechanic: FRAGILE/GLASS = the crush mechanic, HAZMAT/FLAM/TOXIC = hazmat, HEAVY = large freight only (verified HVY appears on large boxes ONLY), SP = non-conveyable, and the service tiers (GND/OVN/EXP/PRI/MEDIA) are honest routing speeds, not physical claims. (2) The border glow: large/NC boxes wore a FRAGILE-RED border, so a large HEAVY box read as "fragile with HVY on the front." The border now follows real handling — fragile/glass = red (matches crush), large/NC = a neutral steel border. Verified: 4000 rolls show zero DNS/KEEP DRY, HVY large-only. NEXT: sign-in prompt (log in or continue as guest).
    CHANGE LOG v3.5.125 - SLIP vs COLLAPSE (Vince's call: "slips are okay, that's how you learn"). collapseFreeStack logged EVERY physics shed as a "collapse" on the record — so a single loose piece read as a collapse (kremsicle's "1 collapse on a run I never collapsed"). Now 1-2 pieces coming loose is a SLIP: its own counter (S.slips), a light touch (integrity -5 not -18, small shake, gentle "😅 SLIP — piece came loose, back on the belt" nudge), and it does NOT hit the record or the collapse-escalation ladder. Only 3+ pieces is a real COLLAPSE (full cost + escalation). A dropped HAZMAT is a hurt-somebody event at ANY size and still ends the run. Verified: 1pc + 2pc = slip (0 collapses), 3pc = 1 collapse, hazmat slip still schedules sent-home. (Slips are tracked now so levels/achievements can farm them out later.) NEXT: box labels reflect real box attributes, sign-in prompt.
@@ -1822,7 +1823,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.127 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.128 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1935,7 +1936,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.127 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.128 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2088,7 +2089,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.127 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.128 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2510,7 +2511,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.127
+// LOCK IN v3.5.128
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7656,13 +7657,29 @@ function cdLinehaulRender(){
 // v3.5.38 live session grade — same math as the end-report (fillTelemetryTiles keeps the canonical copy; keep both in sync if the formula changes)
 // v3.5.50 SOLIDITY — strict "gapless fill up to the wall's height" (real fill, not cheap volume).
 // 1.0 only if every cell below the tallest column is filled; a gappy or sparse-tall wall reads much lower.
+// v3.5.128 STRUCTURED DENSITY (Vince's grade-credibility overhaul). Raw fill gave cheap/loose walls a rank — a couple
+// pillars or a floating slab read "dense enough" and pulled an inflated grade + seal payout. Density is now the BLEND
+// of two axes: the SHELF axis (row fill inside the bounding box — full shelves beat scattered columns) TIMES the
+// COLUMN axis (each occupied column's fill from the floor up to ITS OWN top — punishes floating pieces and buried
+// voids). A perfect wall (full shelves, all grounded) still = 1.0; a loose OR floaty wall drops on the axis it cheated,
+// and the product means you can't max one axis to hide the other. Feeds the grade gate (densHistory) + the seal payout.
 function wallSolidity(grid){
   if(!grid)return 0;
-  var maxH=0,x,y;
-  for(x=0;x<GW;x++){for(y=0;y<GH;y++){if(grid[y]&&grid[y][x]){var hh=GH-y;if(hh>maxH)maxH=hh;break;}}}
-  if(maxH<=0)return 0;
-  var fl=(typeof countFilled==='function')?countFilled():0;
-  return Math.max(0,Math.min(1,fl/(GW*maxH)));
+  var x,y,maxH=0,filled=0,colTop=[],colFill=[];
+  for(x=0;x<GW;x++){colTop[x]=0;colFill[x]=0;}
+  for(y=0;y<GH;y++)for(x=0;x<GW;x++){
+    if(grid[y]&&grid[y][x]){
+      filled++;var h=GH-y;if(h>maxH)maxH=h;
+      if(colTop[x]===0)colTop[x]=h; // first hit scanning top-down = this column's top height
+      colFill[x]++;
+    }
+  }
+  if(maxH<=0||filled<=0)return 0;
+  var rowFill=filled/(GW*maxH);              // SHELF axis (the v3.5.50 solidity): full rows >> scattered fill
+  var cSum=0,cN=0;                            // COLUMN axis: groundedness of each occupied column (1 = no gaps under it)
+  for(x=0;x<GW;x++){if(colTop[x]>0){cSum+=colFill[x]/colTop[x];cN++;}}
+  var colDens=cN?cSum/cN:0;
+  return Math.max(0,Math.min(1,rowFill*colDens));
 }
 function sessionGrade(){
   var ih=(typeof S!=='undefined'&&S&&S.intHistory)?S.intHistory:[],ai=100,ais=0,k;
@@ -9048,7 +9065,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.127</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.128</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
