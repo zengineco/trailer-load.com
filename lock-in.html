@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.121
+   LOCK IN v3.5.122
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.122 - JAILBREAK KILL pt.5: POST-SORT LIED (the "29 PCS" integrity + 100%-on-empty). kremsicle: "load quality... walls sealed are wrong, didnt even play/place anything." Two truthfulness bugs on the SHIFT COMPLETE screen: (1) the AVG INTEGRITY tile was fed shiftState.totalBoxes+' PCS' — a piece count in the integrity slot ("29 PCS"). It now shows the real average integrity %. (2) integrity AND final-support defaulted to a lying 100% (and clockOut's avgInt defaulted to 100) when NOTHING was sealed — so an empty/near-empty session read as a perfect wall. Empty session now reads 0% integrity + 0% support, not 100%. Verified: filled wall shows real 90% integrity, empty shows 0%/0% (was "29 PCS"/100%). STILL OPEN, flagged for Vince's call: the "1 COLLAPSE / 1 HAZ INCIDENT on a run with neither" is the PHYSICS sweep counting a single-piece shed (collapseFreeStack) as a "collapse" on the record — real to the engine, invisible to the player. Design question: should a 1-piece physics shed count as a logged collapse, or only a multi-piece wall failure? NEXT: infinite daily score, box labels, sign-in prompt.
    CHANGE LOG v3.5.121 - JAILBREAK KILL pt.4: THE STUCK WORK STOPPAGE. kremsicle: "if this screen pops up during tour and you go to admin then click reset, it stays on this screen into main menu and into other gamemodes" + "timer doesnt move." The WORK STOPPAGE overlay's .vis is removed ONLY inside the level "strike" tick (when the freeze timer expires) — but reset/menu/mode-change stop that tick, so the frozen full-screen overlay persisted everywhere and its countdown froze at its last value. New _killStoppage() (hides #work-stoppage + #strike-wrap, thaws _M.frozen) is now called from EVERY exit path: quickReset (the admin reset), restartGame (TRY AGAIN), returnToMenu (via clearMechanic), and showStartMenu (belt-and-suspenders). Verified: forced visible, then quickReset / returnToMenu / showStartMenu / startTrailerLoad each clear it (all false). (Confirms the v3.5.119 _shown fix too — a fixed overlay now reads as visible.) NEXT: infinite daily score, post-sort false incidents, box labels.
    CHANGE LOG v3.5.120 - JAILBREAK KILL pt.3: TRUNCATED MODE NAMES ("PRACTIC"/"GAUNTLE"). In the MINI-GAMES clipboard the mode names were clipped by the card edge — a 34px flex-ROW name sharing a ~185px 2-column cell with the icon + a description, under overflow:hidden. On the clipboard launcher the card now stacks (icon over name), the name WRAPS and is sized to fit (26px), and the description (which wasn't showing anyway) is hidden. Verified: PRACTICE / GAUNTLET / TOUR / SMALLS SORT all render in full, none clipped, all within the card. NEXT: infinite daily score, stuck WORK STOPPAGE, post-sort false incidents, box labels.
    CHANGE LOG v3.5.119 - JAILBREAK KILL pt.2: HOLD-R ON THE HOME SCREEN + the _shown() root cause. kremsicle: "holding r makes the home-screen chat go crazy; hold r and right-click on home screen, site reloads." The R (rotate) and B (break-jam) key handlers sat ABOVE the kbPlayActive() gate, so they fired on the menu. Moved them below the gate — BUT that alone didn't fix it, because the real bug was deeper: _shown(id) tested e.offsetParent!==null, and offsetParent is ALWAYS null for position:fixed elements. Every fixed overlay (start-menu, pause, end, post-sort, write-up...) was therefore reported as HIDDEN, so kbPlayActive's start-menu guard never tripped — keyboard play leaked behind the menu. _shown now uses offsetWidth/offsetHeight (0 on display:none, >0 when visible, correct for fixed). Verified: on the home menu R/B fire 0 times (were 10/5) and kbPlayActive is false; in-game R still rotates. This also hardens the loop watchdog's overlay check, which used the same broken _shown. (Also confirmed pt.4 from the ledger — the write-up SENT-HOME cap at 4 — is already live since v3.5.109 and fires end-to-end across churn/collapse/productivity; the #23 screenshot was the pre-fix v3.5.108.) NEXT: infinite daily score, stuck WORK STOPPAGE, post-sort false incidents, box labels, truncated mode names.
@@ -1797,7 +1798,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.121 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.122 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1910,7 +1911,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.121 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.122 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2063,7 +2064,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.121 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.122 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2474,7 +2475,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.121
+// LOCK IN v3.5.122
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -8541,7 +8542,10 @@ function endGameShift(reason){
     document.getElementById('es-score').textContent=S.totalScore+(G.score||0);
     document.getElementById('es-pph').textContent=getPPH();
     document.getElementById('es-trucks').textContent=shiftState.walls;
-    document.getElementById('es-int').textContent=shiftState.totalBoxes+' PCS';
+    // v3.5.122 kremsicle: the AVG INTEGRITY tile showed "29 PCS" — a piece count in the integrity slot. Show the real
+    // average integrity %, and 0% (not a lying 100%) when nothing was actually sealed this session.
+    var _shInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):((shiftState.totalBoxes||0)>0?100:0);
+    document.getElementById('es-int').textContent=_shInt+'%';
     var _inc=(S.incidents||[]).length;document.getElementById('es-incidents').textContent=_inc+(_inc>=2?' ⚠':'');
     fillTelemetryTiles();if(typeof zEndSession==='function')zEndSession();
     document.getElementById('end-title').innerHTML='SHIFT<br>COMPLETE';
@@ -8975,7 +8979,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.121</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.122</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10055,7 +10059,7 @@ function fillTelemetryTiles(){
   set('es-accuracy',(_tp+_rej)>0?Math.round(_tp/(_tp+_rej)*100)+'%':'100%');
   set('es-pertrailer',_tr>0?Math.round(_tp/_tr):_tp);
   set('es-fill',(typeof G!=='undefined'&&G.grid)?Math.round(countFilled()/(GW*GH)*100)+'%':'0%');
-  set('es-support',(typeof G!=='undefined'&&G.grid)?Math.round(supportScore(G.grid)*100)+'%':'0%');
+  set('es-support',(typeof G!=='undefined'&&G.grid&&countFilled()>0)?Math.round(supportScore(G.grid)*100)+'%':'0%'); // v3.5.122 empty wall = 0% support, not a lying 100%
   set('es-nests',S.nests||0);set('es-drinks',S.drinks||0);
   // ── v2.1.39 SESSION GRADE (hero rating) ──
   try{finalizeWall();}catch(_fg){} // v3.5.57 make sure the wall on screen is in the histories before we grade it
@@ -10073,7 +10077,7 @@ function clockOut(){
   S.bestPPH=Math.max(S.bestPPH||0,getPPH());
   finalizeWall(); // v3.5.57 capture the wall on screen (no-op if already sealed)
   if(gameMode==='shift'&&typeof shiftState!=='undefined')shiftState.totalBoxes+=placed;
-  var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
+  var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):((S.totalPieces||0)>0?100:0); // v3.5.122 no lying 100% on an empty session
   var trucks=(gameMode==='shift'&&typeof shiftState!=='undefined')?shiftState.walls:(S.trucksDone||S.truck||1);
   var inc=(S.incidents||[]).length;
   document.getElementById('es-score').textContent=S.totalScore;
