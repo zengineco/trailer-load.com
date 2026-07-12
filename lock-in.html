@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.108
+   LOCK IN v3.5.109
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.109 - SENT-HOME AT 4 WRITE-UPS + leaderboard cleanup. The write-up popup just resumed forever — the jailbreaker stacked 23 with no consequence. NOW: every documented write-up counts (S.writeups); the 4th this shift = SENT HOME (WRITEUP_SENT_HOME=4). The 4th write-up shows the SENT_HOME doc ("too many write-ups... clocked out for the day, come back and load it clean"), the button flips to SIGN — CLOCK OUT, and signing it ends the game (endGame). Verified: writeups 1-3 continue, #4 = sent-home doc + game-over on sign. Also (DB, no code): removed the autoclicker exploit sessions — kreminal's impossible 20,019 + 16,927 pph placements deleted; peak-pph ceiling is now a sane 2,665.
    CHANGE LOG v3.5.108 - LOGIN PERSISTENCE FIX (THE largest gap) + USERNAME BUTTON. THE BUG: zAuthLoad() — which restores the saved session from localStorage — was ONLY called inside zOpenData() (the ADMIN account overlay). It was NEVER called at boot. So every page load/reload read as logged-OUT even with a valid saved session; the daily then played as ANONYMOUS and nothing posted. "Zero persistence," exactly as reported. FIX: call zAuthLoad() in the boot sequence (after initTruck) so the session restores on every load. Verified: seed a session -> reload -> loggedIn=true on boot, uid+handle restored. USERNAME BUTTON: the top-corner "SOCIAL" button is now the login indicator — shows your NAME (cyan "signed-in" style) when logged in, "CLOCK-IN" when not; click it -> your record (openSocial(me)). zAuthStatus updates it on login/logout/boot. (Ranking-in-the-button = a couple weeks out.) This unblocks the whole daily->leaderboard chain.
    CHANGE LOG v3.5.107 - ALL-TIME DAILY STRIP (pass 2). New Supabase RPC lockin_daily_alltime() (SECURITY DEFINER, anon+authenticated EXECUTE) returns the daily records that stand: Highest score + Cleanest from lockin_daily, Fastest complete + Slowest winner from lockin_walls WHERE mode=daily AND density>=85 (joined to lockin_handles for the name). Wired as a strip under the daily crown (lb-alltime): 4 cards, fame amber rail, shame rust rail on Slowest Winner. Verified live: Highest=vince 259,008, Cleanest=vince 100%, Fastest/Slowest=kreminal 2:45. NOTE: "Most nested" is intentionally omitted — nests aren't stored per wall yet (would need a schema column); everything shown is real, nothing faked.
    CHANGE LOG v3.5.106 - NC BRIEFING TEXT FIX. Rule 4 said tires/SP/oversize "wait in the side panel" — but the staging tray is at the BOTTOM, not the side. Text now reads "wait in the staging tray at the bottom." (Slop = the words not matching the actual layout.) Also verified end-to-end on live: the DAILY sign-in + submit pipeline works top to bottom (fresh account signup->signin->submit->on the board; real players on today board), and the v3.5.102 uid-from-sub fix is deployed. No logic change here beyond the text.
@@ -1768,7 +1769,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.108 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.109 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1881,7 +1882,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.108 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.109 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -1899,7 +1900,7 @@ body[data-cb="trit"]{
     <div class="wu-why" id="wu-why">—</div>
     <div class="wu-ack">
       <span id="wu-ack-note">By signing, you acknowledge the safety briefing. Repeat infractions escalate — five sends you to a practice trailer.</span>
-      <button onclick="signWriteup()">✍ SIGN &amp; CONTINUE</button>
+      <button id="wu-signbtn" onclick="signWriteup()">✍ SIGN &amp; CONTINUE</button>
     </div>
   </div>
 </div>
@@ -2034,7 +2035,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.108 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.109 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2444,7 +2445,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.108
+// LOCK IN v3.5.109
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4699,6 +4700,7 @@ var WRITEUP_DOCS={
   FRAGILE_CRUSH:{t:'REPEATED CRUSHED FRAGILES',w:'Fragile freight rides on TOP, nothing heavy above it. You keep burying them — crushed fragiles are damage claims. Lock a shelf over them or keep them high.'},
   COLLAPSE:{t:'REPEATED WALL COLLAPSES',w:'Your wall keeps coming down. Taper your stacks (wide base, narrow top) and lock shelves. Repeated collapses get documented.'},
   ACCUMULATED:{t:'MULTIPLE SAFETY VIOLATIONS',w:'You have stacked up safety violations this session. The manager is now documenting each one. Slow down and load it clean.'},
+  SENT_HOME:{t:'SENT HOME — TOO MANY WRITE-UPS',w:'That is four documented write-ups this shift. The manager has seen enough — you are clocked out for the day. It is not the end of your career: come back, slow down, and load it clean. Sign to clock out.'},
   PRODUCTIVITY:{t:'PACE BELOW HUB STANDARD',w:'The hub runs a ~250 pph standard, counted in REAL FREIGHT — boxes. Smalls and bags don’t count, and breaking a bag down to chink gaps is time you’re not moving freight. Your pace is under the line. Keep the belt fed and move the boxes.'},
   CHURN:{t:'REPEATED PICK-UP / PUT-DOWN',w:'You keep grabbing the same freight and setting it right back down. That is not loading — it is churn, and on the floor it reads as not understanding the job (or not caring). An unproductive loader gets buried and becomes a safety problem. Place the piece, move to the next. This is a documented productivity conversation — PIP territory.'}
 };
@@ -4716,18 +4718,24 @@ function productivityLadder(pk){
     if(typeof raiseWriteup==='function')raiseWriteup('CHURN',S.prodIncidents.length);
   }
 }
+var WRITEUP_SENT_HOME=4; // v3.5.109 the Nth documented write-up this shift = SENT HOME (game over)
 function raiseWriteup(offense,num){
-  var doc=WRITEUP_DOCS[offense]||WRITEUP_DOCS.ACCUMULATED;
+  S.writeups=(S.writeups||0)+1; // v3.5.109 count every documented write-up
+  var terminal=(S.writeups>=WRITEUP_SENT_HOME);
+  var doc=terminal?WRITEUP_DOCS.SENT_HOME:(WRITEUP_DOCS[offense]||WRITEUP_DOCS.ACCUMULATED);
   var who=(typeof zWho==='function')?zWho():'GUEST'; // v3.5.76 session-based identity, consistent with the report + lifetime
   function set(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
   set('wu-loader',who);set('wu-date',new Date().toISOString().slice(0,10));
-  set('wu-num',(num!=null?num:(S.incidents||[]).length));set('wu-title',doc.t);set('wu-why',doc.w); // v3.5.90 num override so productivity write-ups show the productivity count
+  set('wu-num',S.writeups);set('wu-title',doc.t);set('wu-why',doc.w); // v3.5.109 wu-num = the running write-up count
+  var _sb=document.getElementById('wu-signbtn');if(_sb)_sb.textContent=terminal?'✍ SIGN — CLOCK OUT':'✍ SIGN & CONTINUE';
+  if(terminal&&G)G._sentHome=true; // v3.5.109 sign -> game over
   paused=true;if(animF){cancelAnimationFrame(animF);animF=null;}
   var ov=document.getElementById('ov-writeup');if(ov)ov.classList.add('vis');
   if(typeof playSfx==='function')playSfx('lose');
 }
 function signWriteup(){
   var ov=document.getElementById('ov-writeup');if(ov)ov.classList.remove('vis');
+  if(G&&G._sentHome){G._sentHome=false;if(typeof endGame==='function'){endGame('SENT HOME — 4 write-ups this shift. Come back and load it clean.',false);}return;} // v3.5.109 4th write-up = sent home
   if(gOver)return;
   paused=false;lastLoopT=0;animF=requestAnimationFrame(loop);
 }
@@ -8904,7 +8912,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.108</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.109</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
