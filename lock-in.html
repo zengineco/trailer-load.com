@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.109
+   LOCK IN v3.5.110
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.110 - MOBILE PASS pt.1: GRADE + LINEHAUL SLOP. (1) EMPTY WALL = F: a 0-piece wall was grading D "Trailer sealed, but loose" (the density gate uses avg SEALED density = 1 before any seal, so an empty live wall read full-density). Now countFilled()<=0 -> hard F "NOT LOADED" ("showing up is half the job — loading it is the other half"). Also reworded the D verdict off the false "Trailer sealed" (the OPS drawer is a LIVE mid-load check, not a seal). (2) LINEHAUL double-label + mislabel fix: pushMsg now reads the speaker OUT of the body ("👷 MANAGER: HEY" -> label MANAGER + body "HEY"), so no more "MANAGER: MANAGER" and no more COWORKER-labeled manager lines. Back-to-back DUPLICATE dispatch lines are skipped (no spam). Removed the "(the toss slides — this time)" exploit tell from the hydration-cover line. Verified in-browser. NEXT in the mobile pass: SOCIAL tabs 2x2 + legibility (gray-on-gray), the bottom button bar (break-jam icon, throw/nc sizing, safety legibility), linehaul-as-a-line, throw reframing.
    CHANGE LOG v3.5.109 - SENT-HOME AT 4 WRITE-UPS + leaderboard cleanup. The write-up popup just resumed forever — the jailbreaker stacked 23 with no consequence. NOW: every documented write-up counts (S.writeups); the 4th this shift = SENT HOME (WRITEUP_SENT_HOME=4). The 4th write-up shows the SENT_HOME doc ("too many write-ups... clocked out for the day, come back and load it clean"), the button flips to SIGN — CLOCK OUT, and signing it ends the game (endGame). Verified: writeups 1-3 continue, #4 = sent-home doc + game-over on sign. Also (DB, no code): removed the autoclicker exploit sessions — kreminal's impossible 20,019 + 16,927 pph placements deleted; peak-pph ceiling is now a sane 2,665.
    CHANGE LOG v3.5.108 - LOGIN PERSISTENCE FIX (THE largest gap) + USERNAME BUTTON. THE BUG: zAuthLoad() — which restores the saved session from localStorage — was ONLY called inside zOpenData() (the ADMIN account overlay). It was NEVER called at boot. So every page load/reload read as logged-OUT even with a valid saved session; the daily then played as ANONYMOUS and nothing posted. "Zero persistence," exactly as reported. FIX: call zAuthLoad() in the boot sequence (after initTruck) so the session restores on every load. Verified: seed a session -> reload -> loggedIn=true on boot, uid+handle restored. USERNAME BUTTON: the top-corner "SOCIAL" button is now the login indicator — shows your NAME (cyan "signed-in" style) when logged in, "CLOCK-IN" when not; click it -> your record (openSocial(me)). zAuthStatus updates it on login/logout/boot. (Ranking-in-the-button = a couple weeks out.) This unblocks the whole daily->leaderboard chain.
    CHANGE LOG v3.5.107 - ALL-TIME DAILY STRIP (pass 2). New Supabase RPC lockin_daily_alltime() (SECURITY DEFINER, anon+authenticated EXECUTE) returns the daily records that stand: Highest score + Cleanest from lockin_daily, Fastest complete + Slowest winner from lockin_walls WHERE mode=daily AND density>=85 (joined to lockin_handles for the name). Wired as a strip under the daily crown (lb-alltime): 4 cards, fame amber rail, shame rust rail on Slowest Winner. Verified live: Highest=vince 259,008, Cleanest=vince 100%, Fastest/Slowest=kreminal 2:45. NOTE: "Most nested" is intentionally omitted — nests aren't stored per wall yet (would need a schema column); everything shown is real, nothing faked.
@@ -1769,7 +1770,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.109 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.110 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1882,7 +1883,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.109 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.110 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2035,7 +2036,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.109 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.110 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2445,7 +2446,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.109
+// LOCK IN v3.5.110
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3998,7 +3999,7 @@ function takeDrink(){
     G.score=Math.max(0,(G.score||0)-_dpen);
     S.waterSabotage=(S.waterSabotage||0)+1;
     showBanner('\ud83d\udeab OVER-HYDRATING TO DODGE SAFETIES IS SABOTAGE \u2014 logged. \u2212'+_dpen+' CUBES'+(cleared?' (warning still cleared).':'.'),'danger',2400);
-  }else if(_covered){showBanner('\ud83d\udc77 MANAGER: \u2026THANK YOU FOR STAYING HYDRATED. \ud83d\udca7<br><span style="font-size:.5em">(the toss slides \u2014 this time.)</span>','ok',2400);}
+  }else if(_covered){showBanner('\ud83d\udc77 MANAGER: \u2026THANK YOU FOR STAYING HYDRATED. \ud83d\udca7','ok',2400);}
   else if(cleared){showBanner('\ud83d\udca7 WATER BREAK \u2014 warning cleared (still on the record as washed).','ok',1900);}
   else if(G.drinks===1)showBanner('\ud83d\udca7 HYDRATED \u2014 1 is par. A second nets a bonus.','',1400);
   else if(G.drinks===2)showBanner('\ud83d\udca7 TOPPED OFF \u2014 hydration bonus secured.','ok',1400);
@@ -7474,13 +7475,20 @@ function _msgSource(type){return type==='ok'?'COWORKER':'MANAGER';}
 var _linehaulLog=[],_linehaulOpen=false; // v3.5.19 persistent dispatch record (the Linehaul board)
 function pushMsg(html,type,source){
   if(html==null)return;
-  var src=source||_msgSource(type);
   var body=(''+html).replace(/<br\s*\/?>/gi,' — ');
-  // record EVERY line for the Linehaul board so nothing is missed
-  _linehaulLog.push({src:src,type:type||'',body:body});
-  if(_linehaulLog.length>80)_linehaulLog.shift();
-  if(_linehaulOpen&&typeof lhRender==='function')lhRender();
-  if(_drawerTab==='linehaul'&&typeof cdLinehaulRender==='function')cdLinehaulRender(); // v3.5.37 live LINEHAUL drawer
+  var src=source||_msgSource(type);
+  // v3.5.110 if the line names its own speaker (e.g. "👷 MANAGER: HEY"), use THAT as the label + strip it from the
+  // body. Kills the "MANAGER: MANAGER" double-label AND the COWORKER-labeled manager lines (label = actual speaker).
+  var _sp=body.match(/^[^A-Za-z]*(MANAGER|COWORKER|TRAINER|SUPERVISOR)\s*:\s*/i);
+  if(_sp){src=_sp[1].toUpperCase();body=body.slice(_sp[0].length);}
+  // record for the Linehaul board — but skip an exact back-to-back duplicate so the board doesn't read as spam
+  var _last=_linehaulLog[_linehaulLog.length-1];
+  if(!(_last&&_last.body===body&&_last.src===src)){
+    _linehaulLog.push({src:src,type:type||'',body:body});
+    if(_linehaulLog.length>80)_linehaulLog.shift();
+    if(_linehaulOpen&&typeof lhRender==='function')lhRender();
+    if(_drawerTab==='linehaul'&&typeof cdLinehaulRender==='function')cdLinehaulRender(); // v3.5.37 live LINEHAUL drawer
+  }
   var feed=document.getElementById('msg-feed');if(!feed)return;
   var el=document.createElement('div');el.className='msg-line'+(type?(' msg-'+type):'');
   el.innerHTML='<span class="msg-src">'+src+'</span><span class="msg-body">'+body+'</span>';
@@ -7562,13 +7570,17 @@ function sessionGrade(){
   if(inc>=1)pts=Math.min(pts,88);   // v3.5.50 ANY safety incident caps you out of A+ (elite = spotless)
   if(inc>=2)pts=Math.min(pts,55);
   pts=Math.max(0,Math.min(100,Math.round(pts)));
+  // v3.5.110 EMPTY WALL = F. An unloaded trailer can't grade D on default integrity — showing up is half the job,
+  // and half a job is a failing grade. Detect a truly-empty wall (nothing placed) and hard-fail it.
+  var _filled=(typeof countFilled==='function'&&typeof GW!=='undefined'&&G&&G.grid)?countFilled():((typeof placed!=='undefined')?placed:1);
+  if(_filled<=0){return {pts:0,g:'F',rank:'NOT LOADED',verd:'Nothing in the trailer. Showing up is half the job — loading it is the other half.',clr:'var(--danger)',ai:0,inc:inc};}
   var g,rank,verd,clr;
   if(pts>=95){g='A+';rank='YARD LEGEND';verd='Elite. Near-gapless, dead-square, spotless safety. Almost nobody loads like this.';clr='var(--ok)';}
   else if(pts>=87){g='A';rank='DOCK VETERAN';verd='Tight, square, safe — a hair off perfect. Veteran work.';clr='var(--ok)';}
   else if(pts>=76){g='B';rank='SOLID HAND';verd='Strong wall, but real cubes left behind or a loose spot.';clr='var(--teal)';}
   else if(pts>=62){g='C';rank='GREENHORN+';verd='You made the door. Now make it TIGHT — pack the gaps.';clr='var(--warn)';}
-  else if(pts>=48){g='D';rank='ROOKIE';verd='Trailer sealed, but loose. Fundamentals need work.';clr='var(--warn)';}
-  else{g='F';rank='RE-TRAIN';verd=(inc>=2?'Safety record flagged — slow down.':'Floor first. Support everything. Try again.');clr='var(--danger)';}
+  else if(pts>=48){g='D';rank='ROOKIE';verd='Loose load — real cubes going to waste. Square it up and pack the gaps.';clr='var(--warn)';}
+  else{g='F';rank='RE-TRAIN';verd=(inc>=2?'Safety record flagged — slow down.':'Floor first, support everything, fill the gaps. Run it back.');clr='var(--danger)';}
   return {pts:pts,g:g,rank:rank,verd:verd,clr:clr,ai:Math.round(ai),inc:inc};
 }
 // OPERATIONS = a live mid-load CHECK-IN (mini end-report), NOT a scoreboard rerun.
@@ -8912,7 +8924,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.109</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.110</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
