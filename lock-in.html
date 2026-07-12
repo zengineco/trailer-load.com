@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.117
+   LOCK IN v3.5.118
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.118 - JAILBREAK KILL pt.1: AFK FARM + LOW-RATE WARNING (kremsicle's pen-test). (1) AFK FARM DEAD: he sat in a trailer 44:37 with 0 placed to farm the "longest time" stat — immune because with nothing placed PPH reads 0 and the old checkPPHFail only accumulated when pph>0. New AFK kill: no placement for AFK_LIMIT (5 min) ends the session ("AFK — NO FREIGHT PLACED IN 5 MIN"), with a one-minute warning first. Implemented as a placed-delta inside checkPPHFail so it auto-resets on ANY placement and on a new game (placed drops to 0) — no hooks needed in the placement/start paths — and it's dt-accumulated so it correctly freezes during pause/stoppage. Applies in all modes (you can't farm anywhere). (2) "NO WARNING FOR LOW LOAD RATE": the sub-55 kick fired silently. Now the manager gives a heads-up at the halfway mark ("load rate's under 55 — pick up the pace or you're off the trailer") before the kick, and the kick message reports the real window (3 MINUTES, matching LOW_PPH_FAIL, not the stale hardcoded "2"). Verified: AFK warns at 241s + kicks at 300s, a placement resets the clock, low-rate warns at 90s + kicks at 180s. NEXT jailbreaks: infinite daily score, write-up cap dead at #23, stuck WORK STOPPAGE, post-sort false incidents, hold-R on home screen, box labels, truncated mode names.
    CHANGE LOG v3.5.117 - MOBILE PASS pt.8: TRAINING WAS A SIDEBAR OVER THE WALL. Training runs clean (18-step scripted demo, principle cards advance, wall builds to a seal) — but on a phone the teaching panel was a 290px OPAQUE RIGHT SIDEBAR (top:0 right:0 bottom:0), so it covered 77% of a 375px screen: you literally could not watch the demo wall it was narrating (and it's the side-panel pattern we're killing everywhere else). On m-portrait it's now a BOTTOM SHEET (full width, bottom-anchored, max 47vh) so the wall shows in the top ~60% while the principle/reason/controls sit below. Desktop sidebar unchanged (rule gated to m-portrait). Verified at 375x812: overlay is full-width bottom-anchored, 60% wall visible above (was 0%), and the game auto-adds m-portrait at phone width. NEXT: smalls, measure-everything + density overhaul (awaiting the 15 pics).
    CHANGE LOG v3.5.116 - MOBILE PASS pt.7: LINEHAUL IS ONE LINE NOW. The live dispatch was a 118px-tall stack of up to FIVE fading lines, each stamped with a COWORKER/MANAGER source chip — the "COWORKER D..." slop from the screenshots. It's now a SINGLE legible line (34px) sitting directly under the chute and ABOVE the OPERATIONS/LINEHAUL/ADMIN row (was below it), showing just the message — no source chip. The full speakered record is untouched in the LINEHAUL drawer (still logs MANAGER/COWORKER/TRAINER with color severity). Verified in-browser: dispatch-bar order is [msg-feed, ops-console], exactly 1 live line, 0 source chips on it, LINEHAUL log still keeps speakers. NEXT: training/smalls fixes, measure-everything + density overhaul.
    CHANGE LOG v3.5.115 - MOBILE PASS pt.6: THROW -> FLAG, ALL THE WAY DOWN. The button became FLAG in pt.3, but every message still said "throw/toss packages" — so the reframe read half-done. Now the whole runtime script speaks the FLAG language: the manager's HEY window says "you flagged a coworker for a hand. DRINK WATER in the next 2s to play it off as a quick breather"; the escalation is "STOP PULLING PEOPLE OFF THEIR OWN TRAILERS!"; the safety label is "over-flagging for help"; the cooldown is "FLAG ON COOLDOWN — you can't wave a coworker over back-to-back"; empty-belt is "Nothing in hand to flag for"; the WATER tooltip "covers a FLAG in the HEY window." Internal keys (throwBox/the 'THROW' safety key) unchanged so the incident ladder + penalties are untouched. Verified: FLAG button, FLAG water-tooltip, throwBox() runs clean, zero player-facing "throw packages/toss" strings remain (only the historical changelog + a code comment). NEXT: linehaul-as-a-line, training/smalls fixes.
@@ -1788,7 +1789,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.117 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.118 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1901,7 +1902,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.117 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.118 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2054,7 +2055,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.117 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.118 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2465,7 +2466,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.117
+// LOCK IN v3.5.118
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2510,6 +2511,7 @@ var MAX_NC_SLOTS=8, MAX_BAG_SLOTS=8;
 // Fail window extended: 120→180s before PPH kills the round (3 minutes, not 2).
 // Fast loaders (1000 PPH) are already rewarded via speedM — they never see this.
 var MIN_PPH=55, LOW_PPH_GRACE=60, LOW_PPH_FAIL=180;
+var AFK_LIMIT=300; // v3.5.118 no-placement idle kill (kills kremsicle's 44-min "farm longest time by afking" exploit)
 // v3.5.90 THE HUB STANDARD. Real FedEx/UPS loaders run ~250 pieces/hr — and "pieces" = REAL FREIGHT (boxes),
 // NOT smalls, NOT bags. Breaking down a smalls bag to chink your gaps is time you're NOT moving freight, so it
 // drags your pph. A wall sealed below standard is a PRODUCTIVITY incident — documented like a safety write-up.
@@ -3103,6 +3105,7 @@ var _loopErrStreak=0; // v3.5.3 CONSECUTIVE render-error streak — trips the re
 var _hb=0,_hbLast=-1,_wdog=null,_stallShown=false,_reviveN=0,_recoverShown=false; // v2.4.6 loop watchdog / v2.4.10 cap+recover
 var placed=0, startT=null, lastLoopT=0;
 var pphLowSec=0, lgDangerSec=0, winHintT=0;
+var idleSec=0, _afkLastPlaced=-1, _afkWarned=false, _lowRateWarned=false; // v3.5.118 AFK + low-rate-warning state
 var panicActive=false, panicStartT=null, panicSealed=false;
 var recoveryActive=false, recoveryT=null, recoveryCount=0;
 var collapseAnimating=false;
@@ -7020,12 +7023,24 @@ function buildTips(hp,integ,voids,cog,ss,pph){
 
 // ── FAIL CONDITIONS ──
 function checkPPHFail(dt){
+  // v3.5.118 AFK KILL — no placement for AFK_LIMIT ends the session (kremsicle's "farm longest time by afking":
+  // 44 min elapsed, 0 placed, immune because PPH was 0). placed-delta so it auto-resets on ANY placement AND on a
+  // new game (placed drops to 0), needing no hooks in the placement/start paths. dt-accumulated => freezes on pause.
+  if(_afkLastPlaced<0)_afkLastPlaced=placed;
+  if(placed!==_afkLastPlaced){idleSec=0;_afkLastPlaced=placed;_afkWarned=false;}
+  else{
+    idleSec+=dt;
+    if(!_afkWarned&&idleSec>=AFK_LIMIT-60){_afkWarned=true;pushMsg('👷 MANAGER: you’ve gone idle. Place freight in the next minute or you’re clocked out.','warn');}
+    if(idleSec>=AFK_LIMIT){idleSec=0;_afkWarned=false;endGame('AFK — NO FREIGHT PLACED IN '+Math.round(AFK_LIMIT/60)+' MIN',false);return;}
+  }
   var el=elapsed();if(el<LOW_PPH_GRACE)return;
   var pph=getPPH();
   if(pph>0&&pph<MIN_PPH){
     pphLowSec+=dt;
-    if(pphLowSec>=LOW_PPH_FAIL){if(isForgiving())pphLowSec=0;else endGame('PPH BELOW '+MIN_PPH+' FOR 2 MINUTES',false);} // v2.1.10
-  }else{pphLowSec=0;}
+    // v3.5.118 WARN before the kick — kremsicle: "no warning for low load rate." Heads-up at the halfway mark.
+    if(!_lowRateWarned&&pphLowSec>=LOW_PPH_FAIL*0.5){_lowRateWarned=true;pushMsg('👷 MANAGER: load rate’s under '+MIN_PPH+'. Pick up the pace or you’re off the trailer.','warn');}
+    if(pphLowSec>=LOW_PPH_FAIL){if(isForgiving()){pphLowSec=0;_lowRateWarned=false;}else endGame('PPH BELOW '+MIN_PPH+' FOR '+Math.round(LOW_PPH_FAIL/60)+' MINUTES',false);} // v2.1.10
+  }else{pphLowSec=0;_lowRateWarned=false;}
 }
 
 function checkLargeDanger(dt){
@@ -8945,7 +8960,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.117</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.118</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
