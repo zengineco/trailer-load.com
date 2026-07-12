@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.115
+   LOCK IN v3.5.116
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.116 - MOBILE PASS pt.7: LINEHAUL IS ONE LINE NOW. The live dispatch was a 118px-tall stack of up to FIVE fading lines, each stamped with a COWORKER/MANAGER source chip — the "COWORKER D..." slop from the screenshots. It's now a SINGLE legible line (34px) sitting directly under the chute and ABOVE the OPERATIONS/LINEHAUL/ADMIN row (was below it), showing just the message — no source chip. The full speakered record is untouched in the LINEHAUL drawer (still logs MANAGER/COWORKER/TRAINER with color severity). Verified in-browser: dispatch-bar order is [msg-feed, ops-console], exactly 1 live line, 0 source chips on it, LINEHAUL log still keeps speakers. NEXT: training/smalls fixes, measure-everything + density overhaul.
    CHANGE LOG v3.5.115 - MOBILE PASS pt.6: THROW -> FLAG, ALL THE WAY DOWN. The button became FLAG in pt.3, but every message still said "throw/toss packages" — so the reframe read half-done. Now the whole runtime script speaks the FLAG language: the manager's HEY window says "you flagged a coworker for a hand. DRINK WATER in the next 2s to play it off as a quick breather"; the escalation is "STOP PULLING PEOPLE OFF THEIR OWN TRAILERS!"; the safety label is "over-flagging for help"; the cooldown is "FLAG ON COOLDOWN — you can't wave a coworker over back-to-back"; empty-belt is "Nothing in hand to flag for"; the WATER tooltip "covers a FLAG in the HEY window." Internal keys (throwBox/the 'THROW' safety key) unchanged so the incident ladder + penalties are untouched. Verified: FLAG button, FLAG water-tooltip, throwBox() runs clean, zero player-facing "throw packages/toss" strings remain (only the historical changelog + a code comment). NEXT: linehaul-as-a-line, training/smalls fixes.
    CHANGE LOG v3.5.114 - MOBILE PASS pt.5: TAP-TO-BREAK BAGS (was impossible on touch). Breaking a staged smalls bag into loose smalls used ondblclick, which never fires on a phone — so the whole break-a-bag-to-fill-gaps mechanic (and its PPH cost) was unreachable on mobile. Each bag tile in the staging wheel now carries a tappable "scissors BREAK" chip (event.stopPropagation so the tap breaks the bag instead of picking the tile). Works on touch AND desktop. Verified: chip renders, a tap drops the bag count 3->2 and leaves selBag at -1 (broke, didn't pick). NEXT: linehaul-as-a-line, throw-message reframe to match FLAG, training/smalls fixes.
    CHANGE LOG v3.5.113 - MOBILE PASS pt.4: THE D-PAD GAME-BREAKER. On mobile the NC/staging tile wheel fanned out from screen-center at bottom:112px, +/-162px wide, overlapping BOTH bottom-corner controls: the left d-pad/stick (it sat right on the DOWN button, so you literally could not aim down) and the right DROP/ROT. Fix: on m-portrait the wheel anchor is raised to bottom:288px so tiles fan in the clear band ABOVE the control stack (wall still tappable between them). Verified at 375x812: staging tiles occupy screen-y 430-533, every control starts at 566+ (a 33px clear gap, ZERO overlaps with the d-pad down button, DROP, or ROT). NEXT: a real touch mechanic for breaking a smalls bag (double-click doesn't exist on touch), linehaul-as-a-line, throw-message reframe to match FLAG.
@@ -1450,8 +1451,9 @@ body[data-cb="trit"]{
 .rp-sec{padding:11px 14px 9px;border-bottom:1px solid var(--border);}
 .rp-sec-t{font-family:'Share Tech Mono',monospace;font-size:15px;letter-spacing:1.5px;color:var(--acc);font-weight:bold;margin-bottom:5px;}
 /* v3.5.5 DISPATCH feed — the single home for all transient messages (off the wall) */
-#msg-feed{display:flex;flex-direction:column;gap:5px;min-height:118px;}
-.msg-line{font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.28;color:var(--t1);background:rgba(0,0,0,.16);border-left:3px solid var(--acc);padding:5px 8px;border-radius:0 4px 4px 0;animation:msgIn .22s ease-out both;}
+/* v3.5.116 DISPATCH = one live line (was a 118px column of up to 5). Single row, directly under the chute. */
+#msg-feed{display:flex;flex-direction:column;justify-content:center;min-height:34px;margin-bottom:5px;}
+.msg-line{font-family:'Share Tech Mono',monospace;font-size:13px;line-height:1.3;color:var(--t1);background:rgba(0,0,0,.22);border-left:3px solid var(--acc);padding:7px 11px;border-radius:0 5px 5px 0;animation:msgIn .22s ease-out both;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .msg-line.msg-ok{border-left-color:var(--ok);color:#9fe3ba;}
 .msg-line.msg-warn{border-left-color:var(--warn);color:#e8c890;}
 .msg-line.msg-danger{border-left-color:var(--danger);color:#f0a890;}
@@ -1782,7 +1784,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.115 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.116 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1895,7 +1897,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.115 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.116 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2048,7 +2050,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.115 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.116 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2236,14 +2238,14 @@ body[data-cb="trit"]{
       </div>
     </div>
     <div id="footer">
-      <!-- v3.5.8: DISPATCH lives here now — one legible line directly above the controls (was a separate right column) -->
+      <!-- v3.5.116: DISPATCH is now ONE live line, sitting directly below the chute and above the OPERATIONS row (was a 118px stack of up to 5 lines with a COWORKER/MANAGER source chip). The full log with speakers lives in the LINEHAUL drawer. -->
       <div id="dispatch-bar">
+        <div id="msg-feed"></div>
         <div id="ops-console">
           <button class="console-btn" id="cbtn-ops" onclick="toggleDrawer('ops')" title="Live operations — load rate, pack, balance, incidents"><span class="ci">◈</span>OPERATIONS</button>
           <button class="console-btn" id="cbtn-lh" onclick="toggleDrawer('linehaul')" title="Linehaul — full dispatch log (every message, nothing missed)"><span class="ci">▸</span>LINEHAUL</button>
           <button class="console-btn" id="cbtn-admin" onclick="openAdmin()" title="Admin — pause / settings"><span class="ci">⚙</span>ADMIN</button>
         </div>
-        <div id="msg-feed"></div>
       </div>
       <div id="conv-header">
         <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
@@ -2459,7 +2461,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.115
+// LOCK IN v3.5.116
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -7505,9 +7507,10 @@ function pushMsg(html,type,source){
   }
   var feed=document.getElementById('msg-feed');if(!feed)return;
   var el=document.createElement('div');el.className='msg-line'+(type?(' msg-'+type):'');
-  el.innerHTML='<span class="msg-src">'+src+'</span><span class="msg-body">'+body+'</span>';
+  // v3.5.116 live line = the message only (no COWORKER/MANAGER source chip); the full speakered log lives in LINEHAUL.
+  el.innerHTML='<span class="msg-body">'+body+'</span>';
   feed.insertBefore(el,feed.firstChild);
-  while(feed.children.length>5){if(feed.lastChild)feed.removeChild(feed.lastChild);else break;}
+  while(feed.children.length>1){if(feed.lastChild)feed.removeChild(feed.lastChild);else break;}
   var dwell=(type==='danger'||type==='warn')?4400:2700;
   setTimeout(function(){el.classList.add('msg-out');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},520);},dwell);
 }
@@ -8938,7 +8941,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.115</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.116</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
