@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.114
+   LOCK IN v3.5.115
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.115 - MOBILE PASS pt.6: THROW -> FLAG, ALL THE WAY DOWN. The button became FLAG in pt.3, but every message still said "throw/toss packages" — so the reframe read half-done. Now the whole runtime script speaks the FLAG language: the manager's HEY window says "you flagged a coworker for a hand. DRINK WATER in the next 2s to play it off as a quick breather"; the escalation is "STOP PULLING PEOPLE OFF THEIR OWN TRAILERS!"; the safety label is "over-flagging for help"; the cooldown is "FLAG ON COOLDOWN — you can't wave a coworker over back-to-back"; empty-belt is "Nothing in hand to flag for"; the WATER tooltip "covers a FLAG in the HEY window." Internal keys (throwBox/the 'THROW' safety key) unchanged so the incident ladder + penalties are untouched. Verified: FLAG button, FLAG water-tooltip, throwBox() runs clean, zero player-facing "throw packages/toss" strings remain (only the historical changelog + a code comment). NEXT: linehaul-as-a-line, training/smalls fixes.
    CHANGE LOG v3.5.114 - MOBILE PASS pt.5: TAP-TO-BREAK BAGS (was impossible on touch). Breaking a staged smalls bag into loose smalls used ondblclick, which never fires on a phone — so the whole break-a-bag-to-fill-gaps mechanic (and its PPH cost) was unreachable on mobile. Each bag tile in the staging wheel now carries a tappable "scissors BREAK" chip (event.stopPropagation so the tap breaks the bag instead of picking the tile). Works on touch AND desktop. Verified: chip renders, a tap drops the bag count 3->2 and leaves selBag at -1 (broke, didn't pick). NEXT: linehaul-as-a-line, throw-message reframe to match FLAG, training/smalls fixes.
    CHANGE LOG v3.5.113 - MOBILE PASS pt.4: THE D-PAD GAME-BREAKER. On mobile the NC/staging tile wheel fanned out from screen-center at bottom:112px, +/-162px wide, overlapping BOTH bottom-corner controls: the left d-pad/stick (it sat right on the DOWN button, so you literally could not aim down) and the right DROP/ROT. Fix: on m-portrait the wheel anchor is raised to bottom:288px so tiles fan in the clear band ABOVE the control stack (wall still tappable between them). Verified at 375x812: staging tiles occupy screen-y 430-533, every control starts at 566+ (a 33px clear gap, ZERO overlaps with the d-pad down button, DROP, or ROT). NEXT: a real touch mechanic for breaking a smalls bag (double-click doesn't exist on touch), linehaul-as-a-line, throw-message reframe to match FLAG.
    CHANGE LOG v3.5.112 - MOBILE PASS pt.3: BOTTOM BAR (the "unbearable" strip). BREAK JAM icon lightning->box (a jam is boxes, not a lightning bolt). THROW -> FLAG (the reframe: "flag a hand" — wave a coworker down for help reaching a top gap; they toss you a smalls bag; overuse draws heat — zero "throwing packages" language; internal throwBox() unchanged). SAFETY indicator legible: 11px -> 14px BOLD. NC/staging pill sized to match the strip buttons (11px -> 13px bold) so it stops looking like "a different game." Verified in-browser. NEXT: reframe the throw MESSAGES (HEY/toss language) to match FLAG, linehaul-as-a-line, the NC-covers-d-pad game-breaker.
@@ -1781,7 +1782,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.114 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.115 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1894,7 +1895,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.114 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.115 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2047,7 +2048,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.114 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.115 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2247,7 +2248,7 @@ body[data-cb="trit"]{
       <div id="conv-header">
         <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">📦 BREAK JAM</button></div>
-        <button id="water-side" class="strip-act sa-water" onclick="takeDrink()" title="Water break — clears one open minor warning, and covers a throw in the HEY window. Cooldown 6s.">💧 WATER</button>
+        <button id="water-side" class="strip-act sa-water" onclick="takeDrink()" title="Water break — clears one open minor warning, and covers a FLAG in the HEY window. Cooldown 6s.">💧 WATER</button>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:7px;">
           <span class="stg-light" id="stg-nc" onclick="openStagingPopup('nc')" title="Non-conveyable staging — tap to load low"><b>NC</b><span class="stg-pie" id="stg-nc-pie"></span><span id="stg-nc-n">0/8</span></span>
           <span class="stg-sep" id="stg-sep" onclick="stgClose()" style="display:none;"></span>
@@ -2458,7 +2459,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.114
+// LOCK IN v3.5.115
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -4700,7 +4701,7 @@ var SAFETY_PRACTICE_THRESHOLD=5;
 var SAFETY_MINOR=['HYDRATION','TIRE_SIDEWAYS','SP_DWELL','SMALLS_DWELL','THROW','FRAGILE_CRUSH']; // warn-eligible + water-clearable
 function _sfMinor(o){return SAFETY_MINOR.indexOf(o)>=0;}
 function _sfInit(){S.warnings=S.warnings||[];S.incidents=S.incidents||[];}
-function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',TIRE_STACK:'stacked tires',THROW:'thrown package',FRAGILE_CRUSH:'crushed fragile',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
+function _sfLabel(o){return {HYDRATION:'hydration',TIRE_SIDEWAYS:'sideways tire',TIRE_STACK:'stacked tires',THROW:'over-flagging for help',FRAGILE_CRUSH:'crushed fragile',SP_DWELL:'staging dwell',SMALLS_DWELL:'smalls dwell',HAZMAT_HIGH:'hazmat-high',HAZMAT_CRUSH:'hazmat-crush',SEGREGATION:'segregation',KILLER:'killer pair',COLLAPSE:'collapse',HYDRATION_100:'no-hydration'}[o]||(''+o).toLowerCase();}
 // v3.5.68 WRITE-UP SYSTEM \u2014 some infractions are "bad the first time" (obvious hazards \u2192 instant paperwork);
 // everything else accumulates and gets documented every 3rd violation. The write-up STOPS the game to be signed.
 var WRITEUP_POOL=['HAZMAT_HIGH','HAZMAT_CRUSH','KILLER','SEGREGATION','TIRE_STACK']; // immediate write-up
@@ -4832,19 +4833,19 @@ var _throwPending=false,_throwWinTO=null;
 function _openThrowWindow(pen){
   _throwPending=true;
   if(_throwWinTO)clearTimeout(_throwWinTO);
-  showBanner('\ud83d\udc77 MANAGER: HEY \u2014'+((pen>0)?(' (\u2212'+pen+' cubes)'):'')+'<br><span style="font-size:.5em">bag\u2019s on the belt. DRINK WATER in the next 2s to cover the toss.</span>','warn',2200);
+  showBanner('\ud83d\udc77 MANAGER: HEY \u2014'+((pen>0)?(' (\u2212'+pen+' cubes)'):'')+'<br><span style="font-size:.5em">you flagged a coworker for a hand. DRINK WATER in the next 2s to play it off as a quick breather.</span>','warn',2200);
   _throwWinTO=setTimeout(function(){
     _throwWinTO=null;
     if(!_throwPending||gOver)return;
     _throwPending=false;
-    showBanner('\ud83d\udc77 MANAGER: YOU ARE NOT ALLOWED TO THROW PACKAGES!','danger',3200);
-    if(typeof safetyWarn==='function')safetyWarn('THROW','tossed a package and didn\u2019t cover it with a water break.');
+    showBanner('\ud83d\udc77 MANAGER: STOP PULLING PEOPLE OFF THEIR OWN TRAILERS!','danger',3200);
+    if(typeof safetyWarn==='function')safetyWarn('THROW','flagged a coworker for a hand and didn\u2019t cover it with a water break.');
   },2000);
 }
 // THROW \u2014 toss the selected piece; ALWAYS spawns a bag of smalls (a vet always has one to throw on).
 function throwBox(){
-  if(gOver||typeof G==='undefined'||!G||!G.belt||!G.belt.length){if(typeof showBanner==='function'&&(!G||!G.belt||!G.belt.length))showBanner('Nothing in hand to throw.','',1200);return;}
-  if(Date.now()-_lastThrowT<THROW_CD){showBanner('🦵 THROW ON COOLDOWN — you can’t chuck packages back-to-back.','warn',1200);return;}
+  if(gOver||typeof G==='undefined'||!G||!G.belt||!G.belt.length){if(typeof showBanner==='function'&&(!G||!G.belt||!G.belt.length))showBanner('Nothing in hand to flag for.','',1200);return;}
+  if(Date.now()-_lastThrowT<THROW_CD){showBanner('🙋 FLAG ON COOLDOWN — you can’t wave a coworker over back-to-back.','warn',1200);return;}
   _lastThrowT=Date.now();_coolBtn('throw-side',THROW_CD);
   var idx=(selBeltIdx!=null)?selBeltIdx:0;if(idx<0||idx>=G.belt.length)idx=0;
   G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
@@ -8937,7 +8938,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.114</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.115</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
