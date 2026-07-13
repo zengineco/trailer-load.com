@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.132
+   LOCK IN v3.5.133
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.133 - CRITICAL: DAILY FREEZE FIXED (the v3.5.123 regression that hit 2000 players). Finishing a daily wall FROZE the game — gOver went true but NO end screen showed, so controls were dead and admin was unreachable ("everything glitched, no admin after daily"). ROOT CAUSE: daily called endGame(reason, TRUE); endGame's win-path does `if(win){sealWall(reason);return;}`, which re-entered sealWall's daily branch, which re-called endGame — but gOver was already set, so `if(gOver)return` blocked it and the ov-end screen never rendered. FIX: every daily end path now routes through endGame(reason, FALSE) — the non-win path that OWNS gOver, shows the DAILY DONE screen, and runs dailyFinish() (submit + board). The re-seal path and the FINISH/nextTrailer path are guarded to end daily too (no stray NEXT TRAILER popup — that button was the "glitch"). Verified: full wall + FINISH click both show DAILY DONE + submit + gOver, and TRY AGAIN replays the same seed. No freeze, no dead controls.
    CHANGE LOG v3.5.132 - MEASUREMENT WHOLE + TOTAL (the raw per-action timeline). zLog captured ONLY placements — the max-resolution layer under the dashboard was blind to everything else. Now every action is logged to the per-session event stream, timestamped (deciseconds from sessionStartT): place, reject, rotate, lift, flag(throw), water, bagbreak, seal (with density/fill/pph/pieces), slip, collapse, safety warn, safety incident, writeup. The stream RESETS per session (was accumulating across sessions in the same tab — timestamps are relative to sessionStartT, so it must zero at the session boundary; reset happens right before the first place is logged so nothing is dropped). Combined with the v3.5.128 unified density and the v3.5.129 telemetry-accuracy pass, the dashboard can now reconstruct exactly how any wall was built AND every number (grade / seal payout / per-wall board / session summary) is one consistent figure. Verified: a mixed action burst logs rotate/water/warn/incident/flag/writeup/reject/slip/collapse/seal, each as [decisec, kind, data]. Measurement is complete.
    CHANGE LOG v3.5.131 - TWO VISUAL BUGS: GREEN F + CUT-OFF ACCOUNT BUTTONS. (1) "f is green???" — the post-sort report's grade ring (.ps-ring) was hardcoded green (#1f9d57) regardless of grade, so an F sat in a green ring. It's now colored by the actual grade: A=green, B=teal, C/D=amber, F=red. Verified: F ring rgb(204,56,32) red, A green, B teal, D amber. (2) "cant see what bottom buttons say in the account and data part of admin menu" — the DATA & PRIVACY card (.data-card) had no max-height and no scroll and dropped from the top, so on a normal viewport the bottom (SIGN OUT / SAVE / NOT NOW) overflowed off-screen with no way to reach it. Card now caps at 94vh with overflow-y:auto (+ the overlay scrolls) so every button is reachable. NEXT: the raw event stream (measure everything, whole + total).
    CHANGE LOG v3.5.130 - THE ADMIN/MENU/PAUSE CLUSTER (kremsicle's PC+mobile report). Root cause of "can not reach admin/linehaul": the #briefing clipboard (position:fixed, inset:0, z-index:600) was left covering the WHOLE screen and invisibly eating every click on the bottom bar — the OPERATIONS/LINEHAUL/ADMIN functions worked when called, but the clicks never landed. Fixes: (1) hideStartMenu() force-dismisses the briefing on every mode start (a running mode is never under it) + #briefing.gone gets pointer-events:none as belt-and-suspenders — LINEHAUL/ADMIN reachable again on PC and mobile. (2) Admin RESTART now restarts the CURRENT mode via tryAgain() (was hard-coded to dump you to the main menu). (3) The live HUD (scoreboard + control bar) is hidden on the menu and restored on mode start — no more "back to lobby with my score still up on the scoreboard." (4) togglePause() FREEZES the clock: it advances startT + wall + session clocks past the paused span so elapsed/PPH/session-time never count paused seconds (kremsicle: "the timer doesn't pause"). (5) The NC/smalls wheel now closes when a drawer OR the pause/admin opens (kremsicle: "the nc menu showing when the admin tab opens"). Verified: buttons reachable with briefing dismissed, restart keeps the mode, menu hides the HUD, 400ms real pause = 0s elapsed drift. NEXT: F-grade ring color + cut-off account buttons, then the raw event stream.
@@ -1827,7 +1828,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.132 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.133 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1940,7 +1941,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.132 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.133 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2093,7 +2094,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.132 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.133 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2515,7 +2516,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.132
+// LOCK IN v3.5.133
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2965,7 +2966,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.132'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.133'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -5553,7 +5554,9 @@ function finalizeWall(){
 function packPct(){return (typeof countFilled==='function'&&typeof GW!=='undefined')?Math.round(countFilled()/(GW*GH)*100):0;}
 function sealWall(reason){
   if(!hydrationOK())return;
-  if(G.sealed){if(gameMode!=='level'){ // v3.5.4 seal payout ONCE per wall. v3.5.98: re-seal respects the rhythm rule too
+  if(G.sealed){
+    if(gameMode==='daily'){if(typeof endGame==='function'&&!gOver)endGame('DAILY COMPLETE',false);return;} // v3.5.133 a re-seal in daily ENDS the run — never show a NEXT TRAILER popup (that button was the "glitch")
+    if(gameMode!=='level'){ // v3.5.4 seal payout ONCE per wall. v3.5.98: re-seal respects the rhythm rule too
     var _kl0=(typeof countFilled==='function')&&countFilled()<GW*GH&&!(G&&G.wallDone);
     if(_kl0){var _mf0=document.getElementById('maxpack-finish');if(_mf0){_mf0.style.display='';_mf0.classList.add('pulse');}G.maxPack=true;}
     else{var _np=document.getElementById('next-popup');if(_np)_np.classList.add('vis');var _nb=document.getElementById('next-popup-badge');if(_nb)_nb.textContent='✓ WALL COMPLETE — '+packPct()+'% PACKED';}
@@ -5596,10 +5599,12 @@ function sealWall(reason){
     var _mf=document.getElementById('maxpack-finish');if(_mf){_mf.style.display='';_mf.classList.add('pulse');}
     showBanner('✓ SEALED — TRAILER CAN DISPATCH.<br><span style="font-size:.72em">Keep loading for score, or hit ✓ FINISH TRAILER (top right) to roll out.</span>','ok',2600);
   } else if(gameMode==='daily'){
-    // v3.5.123 DAILY IS ONE WALL. Sealing the daily wall ENDS the run (no NEXT TRAILER = no infinite-score farming).
-    // The end screen submits the score and offers TRY AGAIN, which replays the SAME seeded wall (startDaily).
-    gOver=true;if(animF)cancelAnimationFrame(animF);
-    setTimeout(function(){if(typeof endGame==='function')endGame('DAILY COMPLETE',true);},800);
+    // v3.5.133 DAILY IS ONE WALL — the seal ENDS the run + shows the DAILY DONE screen (submit + TRY AGAIN). CRITICAL:
+    // route through endGame(reason, FALSE). The WIN path (endGame(...,true)) calls sealWall again, which re-entered this
+    // branch and re-called endGame — but gOver was already set, so `if(gOver)return` blocked it and NO end screen ever
+    // showed: the game froze with dead controls and no admin (the v3.5.123 daily-freeze that hit 2000 players). Do NOT
+    // pre-set gOver here — endGame(false) owns it, displays the screen, and runs dailyFinish().
+    if(typeof endGame==='function'){endGame('DAILY COMPLETE',false);}
     return;
   } else {
     document.getElementById('next-popup').classList.add('vis');
@@ -8588,7 +8593,8 @@ function nextTrailer(){
   if(typeof playSfx==='function')playSfx('trailer');
   document.getElementById('next-popup').classList.remove('vis');
   // v3.5.123 DAILY IS ONE WALL — FINISH/next ends the run, never spawns a fresh trailer (kills infinite daily score).
-  if(gameMode==='daily'){var _mf0=document.getElementById('maxpack-finish');if(_mf0)_mf0.style.display='none';if(typeof endGame==='function')endGame('DAILY COMPLETE',true);return;}
+  // v3.5.133 endGame(FALSE): the win-path bounced into sealWall and froze the game (no end screen, no admin).
+  if(gameMode==='daily'){var _mf0=document.getElementById('maxpack-finish');if(_mf0)_mf0.style.display='none';if(typeof endGame==='function'&&!gOver)endGame('DAILY COMPLETE',false);return;}
   if(G){G.sealed=false;G.maxPack=false;G.wallDone=false;}var _mf=document.getElementById('maxpack-finish');if(_mf){_mf.style.display='none';_mf.classList.remove('pulse');} // v3.5.4 reset seal/max-pack for the new wall; v3.5.98 clear the pulse
   var _kl2=document.querySelector('#next-popup button[onclick="npKeepLoading()"]');if(_kl2)_kl2.style.display=''; // v3.5.24 restore keep-loading for the next wall
   S.bestTrailerAvg=Math.max(S.bestTrailerAvg||0,getPPH()); // v2.1.9 best single-trailer rate
@@ -9095,7 +9101,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.132</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.133</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
