@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.134
+   LOCK IN v3.5.135
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.135 - UNIFICATION: ONE LABEL PER STAT + DENSITY SURFACED. The post-sort report had a "· Density" sub-row that read RAW cubePct — the SAME number as "Cube fill %" right below it, and NOT the structured density that drives the grade. And raw fill wore four different labels across surfaces (scoreboard PACK, OPERATIONS "PACK FILL", end screen "Final Fill %", report "Cube fill %"). Now unified: DENSITY = the structured metric (wallSolidity, the grade driver) shown distinctly on the report, the end screen (new Density tile), and the OPERATIONS drawer; raw cube-fill is "PACK %" everywhere (scoreboard "PACK" is its live short form); Support is "Support %". Verified on a dense-but-low-pack wall: Density reads 100% while Pack reads 40% (they were identical before), and OPERATIONS shows DENSITY + PACK % (no stray "PACK FILL"). NEXT: the /me/ dashboard density card (needs an avg_density column + lifetime-view update).
    CHANGE LOG v3.5.134 - AFK FALSE-KICK FIXED (kremsicle: "says 5, kicked out at 2:30" on a 2-min session). The AFK idle timer (idleSec) and the low-rate timer (pphLowSec) never reset per session — a prior game left idleSec high, and a fresh game that happened to start with placed===_afkLastPlaced===0 kept accumulating the OLD idle, so the 5-minute AFK kick fired minutes early. FIX: track the session clock (_afkStartT); startT is set fresh on every wall/game start (and advanced on pause-resume), so any startT change zeroes the idle + low-rate clocks. Also made restartGame reset placed + startT (it was carrying the prior run's clock — a fresh run now starts at 0 elapsed). Verified: a new session with a carried-over idleSec=250 resets to 0 (no false kick), the AFK still fires at the REAL 300s, and a placement resets idle. NEXT: the floating-small physics (bottom small breaks, top stays floating).
    CHANGE LOG v3.5.133 - CRITICAL: DAILY FREEZE FIXED (the v3.5.123 regression that hit 2000 players). Finishing a daily wall FROZE the game — gOver went true but NO end screen showed, so controls were dead and admin was unreachable ("everything glitched, no admin after daily"). ROOT CAUSE: daily called endGame(reason, TRUE); endGame's win-path does `if(win){sealWall(reason);return;}`, which re-entered sealWall's daily branch, which re-called endGame — but gOver was already set, so `if(gOver)return` blocked it and the ov-end screen never rendered. FIX: every daily end path now routes through endGame(reason, FALSE) — the non-win path that OWNS gOver, shows the DAILY DONE screen, and runs dailyFinish() (submit + board). The re-seal path and the FINISH/nextTrailer path are guarded to end daily too (no stray NEXT TRAILER popup — that button was the "glitch"). Verified: full wall + FINISH click both show DAILY DONE + submit + gOver, and TRY AGAIN replays the same seed. No freeze, no dead controls.
    CHANGE LOG v3.5.132 - MEASUREMENT WHOLE + TOTAL (the raw per-action timeline). zLog captured ONLY placements — the max-resolution layer under the dashboard was blind to everything else. Now every action is logged to the per-session event stream, timestamped (deciseconds from sessionStartT): place, reject, rotate, lift, flag(throw), water, bagbreak, seal (with density/fill/pph/pieces), slip, collapse, safety warn, safety incident, writeup. The stream RESETS per session (was accumulating across sessions in the same tab — timestamps are relative to sessionStartT, so it must zero at the session boundary; reset happens right before the first place is logged so nothing is dropped). Combined with the v3.5.128 unified density and the v3.5.129 telemetry-accuracy pass, the dashboard can now reconstruct exactly how any wall was built AND every number (grade / seal payout / per-wall board / session summary) is one consistent figure. Verified: a mixed action burst logs rotate/water/warn/incident/flag/writeup/reject/slip/collapse/seal, each as [decisec, kind, data]. Measurement is complete.
@@ -1829,7 +1830,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.134 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.135 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1942,7 +1943,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.134 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.135 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2095,7 +2096,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.134 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.135 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2344,8 +2345,9 @@ body[data-cb="trit"]{
    </div></div>
    <div class="es-sec"><div class="es-sec-t">QUALITY</div><div class="es-grid">
     <div class="sg"><span class="v" id="es-int">100%</span><span class="l">Avg Integrity</span></div>
-    <div class="sg"><span class="v" id="es-fill">0%</span><span class="l">Final Fill %</span></div>
-    <div class="sg"><span class="v" id="es-support">0%</span><span class="l">Final Support %</span></div>
+    <div class="sg"><span class="v" id="es-density">0%</span><span class="l">Density</span></div>
+    <div class="sg"><span class="v" id="es-fill">0%</span><span class="l">Pack %</span></div>
+    <div class="sg"><span class="v" id="es-support">0%</span><span class="l">Support %</span></div>
     <div class="sg"><span class="v" id="es-shelves">0</span><span class="l">Shelves Locked</span></div>
     <div class="sg"><span class="v" id="es-locks">0</span><span class="l">Double Locks</span></div>
     <div class="sg"><span class="v" id="es-shelvesmin">0</span><span class="l">Shelves / Min</span></div>
@@ -2517,7 +2519,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.134
+// LOCK IN v3.5.135
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2967,7 +2969,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.134'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.135'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -7746,6 +7748,7 @@ function opsRender(){
   function cell(k,v,cls){return '<div class="ops-cell"><div class="ops-k">'+k+'</div><div class="ops-v'+(cls?(' '+cls):'')+'">'+v+'</div></div>';}
   var sg=sessionGrade();
   var fill=Math.round(countFilled()/(GW*GH)*100);
+  var dens=Math.round((typeof wallSolidity==='function'?wallSolidity(G.grid):0)*100); // v3.5.135 structured density (grade driver)
   var sup=Math.round(supportScore(G.grid)*100);
   var integ=(G.integrity!=null)?G.integrity:100;
   var pphNow=getPPH()||0,peak=(S&&S.bestPPH)||0;
@@ -7758,8 +7761,9 @@ function opsRender(){
     +'<div class="ops-pts" style="color:'+sg.clr+'">'+sg.pts+'<span>/100</span></div></div>';
   h+='<div class="ops-sec first">LOAD QUALITY</div><div class="ops-grid">';
   h+=cell('INTEGRITY',integ+'%',integ<35?'danger':integ<55?'warn':'ok');
+  h+=cell('DENSITY',dens+'%',dens<40?'danger':dens<65?'warn':'ok'); // v3.5.135 structured density = the grade driver, surfaced live
   h+=cell('SUPPORT',sup+'%',sup<50?'warn':'ok');
-  h+=cell('PACK FILL',fill+'%');
+  h+=cell('PACK %',fill+'%'); // v3.5.135 unified label (was "PACK FILL") — raw cube fill
   h+=cell('GAPS LEFT',(S&&S.lastGaps)||0);
   h+='</div>';
   h+='<div class="ops-sec">SAFETY</div><div class="ops-grid">';
@@ -9107,7 +9111,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.134</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.135</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9149,9 +9153,9 @@ function psBuild(lifeState,life){
       row('Integrity',lwv('integrity'),avgInt,'avg_integrity')+
       row('\u00b7 Structure',lwv('integrity'),wlAvg('integrity'),null,true)+
       row('\u00b7 Balance',lwv('bal'),wlAvg('bal'),null,true)+
-      row('\u00b7 Density',lwv('cubePct'),wlAvg('cubePct'),null,true)+
       row('\u00b7 Support',lwv('support'),wlAvg('support'),null,true)+
-      row('Cube fill %',lwv('cubePct'),wlAvg('cubePct'),'cube_eff','','%')+
+      row('Density',lwv('density'),wlAvg('density'),'density_pct','','%')+ // v3.5.135 UNIFIED: this is the STRUCTURED density that drives the grade (was reading raw cubePct \u2014 the same number as Pack %)
+      row('Pack %',lwv('cubePct'),wlAvg('cubePct'),'cube_eff','','%')+     // v3.5.135 raw cube-fill \u2014 one canonical label (was "Cube fill %"); the scoreboard "PACK" is its live short form
       row('Wall height %',lwv('fillPct'),wlAvg('fillPct'),'avg_wall_pct','','%')+
       row('Avg pieces / wall',lwv('pieces'),(wl.length?wlAvg('pieces'):(walls>0?Math.round(pieces/walls):'\u2014')),null)+
       row('SP utility %',null,(ncU==null?'\u2014':ncU),'nc_util_pct','','%')+
@@ -10189,6 +10193,7 @@ function fillTelemetryTiles(){
   set('es-accuracy',(_tp+_rej)>0?Math.round(_tp/(_tp+_rej)*100)+'%':'100%');
   set('es-pertrailer',_tr>0?Math.round(_tp/_tr):_tp);
   set('es-fill',(typeof G!=='undefined'&&G.grid)?Math.round(countFilled()/(GW*GH)*100)+'%':'0%');
+  set('es-density',(typeof G!=='undefined'&&G.grid&&countFilled()>0)?Math.round((typeof wallSolidity==='function'?wallSolidity(G.grid):0)*100)+'%':'0%'); // v3.5.135 the STRUCTURED density (grade driver), distinct from Pack %
   set('es-support',(typeof G!=='undefined'&&G.grid&&countFilled()>0)?Math.round(supportScore(G.grid)*100)+'%':'0%'); // v3.5.122 empty wall = 0% support, not a lying 100%
   set('es-nests',S.nests||0);set('es-drinks',S.drinks||0);
   // ── v2.1.39 SESSION GRADE (hero rating) ──
