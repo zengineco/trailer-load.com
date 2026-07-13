@@ -319,14 +319,16 @@ function mRank(ai){
 }
 function mRender(){
   var rows=ME.rows;
-  var sessions=0,walls=0,pieces=0,bestScore=0,peak=0,inc=0,shelves=0,aiSum=0,aiN=0,i;
+  var sessions=0,walls=0,pieces=0,bestScore=0,peak=0,inc=0,shelves=0,aiSum=0,aiN=0,dnSum=0,dnN=0,i;
   for(i=0;i<rows.length;i++){var r=rows[i];
     sessions+=mNum(r.sessions);walls+=mNum(r.walls);pieces+=mNum(r.pieces);
     bestScore=Math.max(bestScore,mNum(r.score));peak=Math.max(peak,mNum(r.peak_pph));
     inc+=mNum(r.incidents);shelves+=mNum(r.shelves_locked);
     if(mNum(r.avg_integrity)>0){aiSum+=mNum(r.avg_integrity);aiN++;}
+    if(mNum(r.density_pct)>0){dnSum+=mNum(r.density_pct);dnN++;} // v3.5.135 structured density = the grade driver, same number the game shows
   }
   var ai=aiN?Math.round(aiSum/aiN):0;
+  var den=dnN?Math.round(dnSum/dnN):0;
   document.getElementById('me-rank').textContent=rows.length?mRank(ai):'CLOCK A WALL TO EARN YOUR RANK';
   var intCls=ai>=80?'ok':ai>=60?'warn':(ai>0?'danger':'');
   function card(k,v,c,cls){return '<div class="card '+(cls||'')+'"><div class="k">'+k+'</div><div class="v">'+v+'</div><div class="c">'+c+'</div></div>';}
@@ -336,6 +338,7 @@ function mRender(){
     +card('BEST SCORE',bestScore.toLocaleString(),'personal best','teal')
     +card('PEAK PPH',peak||'—','fastest pace','teal')
     +card('AVG INTEGRITY',(ai?ai+'%':'—'),'attention to detail',intCls)
+    +card('DENSITY',(den?den+'%':'—'),'how tight you pack',den>=65?'ok':den>=40?'warn':(den>0?'danger':''))
     +card('SHELVES',shelves.toLocaleString(),'locked in','')
     +card('PIECES',pieces.toLocaleString(),'total moved','')
     +card('INCIDENTS',inc,'lifetime safety',inc>=2?'danger':inc>=1?'warn':'ok');
