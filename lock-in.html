@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.135
+   LOCK IN v3.5.136
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.136 - PLACEMENT GHOST ON EVERY ELIGIBLE SQUARE (the release blocker: "renderability is a huge problem"). The opaque preview (drawPlacementPreview) already existed, but the mouse handler left hCell at the raw cursor cell — so near any edge the held piece would spill past the wall and the preview's bounds check skipped it: no ghost, and placement "only from certain angles." Now the pointer-move clamps hCell to the HELD piece's dims (like the touch path always did), so the ghost snaps fully into the wall and renders on every eligible square. The tap/click placement clamps the SAME way, so the drop lands exactly where the ghost showed it (WYSIWYG — was placing at the raw cell and getting rejected while the ghost sat one cell in). Verified: a 3x2 piece at the far-right edge clamps to col 14 (GW-3) and the ghost renders there; middle placement unchanged. NEXT (per Vince): the tutorial, then the homepage. Follow-on ghost polish: KBM hover (no piece held) shows the size, drag-from-chute.
    CHANGE LOG v3.5.135 - UNIFICATION: ONE LABEL PER STAT + DENSITY SURFACED. The post-sort report had a "· Density" sub-row that read RAW cubePct — the SAME number as "Cube fill %" right below it, and NOT the structured density that drives the grade. And raw fill wore four different labels across surfaces (scoreboard PACK, OPERATIONS "PACK FILL", end screen "Final Fill %", report "Cube fill %"). Now unified: DENSITY = the structured metric (wallSolidity, the grade driver) shown distinctly on the report, the end screen (new Density tile), and the OPERATIONS drawer; raw cube-fill is "PACK %" everywhere (scoreboard "PACK" is its live short form); Support is "Support %". Verified on a dense-but-low-pack wall: Density reads 100% while Pack reads 40% (they were identical before), and OPERATIONS shows DENSITY + PACK % (no stray "PACK FILL"). NEXT: the /me/ dashboard density card (needs an avg_density column + lifetime-view update).
    CHANGE LOG v3.5.134 - AFK FALSE-KICK FIXED (kremsicle: "says 5, kicked out at 2:30" on a 2-min session). The AFK idle timer (idleSec) and the low-rate timer (pphLowSec) never reset per session — a prior game left idleSec high, and a fresh game that happened to start with placed===_afkLastPlaced===0 kept accumulating the OLD idle, so the 5-minute AFK kick fired minutes early. FIX: track the session clock (_afkStartT); startT is set fresh on every wall/game start (and advanced on pause-resume), so any startT change zeroes the idle + low-rate clocks. Also made restartGame reset placed + startT (it was carrying the prior run's clock — a fresh run now starts at 0 elapsed). Verified: a new session with a carried-over idleSec=250 resets to 0 (no false kick), the AFK still fires at the REAL 300s, and a placement resets idle. NEXT: the floating-small physics (bottom small breaks, top stays floating).
    CHANGE LOG v3.5.133 - CRITICAL: DAILY FREEZE FIXED (the v3.5.123 regression that hit 2000 players). Finishing a daily wall FROZE the game — gOver went true but NO end screen showed, so controls were dead and admin was unreachable ("everything glitched, no admin after daily"). ROOT CAUSE: daily called endGame(reason, TRUE); endGame's win-path does `if(win){sealWall(reason);return;}`, which re-entered sealWall's daily branch, which re-called endGame — but gOver was already set, so `if(gOver)return` blocked it and the ov-end screen never rendered. FIX: every daily end path now routes through endGame(reason, FALSE) — the non-win path that OWNS gOver, shows the DAILY DONE screen, and runs dailyFinish() (submit + board). The re-seal path and the FINISH/nextTrailer path are guarded to end daily too (no stray NEXT TRAILER popup — that button was the "glitch"). Verified: full wall + FINISH click both show DAILY DONE + submit + gOver, and TRY AGAIN replays the same seed. No freeze, no dead controls.
@@ -1830,7 +1831,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.135 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.136 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1943,7 +1944,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.135 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.136 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2096,7 +2097,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.135 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.136 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2519,7 +2520,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.135
+// LOCK IN v3.5.136
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2969,7 +2970,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.135'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.136'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -7201,8 +7202,14 @@ scene.addEventListener('pointermove',function(e){
   var c2=getPC(e,scene);if(!c2)return;
   var g=canvasToGrid(c2.mx,c2.my);
   // Check if cursor is within nose wall bounds
-  if(g.x>=0&&g.x<GW&&g.y>=0&&g.y<GH)hCell={x:g.x,y:g.y};
-  else hCell=null;
+  if(g.x>=0&&g.x<GW&&g.y>=0&&g.y<GH){
+    // v3.5.136 GHOST ON EVERY ELIGIBLE SQUARE: clamp hCell to the HELD piece's dims so the whole piece always fits in
+    // the wall. Was leaving hCell where the piece would spill past the edge -> drawPlacementPreview's bounds check
+    // skipped it -> "no shadow / only places from certain angles" near the edges. Now it snaps to the nearest valid cell.
+    var _hb=(typeof kbSelBox==='function')?kbSelBox():null;
+    if(_hb){var _hd=getDims(_hb,(selNC>=0)?selNCRot:selBeltRot);hCell={x:Math.max(0,Math.min(GW-_hd.w,g.x)),y:Math.max(0,Math.min(GH-_hd.h,g.y))};}
+    else hCell={x:g.x,y:g.y};
+  } else hCell=null;
 },{passive:false});
 
 scene.addEventListener('pointerup',function(e){
@@ -7277,6 +7284,10 @@ scene.addEventListener('pointerup',function(e){
     if(selNC>=0&&tryNest('nc',selNC,_tgt))return; // v3.5.72 seat a hazmat/NC into the hollow
     if(selBag>=0&&tryNest('bag',selBag,_tgt))return;
   }
+  // v3.5.136 place at the CLAMPED cell so the drop lands exactly where the ghost showed it (WYSIWYG). Was placing at the
+  // raw cursor cell, which near an edge extended past the wall and got rejected while the ghost sat one cell in.
+  var _pb=(typeof kbSelBox==='function')?kbSelBox():null;
+  if(_pb){var _pd=getDims(_pb,(selNC>=0)?selNCRot:selBeltRot);g={x:Math.max(0,Math.min(GW-_pd.w,g.x)),y:Math.max(0,Math.min(GH-_pd.h,g.y))};}
   if(selBeltIdx!==null){placeBox('belt',selBeltIdx,g.x,g.y,selBeltRot);return;}
   if(selNC>=0){
     placeBox('nc',selNC,g.x,g.y,selNCRot);
@@ -9111,7 +9122,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.135</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.136</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
