@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.136
+   LOCK IN v3.5.137
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.137 - INTERACTIVE TUTORIAL (deterministic + guided; the TRAINING pillar is now hands-on). One run teaches every mechanic EXCEPT nesting — 15 scripted beats, zero RNG: grab+place with the ghost, rotate, arrows-up, heavy freight low, lay a tire flat, LOCK IN a full shelf, stagger the seams, anchor SP/non-conveyable low, hazmat below the waist, fragile on top, break a bag to fill gaps, build a thin tower and WATCH IT FALL, water break, flag a hand, then FINISH to seal. Each beat = one short line + a highlighted target; it advances when you do the action (any legal placement of the scripted piece counts, so it can't get stuck on support). Ends on a real-warehouse SIGN-OFF clipboard: an "I learned" checklist (LOCK IN culminates last), the SAFETY LADDER spelled out exactly (heads-up -> documented WARNING on a repeat -> INCIDENT -> signed WRITE-UP -> SENT HOME to a practice trailer; water/shelf-lock clear warnings), and SIGN HERE — the same signature mechanic as the in-game write-ups. TUTORIAL_MODE clears on any menu return so it never leaks into a real game. Verified: all 15 beats advance to the sign-off, 15/15 checklist items check, ladder text present, TRAINING card wired. Follow-on polish: confirm the collapse visibly falls, enforce the bag-BREAK step, mobile banner position.
    CHANGE LOG v3.5.136 - PLACEMENT GHOST ON EVERY ELIGIBLE SQUARE (the release blocker: "renderability is a huge problem"). The opaque preview (drawPlacementPreview) already existed, but the mouse handler left hCell at the raw cursor cell — so near any edge the held piece would spill past the wall and the preview's bounds check skipped it: no ghost, and placement "only from certain angles." Now the pointer-move clamps hCell to the HELD piece's dims (like the touch path always did), so the ghost snaps fully into the wall and renders on every eligible square. The tap/click placement clamps the SAME way, so the drop lands exactly where the ghost showed it (WYSIWYG — was placing at the raw cell and getting rejected while the ghost sat one cell in). Verified: a 3x2 piece at the far-right edge clamps to col 14 (GW-3) and the ghost renders there; middle placement unchanged. NEXT (per Vince): the tutorial, then the homepage. Follow-on ghost polish: KBM hover (no piece held) shows the size, drag-from-chute.
    CHANGE LOG v3.5.135 - UNIFICATION: ONE LABEL PER STAT + DENSITY SURFACED. The post-sort report had a "· Density" sub-row that read RAW cubePct — the SAME number as "Cube fill %" right below it, and NOT the structured density that drives the grade. And raw fill wore four different labels across surfaces (scoreboard PACK, OPERATIONS "PACK FILL", end screen "Final Fill %", report "Cube fill %"). Now unified: DENSITY = the structured metric (wallSolidity, the grade driver) shown distinctly on the report, the end screen (new Density tile), and the OPERATIONS drawer; raw cube-fill is "PACK %" everywhere (scoreboard "PACK" is its live short form); Support is "Support %". Verified on a dense-but-low-pack wall: Density reads 100% while Pack reads 40% (they were identical before), and OPERATIONS shows DENSITY + PACK % (no stray "PACK FILL"). NEXT: the /me/ dashboard density card (needs an avg_density column + lifetime-view update).
    CHANGE LOG v3.5.134 - AFK FALSE-KICK FIXED (kremsicle: "says 5, kicked out at 2:30" on a 2-min session). The AFK idle timer (idleSec) and the low-rate timer (pphLowSec) never reset per session — a prior game left idleSec high, and a fresh game that happened to start with placed===_afkLastPlaced===0 kept accumulating the OLD idle, so the 5-minute AFK kick fired minutes early. FIX: track the session clock (_afkStartT); startT is set fresh on every wall/game start (and advanced on pause-resume), so any startT change zeroes the idle + low-rate clocks. Also made restartGame reset placed + startT (it was carrying the prior run's clock — a fresh run now starts at 0 elapsed). Verified: a new session with a carried-over idleSec=250 resets to 0 (no false kick), the AFK still fires at the REAL 300s, and a placement resets idle. NEXT: the floating-small physics (bottom small breaks, top stays floating).
@@ -1239,6 +1240,26 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .sip-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:3px;color:var(--acc-bright);margin-bottom:10px;}
 .sip-body{font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.4;color:var(--t1);margin-bottom:18px;}
 .sip-actions{display:grid;grid-template-columns:1fr;gap:10px;}
+/* v3.5.137 TUTORIAL guide banner + sign-off clipboard */
+#tut-tip{position:fixed;left:50%;top:64px;transform:translateX(-50%);z-index:350;display:none;max-width:min(560px,94vw);background:linear-gradient(180deg,#123f3a,#0d2c29);border:1.5px solid #2aa9a0;border-radius:10px;padding:10px 16px;box-shadow:0 6px 24px rgba(0,0,0,.5);text-align:center;}
+#tut-tip.vis{display:block;}
+#tut-tip .tt-n{display:block;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;color:#5fd6cd;margin-bottom:3px;}
+#tut-tip .tt-txt{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:600;color:#eafffb;line-height:1.25;}
+#ov-tutdone{position:fixed;inset:0;z-index:620;display:none;align-items:center;justify-content:center;background:rgba(10,7,4,.9);padding:20px;overflow-y:auto;}
+#ov-tutdone.vis{display:flex;}
+.tutdone-card{background:#f5f0e8;color:#2a1c0a;border-radius:10px;max-width:460px;width:100%;max-height:94vh;overflow-y:auto;padding:22px 22px 20px;box-shadow:0 18px 48px rgba(0,0,0,.6);}
+.td-hdr{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:2px;color:#1a1206;}
+.td-badge{font-family:'Share Tech Mono',monospace;font-size:12px;border:1.5px solid #b23b2e;color:#b23b2e;border-radius:4px;padding:2px 7px;vertical-align:middle;margin-left:6px;letter-spacing:1px;}
+.td-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:#5a4a30;line-height:1.35;margin:8px 0 14px;}
+.td-list{margin-bottom:14px;}
+.tdl-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px dashed #d8ccb2;}
+.tdl-box{flex:none;width:22px;height:22px;border:2px solid #7a6a4a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;color:#1f9d57;font-size:16px;}
+.tdl-row.on .tdl-box{border-color:#1f9d57;background:rgba(31,157,87,.12);}
+.tdl-t{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;color:#2a1c0a;}
+.tdl-row:last-child .tdl-t{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;}
+.td-ladder{font-family:'Barlow Condensed',sans-serif;font-size:14px;line-height:1.4;color:#4a3a20;background:rgba(178,59,46,.06);border-left:3px solid #b23b2e;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:16px;}
+.td-sign{width:100%;background:linear-gradient(180deg,#e0a838,#c8801a);color:#160c00;border:none;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1.5px;padding:13px;border-radius:7px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.3);}
+.td-skip{width:100%;background:none;border:none;color:#7a6a4a;font-family:'Barlow Condensed',sans-serif;font-size:15px;text-decoration:underline;cursor:pointer;padding:10px;margin-top:4px;}
 
 /* Score pop */
 .spp{position:fixed;font-family:'Bebas Neue',cursive;pointer-events:none;z-index:65;
@@ -1831,7 +1852,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.136 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.137 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1932,7 +1953,7 @@ body[data-cb="trit"]{
       <div class="sm-card-name">DAILY</div>
       <div class="sm-card-desc">Same pieces, same timer, everyone on Earth — one shared board, 00:00–23:59 UTC. Win it and you're the day's #1 loader on the planet.</div>
     </div>
-    <div class="sm-card mode-training" onclick="startTraining()">
+    <div class="sm-card mode-training" onclick="startTutorial()">
       <div class="sm-card-ico">🎓</div>
       <div class="sm-card-name">TRAINING</div>
       <div class="sm-card-desc">Watch a perfect wall build itself, then load one yourself. Every placement teaches a real hub rule — no clock, no fails. New here? Start on this.</div>
@@ -1944,7 +1965,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.136 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.137 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2097,7 +2118,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.136 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.137 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2405,6 +2426,18 @@ body[data-cb="trit"]{
     </div>
   </div>
 </div>
+<!-- v3.5.137 TUTORIAL: one-line guide banner + the training sign-off clipboard -->
+<div id="tut-tip"><span class="tt-n">STEP 1</span><span class="tt-txt"></span></div>
+<div id="ov-tutdone">
+  <div class="tutdone-card">
+    <div class="td-hdr">LOCK IN <span class="td-badge">TRAINING RECORD</span></div>
+    <div class="td-sub">You ran the whole floor. Check what you learned, then sign — same as day one at any real hub.</div>
+    <div id="tutdone-list" class="td-list"></div>
+    <div class="td-ladder"><b>THE SAFETY LADDER (how you get written up):</b><br>1st slip = a heads-up. 2nd of the SAME thing = a documented WARNING. Ignore it and it becomes an INCIDENT on your record. Stack incidents and you SIGN A WRITE-UP; keep going and you're SENT HOME — back to a practice trailer. Water breaks and locking a shelf clear warnings. Load it clean and none of this touches you.</div>
+    <button class="td-sign" onclick="tutSign()">✍ SIGN HERE — I'M TRAINED, CLOCK ME IN</button>
+    <button class="td-skip" onclick="tutExit()">Skip — back to menu</button>
+  </div>
+</div>
 <div id="ov-postsort"><div class="ps-card" id="ps-card"></div></div>
 <div id="ov-recover"><div class="rec-card"><div class="rec-icon">⚠</div><div class="rec-title">WE'RE SORRY — THE SCREEN STALLED</div><div class="rec-sub">The display stopped updating. Your session is safe. Tap RESUME to retry — and if it stays stuck, do a HARD REFRESH (Ctrl+Shift+R, or Cmd+Shift+R on Mac) for a clean reset.</div><div class="rec-btns"><button class="btn-p" onclick="recoverResume()">▶ RESUME</button><button class="btn-p" onclick="recoverMenu()">CHOOSE MODE</button><button class="btn-p" onclick="location.reload()">⟳ HARD REFRESH</button></div><div class="rec-dbg" id="rec-dbg"></div></div></div>
 <div id="ov-profile"><div class="pf-card"><div class="pf-top"><div class="pf-title" id="pf-title">PROFILE</div><button class="pf-x" onclick="closeProfile()">✕</button></div><div class="pf-body" id="pf-body"></div></div></div>
@@ -2520,7 +2553,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.136
+// LOCK IN v3.5.137
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2970,7 +3003,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.136'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.137'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4072,6 +4105,7 @@ function takeDrink(){
   if(Date.now()-_lastDrinkT<DRINK_CD){showBanner('💧 EASY — you just drank. Give it a few seconds.','',1100);return;}
   _lastDrinkT=Date.now();_coolBtn('water-side',DRINK_CD);
   if(typeof zLog==='function')zLog('water',{n:(S.drinks||0)+1}); // v3.5.132 raw timeline
+  if(TUTORIAL_MODE&&typeof tutAct==='function')tutAct('water');
   G.drinks=(G.drinks||0)+1;
   S.drinks=(S.drinks||0)+1;
   if(typeof playSfx==='function')playSfx('drink');
@@ -4554,6 +4588,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   S.bestPPH=Math.max(S.bestPPH||0,getPPH()); // v2.1.9 PEAK pph (fixes the 0 bug)
   // LV10: Drain strike bar on every successful placement
   onPlaceMechanic();
+  if(TUTORIAL_MODE&&typeof tutOnPlace==='function'){tutOnPlace(source,box,gx,gy);} // v3.5.137 tutorial step advance
   // Placement commentary — context-weighted per voice
   fireCommentary(source,box,gx,gy,rot);
   G.cog=calcCOG(G.grid);
@@ -4927,6 +4962,7 @@ function throwBox(){
   if(Date.now()-_lastThrowT<THROW_CD){showBanner('🙋 FLAG ON COOLDOWN — you can’t wave a coworker over back-to-back.','warn',1200);return;}
   _lastThrowT=Date.now();_coolBtn('throw-side',THROW_CD);
   if(typeof zLog==='function')zLog('flag',{n:(S.throws||0)+1}); // v3.5.132 raw timeline
+  if(TUTORIAL_MODE&&typeof tutAct==='function')tutAct('flag');
   var idx=(selBeltIdx!=null)?selBeltIdx:0;if(idx<0||idx>=G.belt.length)idx=0;
   G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
   S.throws=(S.throws||0)+1;G.throws=(G.throws||0)+1;
@@ -5843,6 +5879,7 @@ function drawScene(ts){
   drawBackWall(sCtx);
   drawWallBoxes(sCtx);
   drawParticles(sCtx);
+  if(TUTORIAL_MODE&&typeof tutRenderGuide==='function')tutRenderGuide(sCtx); // v3.5.137 tutorial target highlight (under the ghost)
   drawPlacementPreview(sCtx);
   drawFloorSlots(sCtx);
   drawDockFrame(sCtx);
@@ -7367,6 +7404,7 @@ belt.addEventListener('contextmenu',function(e){e.preventDefault();rotateSel();}
 function rotateSel(){
   S.rotations=(S.rotations||0)+1; // v2.1.7
   if(typeof zLog==='function')zLog('rotate',{n:S.rotations}); // v3.5.132 raw timeline
+  if(TUTORIAL_MODE&&typeof tutAct==='function')tutAct('rotate');
   var rotated=false;
   if(selBeltIdx!==null&&selBeltIdx<G.belt.length){
     var b=G.belt[selBeltIdx];
@@ -8232,6 +8270,7 @@ function stopMenuDemo(){
 }
 function showStartMenu(){
   TRAILER_MODE=false; // v3.5.89 clear the flagship flag on every menu return; the next pick sets it
+  TUTORIAL_MODE=false;var _tt2=document.getElementById('tut-tip');if(_tt2)_tt2.classList.remove('vis'); // v3.5.137 never sit in tutorial mode on the menu
   if(typeof _killStoppage==='function')_killStoppage(); // v3.5.121 belt-and-suspenders: the home screen never shows a stuck WORK STOPPAGE
   // v3.5.130 don't leak the live game HUD over the menu (kremsicle: "back to lobby with my score still up on the scoreboard")
   var _sp=document.getElementById('stats-panel');if(_sp)_sp.style.visibility='hidden';
@@ -8244,6 +8283,8 @@ function showStartMenu(){
 
 function hideStartMenu(){
   document.getElementById('start-menu').style.display='none';
+  TUTORIAL_MODE=false; // v3.5.137 clear tutorial state on any mode start (startTutorial re-sets it after this call) so it never leaks into a real game
+  var _tt=document.getElementById('tut-tip');if(_tt)_tt.classList.remove('vis');
   // v3.5.130 a RUNNING MODE is never under the briefing — that full-screen z-600 clipboard was invisibly eating every
   // click on the bottom bar (kremsicle: "can not reach admin/linehaul"). Force it gone whenever a mode starts.
   var _b=document.getElementById('briefing');if(_b){_b.classList.add('gone');_b.style.display='none';}
@@ -8534,6 +8575,134 @@ function exitTraining(){
   showStartMenu();
 }
 
+// ════════════════════════════════════════════════════════════════════════════════════════════════════════
+// v3.5.137 INTERACTIVE TUTORIAL — deterministic + guided. ONE run teaches every mechanic (except nesting) hands-on:
+// the player performs each action on a real wall, one short prompt per beat, a highlighted target, and it won't
+// advance until the action is done. Ends on a real-warehouse SIGN-OFF (checklist of what you learned + the safety
+// ladder spelled out + SIGN HERE, the same signature mechanic as the in-game write-ups). No RNG anywhere.
+// A beat is either PLACE (drop the fed piece on/near the target) or ACT ('rotate'|'water'|'flag'|'breakjam'|'seal').
+// pre: scaffolding cells to pre-place before the beat. fall: true = a pillar the player builds that we LET COLLAPSE.
+var TUTORIAL_MODE=false, TUT=null;
+var TUT_SCRIPT=[
+  {tip:'Grab the box from the chute. Drop it in the bottom-left corner.', place:{w:3,h:2}, tx:0, ty:18, learn:'place'},
+  {tip:'This one is standing tall. Press ↻ ROT to lay it flat, then drop it next to the first.', place:{w:2,h:3}, rotTo:{w:3,h:2}, tx:3, ty:18, learn:'rotate', needRot:true},
+  {tip:'Arrows point UP — keep freight upright. Fill along the floor.', place:{w:3,h:2, arrow:true}, tx:6, ty:18, learn:'arrows'},
+  {tip:'This freight is HEAVY. Load it low and flat — never build towers.', place:{w:3,h:2, label:'HEAVY'}, tx:9, ty:18, learn:'heavy'},
+  {tip:'Lay the TIRE flat. On its edge it rolls — that is a safety flag.', place:{w:2,h:2, cat:'tire'}, tx:12, ty:18, learn:'tire'},
+  {tip:'One gap left in the floor. Fill it to LOCK IN a full shelf — bonus + integrity.', pre:[{x:14,y:18,w:1,h:2}], place:{w:2,h:2}, tx:15, ty:18, learn:'lockin'},
+  {tip:'Second shelf: STAGGER the seams like brickwork — offset from the row below.', place:{w:3,h:2}, tx:1, ty:16, learn:'stagger'},
+  {tip:'This SP freight will not ride the belt. Anchor it LOW on the wall.', place:{src:'nc', w:2,h:3}, tx:4, ty:14, learn:'anchor'},
+  {tip:'HAZMAT loads LOW — below the waist line. Keep it down.', place:{src:'haz', w:2,h:2, haz:'3'}, tx:7, ty:15, learn:'hazmat'},
+  {tip:'FRAGILE rides on TOP — nothing heavy over it, or it crunches.', place:{w:2,h:2, label:'FRAGILE'}, tx:14, ty:14, learn:'fragile'},
+  {tip:'Break a smalls BAG into gap-fillers — tap ✂ BREAK, then chink the gaps.', place:{src:'bag'}, tx:10, ty:16, learn:'smalls', bag:true},
+  {tip:'Now stack THIN and tall on this stub — and watch. Pillars come DOWN. Wide base, narrow top.', pre:[{x:8,y:19,w:1,h:1},{x:8,y:18,w:1,h:1},{x:8,y:17,w:1,h:1}], place:{w:1,h:2}, tx:8, ty:15, learn:'collapse', fall:true},
+  {tip:'Take a WATER break — stay hydrated, it clears a warning. Tap 💧 WATER.', act:'water', learn:'water'},
+  {tip:'Need a piece fast? FLAG a hand for a smalls bag — but leaning on it draws heat. Tap 🙋 FLAG.', act:'flag', learn:'flag'},
+  {tip:'You are packed enough to dispatch. Hit ✓ FINISH to SEAL the wall.', act:'seal', learn:'seal'}
+];
+// human-readable checklist labels, in the sign-off order (LOCK-IN culminates last, per Vince)
+var TUT_LEARN_LABELS=[['place','Grab & place with the ghost'],['rotate','Rotate a piece (↻ ROT)'],['arrows','Keep arrows UP'],['heavy','Heavy freight low & flat'],['tire','Lay tires flat'],['stagger','Stagger the seams'],['anchor','Anchor SP / non-conveyable low'],['hazmat','Load hazmat below the waist'],['fragile','Fragile rides on top'],['smalls','Break bags → fill the gaps'],['collapse','Pillars collapse — taper them'],['water','Take water breaks'],['flag','Flag a hand when you need one'],['seal','Seal & dispatch the wall'],['lockin','LOCK IN a full shelf']];
+
+function tutMakePiece(spec){
+  spec=spec||{};
+  var src=spec.src||'belt';
+  var box=demoBuildPiece({w:spec.w,h:spec.h,src:(src==='nc'?'nc':src==='haz'?'haz':src==='bag'?'bag':null),n:spec.n,wc:spec.wc,haz:spec.haz});
+  if(!box)box=demoBuildPiece({w:spec.w||2,h:spec.h||2});
+  if(spec.cat==='tire'){box.cat='tire';box.box&&(box.box.cat='tire');}
+  if(spec.arrow)box.arrow=true;
+  if(spec.label){var _L=LABELS.find(function(l){return l.t===spec.label;});if(_L){box.labelDef=_L;box.label=_L.t;box.isFrag=!!_L.isFrag;if(_L.isHaz)box.hazClass=box.hazClass||'3';}}
+  box.id=uid('TUT');
+  return box;
+}
+function startTutorial(){
+  hideStartMenu();
+  gameMode='shift';TRAILER_MODE=false;TUTORIAL_MODE=true;
+  _LV=null;_M=null;currentLevel=0;
+  G={grid:makeGrid(),belt:[],ncSlots:Array(MAX_NC_SLOTS).fill(null),drinks:0,
+     bagSlots:Array(MAX_BAG_SLOTS).fill(null),score:0,cog:.5,support:1,integrity:100,tetrisTotal:0,tetrisRows:{},
+     bulkheadRows:{},bulkheadCount:0,brickAwarded:false,crunchCount:0,hazViolations:0,recoveryCount:0,ncPlaced:0,
+     beltSinceNC:0,beltSinceBag:0,practice:true,_finalized:false};
+  placed=0;startT=Date.now();gOver=false;paused=false;
+  selBeltIdx=null;selNC=-1;selBag=-1;hCell=null;
+  TUT={step:0,learned:{},misses:0};
+  document.getElementById('stats-panel').style.visibility='';
+  document.getElementById('footer').style.visibility='';
+  if(animF)cancelAnimationFrame(animF);lastLoopT=0;animF=requestAnimationFrame(loop);
+  tutBeat();
+}
+function tutBeat(){
+  if(!TUT)return;
+  var s=TUT_SCRIPT[TUT.step];
+  if(!s){tutSignoff();return;}
+  TUT.misses=0;
+  // scaffolding
+  if(s.pre){s.pre.forEach(function(p){var _sb=tutMakePiece({w:p.w,h:p.h});var cell={box:_sb,id:uid('SCAF'),rx:p.x,ry:p.y,w:p.w,h:p.h,cells:makeRect(p.w,p.h),isCrushed:false};for(var i=0;i<cell.cells.length;i++){var cx=cell.cells[i][0],cy=cell.cells[i][1];if(G.grid[p.y+cy])G.grid[p.y+cy][p.x+cx]=cell;}});}
+  // feed the piece for PLACE beats
+  G.belt=[];G.ncSlots.fill(null);G.bagSlots.fill(null);selBeltIdx=null;selNC=-1;selBag=-1;
+  if(s.place){
+    var box=tutMakePiece(s.place);
+    if(s.place.src==='nc'){G.ncSlots[0]=box;buildNCPanel&&buildNCPanel();}
+    else if(s.place.src==='bag'||s.bag){box.isBag=true;box.labelDef=LABELS[14];G.bagSlots[0]=box;buildBagPanel&&buildBagPanel();}
+    else{G.belt=[box];}
+  }
+  // ACT-beat setup: flag needs a belt piece to hand off; seal shows the FINISH button
+  if(s.act==='flag'){G.belt=[tutMakePiece({w:2,h:2})];}
+  if(s.act==='seal'){G.sealed=false;G.maxPack=true;var _tmf=document.getElementById('maxpack-finish');if(_tmf){_tmf.style.display='';_tmf.classList.add('pulse');}}
+  TUT.target=(s.place)?{x:s.tx,y:s.ty,w:(s.rotTo?s.rotTo.w:(s.place.w||2)),h:(s.rotTo?s.rotTo.h:(s.place.h||2))}:null;
+  tutTip(s.tip,TUT.step+1,TUT_SCRIPT.length);
+}
+function tutTip(text,n,tot){
+  var el=document.getElementById('tut-tip');if(!el)return;
+  el.querySelector('.tt-n').textContent='STEP '+n+' / '+tot;
+  el.querySelector('.tt-txt').textContent=text;
+  el.classList.add('vis');
+}
+function tutAct(kind){ // called from rotateSel/takeDrink/throwBox/breakJam when TUTORIAL_MODE
+  if(!TUT)return;var s=TUT_SCRIPT[TUT.step];if(!s)return;
+  if(s.needRot&&kind==='rotate')TUT.learned['rotate']=1;
+  if(s.act&&s.act===kind){TUT.learned[s.learn]=1;tutAdvance();}
+}
+function tutOnPlace(source,box,gx,gy){
+  if(!TUT)return;var s=TUT_SCRIPT[TUT.step];if(!s||!s.place)return;
+  // ANY legal placement of the scripted piece teaches the beat — advance. The highlight is guidance, not a gate:
+  // requiring an exact cell on a real physics wall risks unplaceable/stuck beats (support depends on prior placements).
+  TUT.learned[s.learn]=1;if(s.needRot&&TUT.learned['rotate'])TUT.learned['rotate']=1;
+  if(s.fall){setTimeout(function(){if(TUT)tutAdvance();},1500);} // give the collapse time to play, then move on
+  else tutAdvance();
+}
+function tutAdvance(){
+  if(!TUT)return;TUT.step++;
+  if(typeof playSfx==='function')playSfx('lock');
+  if(TUT.step>=TUT_SCRIPT.length){tutSignoff();return;}
+  setTimeout(tutBeat,250);
+}
+function tutRenderGuide(c){
+  if(!TUTORIAL_MODE||!TUT||!TUT.target||!c)return;
+  var t=TUT.target;
+  var tl=gridToCanvas(t.x,t.y),tr=gridToCanvas(t.x+t.w,t.y),bl=gridToCanvas(t.x,t.y+t.h),br=gridToCanvas(t.x+t.w,t.y+t.h);
+  c.save();
+  var pulse=0.35+0.35*Math.sin(Date.now()/280);
+  c.fillStyle='rgba(95,214,205,'+pulse+')';
+  c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();c.fill();
+  c.strokeStyle='rgba(120,240,220,.95)';c.lineWidth=2.5;c.stroke();
+  c.restore();
+}
+function tutSignoff(){
+  TUT.target=null;var tt=document.getElementById('tut-tip');if(tt)tt.classList.remove('vis');
+  gOver=true;if(animF){cancelAnimationFrame(animF);animF=null;}
+  var box=document.getElementById('tutdone-list');if(box){
+    var h='';for(var i=0;i<TUT_LEARN_LABELS.length;i++){var k=TUT_LEARN_LABELS[i][0],lbl=TUT_LEARN_LABELS[i][1];var done=!!TUT.learned[k];h+='<div class="tdl-row'+(done?' on':'')+'"><span class="tdl-box">'+(done?'✓':'')+'</span><span class="tdl-t">'+lbl+'</span></div>';}
+    box.innerHTML=h;
+  }
+  document.getElementById('ov-tutdone').classList.add('vis');
+}
+function tutSign(){
+  document.getElementById('ov-tutdone').classList.remove('vis');
+  TUTORIAL_MODE=false;TUT=null;gameMode='';
+  showStartMenu();
+}
+function tutExit(){document.getElementById('ov-tutdone').classList.remove('vis');TUTORIAL_MODE=false;TUT=null;gameMode='';gOver=true;showStartMenu();}
+
 // Training side panel: ESC key exits (handled by global keydown → togglePause catches it;
 // exitTraining() is wired to the EXIT button directly).
 
@@ -8611,6 +8780,7 @@ function updateShiftBadge(){
 function npKeepLoading(){if(G&&G.wallDone)return;if(G)G.maxPack=true;var p=document.getElementById('next-popup');if(p)p.classList.remove('vis');var f=document.getElementById('maxpack-finish');if(f)f.style.display='';} // v3.5.4 keep filling past the seal; FINISH re-opens the menu
 function npFinish(){if(G)G.maxPack=false;var f=document.getElementById('maxpack-finish');if(f)f.style.display='none';var nb=document.getElementById('next-popup-badge');if(nb)nb.textContent='✓ WALL COMPLETE — '+packPct()+'% PACKED';/* v3.5.62 recompute on finish — was showing the stale first-seal % after continue-loading */var p=document.getElementById('next-popup');if(p)p.classList.add('vis');}
 function nextTrailer(){
+  if(TUTORIAL_MODE&&typeof tutAct==='function'){document.getElementById('next-popup').classList.remove('vis');var _tmf=document.getElementById('maxpack-finish');if(_tmf)_tmf.style.display='none';tutAct('seal');return;} // v3.5.137 tutorial: FINISH = the seal lesson
   if(typeof playSfx==='function')playSfx('trailer');
   document.getElementById('next-popup').classList.remove('vis');
   // v3.5.123 DAILY IS ONE WALL — FINISH/next ends the run, never spawns a fresh trailer (kills infinite daily score).
@@ -9122,7 +9292,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.136</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.137</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
