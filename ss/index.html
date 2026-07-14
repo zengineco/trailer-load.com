@@ -81,6 +81,21 @@ html,body{width:100%;height:100dvh;
 .ov{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;
   background:radial-gradient(ellipse 120% 100% at 50% 40%,#3a3a3e,#262628);padding:18px;text-align:center;overflow-y:auto;}
 .ov.vis{display:flex;}
+/* v1.2 board + settings cross-wire */
+#sm-board-btn,#sm-gear-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;background:rgba(224,150,46,.14);border:1px solid var(--acc);color:var(--acc);border-radius:5px;padding:5px 10px;cursor:pointer;}
+#sm-gear-btn{padding:5px 9px;font-size:14px;}
+#sm-board-btn:hover,#sm-gear-btn:hover{background:rgba(224,150,46,.28);}
+.bd-tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center;}
+.bd-tab{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.28);color:#bbb;border-radius:6px;padding:7px 14px;cursor:pointer;}
+.bd-tab.active{background:var(--acc);color:#160c00;border-color:var(--acc);font-weight:bold;}
+.bd-list{width:min(440px,90vw);max-height:52vh;overflow-y:auto;}
+.bd-row{display:flex;align-items:center;gap:12px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.08);font-family:'Share Tech Mono',monospace;}
+.bd-rank{flex:none;width:34px;font-size:16px;color:var(--acc);text-align:center;}
+.bd-name{flex:1;font-size:15px;color:#eee;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bd-val{flex:none;font-size:16px;color:#5fd6cd;font-weight:bold;}
+.bd-empty{padding:24px;color:#888;font-size:15px;text-align:center;line-height:1.4;}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:min(340px,80vw);margin:10px 0;font-family:'Share Tech Mono',monospace;font-size:14px;color:#ddd;}
+.set-row input[type=range]{flex:1;max-width:180px;}
 .ov h1{font-family:'Bebas Neue',cursive;font-size:54px;letter-spacing:5px;color:var(--acc);line-height:.95;text-shadow:0 2px 8px rgba(0,0,0,.5);}
 .ov h2{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:14px;font-weight:bold;}
 .ov p{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--t2);max-width:470px;line-height:1.4;margin-bottom:6px;}
@@ -106,8 +121,10 @@ html,body{width:100%;height:100dvh;
 <div id="root">
   <div id="hdr">
     <img class="logo-img" src="logo.png" alt="SMALLSORT" style="height:42px;width:auto;">
-    <div style="display:flex;align-items:center;gap:14px;">
+    <div style="display:flex;align-items:center;gap:12px;">
       <span id="sm-acct" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;"></span>
+      <button id="sm-board-btn" onclick="smOpenBoard()">★ BOARD</button>
+      <button id="sm-gear-btn" onclick="smOpenSettings()" title="Sound & music">⚙</button>
       <a href="/lock-in.html" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:1px;">← LOCK IN</a>
     </div>
   </div>
@@ -156,6 +173,25 @@ html,body{width:100%;height:100dvh;
       <button id="copy-btn">⧉ COPY RESULT</button>
     </div>
     <button class="btn teal" id="again-btn" style="margin-top:14px;">RUN AGAIN</button>
+  </div>
+
+  <div class="ov" id="ov-board">
+    <h1 style="font-size:32px;">★ SORT BOARD</h1>
+    <div class="bd-tabs">
+      <button class="bd-tab active" data-m="rate" onclick="smBoardTab('rate')">SORT RATE</button>
+      <button class="bd-tab" data-m="accuracy" onclick="smBoardTab('accuracy')">ACCURACY</button>
+      <button class="bd-tab" data-m="score" onclick="smBoardTab('score')">SCORE</button>
+    </div>
+    <div id="sm-board-list" class="bd-list"></div>
+    <button class="btn" onclick="smCloseBoard()" style="margin-top:14px;">✕ CLOSE</button>
+  </div>
+
+  <div class="ov" id="ov-settings">
+    <h1 style="font-size:30px;">⚙ SETTINGS</h1>
+    <p style="font-family:'Share Tech Mono',monospace;font-size:12px;color:#999;max-width:300px;text-align:center;margin:0 0 6px;">Same soundtrack as LOCK IN. Off by default — turn it up.</p>
+    <div class="set-row"><span>Music</span><input type="range" id="set-music" min="0" max="100" value="0" oninput="smSetVol('music',this.value)"></div>
+    <button class="btn teal" id="set-music-toggle" onclick="smToggleMusic()" style="margin-top:10px;">▶ PLAY MUSIC</button>
+    <button class="btn" onclick="smCloseSettings()" style="margin-top:14px;">✕ CLOSE</button>
   </div>
 </div>
 
@@ -557,7 +593,7 @@ function smSubmitSession(acc,tput,grade){
     if(!s||!s.uid||!s.access_token)return; // signed-in only — the same account as the game
     var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
     var rec={
-      user_id:s.uid, mode:'smalls', app_ver:'ss-1.1',
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.2',
       consent_self:true, consent_share:false, opt_in_share:false,
       started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
       duration_s:dur,
@@ -577,6 +613,41 @@ function copyResult(){
   var txt='SMALLSORT — Sort Result\n--------------------------------\nGrade:       '+gr[0]+'\nScore:       '+STATE.score+'\nAccuracy:    '+acc+'%\nThroughput:  '+STATE.sorted+'/min\nBest Combo:  '+STATE.bestCombo+'\nSorted:      '+STATE.sorted+'\nMisroutes:   '+STATE.miss+'\nQA Caught:   '+STATE.qaCaught+'\nStoppages:   '+STATE.stoppages+'\nDowntime:    '+dts+'s\n--------------------------------\nLOCK IN · SMALLSORT · trailer-load.com · © 2026';
   try{navigator.clipboard.writeText(txt);var b=document.getElementById('copy-btn');var o=b.textContent;b.textContent='✓ COPIED';setTimeout(function(){b.textContent=o;},1400);}
   catch(err){console.error('copyResult:',err);window.prompt('Copy result:',txt);}
+}
+// ── v1.2 LEADERBOARD (public lockin_smalls_board RPC — the same shared backend as LOCK IN) ──
+var SM_BOARD_METRIC='rate';
+function smEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':'&quot;';});}
+function smOpenBoard(){document.getElementById('ov-board').classList.add('vis');smLoadBoard(SM_BOARD_METRIC);}
+function smCloseBoard(){document.getElementById('ov-board').classList.remove('vis');}
+function smBoardTab(m){SM_BOARD_METRIC=m;var tabs=document.querySelectorAll('.bd-tab'),i;for(i=0;i<tabs.length;i++)tabs[i].classList.toggle('active',tabs[i].getAttribute('data-m')===m);smLoadBoard(m);}
+function smLoadBoard(metric){
+  var el=document.getElementById('sm-board-list');if(!el)return;el.innerHTML='<div class="bd-empty">Loading…</div>';
+  fetch(SM_ENDPOINT+'/rpc/lockin_smalls_board',{method:'POST',headers:{'apikey':SM_ANON,'Content-Type':'application/json'},body:JSON.stringify({p_metric:metric,p_limit:25})})
+    .then(function(r){return r.json();})
+    .then(function(j){
+      var rows=Array.isArray(j)?j:[];
+      if(!rows.length){el.innerHTML='<div class="bd-empty">No sorters ranked yet — play a signed-in run to claim the board.</div>';return;}
+      var h='',i;for(i=0;i<rows.length;i++){var r=rows[i];
+        var val=(metric==='accuracy')?(r.accuracy+'%'):(metric==='rate')?(r.sort_rate+'/min'):r.score;
+        var medal=(i===0)?'🥇':(i===1)?'🥈':(i===2)?'🥉':r.rank;
+        h+='<div class="bd-row"><span class="bd-rank">'+medal+'</span><span class="bd-name">'+smEsc(r.username)+'</span><span class="bd-val">'+val+'</span></div>';}
+      el.innerHTML=h;
+    }).catch(function(e){console.error('smBoard:',e);el.innerHTML='<div class="bd-empty">Could not load the board.</div>';});
+}
+// ── v1.2 SETTINGS + MUSIC (same tracks as LOCK IN, off by default) ──
+var SM_AUDIO=null, SM_TRACK=1, SM_MUSICVOL=0;
+try{var _sv=JSON.parse(localStorage.getItem('smSettings')||'{}');if(_sv&&typeof _sv.music==='number')SM_MUSICVOL=_sv.music;}catch(e){}
+function smOpenSettings(){var m=document.getElementById('set-music');if(m)m.value=SM_MUSICVOL;document.getElementById('ov-settings').classList.add('vis');}
+function smCloseSettings(){document.getElementById('ov-settings').classList.remove('vis');}
+function smSetVol(kind,v){v=parseInt(v,10)||0;if(kind==='music'){SM_MUSICVOL=v;if(SM_AUDIO)SM_AUDIO.volume=v/100;}try{localStorage.setItem('smSettings',JSON.stringify({music:SM_MUSICVOL}));}catch(e){}}
+function smToggleMusic(){
+  var btn=document.getElementById('set-music-toggle');
+  if(!SM_AUDIO){SM_AUDIO=new Audio();SM_AUDIO.addEventListener('ended',function(){SM_TRACK=SM_TRACK>=13?1:SM_TRACK+1;SM_AUDIO.src='/'+SM_TRACK+'.mp3';SM_AUDIO.play().catch(function(){});});}
+  if(SM_AUDIO.paused){
+    if(!SM_MUSICVOL){SM_MUSICVOL=60;var m=document.getElementById('set-music');if(m)m.value=60;smSetVol('music',60);}
+    SM_AUDIO.src='/'+SM_TRACK+'.mp3';SM_AUDIO.volume=SM_MUSICVOL/100;
+    SM_AUDIO.play().then(function(){btn.textContent='⏸ PAUSE MUSIC';}).catch(function(){btn.textContent='▶ PLAY MUSIC';});
+  } else { SM_AUDIO.pause();btn.textContent='▶ PLAY MUSIC'; }
 }
 function resize(){var f=document.getElementById('field');W=f.offsetWidth;H=f.offsetHeight;cv.width=W;cv.height=H;layout();}
 function boot(){
