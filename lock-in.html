@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.140
+   LOCK IN v3.5.141
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.141 - TUTORIAL REBUILT FULLY DETERMINISTIC + BUTTON UNIFICATION + DISPATCH REORDER. (1) TRAINING: kremsicle's jailbreaker found a "poltergeist piece" (one inset in another) and floating from step 5 on — the tutorial accepted any tapped placement, so it diverged from a valid wall. Now EVERY place-beat force-drops its piece at an EXACT scripted target + rotation the instant you tap the wall, so the build is byte-identical every run. The script is rebuilt to a real bottom-up floor: 3 NC ANCHORS FIRST (washer/fridge/range across the base — "first piece is the anchor"), then shelf cartons (place/rotate/arrows/heavy/lock-in), then the upper row (tire/stagger/hazmat/fragile/smalls), then a STAGED COLLAPSE, and BREAK JAM introduced AFTER the collapse — then water/flag/seal. Fails are OFF in training (tickChute + checkPPHFail gated on TUTORIAL_MODE) so it can never send you home or log a garbage session. Sign-off slop fixed (no "same as day one at a real hub" contradiction, no zero-bearing sentence). Verified end-to-end: all 18 beats fire in order, ZERO floating pieces, collapse->breakjam->seal, sign-off checks 18/18 with LOCK IN last. (2) BUTTONS: every action + console button (ADMIN/OPS/LINEHAUL, WATER, FLAG, BREAK JAM, ROT) now wears the SAME outline box — uniform --btn-line border, radius, and min-height — while fills stay semantic (water keeps blue, alerts keep red). (3) DISPATCH: the console row is reordered ADMIN -> OPERATIONS -> LINEHAUL (left to right) with the live dispatch message in a boxed text field BELOW the row, per Goyim. NEXT: homepage flesh-out, cosmetic sweep 2.
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
    CHANGE LOG v3.5.140 - COLORBLIND PASS 1: CONTRAST OUTLINES ON THE HUD (opticquiz CVD report: 14 conflicts, dark-teal-on-dark-bg collapsing to 1.7 contrast in deuteranopia). Every scoreboard value + label, plus the dispatch line, safety indicator, grade letter, rank, and the FLAG/WATER/NC/console buttons, now carry a hard dark 1px OUTLINE (text-shadow) + glow — so the TEXT has contrast independent of how its accent color collapses under color-blindness (the labels already differentiate the stats textually; the outline restores legibility). Scoreboard labels bumped 11px->12px and brightened off the muted --t2. This is the "all text outlined with contrast" pass for the in-game HUD, per Vince. NEXT (colorblind pass 2): re-run opticquiz, extend outlines to remaining surfaces, resolve any leftover color-pair conflicts.
    CHANGE LOG v3.5.139 - DAILY MECHANICS REWORK (submit-and-improve; the enterprise "brain exercise"). Daily no longer auto-ends into a graded screen (that's where the "F on finish" came from) and there is NO NEXT TRAILER. When you seal the daily wall you get a CHOICE popup: ★ SUBMIT WALL — BOARD & MENU · ↺ KEEP LOADING — IMPROVE IT · ↺ RESTART DAILY — FRESH ATTEMPT. Nothing posts until you SUBMIT (or clock out); submit fires dailyFinish (today's board) + the session, then returns to the main menu. gOver stays false on seal so you can keep packing the same wall and re-seal for a better score. Shift keeps its own NEXT-TRAILER button set (the groups swap by mode, no cross-contamination). Verified: daily seal shows the daily group only, SUBMIT posts + goes to menu, RESTART replays the same seed, shift shows its own buttons. NEXT: the colorblind text-outline pass.
@@ -325,6 +326,7 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
   --lg:#b04040;--lg-bright:#d86060;
   --panel-left-w:204px;--panel-right-w:226px;
   --pause-bg:rgba(236,229,216,.97);
+  --btn-line:#8a6a2e;
 }
 [data-theme="dark"]{
   --bg:#1c1410;--bg2:#241a13;--bg3:#2e2016;
@@ -335,6 +337,7 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
   --sm:#a07de8;--sm-bright:#c0a0ff;
   --lg:#d86060;--lg-bright:#e88080;
   --pause-bg:rgba(28,20,16,.97);
+  --btn-line:#c8963c;
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1297,10 +1300,14 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .bj-btn.bj-crit{background:var(--danger);border-color:#ff5a36;color:#fff;animation:bjblink .5s steps(2) infinite;}
 /* v3.5.73 WATER + THROW live in the bottom control strip now */
 .strip-act{font-family:'Bebas Neue',cursive;font-size:16px;font-weight:bold;letter-spacing:1.5px;padding:5px 13px;border-radius:4px;cursor:pointer;border:1px solid;white-space:nowrap;}
-.strip-act.sa-water{background:#123a4a;border-color:#2f7fd0;color:#bfe4ff;}
-.strip-act.sa-throw{background:#3a2410;border-color:#c88a2a;color:#f3c98a;}
+.strip-act.sa-water{background:#123a4a;color:#bfe4ff;}
+.strip-act.sa-throw{background:#3a2410;color:#f3c98a;}
 .strip-act:hover{filter:brightness(1.14);}
 .strip-act:active{transform:scale(.95);}
+/* v3.5.141 BUTTON UNIFICATION — every action + console button wears the SAME outline box (uniform --btn-line border, radius, height). Fills stay semantic (water blue, break-jam amber, alerts red) but the OUTLINE is identical everywhere, per Goyim. */
+.console-btn,.strip-act,.bj-btn,#rot-btn{border:1.5px solid var(--btn-line);border-radius:5px;padding:6px 14px;min-height:34px;line-height:1;display:inline-flex;align-items:center;justify-content:center;}
+.console-btn:hover,.strip-act:hover,.bj-btn:hover,#rot-btn:hover{border-color:var(--btn-line);filter:brightness(1.12);}
+.console-btn.on{border-color:var(--btn-line);}
 @keyframes bjpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
 @keyframes bjblink{0%{opacity:1;}50%{opacity:.4;}}
 .chute-light{width:14px;height:14px;border-radius:50%;display:inline-block;flex:none;background:#1f9d57;box-shadow:0 0 8px #1f9d57;}
@@ -1530,9 +1537,9 @@ body[data-cb="trit"]{
 .msg-line.msg-out{opacity:0;transform:translateX(10px);transition:opacity .5s ease,transform .5s ease;}
 /* v3.5.8 DISPATCH moved to the footer — one legible horizontal line above the controls */
 /* v3.5.17 DISPATCH legibility: show the newest message big + high-contrast (full board record comes next) */
-#dispatch-bar{display:flex;align-items:center;gap:10px;padding:5px 8px 6px;border-bottom:1px solid var(--border);min-height:30px;}
+#dispatch-bar{display:flex;flex-direction:column;align-items:stretch;gap:5px;padding:5px 8px 6px;border-bottom:1px solid var(--border);}
 .dispatch-tag{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;color:var(--acc-bright);font-weight:bold;flex:none;white-space:nowrap;}
-#footer #msg-feed{flex:1;flex-direction:row;align-items:center;gap:0;min-height:0;height:auto;overflow:hidden;}
+#footer #msg-feed{flex-direction:row;align-items:center;gap:0;min-height:30px;height:auto;overflow:hidden;background:rgba(0,0,0,.22);border:1px solid var(--border2);border-radius:5px;padding:5px 10px;}
 /* v3.5.18 pro dispatch line: [SOURCE badge] + outlined body */
 #footer .msg-line{display:flex;align-items:center;gap:9px;line-height:1.2;padding:3px 8px;flex:1;min-width:0;background:rgba(0,0,0,.36);border-radius:0 4px 4px 0;border-left-width:4px;}
 #footer .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.5);border:1px solid rgba(224,150,46,.4);color:#f0d9a8;}/* v3.5.34 brighter base source tag (untyped COWORKER/MANAGER pop more) */
@@ -1859,7 +1866,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.140 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.141 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1972,7 +1979,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.140 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.141 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2125,7 +2132,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.140 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.141 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2321,13 +2328,14 @@ body[data-cb="trit"]{
     </div>
     <div id="footer">
       <!-- v3.5.116: DISPATCH is now ONE live line, sitting directly below the chute and above the OPERATIONS row (was a 118px stack of up to 5 lines with a COWORKER/MANAGER source chip). The full log with speakers lives in the LINEHAUL drawer. -->
+      <!-- v3.5.141: order is ADMIN -> OPERATIONS -> LINEHAUL (left to right), THEN the dispatch text box below the row (Goyim). -->
       <div id="dispatch-bar">
-        <div id="msg-feed"></div>
         <div id="ops-console">
+          <button class="console-btn" id="cbtn-admin" onclick="openAdmin()" title="Admin — pause / settings"><span class="ci">⚙</span>ADMIN</button>
           <button class="console-btn" id="cbtn-ops" onclick="toggleDrawer('ops')" title="Live operations — load rate, pack, balance, incidents"><span class="ci">◈</span>OPERATIONS</button>
           <button class="console-btn" id="cbtn-lh" onclick="toggleDrawer('linehaul')" title="Linehaul — full dispatch log (every message, nothing missed)"><span class="ci">▸</span>LINEHAUL</button>
-          <button class="console-btn" id="cbtn-admin" onclick="openAdmin()" title="Admin — pause / settings"><span class="ci">⚙</span>ADMIN</button>
         </div>
+        <div id="msg-feed"></div>
       </div>
       <div id="conv-header">
         <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
@@ -2445,9 +2453,9 @@ body[data-cb="trit"]{
 <div id="ov-tutdone">
   <div class="tutdone-card">
     <div class="td-hdr">LOCK IN <span class="td-badge">TRAINING RECORD</span></div>
-    <div class="td-sub">You ran the whole floor. Check what you learned, then sign — same as day one at any real hub.</div>
+    <div class="td-sub">You ran the whole floor. Check off what you learned, then sign to clock in.</div>
     <div id="tutdone-list" class="td-list"></div>
-    <div class="td-ladder"><b>THE SAFETY LADDER (how you get written up):</b><br>1st slip = a heads-up. 2nd of the SAME thing = a documented WARNING. Ignore it and it becomes an INCIDENT on your record. Stack incidents and you SIGN A WRITE-UP; keep going and you're SENT HOME — back to a practice trailer. Water breaks and locking a shelf clear warnings. Load it clean and none of this touches you.</div>
+    <div class="td-ladder"><b>THE SAFETY LADDER (how you get written up):</b><br>1st slip = a heads-up. 2nd of the SAME thing = a documented WARNING. Ignore it and it becomes an INCIDENT on your record. Stack incidents and you SIGN A WRITE-UP; keep going and you're SENT HOME — back to a practice trailer. Water breaks and locking a shelf clear warnings.</div>
     <button class="td-sign" onclick="tutSign()">✍ SIGN HERE — I'M TRAINED, CLOCK ME IN</button>
     <button class="td-skip" onclick="tutExit()">Skip — back to menu</button>
   </div>
@@ -2567,7 +2575,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.140
+// LOCK IN v3.5.141
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3017,7 +3025,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.140'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.141'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -5785,6 +5793,7 @@ function drawBagSkin(c,dx,dy,dw,dh){if(!BAGIMG_OK)return false;try{c.drawImage(B
 function drawBackdropImg(c){try{c.fillStyle='#16100a';c.fillRect(DL,DT,DR-DL,DB-DT);c.save();c.beginPath();c.rect(DL,DT,DR-DL,DB-DT);c.clip();c.drawImage(BACKDROP,IL,IT,IR-IL,IB-IT);c.restore();}catch(e){BACKDROP_OK=false;}}
 function jamCheck(){if(CHUTE_JAM&&G&&G.belt&&G.belt.length<=0&&!jamStarvedT)jamStarvedT=Date.now();if(typeof updateChuteUI==='function')updateChuteUI();}
 function breakJam(){
+  if(TUTORIAL_MODE&&typeof tutAct==='function')tutAct('breakjam'); // v3.5.141 tutorial: BREAK JAM = the break-jam lesson (fires even if the belt is full)
   if(typeof G==='undefined'||!G.belt)return;
   if(G.belt.length>=BELT_PIECE_COUNT)return;
   var before=G.belt.length;refillBelt();
@@ -5792,6 +5801,7 @@ function breakJam(){
   jamStarvedT=0;jamWarnLevel=0;updateChuteUI();
 }
 function tickChute(){
+  if(TUTORIAL_MODE)return; // v3.5.141 no chute-jam sent-home during the guided tutorial (killed the "CHUTE JAMMED — SENT HOME" bug)
   if(!CHUTE_JAM)return;
   if(G&&G.belt&&G.belt.length>0){if(jamStarvedT||jamWarnLevel){jamStarvedT=0;jamWarnLevel=0;updateChuteUI();}return;}
   if(!jamStarvedT)jamStarvedT=Date.now();
@@ -7173,6 +7183,7 @@ function buildTips(hp,integ,voids,cog,ss,pph){
 
 // ── FAIL CONDITIONS ──
 function checkPPHFail(dt){
+  if(TUTORIAL_MODE)return; // v3.5.141 no AFK / low-rate kick during the guided tutorial
   // v3.5.118 AFK KILL — no placement for AFK_LIMIT ends the session (kremsicle's "farm longest time by afking":
   // 44 min elapsed, 0 placed, immune because PPH was 0). placed-delta so it auto-resets on ANY placement AND on a
   // new game (placed drops to 0), needing no hooks in the placement/start paths. dt-accumulated => freezes on pause.
@@ -7341,6 +7352,9 @@ scene.addEventListener('pointerup',function(e){
   // raw cursor cell, which near an edge extended past the wall and got rejected while the ghost sat one cell in.
   var _pb=(typeof kbSelBox==='function')?kbSelBox():null;
   if(_pb){var _pd=getDims(_pb,(selNC>=0)?selNCRot:selBeltRot);g={x:Math.max(0,Math.min(GW-_pd.w,g.x)),y:Math.max(0,Math.min(GH-_pd.h,g.y))};}
+  // v3.5.141 TUTORIAL is deterministic: a wall-tap drops the scripted piece at its EXACT target + rotation, so it can
+  // never float, inset, or diverge from the guided build (the highlight showed where). Fixes the poltergeist/floating.
+  if(TUTORIAL_MODE&&TUT&&TUT_SCRIPT[TUT.step]&&TUT_SCRIPT[TUT.step].place){var _ts=TUT_SCRIPT[TUT.step];g={x:_ts.tx,y:_ts.ty};if(selBeltIdx!==null)selBeltRot=_ts.rot||0;if(selNC>=0)selNCRot=_ts.rot||0;}
   if(selBeltIdx!==null){placeBox('belt',selBeltIdx,g.x,g.y,selBeltRot);return;}
   if(selNC>=0){
     placeBox('nc',selNC,g.x,g.y,selNCRot);
@@ -8599,25 +8613,36 @@ function exitTraining(){
 // A beat is either PLACE (drop the fed piece on/near the target) or ACT ('rotate'|'water'|'flag'|'breakjam'|'seal').
 // pre: scaffolding cells to pre-place before the beat. fall: true = a pillar the player builds that we LET COLLAPSE.
 var TUTORIAL_MODE=false, TUT=null;
+// v3.5.141 FULLY DETERMINISTIC — each PLACE beat drops its piece at an EXACT valid target (force-placed on tap, so it
+// can NEVER float or inset). Bottom-up like the demo: NC ANCHORS first (the foundation), then shelves, then the top,
+// then a collapse, then break-jam, then safety, then seal. rot = the forced orientation.
 var TUT_SCRIPT=[
-  {tip:'Grab the box from the chute. Drop it in the bottom-left corner.', place:{w:3,h:2}, tx:0, ty:18, learn:'place'},
-  {tip:'This one is standing tall. Press ↻ ROT to lay it flat, then drop it next to the first.', place:{w:2,h:3}, rotTo:{w:3,h:2}, tx:3, ty:18, learn:'rotate', needRot:true},
-  {tip:'Arrows point UP — keep freight upright. Fill along the floor.', place:{w:3,h:2, arrow:true}, tx:6, ty:18, learn:'arrows'},
-  {tip:'This freight is HEAVY. Load it low and flat — never build towers.', place:{w:3,h:2, label:'HEAVY'}, tx:9, ty:18, learn:'heavy'},
-  {tip:'Lay the TIRE flat. On its edge it rolls — that is a safety flag.', place:{w:2,h:2, cat:'tire'}, tx:12, ty:18, learn:'tire'},
-  {tip:'One gap left in the floor. Fill it to LOCK IN a full shelf — bonus + integrity.', pre:[{x:14,y:18,w:1,h:2}], place:{w:2,h:2}, tx:15, ty:18, learn:'lockin'},
-  {tip:'Second shelf: STAGGER the seams like brickwork — offset from the row below.', place:{w:3,h:2}, tx:1, ty:16, learn:'stagger'},
-  {tip:'This SP freight will not ride the belt. Anchor it LOW on the wall.', place:{src:'nc', w:2,h:3}, tx:4, ty:14, learn:'anchor'},
-  {tip:'HAZMAT loads LOW — below the waist line. Keep it down.', place:{src:'haz', w:2,h:2, haz:'3'}, tx:7, ty:15, learn:'hazmat'},
-  {tip:'FRAGILE rides on TOP — nothing heavy over it, or it crunches.', place:{w:2,h:2, label:'FRAGILE'}, tx:14, ty:14, learn:'fragile'},
-  {tip:'Break a smalls BAG into gap-fillers — tap ✂ BREAK, then chink the gaps.', place:{src:'bag'}, tx:10, ty:16, learn:'smalls', bag:true},
-  {tip:'Now stack THIN and tall on this stub — and watch. Pillars come DOWN. Wide base, narrow top.', pre:[{x:8,y:19,w:1,h:1},{x:8,y:18,w:1,h:1},{x:8,y:17,w:1,h:1}], place:{w:1,h:2}, tx:8, ty:15, learn:'collapse', fall:true},
-  {tip:'Take a WATER break — stay hydrated, it clears a warning. Tap 💧 WATER.', act:'water', learn:'water'},
-  {tip:'Need a piece fast? FLAG a hand for a smalls bag — but leaning on it draws heat. Tap 🙋 FLAG.', act:'flag', learn:'flag'},
-  {tip:'You are packed enough to dispatch. Hit ✓ FINISH to SEAL the wall.', act:'seal', learn:'seal'}
+  // ── FOUNDATION: NC/SP anchors (open the NC tray — the first piece is the anchor) ──
+  {tip:'First piece is the ANCHOR. Tap the NC tray, grab the heavy SP freight, and drop it in the bottom-left corner.', place:{src:'nc', w:6,h:8}, tx:0, ty:12, learn:'anchor'},
+  {tip:'Mirror it — a second anchor balances the far corner. SP freight comes in pairs.', place:{src:'nc', w:5,h:8}, tx:12, ty:12, learn:'balance'},
+  {tip:'Close the center. A solid floor with zero voids holds everything above it.', place:{src:'nc', w:6,h:8}, tx:6, ty:12, learn:'foundation'},
+  // ── FIRST SHELF: regular freight, rotate, arrows, heavy, LOCK IN ──
+  {tip:'Now regular freight. Grab from the chute and tile a shelf across the base, left to right.', place:{w:3,h:2}, tx:0, ty:10, learn:'place'},
+  {tip:'This one stands tall. Press ↻ ROT to lay it flat, then drop it next in line.', place:{w:2,h:3}, rot:1, tx:3, ty:10, learn:'rotate', needRot:true},
+  {tip:'Arrows point UP — keep freight upright as you set it. Keep tiling.', place:{w:3,h:2, arrow:true}, tx:6, ty:10, learn:'arrows'},
+  {tip:'HEAVY freight rides LOW and flat — never build it into a tower.', place:{w:3,h:2, label:'HEAVY'}, tx:9, ty:10, learn:'heavy'},
+  {tip:'One gap left. Fill it to complete the row — a full shelf LOCKS IN: bonus + integrity.', place:{w:2,h:2}, tx:12, ty:10, learn:'lockin', pre:[{x:14,y:10,w:1,h:2},{x:15,y:10,w:2,h:2}]},
+  // ── SECOND SHELF: tire, stagger, hazmat, fragile, smalls ──
+  {tip:'Lay the TIRE FLAT. Stood on its edge it rolls when the door opens — that is a safety flag.', place:{w:2,h:2, cat:'tire'}, tx:0, ty:8, learn:'tire'},
+  {tip:'STAGGER the seams like brickwork — offset this row from the one below so it can not split.', place:{w:3,h:2}, tx:3, ty:8, learn:'stagger'},
+  {tip:'HAZMAT loads LOW and stays clear of other classes. Set it down here.', place:{src:'haz', w:2,h:2, haz:'3'}, tx:6, ty:8, learn:'hazmat'},
+  {tip:'FRAGILE rides on TOP — nothing heavy over it, or it crunches.', place:{w:2,h:2, label:'FRAGILE'}, tx:8, ty:8, learn:'fragile'},
+  {tip:'A bag of smalls fills tight gaps. Break it (✂ BREAK) or set it here to chink the last space.', place:{src:'bag'}, tx:10, ty:8, learn:'smalls', bag:true},
+  // ── COLLAPSE (watch it fall), then BREAK JAM ──
+  {tip:'Now stack THIN and tall on this stub — and WATCH. Pillars come down. Wide base, narrow top.', place:{w:1,h:2}, tx:13, ty:6, learn:'collapse', fall:true, pre:[{x:13,y:9,w:1,h:1},{x:13,y:8,w:1,h:1}]},
+  {tip:'The chute backed up while you watched that. Hit ⚡ BREAK JAM to release the next batch onto the belt.', act:'breakjam', learn:'breakjam'},
+  // ── SAFETY + FINISH ──
+  {tip:'Take a WATER break — staying hydrated clears an open warning. Tap 💧 WATER.', act:'water', learn:'water'},
+  {tip:'Stuck reaching the top? FLAG a hand for a smalls bag — but leaning on it draws heat. Tap 🙋 FLAG.', act:'flag', learn:'flag'},
+  {tip:'You are packed enough to dispatch. Hit ✓ FINISH (top-right) to SEAL the wall.', act:'seal', learn:'seal'}
 ];
-// human-readable checklist labels, in the sign-off order (LOCK-IN culminates last, per Vince)
-var TUT_LEARN_LABELS=[['place','Grab & place with the ghost'],['rotate','Rotate a piece (↻ ROT)'],['arrows','Keep arrows UP'],['heavy','Heavy freight low & flat'],['tire','Lay tires flat'],['stagger','Stagger the seams'],['anchor','Anchor SP / non-conveyable low'],['hazmat','Load hazmat below the waist'],['fragile','Fragile rides on top'],['smalls','Break bags → fill the gaps'],['collapse','Pillars collapse — taper them'],['water','Take water breaks'],['flag','Flag a hand when you need one'],['seal','Seal & dispatch the wall'],['lockin','LOCK IN a full shelf']];
+// checklist labels, in the sign-off order (LOCK IN culminates last, per Vince)
+var TUT_LEARN_LABELS=[['anchor','Anchor SP freight in a corner'],['balance','Balance both corners'],['foundation','Solid floor, no voids'],['place','Tile a shelf with the ghost'],['rotate','Rotate a piece (↻ ROT)'],['arrows','Keep arrows UP'],['heavy','Heavy freight low & flat'],['tire','Lay tires flat'],['stagger','Stagger the seams'],['hazmat','Hazmat low & apart'],['fragile','Fragile rides on top'],['smalls','Break bags → fill gaps'],['collapse','Pillars collapse — taper them'],['breakjam','Break a chute jam'],['water','Take water breaks'],['flag','Flag a hand when stuck'],['seal','Seal & dispatch'],['lockin','LOCK IN a full shelf']];
 
 function tutMakePiece(spec){
   spec=spec||{};
@@ -8664,7 +8689,9 @@ function tutBeat(){
   // ACT-beat setup: flag needs a belt piece to hand off; seal shows the FINISH button
   if(s.act==='flag'){G.belt=[tutMakePiece({w:2,h:2})];}
   if(s.act==='seal'){G.sealed=false;G.maxPack=true;var _tmf=document.getElementById('maxpack-finish');if(_tmf){_tmf.style.display='';_tmf.classList.add('pulse');}}
-  TUT.target=(s.place)?{x:s.tx,y:s.ty,w:(s.rotTo?s.rotTo.w:(s.place.w||2)),h:(s.rotTo?s.rotTo.h:(s.place.h||2))}:null;
+  // v3.5.141 highlight reflects the FORCED (rotated) footprint so it matches exactly where the piece lands
+  var _tw=(s.place&&s.place.w)||2,_th=(s.place&&s.place.h)||2;if(s.place&&(s.rot||0)%2===1){var _sw=_tw;_tw=_th;_th=_sw;}
+  TUT.target=(s.place)?{x:s.tx,y:s.ty,w:_tw,h:_th}:null;
   tutTip(s.tip,TUT.step+1,TUT_SCRIPT.length);
 }
 function tutTip(text,n,tot){
@@ -9309,7 +9336,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.140</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.141</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
