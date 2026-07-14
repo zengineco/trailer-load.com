@@ -26,11 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.139
+   LOCK IN v3.5.140
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
+   CHANGE LOG v3.5.140 - COLORBLIND PASS 1: CONTRAST OUTLINES ON THE HUD (opticquiz CVD report: 14 conflicts, dark-teal-on-dark-bg collapsing to 1.7 contrast in deuteranopia). Every scoreboard value + label, plus the dispatch line, safety indicator, grade letter, rank, and the FLAG/WATER/NC/console buttons, now carry a hard dark 1px OUTLINE (text-shadow) + glow — so the TEXT has contrast independent of how its accent color collapses under color-blindness (the labels already differentiate the stats textually; the outline restores legibility). Scoreboard labels bumped 11px->12px and brightened off the muted --t2. This is the "all text outlined with contrast" pass for the in-game HUD, per Vince. NEXT (colorblind pass 2): re-run opticquiz, extend outlines to remaining surfaces, resolve any leftover color-pair conflicts.
    CHANGE LOG v3.5.139 - DAILY MECHANICS REWORK (submit-and-improve; the enterprise "brain exercise"). Daily no longer auto-ends into a graded screen (that's where the "F on finish" came from) and there is NO NEXT TRAILER. When you seal the daily wall you get a CHOICE popup: ★ SUBMIT WALL — BOARD & MENU · ↺ KEEP LOADING — IMPROVE IT · ↺ RESTART DAILY — FRESH ATTEMPT. Nothing posts until you SUBMIT (or clock out); submit fires dailyFinish (today's board) + the session, then returns to the main menu. gOver stays false on seal so you can keep packing the same wall and re-seal for a better score. Shift keeps its own NEXT-TRAILER button set (the groups swap by mode, no cross-contamination). Verified: daily seal shows the daily group only, SUBMIT posts + goes to menu, RESTART replays the same seed, shift shows its own buttons. NEXT: the colorblind text-outline pass.
    CHANGE LOG v3.5.138 - PPH FREEZE (for real this time) + LEADERBOARD WIRING FIX. (1) PPH kept counting while you reviewed your stats — the v3.5.130 pause fix only froze the clock on PAUSE, not on game-end or the post-sort/wall-complete review. Now elapsed() freezes whenever you're REVIEWING (gOver OR ov-postsort OR next-popup OR ov-end up) and resumes the instant you go back to loading. Verified: 400ms passes while the report is open, elapsed stays put; live again on close; frozen on game-over. (2) BACKEND: the lockin_lifetime view grouped by pid (the per-device anon id) alongside the account, so a logged-in player's lifetime stats FRAGMENTED across devices — the "wiring is slop" smell. Recreated the view to group by ACCOUNT (coalesce(user_id, pid)), so one account = one consolidated record regardless of device. Confirmed no data loss: Vince has all 9 sessions (daily 5 / shift 3 / smalls 1), consent on, density flowing (91.5% daily). The leaderboard was never reset. NEXT: daily SUBMIT/RESTART buttons, then colorblind text-outline pass. One run teaches every mechanic EXCEPT nesting — 15 scripted beats, zero RNG: grab+place with the ghost, rotate, arrows-up, heavy freight low, lay a tire flat, LOCK IN a full shelf, stagger the seams, anchor SP/non-conveyable low, hazmat below the waist, fragile on top, break a bag to fill gaps, build a thin tower and WATCH IT FALL, water break, flag a hand, then FINISH to seal. Each beat = one short line + a highlighted target; it advances when you do the action (any legal placement of the scripted piece counts, so it can't get stuck on support). Ends on a real-warehouse SIGN-OFF clipboard: an "I learned" checklist (LOCK IN culminates last), the SAFETY LADDER spelled out exactly (heads-up -> documented WARNING on a repeat -> INCIDENT -> signed WRITE-UP -> SENT HOME to a practice trailer; water/shelf-lock clear warnings), and SIGN HERE — the same signature mechanic as the in-game write-ups. TUTORIAL_MODE clears on any menu return so it never leaks into a real game. Verified: all 15 beats advance to the sign-off, 15/15 checklist items check, ladder text present, TRAINING card wired. Follow-on polish: confirm the collapse visibly falls, enforce the bag-BREAK step, mobile banner position.
    CHANGE LOG v3.5.136 - PLACEMENT GHOST ON EVERY ELIGIBLE SQUARE (the release blocker: "renderability is a huge problem"). The opaque preview (drawPlacementPreview) already existed, but the mouse handler left hCell at the raw cursor cell — so near any edge the held piece would spill past the wall and the preview's bounds check skipped it: no ghost, and placement "only from certain angles." Now the pointer-move clamps hCell to the HELD piece's dims (like the touch path always did), so the ghost snaps fully into the wall and renders on every eligible square. The tap/click placement clamps the SAME way, so the drop lands exactly where the ghost showed it (WYSIWYG — was placing at the raw cell and getting rejected while the ghost sat one cell in). Verified: a 3x2 piece at the far-right edge clamps to col 14 (GW-3) and the ghost renders there; middle placement unchanged. NEXT (per Vince): the tutorial, then the homepage. Follow-on ghost polish: KBM hover (no piece held) shows the size, drag-from-chute.
@@ -362,6 +363,11 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   color:var(--t2);text-transform:uppercase;font-weight:bold;margin:0;white-space:nowrap;line-height:1;}
 .sb-cell .sp-med{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:bold;color:var(--t1);line-height:1;display:block;white-space:nowrap;}
 .sb-cell .sp-big{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:1px;color:var(--acc);line-height:.85;display:block;}
+/* v3.5.140 CVD ACCESSIBILITY (opticquiz: dark-teal-on-dark-bg collapsed to 1.7 contrast in deuteranopia). Every
+   scoreboard value + label gets a hard dark OUTLINE so the TEXT stays legible independent of how its accent color
+   collapses under color-blindness — contrast comes from the outline, not the fill. Labels bumped off 11px. */
+.sb-cell .sp-med,.sb-cell .sp-big,.sb-cell .sp-lbl,#sp-cog-s,.msg-line,#safety-live,.ops-grade,#es-grade-big,.es-rank,.strip-act,.stg-light,.console-btn{text-shadow:-1px -1px 0 #06060a,1px -1px 0 #06060a,-1px 1px 0 #06060a,1px 1px 0 #06060a,0 0 5px rgba(0,0,0,.9);}
+.sb-cell .sp-lbl{font-size:12px;color:#c8c0b0;}
 #stats-panel #sp-time{color:var(--acc-bright);letter-spacing:1px;}   /* ELAPSED — hero */
 #stats-panel #sp-score{color:var(--acc);}
 /* v3.5.34 COLOR PASS — pull the menu palette onto the scoreboard so it stops reading as a wall of --t1 white. Theme-aware vars keep contrast in light AND dark. Tunable: one semantic hue per metric. */
@@ -1853,7 +1859,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.139 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.140 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1966,7 +1972,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.139 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.140 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2119,7 +2125,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.139 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.140 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2561,7 +2567,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.139
+// LOCK IN v3.5.140
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3011,7 +3017,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.139'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.140'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9303,7 +9309,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.139</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.140</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
