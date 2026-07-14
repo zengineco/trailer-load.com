@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.141
+   LOCK IN v3.5.142
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.142 - CEILING SMALLS-BAG BONUS + DISPATCH BESIDE LINEHAUL + HOMEPAGE DE-ZENGINED. (1) ROOF BAGS: a 3x3 smalls bag packed against the trailer ceiling (top edge on grid row 0) now pays a HUGE +600-cube bonus — dead air up top is wasted space, and stuffing bags against the roof reclaims it. Once per bag (a lifted-and-replaced bag can't re-earn it); a full ceiling course is 5 bags (15 of the 17-wide grid). Scored statelessly in calcScore (scan row 0 for distinct bag boxes) so it always matches the wall on screen — lift a bag off the roof and its bonus is gone; a fresh wall resets to 0. First one teaches the mechanic; each roof bag flashes ROOF BAG n/5 (n=5 = FULL CEILING COURSE). (2) DISPATCH LAYOUT: the live linehaul message now sits BESIDE the ADMIN/OPERATIONS/LINEHAUL button row (to its right, filling the strip) instead of on a second line below it — space maximization, per the mockup. Boxed with the uniform --btn-line outline. (3) HOMEPAGE + LEGAL PAGES: culled the Zengine branding slop — removed the ZG badge (index/privacy/terms), the schema.org Organization is now LOCK IN / trailer-load.com (was Zengine / zengine.site), the "provisioned by Zengine" line is reworded, and every footer reads www.trailer-load.com. (Legal operating-entity naming in the Terms/Privacy body left intact — that's who runs the service, flagged for Vince's call.) NEXT: homepage flesh-out, cosmetic sweep 2.
    CHANGE LOG v3.5.141 - TUTORIAL REBUILT FULLY DETERMINISTIC + BUTTON UNIFICATION + DISPATCH REORDER. (1) TRAINING: kremsicle's jailbreaker found a "poltergeist piece" (one inset in another) and floating from step 5 on — the tutorial accepted any tapped placement, so it diverged from a valid wall. Now EVERY place-beat force-drops its piece at an EXACT scripted target + rotation the instant you tap the wall, so the build is byte-identical every run. The script is rebuilt to a real bottom-up floor: 3 NC ANCHORS FIRST (washer/fridge/range across the base — "first piece is the anchor"), then shelf cartons (place/rotate/arrows/heavy/lock-in), then the upper row (tire/stagger/hazmat/fragile/smalls), then a STAGED COLLAPSE, and BREAK JAM introduced AFTER the collapse — then water/flag/seal. Fails are OFF in training (tickChute + checkPPHFail gated on TUTORIAL_MODE) so it can never send you home or log a garbage session. Sign-off slop fixed (no "same as day one at a real hub" contradiction, no zero-bearing sentence). Verified end-to-end: all 18 beats fire in order, ZERO floating pieces, collapse->breakjam->seal, sign-off checks 18/18 with LOCK IN last. (2) BUTTONS: every action + console button (ADMIN/OPS/LINEHAUL, WATER, FLAG, BREAK JAM, ROT) now wears the SAME outline box — uniform --btn-line border, radius, and min-height — while fills stay semantic (water keeps blue, alerts keep red). (3) DISPATCH: the console row is reordered ADMIN -> OPERATIONS -> LINEHAUL (left to right) with the live dispatch message in a boxed text field BELOW the row, per Goyim. NEXT: homepage flesh-out, cosmetic sweep 2.
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
    CHANGE LOG v3.5.140 - COLORBLIND PASS 1: CONTRAST OUTLINES ON THE HUD (opticquiz CVD report: 14 conflicts, dark-teal-on-dark-bg collapsing to 1.7 contrast in deuteranopia). Every scoreboard value + label, plus the dispatch line, safety indicator, grade letter, rank, and the FLAG/WATER/NC/console buttons, now carry a hard dark 1px OUTLINE (text-shadow) + glow — so the TEXT has contrast independent of how its accent color collapses under color-blindness (the labels already differentiate the stats textually; the outline restores legibility). Scoreboard labels bumped 11px->12px and brightened off the muted --t2. This is the "all text outlined with contrast" pass for the in-game HUD, per Vince. NEXT (colorblind pass 2): re-run opticquiz, extend outlines to remaining surfaces, resolve any leftover color-pair conflicts.
@@ -1537,9 +1538,9 @@ body[data-cb="trit"]{
 .msg-line.msg-out{opacity:0;transform:translateX(10px);transition:opacity .5s ease,transform .5s ease;}
 /* v3.5.8 DISPATCH moved to the footer — one legible horizontal line above the controls */
 /* v3.5.17 DISPATCH legibility: show the newest message big + high-contrast (full board record comes next) */
-#dispatch-bar{display:flex;flex-direction:column;align-items:stretch;gap:5px;padding:5px 8px 6px;border-bottom:1px solid var(--border);}
+#dispatch-bar{display:flex;flex-direction:row;align-items:center;gap:8px;padding:5px 8px 6px;border-bottom:1px solid var(--border);min-height:30px;}
 .dispatch-tag{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;color:var(--acc-bright);font-weight:bold;flex:none;white-space:nowrap;}
-#footer #msg-feed{flex-direction:row;align-items:center;gap:0;min-height:30px;height:auto;overflow:hidden;background:rgba(0,0,0,.22);border:1px solid var(--border2);border-radius:5px;padding:5px 10px;}
+#footer #msg-feed{flex:1;flex-direction:row;align-items:center;gap:0;min-height:34px;height:auto;overflow:hidden;background:rgba(0,0,0,.22);border:1px solid var(--btn-line);border-radius:5px;padding:5px 12px;}
 /* v3.5.18 pro dispatch line: [SOURCE badge] + outlined body */
 #footer .msg-line{display:flex;align-items:center;gap:9px;line-height:1.2;padding:3px 8px;flex:1;min-width:0;background:rgba(0,0,0,.36);border-radius:0 4px 4px 0;border-left-width:4px;}
 #footer .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.5);border:1px solid rgba(224,150,46,.4);color:#f0d9a8;}/* v3.5.34 brighter base source tag (untyped COWORKER/MANAGER pop more) */
@@ -1866,7 +1867,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.141 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.142 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1979,7 +1980,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.141 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.142 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2132,7 +2133,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.141 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.142 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2575,7 +2576,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.141
+// LOCK IN v3.5.142
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2628,6 +2629,7 @@ var STANDARD_PPH=250;
 var LARGE_DANGER_FAIL=18;
 var PANIC_THRESHOLD=0.85, PANIC_DURATION=60, PANIC_BONUS_MAX=800;
 var STOW_BONUS=200, TETRIS_BONUS=500, BULKHEAD_BONUS=500, BRICK_BONUS=300;
+var BAG_CEIL_BONUS=600; // v3.5.142 huge bonus per 3x3 smalls bag packed against the trailer roof (dead air up top reclaimed); a full ceiling course = 5 bags (15 of 17 cells)
 var RECOVERY_BONUS=400, CRUNCH_PENALTY=80, COLLAPSE_INT_COST=18;
 var LOAD_SEALED_BONUS=2500, HAZMAT_SHELF_BONUS=1500; // v2.1.11 hierarchy: SEAL #1, HAZMAT SHELF #2
 var HYDRATION_BONUS=300; // v2.1.37 two-drink hydration bonus
@@ -3025,7 +3027,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.141'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.142'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4605,6 +4607,15 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   if(typeof gcurFlash==='function')gcurFlash('drop',420); // v3.5.20 drop-glove on a successful place
   S.totalPieces=(S.totalPieces||0)+1; if(source==='bag')S.bagsPlaced=(S.bagsPlaced||0)+1; // v2.1.7
   if(!(box.type==='small'||box.isBag)&&!((box._gen||0)>0))S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 PPH = REAL freight only; v3.5.99 first placement ONLY — a re-placed (churned) box earns ZERO pph, so the autoclicker's place-lift-place spam gains nothing
+  // v3.5.142 CEILING SMALLS-BAG BONUS — a 3x3 bag stuffed against the trailer roof (top edge at row 0) reclaims the dead air up top. Huge, once per bag (feedback only; calcScore scores the live wall). 5 bags fill a ceiling course (15 of 17 cells).
+  if(box.isBag&&gy===0&&!box._bagCeilAwarded){
+    box._bagCeilAwarded=true;
+    if(typeof playSfx==='function')playSfx('bonus');
+    if(typeof gcurFlash==='function')gcurFlash('nest',520);
+    var _cb=countCeilingBags();
+    if(!G._bagCeilTaught){G._bagCeilTaught=true;showBanner('🌟 BAG ON THE ROOF — +'+BAG_CEIL_BONUS+' CUBES.<br><span style="font-size:.72em">Dead air up top is wasted space. Pack smalls bags against the ceiling — five make a full roof course.</span>','ok',3000);}
+    else showBanner('🌟 ROOF BAG '+_cb+(_cb>=5?'/5 — FULL CEILING COURSE!':'/5')+' — +'+BAG_CEIL_BONUS+' CUBES.','ok',1500);
+  }
   if(!S.sessionStartT){S.sessionStartT=startT||Date.now();ZDATA.events=[];} // v2.1.9 session clock; v3.5.132 reset the raw event timeline per session (timestamps are relative to sessionStartT) so it never accumulates across sessions — BEFORE the first place is logged
   if(typeof zLog==='function')zLog('place',{x:gx,y:gy,n:box.n||box.label||'?',r:rot||0,src:source});
   S.bestPPH=Math.max(S.bestPPH||0,getPPH()); // v2.1.9 PEAK pph (fixes the 0 bug)
@@ -5518,6 +5529,13 @@ function triggerCollapse(){
 }
 
 // ── SCORE ──
+// v3.5.142 distinct 3x3 smalls bags whose top course sits against the trailer roof (grid row 0). Stateless — scores the wall on screen, so lifting a bag off the roof removes its bonus and a fresh wall resets to 0. 1x per bag.
+function countCeilingBags(){
+  var seen={},n=0,x,cc;
+  if(!G.grid||!G.grid[0])return 0;
+  for(x=0;x<GW;x++){cc=G.grid[0][x];if(cc&&cc.box&&cc.box.isBag&&!seen[cc.id]){seen[cc.id]=1;n++;}}
+  return n;
+}
 function calcScore(segOverride){
   var el=elapsed(),pph=el>0?Math.round(placed/el*3600):0;
   var eff=countFilled()/(GW*GH);
@@ -5539,13 +5557,14 @@ function calcScore(segOverride){
   var bulkB=(G.bulkheadCount||0)*BULKHEAD_BONUS;
   var brickB=G.brickAwarded?BRICK_BONUS:0;
   var recovB=(G.recoveryCount||0)*RECOVERY_BONUS;
+  var bagCeilB=countCeilingBags()*BAG_CEIL_BONUS; // v3.5.142 ceiling smalls-bag shelf
   var crunchP=(G.crunchCount||0)*300;
   var voidP=voids*8;
   var cogP=Math.round(cogDev*200);
   var preselectP=(G.preselectDepth||0)*PRESELECT_COST; // v2.1.3 cherry-pick cost
   var seamP=countColumnSeams(G.grid)*COLUMN_SEAM_PENALTY; // v2.1.4 running-bond violation
   var arrowP=(S.arrowsMissed||0)*16; // v2.10.9 small this-side-up ding (locked-in still holds)
-  var raw=base+shelfB+bulkB+brickB+recovB-crunchP-voidP-cogP-preselectP-seamP-arrowP;
+  var raw=base+shelfB+bulkB+brickB+recovB+bagCeilB-crunchP-voidP-cogP-preselectP-seamP-arrowP;
   // HAZMAT: each hazmat currently loaded above the waist line halves the score.
   // Live grid scan, so moving it back down un-penalizes. 1 viol=50%, 2=25%, etc.
   var segViol=(segOverride===undefined||segOverride===null)?countSegregationViolations(G.grid):segOverride;
@@ -9336,7 +9355,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.141</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.142</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
