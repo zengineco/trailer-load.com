@@ -26,12 +26,12 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.137
+   LOCK IN v3.5.138
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
-   CHANGE LOG v3.5.137 - INTERACTIVE TUTORIAL (deterministic + guided; the TRAINING pillar is now hands-on). One run teaches every mechanic EXCEPT nesting — 15 scripted beats, zero RNG: grab+place with the ghost, rotate, arrows-up, heavy freight low, lay a tire flat, LOCK IN a full shelf, stagger the seams, anchor SP/non-conveyable low, hazmat below the waist, fragile on top, break a bag to fill gaps, build a thin tower and WATCH IT FALL, water break, flag a hand, then FINISH to seal. Each beat = one short line + a highlighted target; it advances when you do the action (any legal placement of the scripted piece counts, so it can't get stuck on support). Ends on a real-warehouse SIGN-OFF clipboard: an "I learned" checklist (LOCK IN culminates last), the SAFETY LADDER spelled out exactly (heads-up -> documented WARNING on a repeat -> INCIDENT -> signed WRITE-UP -> SENT HOME to a practice trailer; water/shelf-lock clear warnings), and SIGN HERE — the same signature mechanic as the in-game write-ups. TUTORIAL_MODE clears on any menu return so it never leaks into a real game. Verified: all 15 beats advance to the sign-off, 15/15 checklist items check, ladder text present, TRAINING card wired. Follow-on polish: confirm the collapse visibly falls, enforce the bag-BREAK step, mobile banner position.
+   CHANGE LOG v3.5.138 - PPH FREEZE (for real this time) + LEADERBOARD WIRING FIX. (1) PPH kept counting while you reviewed your stats — the v3.5.130 pause fix only froze the clock on PAUSE, not on game-end or the post-sort/wall-complete review. Now elapsed() freezes whenever you're REVIEWING (gOver OR ov-postsort OR next-popup OR ov-end up) and resumes the instant you go back to loading. Verified: 400ms passes while the report is open, elapsed stays put; live again on close; frozen on game-over. (2) BACKEND: the lockin_lifetime view grouped by pid (the per-device anon id) alongside the account, so a logged-in player's lifetime stats FRAGMENTED across devices — the "wiring is slop" smell. Recreated the view to group by ACCOUNT (coalesce(user_id, pid)), so one account = one consolidated record regardless of device. Confirmed no data loss: Vince has all 9 sessions (daily 5 / shift 3 / smalls 1), consent on, density flowing (91.5% daily). The leaderboard was never reset. NEXT: daily SUBMIT/RESTART buttons, then colorblind text-outline pass. One run teaches every mechanic EXCEPT nesting — 15 scripted beats, zero RNG: grab+place with the ghost, rotate, arrows-up, heavy freight low, lay a tire flat, LOCK IN a full shelf, stagger the seams, anchor SP/non-conveyable low, hazmat below the waist, fragile on top, break a bag to fill gaps, build a thin tower and WATCH IT FALL, water break, flag a hand, then FINISH to seal. Each beat = one short line + a highlighted target; it advances when you do the action (any legal placement of the scripted piece counts, so it can't get stuck on support). Ends on a real-warehouse SIGN-OFF clipboard: an "I learned" checklist (LOCK IN culminates last), the SAFETY LADDER spelled out exactly (heads-up -> documented WARNING on a repeat -> INCIDENT -> signed WRITE-UP -> SENT HOME to a practice trailer; water/shelf-lock clear warnings), and SIGN HERE — the same signature mechanic as the in-game write-ups. TUTORIAL_MODE clears on any menu return so it never leaks into a real game. Verified: all 15 beats advance to the sign-off, 15/15 checklist items check, ladder text present, TRAINING card wired. Follow-on polish: confirm the collapse visibly falls, enforce the bag-BREAK step, mobile banner position.
    CHANGE LOG v3.5.136 - PLACEMENT GHOST ON EVERY ELIGIBLE SQUARE (the release blocker: "renderability is a huge problem"). The opaque preview (drawPlacementPreview) already existed, but the mouse handler left hCell at the raw cursor cell — so near any edge the held piece would spill past the wall and the preview's bounds check skipped it: no ghost, and placement "only from certain angles." Now the pointer-move clamps hCell to the HELD piece's dims (like the touch path always did), so the ghost snaps fully into the wall and renders on every eligible square. The tap/click placement clamps the SAME way, so the drop lands exactly where the ghost showed it (WYSIWYG — was placing at the raw cell and getting rejected while the ghost sat one cell in). Verified: a 3x2 piece at the far-right edge clamps to col 14 (GW-3) and the ghost renders there; middle placement unchanged. NEXT (per Vince): the tutorial, then the homepage. Follow-on ghost polish: KBM hover (no piece held) shows the size, drag-from-chute.
    CHANGE LOG v3.5.135 - UNIFICATION: ONE LABEL PER STAT + DENSITY SURFACED. The post-sort report had a "· Density" sub-row that read RAW cubePct — the SAME number as "Cube fill %" right below it, and NOT the structured density that drives the grade. And raw fill wore four different labels across surfaces (scoreboard PACK, OPERATIONS "PACK FILL", end screen "Final Fill %", report "Cube fill %"). Now unified: DENSITY = the structured metric (wallSolidity, the grade driver) shown distinctly on the report, the end screen (new Density tile), and the OPERATIONS drawer; raw cube-fill is "PACK %" everywhere (scoreboard "PACK" is its live short form); Support is "Support %". Verified on a dense-but-low-pack wall: Density reads 100% while Pack reads 40% (they were identical before), and OPERATIONS shows DENSITY + PACK % (no stray "PACK FILL"). NEXT: the /me/ dashboard density card (needs an avg_density column + lifetime-view update).
    CHANGE LOG v3.5.134 - AFK FALSE-KICK FIXED (kremsicle: "says 5, kicked out at 2:30" on a 2-min session). The AFK idle timer (idleSec) and the low-rate timer (pphLowSec) never reset per session — a prior game left idleSec high, and a fresh game that happened to start with placed===_afkLastPlaced===0 kept accumulating the OLD idle, so the 5-minute AFK kick fired minutes early. FIX: track the session clock (_afkStartT); startT is set fresh on every wall/game start (and advanced on pause-resume), so any startT change zeroes the idle + low-rate clocks. Also made restartGame reset placed + startT (it was carrying the prior run's clock — a fresh run now starts at 0 elapsed). Verified: a new session with a carried-over idleSec=250 resets to 0 (no false kick), the AFK still fires at the REAL 300s, and a placement resets idle. NEXT: the floating-small physics (bottom small breaks, top stays floating).
@@ -1852,7 +1852,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.137 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.138 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1965,7 +1965,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.137 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.138 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2118,7 +2118,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.137 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.138 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2553,7 +2553,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.137
+// LOCK IN v3.5.138
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3003,7 +3003,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.137'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.138'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -5530,7 +5530,9 @@ function calcScore(segOverride){
   var hazMult=Math.pow(0.5, countHazmatViolations(G.grid)+segViol);
   return Math.max(0,Math.round(raw*speedM*supM*integM*hazMult));
 }
-function elapsed(){return startT?(Date.now()-startT)/1000:0;}
+var _elapsedFrozen=null; // v3.5.138 the clock STOPS whenever you're REVIEWING (game over, post-sort report, or the wall-complete popup) — so PPH/elapsed don't keep dropping while you read your stats (kremsicle: "PPH still counts when reviewing statistics")
+function _reviewing(){return gOver||(typeof _shown==='function'&&(_shown('ov-postsort')||_shown('next-popup')||_shown('ov-end')));}
+function elapsed(){if(_elapsedFrozen!=null&&_reviewing())return _elapsedFrozen;return startT?(Date.now()-startT)/1000:0;}
 // v3.5.90 PPH = REAL FREIGHT per hour (boxes only). This wall's freight = S.boxPieces since the wall baseline.
 // Smalls/bags never entered boxPieces, so they can't inflate pph — and the seconds they cost still count, so
 // stopping to break down a bag genuinely drags your number. Gross (no lift-decrement): pph = freight moved / time.
@@ -5647,6 +5649,7 @@ function sealWall(reason){
     if(typeof endGame==='function'){endGame('DAILY COMPLETE',false);}
     return;
   } else {
+    _elapsedFrozen=(typeof startT!=='undefined'&&startT)?(Date.now()-startT)/1000:0; // v3.5.138 freeze PPH while the wall-complete popup is up
     document.getElementById('next-popup').classList.add('vis');
     document.getElementById('next-popup-badge').textContent='✓ '+reason;
   }
@@ -8890,6 +8893,7 @@ function fetchLifetime(cb){
   }catch(e){cb('err',null);}
 }
 function openPostSort(){
+  _elapsedFrozen=(typeof startT!=='undefined'&&startT)?(Date.now()-startT)/1000:0; // v3.5.138 freeze PPH while the report is open
   var ov=document.getElementById('ov-postsort');if(!ov)return;
   ov.classList.add('vis');
   psBuild('loading',null);
@@ -9292,7 +9296,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.137</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.138</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10390,6 +10394,7 @@ function fillTelemetryTiles(){
 // v2.1.8 CLOCK OUT — voluntary end. Keeps score, shows the full readout.
 function clockOut(){
   if(gOver)return;
+  _elapsedFrozen=(typeof startT!=='undefined'&&startT)?(Date.now()-startT)/1000:0; // v3.5.138 freeze the clock (PPH won't drop on the readout)
   paused=false;var pov=document.getElementById('ov-pause');if(pov)pov.classList.remove('vis');
   gOver=true;if(animF){cancelAnimationFrame(animF);animF=null;}
   S.totalScore=(S.totalScore||0)+(G.score||0);
@@ -10683,6 +10688,7 @@ function dailyFinish(){
 }
 function endGame(reason,win){
   if(gOver)return;
+  _elapsedFrozen=(typeof startT!=='undefined'&&startT)?(Date.now()-startT)/1000:0; // v3.5.138 freeze the clock at end (PPH stops dropping on the review screen)
   if(typeof stgClose==='function')stgClose(); // v3.4.13 close the staging wheel so it can't float over the end screen
   gOver=true;if(win){sealWall(reason);return;}
   if(typeof gcurFlash==='function')gcurFlash('end',1500); // v3.5.20 end-condition glove (the L) on a fail/timeout
