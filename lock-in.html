@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.145
+   LOCK IN v3.5.146
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.146 - PLAYABILITY PASS 1 (the top 3 from the polish review): DAILY STREAK + SEAL-READINESS METER + PERSONAL-BEST CELEBRATION. (1) DAILY STREAK — the biggest retention miss (there was zero streak tracking, and DAILY is the classroom/brain-exercise hook). Local per-device, idempotent per UTC day: play the daily and it counts once; consecutive days increment, a skipped day resets to 1, your BEST is kept. Shows as a 🔥 N-DAY STREAK badge on the DAILY menu card + a line on the daily result panel ("come back tomorrow to keep it alive" on day 1, "YOUR BEST!" on a record). liStreakBump fires from dailyFinish. (2) SEAL-READINESS METER — the #1 "why won't it let me finish?" confusion: the win gate is TWO hidden conditions (height>=92% AND density>=35%), and a tall-but-loose wall just silently refused to seal. New always-on meter at the top of the wall shows both as bars that fill to GREEN at their threshold, with a live caption: "FILL BOTH BARS TO SEAL" -> "TALL BUT LOOSE — PACK TIGHTER" (height full, pack short) -> "✓ READY — SEALING". Driven from updateHUD off the same wallH()/countFilled() the gate uses; hidden in review/menu/tutorial/max-pack. (3) PERSONAL BEST — only DAILY celebrated a best before; the flagship dumped 40 tiles with no "you beat your record" moment. Now a gold "🏆 NEW PERSONAL BEST · N CUBES" ribbon fires on the end screen (endGameShift + the generic end path) when you top your local per-mode best; daily still uses its world rank instead. Verified: streak increments/resets/idempotent correctly + badge renders; PB ribbon shows on a beat and hides on a lower score; seal meter shows on first piece, flags tall-but-loose, greens at threshold. NEXT: the rest of the polish list (nesting teach, anchored +N score tick, combo/flow meter, first-run->training funnel, end-screen trim) + homepage.
    CHANGE LOG v3.5.145 - COSMETIC SWEEP 2 (type rhythm + button/legibility unification across every overlay + the strip). Audit-driven. (1) BUTTON RADIUS was 6 different values across surfaces (3/4/5/7/8px) — unified to 6px (.btn-p, .pmb, .end-act, .data-save/.data-cancel, .console-btn). (2) WHITE-ON-AMBER (~2:1) primary buttons .data-save + .auth-tab.active recolored to the dark-on-amber convention (#1c1206) used everywhere else. (3) .btn-p was the loosest button in the UI (40px side-pad / 5px tracking) — tightened to the shared 12px 24px / 2px rhythm. (4) MUTED SUB-AA TEXT raised --t3->--t2: account/data field labels (read while typing), settings helper text; .data-fld span lost its opacity:.7. (5) STRIP TYPOGRAPHY: ROT/FLAG/WATER/BREAK JAM settled on one size (17px/1.5px, was 18/17/16 mixed); the NC/SM staging pills + the ✕ separator were pulled into the v3.5.141 unified --btn-line outline + 34px strip height (they were the last 1px translucent-amber outliers). (6) STAGING TILE text 9px->11px (it's tapped mid-game) and the dispatch SOURCE badge 10px->11px. (7) SCOREBOARD label color was a hardcoded #c8c0b0 (~1.2:1 on the light theme) -> theme-aware var(--t2). (8) MOBILE: the mobile console-button compaction was being overridden by the later unified rule (media queries add no specificity) — re-scoped to #ops-console .console-btn so it wins again; and the no-wrap control strip that overflowed/crushed the dispatch line on a narrow phone now flex-wraps. (9) end-act primary DESCRIPTION was muted --t2 on amber -> darkened. (10) 'Bebas Neue' fallback standardized cursive->sans-serif in all 55 spots (a font-load failure now degrades to a condensed sans everywhere, not half-script/half-sans). (11) PLAYABILITY (legibility): the SEAL LINE (92% target) was a near-invisible 1px/.32 dashed line with 7px text — now a bright 2px dashed teal line with an outlined 11px "SEAL LINE — FILL TO HERE" label, so new players can actually see the finish. NEXT: homepage flesh-out; the larger playability items (daily streak, seal-readiness meter, personal-best celebration, first-run->training funnel) are proposed separately for Vince to pick.
    CHANGE LOG v3.5.144 - DAILY-SUBMIT FIXED + STYLED, CONSOLE-BTN CONTRAST, CLOCK STARTS ON FIRST PIECE. (1) DAILY SUBMIT "doesn't work from it": dailySubmit did finalize -> dailyFinish -> returnToMenu, but dailyFinish populates the daily-result panel that lives ON THE END SCREEN — returnToMenu tore it down instantly, so you never saw your posted rank/board. Now SUBMIT routes through endGame(false): finalizes the wall, posts the session + today's board, and SHOWS the end screen — DAILY DONE + your rank + today's board + SHARE, with MAIN MENU / TRY AGAIN. (2) DAILY SUBMIT looked like a "Microsoft 3.1 text box": #next-popup-btn-daily had a unique id with ZERO css so it rendered as a raw OS button. Every completion-popup button is now a styled card — SUBMIT & NEXT TRAILER green-primary, the rest amber, full-width, legible. (3) CONSOLE BUTTONS (ADMIN/OPERATIONS/LINEHAUL) were muddy — muted --t2 fill collapsed against the dark outline + dark panel. Fill is now bright cream on a darker panel so the inside text and the outline actually contrast. (4) THE CLOCK NOW STARTS ON THE FIRST PIECE, every mode (trailer-load / practice / gauntlet / daily / new wall). startT is null from mode-start until the first placement sets it, so elapsed + PPH never count the time before you place anything — vital on mobile where the opening piece is slower. AFK/idle protection still runs (dt-based, independent of startT). NEXT: cosmetic sweep 2 (overlay type rhythm), homepage flesh-out.
    CHANGE LOG v3.5.143 - LEGIBILITY SWEEP + PAUSE REORDER + COACH FIX. (1) THE PAUSE CLIPBOARD WAS GRAY-ON-GRAY SLOP. Every front-facing string is now outlined for contrast: light-clipboard surfaces (pause / briefing / write-up) get a light HALO on their dark text so it pops off the busy clipboard texture, the muted tans are darkened (sub/coach/hint), and the buttons are solidified (opaque bg + bold) so their labels are legible; the remaining DARK-surface front-facing text (the banner over the wall, the next-wall popup, the end-screen verdict) joins the existing hard dark-outline rule from the v3.5.140 CVD pass. The MAIN MENU is intentionally left un-outlined (per Vince). (2) PAUSE MENU REORDER: RESUME · SETTINGS · RESTART (now directly under settings) · CLOCK OUT · ACCOUNT & DATA · MAIN MENU (account + main-menu moved below clock-out, so the leave-the-game actions sit at the bottom). (3) COACH COUNT FIX: the coach claimed a broken smalls bag yields "five gap-fillers" — it's SIX (BAG_SPILL = three 2x1 + three 1x1 = 6 pieces / 9 cubes). All three coach/commentary lines corrected to six, and they now name the shape (three 2x1s + three singles). NEXT: full cosmetic sweep 2 (spacing/type rhythm across overlays), homepage flesh-out.
@@ -1074,6 +1075,21 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 /* v3.5.98 FINISH TRAILER emphasis — pulses when a partial seal makes dispatch available (no interrupting menu) */
 #maxpack-finish.pulse{animation:mpfpulse 1.15s ease-in-out infinite;}
 @keyframes mpfpulse{0%,100%{box-shadow:0 0 14px rgba(40,184,112,.45);transform:scale(1);}50%{box-shadow:0 0 26px 4px rgba(80,216,144,.85);transform:scale(1.06);}}
+/* v3.5.146 SEAL-READINESS METER — the win gate is two hidden conditions (height>=92% AND density>=35%); this shows both, filling to green so "tall but loose" is visible, not silent. */
+#seal-rdy{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:26;display:none;pointer-events:none;background:rgba(8,10,8,.82);border:1px solid var(--border2);border-radius:8px;padding:6px 11px 7px;min-width:214px;box-shadow:0 3px 12px rgba(0,0,0,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.sr-cap{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);text-align:center;margin-bottom:5px;text-transform:uppercase;font-weight:bold;text-shadow:0 1px 2px #000;}
+.sr-cap.rdy{color:#5fe6b0;}.sr-cap.loose{color:#f0b84a;}
+.sr-row{display:flex;align-items:center;gap:7px;margin-top:3px;}
+.sr-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.4px;color:var(--t2);width:46px;font-weight:bold;text-align:right;}
+.sr-track{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.5);overflow:hidden;border:1px solid rgba(0,0,0,.5);}
+.sr-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c8791e,#e0a64e);transition:width .18s ease;border-radius:4px;}
+.sr-track i.sr-full{background:linear-gradient(90deg,#1f9d57,#3fd07f);}
+.sr-v{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t1);width:34px;font-weight:bold;text-shadow:0 1px 2px #000;}
+/* v3.5.146 PERSONAL-BEST ribbon on the end screen */
+#pb-ribbon{display:none;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:2px;color:#1a1206;background:linear-gradient(180deg,#ffdf7a,#f0b428);border:1px solid #d89a1a;border-radius:6px;padding:8px 18px;box-shadow:0 0 24px rgba(240,180,40,.5);text-align:center;margin:2px auto 8px;animation:pbpop .4s ease;}
+@keyframes pbpop{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+/* v3.5.146 DAILY streak badge on the menu card */
+.sm-streak{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;letter-spacing:.5px;color:#ffb84a;background:rgba(224,120,30,.16);border:1px solid rgba(224,150,46,.5);border-radius:20px;padding:2px 10px;margin-top:6px;text-shadow:0 1px 2px rgba(0,0,0,.5);}
 
 /* ── PAUSE OVERLAY ── */
 #ov-pause{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;
@@ -1799,6 +1815,8 @@ body[data-cb="trit"]{
 /* ── v2.8.0 DAILY RESULT ── */
 #daily-result{margin:10px 0;padding:12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border2);text-align:left;}
 .dr-head{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc);letter-spacing:1px;}
+.dr-streak{font-family:'Share Tech Mono',monospace;font-size:14px;color:#ffb84a;margin:6px 0 2px;letter-spacing:.5px;} /* v3.5.146 daily streak line */
+.dr-streak b{color:#ffd98a;font-size:16px;}
 .dr-rank{font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--t1);margin:6px 0;}
 .dr-rank b{color:var(--acc-bright);font-size:18px;}
 .dr-share{margin:4px 0 10px;width:100%;}
@@ -1893,7 +1911,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.145 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.146 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1993,6 +2011,7 @@ body[data-cb="trit"]{
       <div class="sm-card-ico">📅</div>
       <div class="sm-card-name">DAILY</div>
       <div class="sm-card-desc">Same pieces, same timer, everyone on Earth — one shared board, 00:00–23:59 UTC. Win it and you're the day's #1 loader on the planet.</div>
+      <div class="sm-streak" id="daily-streak-badge" style="display:none;"></div>
     </div>
     <div class="sm-card mode-training" onclick="startTutorial()">
       <div class="sm-card-ico">🎓</div>
@@ -2006,7 +2025,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.145 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.146 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2159,7 +2178,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.145 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.146 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2349,6 +2368,12 @@ body[data-cb="trit"]{
           </div>
         </div>
         <button id="maxpack-finish" onclick="nextTrailer()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
+        <!-- v3.5.146 seal-readiness meter — fill both bars (height 92% + pack 35%) to auto-seal -->
+        <div id="seal-rdy" aria-hidden="true">
+          <div class="sr-cap">FILL BOTH BARS TO SEAL</div>
+          <div class="sr-row"><span class="sr-lbl">HEIGHT</span><span class="sr-track"><i id="sr-h"></i></span><span class="sr-v" id="sr-hv">0%</span></div>
+          <div class="sr-row"><span class="sr-lbl">PACK</span><span class="sr-track"><i id="sr-p"></i></span><span class="sr-v" id="sr-pv">0%</span></div>
+        </div>
         <!-- v3.5.73 WATER + THROW moved into the bottom control strip (see #conv-header) -->
         <!-- v3.5.7: floating in-game coach tip removed — coach is pause-only now -->
       </div>
@@ -2401,6 +2426,7 @@ body[data-cb="trit"]{
 <div id="ov-end">
   <div class="ov-title" id="end-title">ROUND<br>OVER</div>
   <div class="ov-sub" id="end-sub"></div>
+  <div id="pb-ribbon"></div>
   <div class="es-hero">
     <div class="es-grade-ring" id="es-grade-ring"><span id="es-grade-big">A</span></div>
     <div class="es-hero-txt"><div class="es-rank" id="es-rank">DOCK HAND</div><div class="es-verdict" id="es-verdict">—</div></div>
@@ -2450,6 +2476,7 @@ body[data-cb="trit"]{
   </div>
   <div id="daily-result" style="display:none;">
     <div class="dr-head">DAILY · <span id="dr-date"></span></div>
+    <div class="dr-streak" id="dr-streak" style="display:none;"></div>
     <div class="dr-rank" id="dr-rank"></div>
     <button class="btn-p dr-share" onclick="shareDaily()">▲ SHARE RESULT</button>
     <div class="dr-board-h">TODAY’S BOARD</div>
@@ -2602,7 +2629,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.145
+// LOCK IN v3.5.146
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3053,7 +3080,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.145'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.146'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -7078,6 +7105,7 @@ function updateHUD(){
   }
   setEl('sp-eff',Math.round(eff*100)+'%');
   setEl('sp-placed',placed);
+  if(typeof updateSealRdy==='function')updateSealRdy(); // v3.5.146 seal-readiness meter
   if(_drawerTab==='ops'&&typeof opsRender==='function')opsRender(); // v3.5.37 live OPERATIONS drawer
   setEl('sp-tetris',G.tetrisTotal||0);
   setEl('sp-bulkhead',G.bulkheadCount||0);
@@ -8356,6 +8384,7 @@ function showStartMenu(){
   var _ft=document.getElementById('footer');if(_ft)_ft.style.visibility='hidden';
   var menu=document.getElementById('start-menu');
   if(menu)menu.style.display='flex';
+  if(typeof renderDailyStreak==='function')renderDailyStreak(); // v3.5.146 show the daily 🔥 streak on the card
   setVoice(activeVoice);
   startMenuDemo(); // wall builds itself behind the dimmed menu
 }
@@ -8943,7 +8972,9 @@ function endGameShift(reason){
     finalizeWall(); // v3.5.57 capture the final shift wall's integrity+density before grading
     shiftState.totalBoxes+=placed;
     var sessionMins=Math.round((Date.now()-shiftState.sessionStartT)/60000);
-    document.getElementById('es-score').textContent=S.totalScore+(G.score||0);
+    var _fin=S.totalScore+(G.score||0);
+    document.getElementById('es-score').textContent=_fin;
+    if(typeof checkPersonalBest==='function')checkPersonalBest(_fin); // v3.5.146 gold ribbon on a new best
     document.getElementById('es-pph').textContent=getPPH();
     document.getElementById('es-trucks').textContent=shiftState.walls;
     // v3.5.122 kremsicle: the AVG INTEGRITY tile showed "29 PCS" — a piece count in the integrity slot. Show the real
@@ -9385,7 +9416,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.145</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.146</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10699,6 +10730,59 @@ function tryAgain(){
 }
 // v3.5.139 DAILY WALL-COMPLETE — no NEXT TRAILER, no auto-grade screen. A submit-and-improve-later choice, per the
 // daily-as-enterprise spec: SUBMIT to the board, keep loading to improve, or restart the same seeded wall.
+// ── v3.5.146 DAILY STREAK (local, per-device, once per day) ──
+function liStreakGet(){try{var r=JSON.parse(localStorage.getItem('liDailyStreak')||'null');return (r&&typeof r.streak==='number')?r:{last:'',streak:0,best:0};}catch(e){return {last:'',streak:0,best:0};}}
+function _liDayBefore(iso){try{var d=new Date(iso+'T00:00:00Z');d.setUTCDate(d.getUTCDate()-1);return d.toISOString().slice(0,10);}catch(e){return '';}}
+function liStreakBump(){ // idempotent per day — call when a daily is actually played
+  var s=liStreakGet(),today=dailyKey();
+  if(s.last===today)return s;
+  s.streak=(s.last===_liDayBefore(today))?((s.streak||0)+1):1;
+  s.last=today;s.best=Math.max(s.best||0,s.streak);
+  try{localStorage.setItem('liDailyStreak',JSON.stringify(s));}catch(e){}
+  return s;
+}
+function renderDailyStreak(){
+  var b=document.getElementById('daily-streak-badge');if(!b)return;
+  var s=liStreakGet(),today=dailyKey(),active=(s.last===today||s.last===_liDayBefore(today));
+  if(active&&s.streak>0){b.textContent='🔥 '+s.streak+'-DAY STREAK'+(s.best>s.streak?'  ·  BEST '+s.best:'');b.style.display='';}
+  else{b.style.display='none';}
+}
+// ── v3.5.146 PERSONAL BEST (local, per mode) ──
+function liPBGet(mode){try{return parseInt(localStorage.getItem('liPB_'+(mode||'shift'))||'0',10)||0;}catch(e){return 0;}}
+function liPBSet(mode,v){try{localStorage.setItem('liPB_'+(mode||'shift'),''+v);}catch(e){}}
+function checkPersonalBest(finalScore){
+  var rib=document.getElementById('pb-ribbon');
+  var mode=gameMode||'shift',prev=liPBGet(mode),isPB=(finalScore>prev&&finalScore>0);
+  if(isPB)liPBSet(mode,finalScore);
+  if(rib){
+    if(isPB){rib.innerHTML='🏆 NEW PERSONAL BEST · '+finalScore+' CUBES';rib.style.display='';if(typeof playSfx==='function')playSfx('bonus');}
+    else{rib.style.display='none';}
+  }
+  return isPB;
+}
+// ── v3.5.146 SEAL-READINESS METER — fill both bars (height 92% + pack 35%) to auto-seal ──
+function updateSealRdy(){
+  var el=document.getElementById('seal-rdy');if(!el)return;
+  var reviewing=(typeof _shown==='function'&&(_shown('next-popup')||_shown('ov-end')||_shown('ov-postsort')));
+  var sealMode=(gameMode==='shift'||gameMode==='daily'||gameMode==='practice'||gameMode==='gauntlet'||gameMode==='level');
+  if(gOver||TUTORIAL_MODE||reviewing||!sealMode||!G||!G.grid||(placed||0)<1||G.maxPack||G.wallDone){el.style.display='none';return;}
+  el.style.display='block'; // v3.5.146 explicit — the CSS default is display:none
+  var tH=(typeof _LV!=='undefined'&&_LV&&gameMode==='level')?_LV.winH:WIN_H;
+  var tD=(typeof _LV!=='undefined'&&_LV&&gameMode==='level')?_LV.winDensity:0.35;
+  var hp=wallH()/GH, pk=countFilled()/(GW*GH);
+  var hf=Math.max(0,Math.min(1,hp/tH)), pf=Math.max(0,Math.min(1,pk/tD));
+  var h=document.getElementById('sr-h'),p=document.getElementById('sr-p');
+  if(h){h.style.width=Math.round(hf*100)+'%';h.className=hf>=1?'sr-full':'';}
+  if(p){p.style.width=Math.round(pf*100)+'%';p.className=pf>=1?'sr-full':'';}
+  var hv=document.getElementById('sr-hv'),pv=document.getElementById('sr-pv');
+  if(hv)hv.textContent=Math.round(hp*100)+'%';if(pv)pv.textContent=Math.round(pk*100)+'%';
+  var cap=el.querySelector('.sr-cap');
+  if(cap){
+    if(hf>=1&&pf>=1){cap.textContent='✓ READY — SEALING';cap.className='sr-cap rdy';}
+    else if(hf>=1){cap.textContent='TALL BUT LOOSE — PACK TIGHTER';cap.className='sr-cap loose';}
+    else{cap.textContent='FILL BOTH BARS TO SEAL';cap.className='sr-cap';}
+  }
+}
 function showDailyComplete(){
   var np=document.getElementById('next-popup');if(!np)return;
   var _mf=document.getElementById('maxpack-finish');if(_mf){_mf.style.display='none';_mf.classList.remove('pulse');}
@@ -10778,6 +10862,11 @@ function shareDaily(){
 function dailyFinish(){
   var panel=document.getElementById('daily-result');if(!panel)return;
   panel.style.display='block';
+  // v3.5.146 daily streak — count today (idempotent), surface it here + on the menu card
+  var _st=(typeof liStreakBump==='function')?liStreakBump():null;if(typeof renderDailyStreak==='function')renderDailyStreak();
+  var _ds=document.getElementById('dr-streak');
+  if(_ds&&_st&&_st.streak>0){_ds.innerHTML='🔥 <b>'+_st.streak+'-DAY STREAK</b>'+(_st.streak>=_st.best&&_st.best>1?' · YOUR BEST!':'')+(_st.streak===1?' — come back tomorrow to keep it alive':'');_ds.style.display='';}
+  else if(_ds){_ds.style.display='none';}
   var dd=document.getElementById('dr-date');if(dd)dd.textContent=dailyKey();
   var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
   var score=S.totalScore||0,walls=S.trucksDone||S.truck||1,inc=(S.incidents||[]).length;
@@ -10817,6 +10906,7 @@ function endGame(reason,win){
     finalizeWall();S.trucksDone=S.truck; // v3.5.57 capture the failed/timed-out wall once
     var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
     document.getElementById('es-score').textContent=S.totalScore;
+    if(typeof checkPersonalBest==='function'&&gameMode!=='daily')checkPersonalBest(S.totalScore); // v3.5.146 PB ribbon (daily uses its own world rank, not a local PB)
     document.getElementById('es-pph').textContent=S.bestPPH;
     document.getElementById('es-trucks').textContent=S.trucksDone;
     document.getElementById('es-int').textContent=avgInt+'%';
@@ -10824,7 +10914,7 @@ function endGame(reason,win){
     fillTelemetryTiles();if(typeof zEndSession==='function')zEndSession();
     document.getElementById('end-title').innerHTML='ROUND<br>OVER';
     document.getElementById('end-sub').textContent=reason;
-    _drHide();if(gameMode==='daily'){document.getElementById('end-title').innerHTML='DAILY<br>DONE';dailyFinish();}
+    _drHide();if(gameMode==='daily'){document.getElementById('end-title').innerHTML='DAILY<br>DONE';var _pbd=document.getElementById('pb-ribbon');if(_pbd)_pbd.style.display='none';dailyFinish();}
   }catch(_e){liShowErr('endGame',_e);}
   var _ovG=document.getElementById('ov-end');if(_ovG)_ovG.classList.add('vis'); // v2.4.4 end screen ALWAYS shows
 }
