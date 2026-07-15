@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.142
+   LOCK IN v3.5.143
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.143 - LEGIBILITY SWEEP + PAUSE REORDER + COACH FIX. (1) THE PAUSE CLIPBOARD WAS GRAY-ON-GRAY SLOP. Every front-facing string is now outlined for contrast: light-clipboard surfaces (pause / briefing / write-up) get a light HALO on their dark text so it pops off the busy clipboard texture, the muted tans are darkened (sub/coach/hint), and the buttons are solidified (opaque bg + bold) so their labels are legible; the remaining DARK-surface front-facing text (the banner over the wall, the next-wall popup, the end-screen verdict) joins the existing hard dark-outline rule from the v3.5.140 CVD pass. The MAIN MENU is intentionally left un-outlined (per Vince). (2) PAUSE MENU REORDER: RESUME · SETTINGS · RESTART (now directly under settings) · CLOCK OUT · ACCOUNT & DATA · MAIN MENU (account + main-menu moved below clock-out, so the leave-the-game actions sit at the bottom). (3) COACH COUNT FIX: the coach claimed a broken smalls bag yields "five gap-fillers" — it's SIX (BAG_SPILL = three 2x1 + three 1x1 = 6 pieces / 9 cubes). All three coach/commentary lines corrected to six, and they now name the shape (three 2x1s + three singles). NEXT: full cosmetic sweep 2 (spacing/type rhythm across overlays), homepage flesh-out.
    CHANGE LOG v3.5.142 - CEILING SMALLS-BAG BONUS + DISPATCH BESIDE LINEHAUL + HOMEPAGE DE-ZENGINED. (1) ROOF BAGS: a 3x3 smalls bag packed against the trailer ceiling (top edge on grid row 0) now pays a HUGE +600-cube bonus — dead air up top is wasted space, and stuffing bags against the roof reclaims it. Once per bag (a lifted-and-replaced bag can't re-earn it); a full ceiling course is 5 bags (15 of the 17-wide grid). Scored statelessly in calcScore (scan row 0 for distinct bag boxes) so it always matches the wall on screen — lift a bag off the roof and its bonus is gone; a fresh wall resets to 0. First one teaches the mechanic; each roof bag flashes ROOF BAG n/5 (n=5 = FULL CEILING COURSE). (2) DISPATCH LAYOUT: the live linehaul message now sits BESIDE the ADMIN/OPERATIONS/LINEHAUL button row (to its right, filling the strip) instead of on a second line below it — space maximization, per the mockup. Boxed with the uniform --btn-line outline. (3) HOMEPAGE + LEGAL PAGES: culled the Zengine branding slop — removed the ZG badge (index/privacy/terms), the schema.org Organization is now LOCK IN / trailer-load.com (was Zengine / zengine.site), the "provisioned by Zengine" line is reworded, and every footer reads www.trailer-load.com. (Legal operating-entity naming in the Terms/Privacy body left intact — that's who runs the service, flagged for Vince's call.) NEXT: homepage flesh-out, cosmetic sweep 2.
    CHANGE LOG v3.5.141 - TUTORIAL REBUILT FULLY DETERMINISTIC + BUTTON UNIFICATION + DISPATCH REORDER. (1) TRAINING: kremsicle's jailbreaker found a "poltergeist piece" (one inset in another) and floating from step 5 on — the tutorial accepted any tapped placement, so it diverged from a valid wall. Now EVERY place-beat force-drops its piece at an EXACT scripted target + rotation the instant you tap the wall, so the build is byte-identical every run. The script is rebuilt to a real bottom-up floor: 3 NC ANCHORS FIRST (washer/fridge/range across the base — "first piece is the anchor"), then shelf cartons (place/rotate/arrows/heavy/lock-in), then the upper row (tire/stagger/hazmat/fragile/smalls), then a STAGED COLLAPSE, and BREAK JAM introduced AFTER the collapse — then water/flag/seal. Fails are OFF in training (tickChute + checkPPHFail gated on TUTORIAL_MODE) so it can never send you home or log a garbage session. Sign-off slop fixed (no "same as day one at a real hub" contradiction, no zero-bearing sentence). Verified end-to-end: all 18 beats fire in order, ZERO floating pieces, collapse->breakjam->seal, sign-off checks 18/18 with LOCK IN last. (2) BUTTONS: every action + console button (ADMIN/OPS/LINEHAUL, WATER, FLAG, BREAK JAM, ROT) now wears the SAME outline box — uniform --btn-line border, radius, and min-height — while fills stay semantic (water keeps blue, alerts keep red). (3) DISPATCH: the console row is reordered ADMIN -> OPERATIONS -> LINEHAUL (left to right) with the live dispatch message in a boxed text field BELOW the row, per Goyim. NEXT: homepage flesh-out, cosmetic sweep 2.
    CHANGE LOG v2.4.6 — LOOP WATCHDOG (silent-stall fix + diagnosis). The mid-wall freeze does NOT throw (window.__LI_ERR was never set) — the render loop silently stops advancing. New watchdog: the loop ticks a heartbeat every frame; a 1.2s timer checks it. If the heartbeat stalls while the game should be running (not paused, not game-over, no menu/pause/end/report screen up), the loop is AUTO-RESTARTED so you can never be stuck again, and a one-time amber strip prints the exact state (paused/gOver/mode/placed/wallH/animF/lastLoopT) to window.__LI_STALL + console. It also catches a degenerate canvas (W or H collapsed) and re-runs resize(). This both heals the freeze live AND tells us the cause on the next occurrence. No gameplay change.
@@ -370,7 +371,9 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 /* v3.5.140 CVD ACCESSIBILITY (opticquiz: dark-teal-on-dark-bg collapsed to 1.7 contrast in deuteranopia). Every
    scoreboard value + label gets a hard dark OUTLINE so the TEXT stays legible independent of how its accent color
    collapses under color-blindness — contrast comes from the outline, not the fill. Labels bumped off 11px. */
-.sb-cell .sp-med,.sb-cell .sp-big,.sb-cell .sp-lbl,#sp-cog-s,.msg-line,#safety-live,.ops-grade,#es-grade-big,.es-rank,.strip-act,.stg-light,.console-btn{text-shadow:-1px -1px 0 #06060a,1px -1px 0 #06060a,-1px 1px 0 #06060a,1px 1px 0 #06060a,0 0 5px rgba(0,0,0,.9);}
+.sb-cell .sp-med,.sb-cell .sp-big,.sb-cell .sp-lbl,#sp-cog-s,.msg-line,#safety-live,.ops-grade,#es-grade-big,.es-rank,.strip-act,.stg-light,.console-btn,
+/* v3.5.143 outline sweep — extend the hard dark outline to the remaining front-facing DARK-surface text (banner over the wall, next-wall popup, end-screen verdict) so every front-facing string is legible. Light-clipboard surfaces get a light halo above; the main menu is intentionally excluded. */
+#banner,#next-popup-badge,#next-popup-sub,.es-verdict{text-shadow:-1px -1px 0 #06060a,1px -1px 0 #06060a,-1px 1px 0 #06060a,1px 1px 0 #06060a,0 0 5px rgba(0,0,0,.9);}
 .sb-cell .sp-lbl{font-size:12px;color:#c8c0b0;}
 #stats-panel #sp-time{color:var(--acc-bright);letter-spacing:1px;}   /* ELAPSED — hero */
 #stats-panel #sp-score{color:var(--acc);}
@@ -1029,7 +1032,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 
 #banner{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);
   font-family:'Bebas Neue',cursive;letter-spacing:3px;color:var(--acc);
-  text-shadow:0 0 28px rgba(200,121,30,.5);text-align:center;
+  text-shadow:-1px -1px 0 #06060a,1px -1px 0 #06060a,-1px 1px 0 #06060a,1px 1px 0 #06060a,0 0 28px rgba(200,121,30,.5);text-align:center;/* v3.5.143 hard dark outline + the amber glow */
   padding:12px 26px;background:rgba(28,20,16,.96);border-radius:4px;
   border:1px solid rgba(200,121,30,.45);pointer-events:none;z-index:62;
   opacity:0;transition:opacity .18s;font-size:clamp(16px,3.2vw,28px);
@@ -1171,6 +1174,17 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pause-clip #fp-tip-h{color:#3a2c1a;}
 .pause-clip #fp-tip-s{color:#6a5c44;}
 .pause-clip .pause-hint{color:#9a8a6c;}
+/* v3.5.143 LEGIBILITY SWEEP — the clipboard menu read as gray-on-gray slop. Dark text now carries a light HALO
+   (contrast off the busy clipboard texture), the muted tans are darkened, and the buttons are solidified so their
+   labels pop. This is the "outline all front-facing text" pass for the light clipboard surfaces. */
+.pause-clip .pause-sub{color:#5e4e34;}
+.pause-clip #fp-tip-s{color:#4a3c26;}
+.pause-clip .pause-hint{color:#5e4e34;}
+.pause-clip .pmb{background:rgba(255,255,255,.9);border-color:#9a8a6c;color:#241a0e;font-weight:bold;}
+.pause-clip #fp-tip{background:rgba(255,250,240,.85);border:1px solid rgba(42,32,24,.2);}
+.pause-clip .pause-title,.pause-clip .pause-sub,.pause-clip .fp-tip-hdr,.pause-clip #fp-tip-h,.pause-clip #fp-tip-s,.pause-clip .pause-hint,
+.pause-clip .pmb-restart,.pause-clip .pmb:not(.pmb-resume):not(.pmb-account){
+  text-shadow:0 1px 0 rgba(255,255,255,.95),0 -1px 0 rgba(255,255,255,.7),1px 0 0 rgba(255,255,255,.7),-1px 0 0 rgba(255,255,255,.7);}
 /* v3.5.68 SAFETY WRITE-UP — a clipboard document that STOPS the game; you must sign to continue */
 #ov-writeup{position:fixed;inset:0;z-index:520;display:none;align-items:center;justify-content:center;background:rgba(10,7,4,.82);padding:16px;}
 #ov-writeup.vis{display:flex;}
@@ -1867,14 +1881,14 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.142 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.143 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
-    <button class="pmb pmb-account" onclick="zOpenData()">◈ ACCOUNT &amp; DATA</button>
     <button class="pmb pmb-restart" onclick="pauseRestart()">↺ RESTART</button>
-    <button class="pmb" onclick="pauseToMenu()">⌂ MAIN MENU — SWITCH MODE</button>
     <button class="pmb" onclick="clockOut()">⏏ CLOCK OUT — END &amp; SEE STATS</button>
+    <button class="pmb pmb-account" onclick="zOpenData()">◈ ACCOUNT &amp; DATA</button>
+    <button class="pmb" onclick="pauseToMenu()">⌂ MAIN MENU — SWITCH MODE</button>
   </div>
   <!-- v3.5.7: COACH lives here now — read it on a break, not over the wall -->
   <div id="fp-tip">
@@ -1980,7 +1994,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.142 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.143 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2133,7 +2147,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.142 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.143 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2576,7 +2590,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.142
+// LOCK IN v3.5.143
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3027,7 +3041,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.142'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.143'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -7193,8 +7207,8 @@ function buildTips(hp,integ,voids,cog,ss,pph){
     {h:'Stagger your rows.',s:'Pieces that bridge row seams earn BRICK LOCK. That\'s what keeps walls from splitting in transit.'}:
     {h:'Stagger your rows.',s:'Offset box joints like a brick wall — pieces that bridge seams earn the BRICK LOCK bonus.'});
   tips.push(hub?
-    {h:'Smalls bag sitting there?',s:'Double-click it. Five gap-fillers. Use them. That\'s what they\'re for.'}:
-    {h:'Bag breakdown tip.',s:'Long-press or double-click a smalls bag to break it into 5 gap-fill pieces for tight voids near the top.'});
+    {h:'Smalls bag sitting there?',s:'Double-click it. Six gap-fillers — three 2×1s and three singles. Use them. That\'s what they\'re for.'}:
+    {h:'Bag breakdown tip.',s:'Long-press or double-click a smalls bag to break it into 6 gap-fill pieces (three 2×1s + three singles) for tight voids near the top.'});
   return tips.length?tips:[hub?
     {h:'Keep loading.',s:'Wall won\'t seal itself.'}:
     {h:'Keep loading.',s:'Build toward 92% wall height to complete the trailer.'}];
@@ -8405,7 +8419,7 @@ var DEMO_SCRIPT=[
    r:'The rotated carton poked one cell up. A small flat package caps it flush — smalls finish what big freight cannot.'},
   {src:'bag',n:'SMALLS',w:2,h:2,gx:0,gy:8,rot:0,color:'#7a4dd0',
    p:'THE HUMBLE BAG JUST LOCKED YOUR SHELF',
-   r:'Seat a smalls bag whole, or double-click it for five gap-fillers. This one closes the last gap and DOUBLE LOCKS the second shelf.'},
+   r:'Seat a smalls bag whole, or double-click it for six gap-fillers. This one closes the last gap and DOUBLE LOCKS the second shelf.'},
 
   // ── 1.4  SEAL: a long plank bars the whole top row (row 7) ──
   {src:'reg',n:'PLANK-XL',w:12,h:1,gx:0,gy:7,rot:0,
@@ -9355,7 +9369,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.142</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.143</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
