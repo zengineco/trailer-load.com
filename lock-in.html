@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.144
+   LOCK IN v3.5.145
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.145 - COSMETIC SWEEP 2 (type rhythm + button/legibility unification across every overlay + the strip). Audit-driven. (1) BUTTON RADIUS was 6 different values across surfaces (3/4/5/7/8px) — unified to 6px (.btn-p, .pmb, .end-act, .data-save/.data-cancel, .console-btn). (2) WHITE-ON-AMBER (~2:1) primary buttons .data-save + .auth-tab.active recolored to the dark-on-amber convention (#1c1206) used everywhere else. (3) .btn-p was the loosest button in the UI (40px side-pad / 5px tracking) — tightened to the shared 12px 24px / 2px rhythm. (4) MUTED SUB-AA TEXT raised --t3->--t2: account/data field labels (read while typing), settings helper text; .data-fld span lost its opacity:.7. (5) STRIP TYPOGRAPHY: ROT/FLAG/WATER/BREAK JAM settled on one size (17px/1.5px, was 18/17/16 mixed); the NC/SM staging pills + the ✕ separator were pulled into the v3.5.141 unified --btn-line outline + 34px strip height (they were the last 1px translucent-amber outliers). (6) STAGING TILE text 9px->11px (it's tapped mid-game) and the dispatch SOURCE badge 10px->11px. (7) SCOREBOARD label color was a hardcoded #c8c0b0 (~1.2:1 on the light theme) -> theme-aware var(--t2). (8) MOBILE: the mobile console-button compaction was being overridden by the later unified rule (media queries add no specificity) — re-scoped to #ops-console .console-btn so it wins again; and the no-wrap control strip that overflowed/crushed the dispatch line on a narrow phone now flex-wraps. (9) end-act primary DESCRIPTION was muted --t2 on amber -> darkened. (10) 'Bebas Neue' fallback standardized cursive->sans-serif in all 55 spots (a font-load failure now degrades to a condensed sans everywhere, not half-script/half-sans). (11) PLAYABILITY (legibility): the SEAL LINE (92% target) was a near-invisible 1px/.32 dashed line with 7px text — now a bright 2px dashed teal line with an outlined 11px "SEAL LINE — FILL TO HERE" label, so new players can actually see the finish. NEXT: homepage flesh-out; the larger playability items (daily streak, seal-readiness meter, personal-best celebration, first-run->training funnel) are proposed separately for Vince to pick.
    CHANGE LOG v3.5.144 - DAILY-SUBMIT FIXED + STYLED, CONSOLE-BTN CONTRAST, CLOCK STARTS ON FIRST PIECE. (1) DAILY SUBMIT "doesn't work from it": dailySubmit did finalize -> dailyFinish -> returnToMenu, but dailyFinish populates the daily-result panel that lives ON THE END SCREEN — returnToMenu tore it down instantly, so you never saw your posted rank/board. Now SUBMIT routes through endGame(false): finalizes the wall, posts the session + today's board, and SHOWS the end screen — DAILY DONE + your rank + today's board + SHARE, with MAIN MENU / TRY AGAIN. (2) DAILY SUBMIT looked like a "Microsoft 3.1 text box": #next-popup-btn-daily had a unique id with ZERO css so it rendered as a raw OS button. Every completion-popup button is now a styled card — SUBMIT & NEXT TRAILER green-primary, the rest amber, full-width, legible. (3) CONSOLE BUTTONS (ADMIN/OPERATIONS/LINEHAUL) were muddy — muted --t2 fill collapsed against the dark outline + dark panel. Fill is now bright cream on a darker panel so the inside text and the outline actually contrast. (4) THE CLOCK NOW STARTS ON THE FIRST PIECE, every mode (trailer-load / practice / gauntlet / daily / new wall). startT is null from mode-start until the first placement sets it, so elapsed + PPH never count the time before you place anything — vital on mobile where the opening piece is slower. AFK/idle protection still runs (dt-based, independent of startT). NEXT: cosmetic sweep 2 (overlay type rhythm), homepage flesh-out.
    CHANGE LOG v3.5.143 - LEGIBILITY SWEEP + PAUSE REORDER + COACH FIX. (1) THE PAUSE CLIPBOARD WAS GRAY-ON-GRAY SLOP. Every front-facing string is now outlined for contrast: light-clipboard surfaces (pause / briefing / write-up) get a light HALO on their dark text so it pops off the busy clipboard texture, the muted tans are darkened (sub/coach/hint), and the buttons are solidified (opaque bg + bold) so their labels are legible; the remaining DARK-surface front-facing text (the banner over the wall, the next-wall popup, the end-screen verdict) joins the existing hard dark-outline rule from the v3.5.140 CVD pass. The MAIN MENU is intentionally left un-outlined (per Vince). (2) PAUSE MENU REORDER: RESUME · SETTINGS · RESTART (now directly under settings) · CLOCK OUT · ACCOUNT & DATA · MAIN MENU (account + main-menu moved below clock-out, so the leave-the-game actions sit at the bottom). (3) COACH COUNT FIX: the coach claimed a broken smalls bag yields "five gap-fillers" — it's SIX (BAG_SPILL = three 2x1 + three 1x1 = 6 pieces / 9 cubes). All three coach/commentary lines corrected to six, and they now name the shape (three 2x1s + three singles). NEXT: full cosmetic sweep 2 (spacing/type rhythm across overlays), homepage flesh-out.
    CHANGE LOG v3.5.142 - CEILING SMALLS-BAG BONUS + DISPATCH BESIDE LINEHAUL + HOMEPAGE DE-ZENGINED. (1) ROOF BAGS: a 3x3 smalls bag packed against the trailer ceiling (top edge on grid row 0) now pays a HUGE +600-cube bonus — dead air up top is wasted space, and stuffing bags against the roof reclaims it. Once per bag (a lifted-and-replaced bag can't re-earn it); a full ceiling course is 5 bags (15 of the 17-wide grid). Scored statelessly in calcScore (scan row 0 for distinct bag boxes) so it always matches the wall on screen — lift a bag off the roof and its bonus is gone; a fresh wall resets to 0. First one teaches the mechanic; each roof bag flashes ROOF BAG n/5 (n=5 = FULL CEILING COURSE). (2) DISPATCH LAYOUT: the live linehaul message now sits BESIDE the ADMIN/OPERATIONS/LINEHAUL button row (to its right, filling the strip) instead of on a second line below it — space maximization, per the mockup. Boxed with the uniform --btn-line outline. (3) HOMEPAGE + LEGAL PAGES: culled the Zengine branding slop — removed the ZG badge (index/privacy/terms), the schema.org Organization is now LOCK IN / trailer-load.com (was Zengine / zengine.site), the "provisioned by Zengine" line is reworded, and every footer reads www.trailer-load.com. (Legal operating-entity naming in the Terms/Privacy body left intact — that's who runs the service, flagged for Vince's call.) NEXT: homepage flesh-out, cosmetic sweep 2.
@@ -368,14 +369,14 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .sb-cell .sp-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
   color:var(--t2);text-transform:uppercase;font-weight:bold;margin:0;white-space:nowrap;line-height:1;}
 .sb-cell .sp-med{font-family:'Share Tech Mono',monospace;font-size:22px;font-weight:bold;color:var(--t1);line-height:1;display:block;white-space:nowrap;}
-.sb-cell .sp-big{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:1px;color:var(--acc);line-height:.85;display:block;}
+.sb-cell .sp-big{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;color:var(--acc);line-height:.85;display:block;}
 /* v3.5.140 CVD ACCESSIBILITY (opticquiz: dark-teal-on-dark-bg collapsed to 1.7 contrast in deuteranopia). Every
    scoreboard value + label gets a hard dark OUTLINE so the TEXT stays legible independent of how its accent color
    collapses under color-blindness — contrast comes from the outline, not the fill. Labels bumped off 11px. */
 .sb-cell .sp-med,.sb-cell .sp-big,.sb-cell .sp-lbl,#sp-cog-s,.msg-line,#safety-live,.ops-grade,#es-grade-big,.es-rank,.strip-act,.stg-light,.console-btn,
 /* v3.5.143 outline sweep — extend the hard dark outline to the remaining front-facing DARK-surface text (banner over the wall, next-wall popup, end-screen verdict) so every front-facing string is legible. Light-clipboard surfaces get a light halo above; the main menu is intentionally excluded. */
 #banner,#next-popup-badge,#next-popup-sub,.es-verdict{text-shadow:-1px -1px 0 #06060a,1px -1px 0 #06060a,-1px 1px 0 #06060a,1px 1px 0 #06060a,0 0 5px rgba(0,0,0,.9);}
-.sb-cell .sp-lbl{font-size:12px;color:#c8c0b0;}
+.sb-cell .sp-lbl{font-size:12px;color:var(--t2);} /* v3.5.145 theme-aware (was hardcoded #c8c0b0 — ~1.2:1 on the light theme, only saved by the outline) */
 #stats-panel #sp-time{color:var(--acc-bright);letter-spacing:1px;}   /* ELAPSED — hero */
 #stats-panel #sp-score{color:var(--acc);}
 /* v3.5.34 COLOR PASS — pull the menu palette onto the scoreboard so it stops reading as a wall of --t1 white. Theme-aware vars keep contrast in light AND dark. Tunable: one semantic hue per metric. */
@@ -390,7 +391,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 #stats-panel #sp-cog-s{font-size:13px;margin-top:3px;}
 #stats-panel .sp-bar{width:100%;min-width:74px;height:6px;margin-top:5px;}
 #sb-pause{margin-left:auto;align-self:center;margin-right:14px;background:transparent;
-  border:1px solid var(--border2);color:var(--t2);font-family:'Bebas Neue',cursive;
+  border:1px solid var(--border2);color:var(--t2);font-family:'Bebas Neue',sans-serif;
   font-size:19px;letter-spacing:2px;padding:7px 17px;border-radius:4px;cursor:pointer;flex:none;}
 #sb-pause:hover{border-color:var(--acc);color:var(--acc);}
 .sp-hdr{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;
@@ -400,7 +401,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .sp-block:last-child{border-bottom:none;}
 .sp-lbl{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;
   color:var(--t2);text-transform:uppercase;margin-bottom:3px;font-weight:bold;}
-.sp-big{font-family:'Bebas Neue',cursive;font-size:42px;letter-spacing:2px;
+.sp-big{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px;
   color:var(--acc);line-height:1;display:block;}
 .sp-big.ok{color:var(--ok);}.sp-big.warn{color:var(--warn);}
 .sp-big.danger{color:var(--danger);animation:blink .5s infinite;}
@@ -435,12 +436,12 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   position:relative;z-index:10;}
 #hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,var(--acc) 30%,var(--acc) 70%,transparent);opacity:.3;}
-.logo{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:5px;color:var(--acc);line-height:1;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:5px;color:var(--acc);line-height:1;}
 ,.logo sub{font-size:12px;letter-spacing:1px;color:var(--t3);display:block;font-family:'Share Tech Mono',monospace;}
 .hdr-mid{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:.7px;
   color:var(--t2);text-align:center;font-weight:bold;}
 #pause-btn{background:transparent;border:1px solid var(--border2);color:var(--t2);
-  font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;
+  font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;
   padding:2px 8px;border-radius:3px;cursor:pointer;}
 #pause-btn:hover{border-color:var(--acc);color:var(--acc);}
 /* ══════════════════════════════════════════════════════
@@ -453,7 +454,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 #drought-banner{
   display:none;position:absolute;bottom:0;left:0;right:0;
   background:rgba(12,8,4,.92);border-top:1px solid rgba(204,88,32,.5);
-  font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:4px;
+  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;
   color:#d46020;text-align:center;padding:6px 0;z-index:30;
   pointer-events:none;
 }
@@ -503,11 +504,11 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   pointer-events:none;
 }
 #work-stoppage.vis{display:flex;}
-#ws-title{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:8px;
+#ws-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:8px;
   color:#cc3820;text-shadow:0 0 40px rgba(204,56,32,.5);}
 #ws-sub{font-family:'Share Tech Mono',monospace;font-size:12px;
   color:rgba(255,255,255,.5);letter-spacing:2px;text-align:center;}
-#ws-timer{font-family:'Bebas Neue',cursive;font-size:36px;color:#e08060;letter-spacing:4px;}
+#ws-timer{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#e08060;letter-spacing:4px;}
 
 /* ═══════════════════════════════════════════════════════
    START MENU — v1.9.0
@@ -535,7 +536,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 #sm-logo{text-align:left;margin:0 0 14px 34px;}
 #sm-header-img{display:none;max-width:min(340px,52vw);width:100%;height:auto;margin:0;}
 #sm-wordmark{
-  font-family:'Bebas Neue',cursive;font-size:clamp(42px,5.2vw,64px);
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,5.2vw,64px);
   letter-spacing:10px;color:var(--acc);
   text-shadow:0 0 60px rgba(200,121,30,.35),0 0 120px rgba(200,121,30,.12);
   display:block;line-height:1;
@@ -558,11 +559,10 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 /* v3.5.144 CONTRAST FIX — the muted --t2 inside text collapsed against the dark outline + dark bg (Vince: "outline and inside DO NOT contrast enough"). Bright cream fill now pops off both the outline and the panel. */
 .console-btn{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;letter-spacing:.08em;
   text-transform:uppercase;color:#f6e6c4;background:#241a10;border:1px solid var(--border2);
-  border-radius:5px;padding:5px 11px;cursor:pointer;white-space:nowrap;}
+  border-radius:6px;padding:5px 11px;cursor:pointer;white-space:nowrap;}
 .console-btn:hover{border-color:var(--acc);color:#ffdf9a;}
 .console-btn.on{background:var(--acc);color:#160c02;border-color:var(--acc);}
-.console-btn .ci{opacity:1;}
-.console-btn .ci{margin-right:5px;opacity:.85;}
+.console-btn .ci{margin-right:5px;opacity:1;} /* v3.5.145 was a dead double-declaration (opacity 1 then .85); consolidated bright */
 #console-drawer{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(1120px,100%);
   max-height:52vh;background:var(--bg2);border:1px solid var(--border2);border-bottom:none;
   border-radius:10px 10px 0 0;box-shadow:0 -8px 30px rgba(20,12,4,.45);z-index:120;
@@ -594,7 +594,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .cd-empty{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--t3);text-align:center;padding:24px 0;}
 /* v3.5.38 OPERATIONS = live mini-report (grade hero + grouped metrics, pulled from the end-report sources) */
 .ops-hero{display:flex;align-items:center;gap:12px;padding:4px 2px 12px;border-bottom:1px solid var(--border2);margin-bottom:10px;}
-.ops-grade{font-family:'Bebas Neue',cursive;font-size:46px;line-height:.9;flex:none;min-width:54px;text-align:center;}
+.ops-grade{font-family:'Bebas Neue',sans-serif;font-size:46px;line-height:.9;flex:none;min-width:54px;text-align:center;}
 .ops-hero-txt{flex:1;min-width:0;}
 .ops-rank{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:bold;letter-spacing:1px;color:var(--t1);text-transform:uppercase;}
 .ops-verd{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--t2);line-height:1.3;margin-top:2px;}
@@ -608,21 +608,21 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 @keyframes dataDrop{from{transform:translateY(-100%);}to{transform:translateY(0);}}
 .data-hdr{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em;color:var(--acc);margin-bottom:8px;}
 .data-p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--t2);line-height:1.35;margin:0 0 14px;}
-.data-fld{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--t3);margin-bottom:10px;}
-.data-fld span{color:var(--t3);opacity:.7;text-transform:none;letter-spacing:0;}
+.data-fld{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;color:var(--t2);margin-bottom:10px;} /* v3.5.145 was 10px/--t3 (sub-AA while typing) */
+.data-fld span{color:var(--t2);text-transform:none;letter-spacing:0;}
 .data-fld input{display:block;width:100%;margin-top:4px;padding:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--t1);font-family:'Share Tech Mono',monospace;font-size:13px;}
 .data-chk{display:flex;align-items:flex-start;gap:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--t1);margin-bottom:8px;cursor:pointer;}
 .data-chk input{margin-top:3px;width:16px;height:16px;accent-color:var(--teal);}
 .data-btns{display:flex;gap:10px;margin:14px 0 8px;}
-.data-save{flex:1;padding:10px;background:var(--acc);color:#fff;border:none;border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:.06em;cursor:pointer;}
+.data-save{flex:1;padding:10px;background:var(--acc);color:#1c1206;font-weight:bold;border:none;border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:.06em;cursor:pointer;} /* v3.5.145 was white-on-amber (~2:1) + 7px radius */
 .data-save:hover{background:var(--acc-bright);}
-.data-cancel{flex:1;padding:10px;background:transparent;color:var(--t2);border:1px solid var(--border2);border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:.06em;cursor:pointer;}
+.data-cancel{flex:1;padding:10px;background:transparent;color:var(--t2);border:1px solid var(--border2);border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:.06em;cursor:pointer;}
 .data-note{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--t3);line-height:1.3;}
 .auth-status{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--ok);margin-bottom:8px;}
 .auth-box{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:12px 13px;margin-bottom:12px;}
 .auth-toggle{display:flex;gap:6px;margin-bottom:10px;}
 .auth-tab{flex:1;padding:6px;background:transparent;color:var(--t3);border:1px solid var(--border2);border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;cursor:pointer;}
-.auth-tab.active{background:var(--acc);color:#fff;border-color:var(--acc);}
+.auth-tab.active{background:var(--acc);color:#1c1206;font-weight:bold;border-color:var(--acc);} /* v3.5.145 was white-on-amber */
 .auth-note{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--t3);line-height:1.3;margin-top:2px;}
 .auth-signout{margin-top:8px;width:100%;padding:7px;background:transparent;color:var(--danger);border:1px solid var(--danger);border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.06em;cursor:pointer;}
 .data-divider{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--t3);border-top:1px solid var(--border2);padding-top:10px;margin-bottom:10px;}
@@ -664,7 +664,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .sm-card.mode-daily{border-left-color:#9a8b72;}
 .sm-card-ico{font-size:34px;line-height:1;flex:none;width:44px;text-align:center;}
 .sm-card-name{
-  font-family:'Bebas Neue',cursive;font-size:34px;letter-spacing:2px;
+  font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;
   color:var(--t1);flex:1;min-width:0;line-height:1;
 }
 .sm-card.mode-regular .sm-card-name{color:var(--teal-bright);}
@@ -706,8 +706,8 @@ html,body{width:100%;height:100dvh;color:var(--t1);
   .sm-card-ico{font-size:24px;width:30px;}
   .sm-card-name{font-size:clamp(20px,5.6vw,26px);letter-spacing:1px;}
   #ops-console{gap:4px;}
-  .console-btn{font-size:11px;padding:5px 7px;letter-spacing:.02em;}
-  .console-btn .ci{margin-right:3px;}
+  #ops-console .console-btn{font-size:11px;padding:5px 7px;letter-spacing:.02em;min-height:30px;} /* v3.5.145 #ops-console prefix so this wins over the later unified rule (media queries add no specificity) — restores the mobile compaction */
+  #ops-console .console-btn .ci{margin-right:3px;}
   /* briefing clipboard: stretch taller + expand the writing area so the text never clips */
   #clipboard{aspect-ratio:1372/1420;background-size:100% 100%;width:min(560px,94vw);}
   #brief-body{top:26%;bottom:6%;left:8%;right:8%;overflow-y:auto;}
@@ -748,7 +748,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   background:rgba(0,0,0,.25);
 }
 #to-title{
-  font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:5px;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:5px;
   color:var(--ok);line-height:1;display:block;
 }
 #to-sub{
@@ -774,7 +774,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   overflow:hidden;
 }
 #to-principle{
-  font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;
   color:var(--acc);line-height:1.1;
   border-left:3px solid var(--acc);
   padding-left:10px;
@@ -797,7 +797,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 .to-btn-row{display:flex;gap:8px;}
 .to-btn{
   flex:1;
-  font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;
+  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;
   padding:9px 0;border-radius:4px;cursor:pointer;border:1px solid;
   text-align:center;
 }
@@ -848,7 +848,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   justify-content:space-between;margin-bottom:20px;flex-shrink:0;
 }
 #ls-title{
-  font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:6px;
+  font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:6px;
   color:var(--acc);
 }
 #ls-subtitle{
@@ -856,7 +856,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   letter-spacing:2px;color:var(--t3);
 }
 #ls-back{
-  font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;
+  font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;
   color:var(--t2);background:transparent;border:1px solid var(--border2);
   border-radius:3px;padding:4px 14px;cursor:pointer;
 }
@@ -884,7 +884,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   letter-spacing:2px;color:var(--t3);
 }
 .ls-name{
-  font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;
+  font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;
   color:var(--t1);line-height:1;
 }
 .ls-hub{
@@ -931,7 +931,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 .le-star.earned{color:#e8c060;text-shadow:0 0 20px rgba(232,192,96,.5);}
 .le-star.empty{color:rgba(42,32,24,.18);}
 #le-title{
-  font-family:'Bebas Neue',cursive;font-size:42px;letter-spacing:6px;
+  font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:6px;
   color:var(--acc);margin-bottom:2px;
 }
 #le-hub{
@@ -939,7 +939,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   color:var(--t3);margin-bottom:16px;
 }
 #le-grade{
-  font-family:'Bebas Neue',cursive;font-size:80px;letter-spacing:6px;
+  font-family:'Bebas Neue',sans-serif;font-size:80px;letter-spacing:6px;
   line-height:1;display:block;margin-bottom:12px;
 }
 /* Analytics grid */
@@ -952,7 +952,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   padding:8px 10px;text-align:center;
 }
 .le-stat-v{
-  font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1px;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;
   color:var(--t1);display:block;line-height:1;
 }
 .le-stat-l{
@@ -967,7 +967,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 }
 #le-btn-row{display:flex;gap:10px;}
 .le-btn{
-  font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;
+  font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;
   padding:10px 22px;border-radius:4px;cursor:pointer;border:1px solid;
 }
 .le-btn-restart{background:transparent;color:var(--t2);border-color:var(--border2);}
@@ -997,7 +997,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   color:var(--acc);text-transform:uppercase;text-align:center;
   padding:8px 4px 6px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,.2);}
 #fp-grade-card{padding:8px 10px 6px;border-bottom:1px solid var(--border2);text-align:center;}
-#fp-grade{font-family:'Bebas Neue',cursive;font-size:46px;letter-spacing:4px;line-height:1;display:block;}
+#fp-grade{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:4px;line-height:1;display:block;}
 #fp-grade-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);display:block;margin-top:-1px;font-weight:bold;}
 #fp-subs{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px;}
 .fp-sg{display:flex;align-items:center;justify-content:space-between;gap:4px;}
@@ -1034,7 +1034,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 #fl-bulkhead{background:rgba(200,121,30,0);}#fl-bulkhead.on{background:rgba(200,121,30,.1);}
 
 #banner{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);
-  font-family:'Bebas Neue',cursive;letter-spacing:3px;color:var(--acc);
+  font-family:'Bebas Neue',sans-serif;letter-spacing:3px;color:var(--acc);
   text-shadow:-1px -1px 0 #06060a,1px -1px 0 #06060a,-1px 1px 0 #06060a,1px 1px 0 #06060a,0 0 28px rgba(200,121,30,.5);text-align:center;/* v3.5.143 hard dark outline + the amber glow */
   padding:12px 26px;background:rgba(28,20,16,.96);border-radius:4px;
   border:1px solid rgba(200,121,30,.45);pointer-events:none;z-index:62;
@@ -1061,11 +1061,11 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 #next-popup-badge{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;
   color:var(--ok);font-weight:bold;}/* v3.5.32 was 9px slop — now a real legible completion line */
 #next-popup-btn{background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;
-  border:none;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;
+  border:none;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;
   padding:6px 8px;border-radius:4px;pointer-events:auto;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.3);line-height:1.05;}
 #next-popup-sub{font-family:'Share Tech Mono',monospace;font-size:14px;color:rgba(120,224,168,.95);}
 /* v3.5.144 DAILY SUBMIT was a raw OS button ("Microsoft 3.1 text box"): #next-popup-btn-daily had a unique id with ZERO css. Unify every completion-popup button into legible styled cards — SUBMIT (and NEXT TRAILER) green-primary, the rest amber-secondary. */
-#next-popup .btn-p,#next-popup-btn,#next-popup-btn-daily{width:100%;font-family:'Bebas Neue',cursive;letter-spacing:1.4px;font-size:16px;line-height:1.12;
+#next-popup .btn-p,#next-popup-btn,#next-popup-btn-daily{width:100%;font-family:'Bebas Neue',sans-serif;letter-spacing:1.4px;font-size:16px;line-height:1.12;
   padding:11px 12px;border:none;border-radius:6px;cursor:pointer;text-align:center;white-space:normal;box-shadow:0 2px 10px rgba(0,0,0,.35);}
 #next-popup-btn,#next-popup-btn-daily{background:linear-gradient(180deg,#50d890,#28b870);color:#04120a;box-shadow:0 0 18px rgba(40,184,112,.4);font-weight:bold;}
 #next-popup .btn-p{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#140a02;}
@@ -1086,7 +1086,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 /* v3.5.59 side action buttons (WATER left margin / THROW right margin, in the beige side gutters) */
 .side-btn{position:absolute;bottom:18px;z-index:28;display:flex;flex-direction:column;align-items:center;gap:2px;
   background:rgba(22,22,24,.86);color:#f0ead8;border:1.5px solid #4a4a4c;border-radius:12px;padding:9px 11px;cursor:pointer;
-  font-family:'Bebas Neue',cursive;letter-spacing:1px;box-shadow:0 3px 12px rgba(0,0,0,.35);user-select:none;-webkit-user-select:none;}
+  font-family:'Bebas Neue',sans-serif;letter-spacing:1px;box-shadow:0 3px 12px rgba(0,0,0,.35);user-select:none;-webkit-user-select:none;}
 .side-btn .side-ic{font-size:22px;line-height:1;}
 .side-btn .side-ic img{width:26px;height:26px;display:block;object-fit:contain;}
 .side-btn .side-tx{font-size:12px;}
@@ -1105,7 +1105,7 @@ body.ctrl-edit #ctrl-edit-bar{display:flex;}
 #ctrl-edit-bar .ce-row{display:flex;align-items:center;gap:12px;}
 #ctrl-edit-bar label{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--acc-bright);letter-spacing:1px;flex:none;}
 #ctrl-edit-bar input[type=range]{flex:1;min-width:0;}
-#ce-done{background:var(--acc);color:#1a1006;border:none;border-radius:7px;padding:9px 22px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;flex:none;}
+#ce-done{background:var(--acc);color:#1a1006;border:none;border-radius:7px;padding:9px 22px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;flex:none;}
 body.m-portrait #root{max-width:none;}
 body.m-portrait #stats-panel,body.m-portrait #fb-panel{display:none;}
 body.m-portrait #pause-btn{display:none;}
@@ -1128,7 +1128,7 @@ body.m-portrait.m-armed.ctrl-dpad #m-dpad{display:grid;position:fixed;left:14px;
   background:radial-gradient(circle at 38% 35%,var(--acc-bright),var(--acc));border:1px solid var(--acc-dim);
   box-shadow:0 2px 8px rgba(0,0,0,.5);transition:transform .08s ease-out;}
 body.m-portrait.m-armed #m-drop{display:flex;position:fixed;right:14px;bottom:124px;z-index:120;height:56px;padding:0 22px;
-  align-items:center;justify-content:center;border-radius:12px;font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:3px;
+  align-items:center;justify-content:center;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;
   cursor:pointer;background:linear-gradient(180deg,var(--ok),#0f7a3f);color:#fff;border:1px solid var(--ok);box-shadow:0 4px 14px rgba(0,0,0,.4);opacity:.93;}
 body.m-portrait.m-armed #m-rot{display:flex;position:fixed;right:14px;bottom:190px;z-index:120;width:56px;height:56px;padding:0;
   align-items:center;justify-content:center;border-radius:50%;font-size:26px;cursor:pointer;
@@ -1151,13 +1151,13 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   35%{opacity:1;}100%{opacity:1;filter:blur(0);transform:scale(1) rotate(0deg);}}
 #boot-splash.gone{opacity:0;pointer-events:none;}
 @media (prefers-reduced-motion: reduce){#boot-splash img{animation:none;filter:none;transform:none;opacity:1;}}
-.pause-title{font-family:'Bebas Neue',cursive;font-size:56px;letter-spacing:8px;
+.pause-title{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:8px;
   color:var(--acc);text-shadow:0 0 40px rgba(200,121,30,.3);text-align:center;}
-.pause-sub{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;
+.pause-sub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;
   color:var(--t2);text-align:center;}
 .pause-menu{display:flex;flex-direction:column;gap:8px;width:100%;max-width:280px;margin-top:6px;}
-.pmb{width:100%;padding:11px 0;border-radius:4px;cursor:pointer;
-  font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:5px;
+.pmb{width:100%;padding:11px 0;border-radius:6px;cursor:pointer;
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:5px;
   border:1px solid var(--pause-border);text-align:center;transition:all .15s;}
 .pmb-resume{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;border-color:var(--acc);}
 .pmb-resume:hover{filter:brightness(1.1);}
@@ -1173,7 +1173,7 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .pause-clip .pause-sub{color:#9a8a6c;}
 .pause-clip .pause-menu{max-width:300px;gap:4px;margin-top:0;}
 .pause-clip .pmb{font-size:14px;letter-spacing:1.5px;padding:6px 0;border-color:#cbbfa6;color:#3a2c1a;background:rgba(255,255,255,.55);}
-.pause-clip #fp-tip{padding:6px 9px;}.pause-clip .fp-tip-hdr{font-size:9px;margin-bottom:1px;}.pause-clip #fp-tip-h{font-size:13px;}.pause-clip #fp-tip-s{font-size:12px;line-height:1.24;}
+.pause-clip #fp-tip{padding:6px 9px;}.pause-clip .fp-tip-hdr{font-size:11px;margin-bottom:1px;}.pause-clip #fp-tip-h{font-size:14px;}.pause-clip #fp-tip-s{font-size:12.5px;line-height:1.28;}
 .pause-clip .pmb:hover{border-color:var(--acc);color:var(--acc-dim);}
 .pause-clip .pmb-resume{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#2a1c08;border-color:var(--acc);}
 .pause-clip .pmb-resume:hover{filter:brightness(1.05);color:#2a1c08;}
@@ -1226,7 +1226,7 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 
 /* ── PAUSE BUTTON ── */
 #pause-btn{background:rgba(200,121,30,.1);border:1px solid rgba(200,121,30,.25);
-  color:var(--acc);font-family:'Bebas Neue',cursive;font-size:13px;
+  color:var(--acc);font-family:'Bebas Neue',sans-serif;font-size:13px;
   letter-spacing:2px;padding:2px 8px;border-radius:3px;cursor:pointer;margin-left:6px;}
 #pause-btn:hover{background:rgba(200,121,30,.2);}
 
@@ -1235,7 +1235,7 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   align-items:center;justify-content:flex-start;gap:8px;overflow-y:auto;padding:22px 16px 40px;
   background:radial-gradient(ellipse 90% 70% at 50% 30%,rgba(18,12,6,.98),rgba(4,3,2,.995))}
 #ov-end.vis{display:flex;}
-.ov-title{font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:7px;
+.ov-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:7px;
   color:var(--danger);text-shadow:0 0 50px rgba(204,56,32,.35);text-align:center;line-height:.9;}
 .ov-sub{font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:1.5px;
   color:var(--t2);text-align:center;max-width:320px;line-height:1.7;}
@@ -1251,28 +1251,29 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .es-hero-txt{display:flex;flex-direction:column;gap:4px;}
 .es-rank{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:.06em;color:var(--t1);}
 .es-verdict{font-family:'Barlow Condensed',sans-serif;font-size:17px;color:var(--t1);line-height:1.3;}
-.sg .v{font-family:'Bebas Neue',cursive;font-size:28px;color:var(--acc);letter-spacing:1px;display:block;line-height:1;}
+.sg .v{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--acc);letter-spacing:1px;display:block;line-height:1;}
 .sg .l{font-size:14px;color:var(--t2);letter-spacing:.5px;text-transform:uppercase;font-family:'Share Tech Mono',monospace;display:block;margin-top:3px;}
 .btn-p{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;
-  border:none;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:5px;
-  padding:10px 40px;border-radius:3px;cursor:pointer;box-shadow:0 0 28px rgba(200,121,30,.22);}
+  border:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;
+  padding:12px 24px;border-radius:6px;cursor:pointer;box-shadow:0 0 28px rgba(200,121,30,.22);} /* v3.5.145 tightened from 40px/5px + 3px radius to the shared button rhythm */
 /* v3.5.124 END-GAME MENU: uniform action cards (label + description), zero small text. Vince: "every bit of text
    legible and large, no fine print." */
 .es-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
 .end-act{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left;
   background:rgba(20,14,8,.97);color:var(--acc-bright);border:1.5px solid var(--acc);
-  padding:13px 16px;border-radius:8px;cursor:pointer;transition:background .15s,border-color .15s;}
+  padding:13px 16px;border-radius:6px;cursor:pointer;transition:background .15s,border-color .15s;}
 .end-act:hover{background:rgba(34,23,12,1);border-color:var(--acc-bright);}
 .end-act.primary{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;border-color:var(--acc-bright);}
 .end-act.wide{grid-column:1 / -1;}
-.ea-t{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:2px;line-height:1;}
+.ea-t{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;line-height:1;}
 .ea-d{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;line-height:1.15;color:var(--t2);}
+.end-act.primary .ea-d{color:#3a2408;} /* v3.5.145 the description was muted --t2 on the amber primary button — low contrast; darkened to match .ea-t */
 .end-act.primary .ea-d{color:rgba(10,6,0,.72);}
 /* v3.5.127 sign-in prompt — large legible text, uniform action cards, no fine print */
 #ov-signin-prompt{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(10,7,4,.88);padding:20px;}
 #ov-signin-prompt.vis{display:flex;}
 .sip-card{background:#161009;border:1.5px solid var(--acc);border-radius:12px;max-width:440px;width:100%;padding:24px 22px;box-shadow:0 18px 48px rgba(0,0,0,.6);}
-.sip-title{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:3px;color:var(--acc-bright);margin-bottom:10px;}
+.sip-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;color:var(--acc-bright);margin-bottom:10px;}
 .sip-body{font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.4;color:var(--t1);margin-bottom:18px;}
 .sip-actions{display:grid;grid-template-columns:1fr;gap:10px;}
 /* v3.5.137 TUTORIAL guide banner + sign-off clipboard */
@@ -1283,21 +1284,21 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 #ov-tutdone{position:fixed;inset:0;z-index:620;display:none;align-items:center;justify-content:center;background:rgba(10,7,4,.9);padding:20px;overflow-y:auto;}
 #ov-tutdone.vis{display:flex;}
 .tutdone-card{background:#f5f0e8;color:#2a1c0a;border-radius:10px;max-width:460px;width:100%;max-height:94vh;overflow-y:auto;padding:22px 22px 20px;box-shadow:0 18px 48px rgba(0,0,0,.6);}
-.td-hdr{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:2px;color:#1a1206;}
+.td-hdr{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;color:#1a1206;}
 .td-badge{font-family:'Share Tech Mono',monospace;font-size:12px;border:1.5px solid #b23b2e;color:#b23b2e;border-radius:4px;padding:2px 7px;vertical-align:middle;margin-left:6px;letter-spacing:1px;}
 .td-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:#5a4a30;line-height:1.35;margin:8px 0 14px;}
 .td-list{margin-bottom:14px;}
 .tdl-row{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px dashed #d8ccb2;}
-.tdl-box{flex:none;width:22px;height:22px;border:2px solid #7a6a4a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',cursive;color:#1f9d57;font-size:16px;}
+.tdl-box{flex:none;width:22px;height:22px;border:2px solid #7a6a4a;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;color:#1f9d57;font-size:16px;}
 .tdl-row.on .tdl-box{border-color:#1f9d57;background:rgba(31,157,87,.12);}
 .tdl-t{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;color:#2a1c0a;}
-.tdl-row:last-child .tdl-t{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;}
+.tdl-row:last-child .tdl-t{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;}
 .td-ladder{font-family:'Barlow Condensed',sans-serif;font-size:14px;line-height:1.4;color:#4a3a20;background:rgba(178,59,46,.06);border-left:3px solid #b23b2e;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:16px;}
-.td-sign{width:100%;background:linear-gradient(180deg,#e0a838,#c8801a);color:#160c00;border:none;font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1.5px;padding:13px;border-radius:7px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.3);}
+.td-sign{width:100%;background:linear-gradient(180deg,#e0a838,#c8801a);color:#160c00;border:none;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;padding:13px;border-radius:7px;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.3);}
 .td-skip{width:100%;background:none;border:none;color:#7a6a4a;font-family:'Barlow Condensed',sans-serif;font-size:15px;text-decoration:underline;cursor:pointer;padding:10px;margin-top:4px;}
 
 /* Score pop */
-.spp{position:fixed;font-family:'Bebas Neue',cursive;pointer-events:none;z-index:65;
+.spp{position:fixed;font-family:'Bebas Neue',sans-serif;pointer-events:none;z-index:65;
   animation:spu .9s ease-out forwards;letter-spacing:2px;}
 @keyframes spu{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-50px) scale(1.25);}}
 
@@ -1316,21 +1317,22 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 /* Footer conveyor */
 #footer{flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border2);padding:3px 6px 3px;z-index:10;}
 #conv-header{display:flex;align-items:center;justify-content:space-between;padding:0 2px 2px;}
+body.m-portrait #conv-header{flex-wrap:wrap;row-gap:6px;justify-content:center;} /* v3.5.145 on a narrow phone the no-wrap strip (chute/BREAK JAM/WATER/NC/SM/safety/FLAG/ROT) overflowed + crushed the dispatch line; wrap it instead of clipping */
 .conv-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.7px;color:var(--t2);text-transform:uppercase;font-weight:bold;}
 #rot-btn{background:var(--acc);border:1px solid var(--acc-bright);
-  color:#1c1206;font-family:'Bebas Neue',cursive;font-size:18px;font-weight:bold;
-  letter-spacing:2px;padding:5px 16px;border-radius:4px;cursor:pointer;}
-.bj-btn{background:var(--acc);border:1px solid var(--acc-bright);color:#1c1206;font-family:'Bebas Neue',cursive;font-size:17px;font-weight:bold;letter-spacing:1.5px;padding:5px 14px;border-radius:4px;cursor:pointer;}
+  color:#1c1206;font-family:'Bebas Neue',sans-serif;font-size:17px;font-weight:bold;
+  letter-spacing:1.5px;padding:5px 16px;border-radius:4px;cursor:pointer;} /* v3.5.145 17px/1.5px = one size for every strip action */
+.bj-btn{background:var(--acc);border:1px solid var(--acc-bright);color:#1c1206;font-family:'Bebas Neue',sans-serif;font-size:17px;font-weight:bold;letter-spacing:1.5px;padding:5px 14px;border-radius:4px;cursor:pointer;}
 .bj-btn.bj-warn{background:var(--warn);border-color:#e8a020;color:#1c1206;animation:bjpulse 1s ease-in-out infinite;}
 .bj-btn.bj-crit{background:var(--danger);border-color:#ff5a36;color:#fff;animation:bjblink .5s steps(2) infinite;}
 /* v3.5.73 WATER + THROW live in the bottom control strip now */
-.strip-act{font-family:'Bebas Neue',cursive;font-size:16px;font-weight:bold;letter-spacing:1.5px;padding:5px 13px;border-radius:4px;cursor:pointer;border:1px solid;white-space:nowrap;}
+.strip-act{font-family:'Bebas Neue',sans-serif;font-size:17px;font-weight:bold;letter-spacing:1.5px;padding:5px 13px;border-radius:4px;cursor:pointer;border:1px solid;white-space:nowrap;}
 .strip-act.sa-water{background:#123a4a;color:#bfe4ff;}
 .strip-act.sa-throw{background:#3a2410;color:#f3c98a;}
 .strip-act:hover{filter:brightness(1.14);}
 .strip-act:active{transform:scale(.95);}
 /* v3.5.141 BUTTON UNIFICATION — every action + console button wears the SAME outline box (uniform --btn-line border, radius, height). Fills stay semantic (water blue, break-jam amber, alerts red) but the OUTLINE is identical everywhere, per Goyim. */
-.console-btn,.strip-act,.bj-btn,#rot-btn{border:1.5px solid var(--btn-line);border-radius:5px;padding:6px 14px;min-height:34px;line-height:1;display:inline-flex;align-items:center;justify-content:center;}
+.console-btn,.strip-act,.bj-btn,#rot-btn{border:1.5px solid var(--btn-line);border-radius:6px;padding:6px 14px;min-height:34px;line-height:1;display:inline-flex;align-items:center;justify-content:center;} /* v3.5.145 radius 5->6px = the one shared button radius */
 .console-btn:hover,.strip-act:hover,.bj-btn:hover,#rot-btn:hover{border-color:var(--btn-line);filter:brightness(1.12);}
 .console-btn.on{border-color:var(--btn-line);}
 @keyframes bjpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
@@ -1341,7 +1343,7 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .chute-light.cl-crit{background:#c23a1a;box-shadow:0 0 12px #c23a1a;animation:bjblink .5s steps(2) infinite;}
 /* v3.4.12 NC/SMALLS pie-chart lights + wheel HUD */
 /* v3.5.112 NC/staging pill sized to match the strip buttons (was tiny 11px = "different game") */
-.stg-light{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 11px;border-radius:5px;background:rgba(0,0,0,.34);border:1px solid rgba(200,121,30,.42);font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#e8d6b0;user-select:none;}
+.stg-light{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 11px;min-height:34px;border-radius:6px;background:rgba(0,0,0,.34);border:1.5px solid var(--btn-line);font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#e8d6b0;user-select:none;} /* v3.5.145 pulled into the unified --btn-line outline system + strip height */
 .stg-light b{color:var(--acc-bright);font-weight:bold;letter-spacing:.5px;font-size:14px;}
 .stg-pie{width:20px;height:20px;border-radius:50%;background:conic-gradient(#1f9d57 0%, rgba(255,255,255,.13) 0);border:1px solid rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
 .stg-light.s-crit{border-color:#c23a1a;animation:bjblink .5s steps(2) infinite;}
@@ -1351,14 +1353,14 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 /* v3.5.113 MOBILE GAME-BREAKER FIX: at bottom:112 the staging fan (±162px) overlapped BOTH bottom-corner controls — the left d-pad/stick (blocked the DOWN button) and the right DROP/ROT. Raise the anchor above the control stack (d-pad tops at ~256px) so tiles fan in clear space; the wall stays tappable between them. */
 body.m-portrait .stg-wheel{bottom:288px;}
 .stg-tiles{position:absolute;left:0;top:0;}
-.stg-tile{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;width:58px;height:54px;border-radius:50% 50% 9px 9px/64% 64% 9px 9px;border:1px solid rgba(200,121,30,.5);background:rgba(24,16,9,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--t1);text-align:center;line-height:1.12;box-shadow:0 3px 14px rgba(0,0,0,.55);}
+.stg-tile{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;width:58px;height:54px;border-radius:50% 50% 9px 9px/64% 64% 9px 9px;border:1px solid rgba(200,121,30,.5);background:rgba(24,16,9,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t1);text-align:center;line-height:1.1;box-shadow:0 3px 14px rgba(0,0,0,.55);} /* v3.5.145 9px->11px: this is tapped mid-game */
 .stg-tile:hover{border-color:var(--acc-bright);}
 .stg-tile.sel{border-color:var(--teal-bright);box-shadow:0 0 0 2px var(--teal),0 3px 14px rgba(0,0,0,.55);background:rgba(16,34,30,.97);}
 .stg-tile .d{font-size:14px;font-weight:bold;color:var(--acc-bright);}
 /* v3.5.114 touch-friendly bag break: a tappable chip replaces the impossible-on-mobile double-click */
-.stg-brk{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'Bebas Neue',cursive;font-size:12px;letter-spacing:1px;color:#0d0805;background:var(--acc-bright);border:1px solid #7a4a12;border-radius:5px;padding:2px 9px;box-shadow:0 2px 7px rgba(0,0,0,.55);pointer-events:auto;cursor:pointer;z-index:2;}
+.stg-brk{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:#0d0805;background:var(--acc-bright);border:1px solid #7a4a12;border-radius:5px;padding:2px 9px;box-shadow:0 2px 7px rgba(0,0,0,.55);pointer-events:auto;cursor:pointer;z-index:2;}
 .stg-brk:active{background:#fff;}
-.stg-sep{cursor:pointer;padding:3px 10px;border-radius:4px;background:rgba(200,121,30,.16);border:1px solid var(--acc);font-family:'Bebas Neue',cursive;letter-spacing:1.5px;color:var(--acc-bright);font-size:13px;white-space:nowrap;}
+.stg-sep{cursor:pointer;padding:3px 10px;border-radius:6px;background:rgba(200,121,30,.16);border:1.5px solid var(--btn-line);font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;color:var(--acc-bright);font-size:13px;white-space:nowrap;}
 .stg-sep::after{content:' ✕';color:var(--t2);font-family:monospace;font-size:11px;}
 .stg-empty{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);white-space:nowrap;color:var(--t3);font-size:12px;background:rgba(20,14,9,.95);padding:6px 12px;border-radius:6px;pointer-events:auto;}
 
@@ -1378,19 +1380,19 @@ body.m-portrait .stg-wheel{bottom:288px;}
   display:flex;flex-direction:column;justify-content:center;overflow:hidden;}
 .brief-title{margin-bottom:clamp(4px,1vw,7px)!important;}
 #brief-std{display:flex;flex-direction:column;}
-.brief-title{font-family:'Bebas Neue',cursive;font-size:clamp(18px,3.6vw,23px);letter-spacing:2.5px;
+.brief-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3.6vw,23px);letter-spacing:2.5px;
   color:#2a1c0e;display:block;margin-bottom:1px;text-shadow:0 1px 0 rgba(255,255,255,.4);}
 .brief-sub{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,1.6vw,10px);letter-spacing:2px;
   color:#6a5a42;text-transform:uppercase;display:block;margin-bottom:clamp(7px,1.6vw,13px);}
 .brief-rule{display:flex;gap:8px;margin-bottom:clamp(2px,0.5vw,4px);align-items:baseline;} /* v3.5.84 tightened for 9 rules + why-lines */
-.brief-rule-num{font-family:'Bebas Neue',cursive;font-size:clamp(14px,2.7vw,17px);color:#b5651a;
+.brief-rule-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2.7vw,17px);color:#b5651a;
   line-height:1;flex-shrink:0;min-width:14px;}
 .brief-rule-txt{font-family:'Barlow Condensed',sans-serif;font-size:clamp(12px,2.3vw,14px);font-weight:600;
   letter-spacing:.3px;color:#2a1c0e;line-height:1.12;}
 .brief-rule-txt b{color:#a8511a;}
 .brief-why{display:block;font-weight:400;font-size:clamp(9.5px,1.8vw,11px);color:#6a5a42;line-height:1.08;margin-top:0;letter-spacing:.1px;} /* v3.5.84 the "why" detail line */
 #brief-cta-row{display:flex;align-items:center;justify-content:center;margin-top:16px;flex:none;}
-#brief-cta{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:4px;
+#brief-cta{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;
   background:linear-gradient(180deg,#c8791e,#9a5512);color:#fff;border:1px solid #e0a64e;border-radius:5px;
   padding:11px 26px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.45);}
 #brief-cta:hover{filter:brightness(1.1);}
@@ -1421,7 +1423,7 @@ body.m-portrait .stg-wheel{bottom:288px;}
 #cmt-overlay{
   position:absolute;left:50%;transform:translateX(-50%);
   z-index:45;pointer-events:none;
-  font-family:'Bebas Neue',cursive;font-size:clamp(14px,2.4vw,22px);
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2.4vw,22px);
   letter-spacing:3px;color:#f5f0e8;text-align:center;
   background:rgba(28,20,16,.86);
   border:1px solid rgba(200,121,30,.45);border-radius:4px;
@@ -1440,10 +1442,10 @@ body.m-portrait .stg-wheel{bottom:288px;}
 #trainer-wrap{position:absolute;top:6px;left:50%;transform:translateX(-50%);
   z-index:55;display:none;flex-direction:column;align-items:center;gap:3px;}
 #trainer-wrap.vis{display:flex;}
-#trainer-counter{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;
+#trainer-counter{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;
   color:#c040c0;background:rgba(8,2,8,.92);padding:3px 12px;border-radius:3px;
   border:1px solid rgba(192,64,192,.4);}
-#trainer-banner{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;
+#trainer-banner{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;
   color:#fff;background:rgba(192,64,192,.18);padding:4px 16px;border-radius:3px;
   border:1px solid rgba(192,64,192,.5);opacity:0;transition:opacity .2s;}
 #trainer-banner.vis{opacity:1;}
@@ -1457,7 +1459,7 @@ body.m-portrait .stg-wheel{bottom:288px;}
   border-radius:12px;padding:9px 24px;
   box-shadow:0 8px 30px rgba(0,0,0,.55),0 0 36px rgba(40,232,112,.28);
   animation:lockinPop .34s cubic-bezier(.22,1,.36,1) forwards;}
-#tf-word{font-family:'Bebas Neue',cursive;font-size:clamp(32px,5vw,50px);
+#tf-word{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,50px);
   letter-spacing:4px;color:#3dff86;line-height:1;text-shadow:0 2px 5px rgba(0,0,0,.9);}
 #tf-sub{font-family:'Share Tech Mono',monospace;font-size:11px;
   letter-spacing:2px;color:#fff;text-align:center;opacity:.92;}
@@ -1477,8 +1479,8 @@ body.m-portrait .stg-wheel{bottom:288px;}
   background:linear-gradient(90deg,transparent,var(--acc) 30%,var(--acc) 70%,transparent);opacity:.55;border-radius:10px 10px 0 0;}
 #set-head{display:flex;align-items:center;justify-content:space-between;
   padding:16px 20px 12px;border-bottom:1px solid var(--border2);position:sticky;top:0;background:var(--bg2);z-index:2;}
-#set-title{font-family:'Bebas Neue',cursive;font-size:30px;letter-spacing:6px;color:var(--acc);line-height:1;}
-#set-close{font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;
+#set-title{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:6px;color:var(--acc);line-height:1;}
+#set-close{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;
   background:transparent;border:1px solid var(--border2);border-radius:6px;
   color:var(--t2);padding:6px 14px;cursor:pointer;}
 #set-close:hover{border-color:var(--acc);color:var(--acc);}
@@ -1490,8 +1492,8 @@ body.m-portrait .stg-wheel{bottom:288px;}
 .set-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:12px;}
 .set-row:last-child{margin-bottom:0;}
 .set-lbl{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--t1);line-height:1.15;}
-.set-lbl small{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;
-  font-weight:400;letter-spacing:.4px;color:var(--t3);margin-top:3px;text-transform:none;}
+.set-lbl small{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;
+  font-weight:400;letter-spacing:.4px;color:var(--t2);margin-top:3px;text-transform:none;} /* v3.5.145 was 10px/--t3 (sub-AA) */
 .set-seg{display:flex;border:1px solid var(--border2);border-radius:6px;overflow:hidden;flex-shrink:0;}
 .set-seg-btn{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;letter-spacing:1px;
   padding:8px 16px;cursor:pointer;background:transparent;color:var(--t2);border:none;transition:background .15s,color .15s;}
@@ -1542,7 +1544,7 @@ body[data-cb="trit"]{
 #menu-demo-cap{
   position:absolute;bottom:40px;left:50%;transform:translateX(-50%);
   z-index:5;display:none;pointer-events:none;max-width:min(560px,90vw);
-  font-family:'Bebas Neue',cursive;font-size:clamp(15px,2.5vw,23px);letter-spacing:3px;
+  font-family:'Bebas Neue',sans-serif;font-size:clamp(15px,2.5vw,23px);letter-spacing:3px;
   color:var(--acc-bright);text-align:center;
   background:rgba(13,9,6,.82);border:1px solid rgba(200,121,30,.4);border-radius:6px;
   padding:7px 20px;text-shadow:0 0 18px rgba(200,121,30,.35);
@@ -1567,7 +1569,7 @@ body[data-cb="trit"]{
 #footer #msg-feed{flex:1;flex-direction:row;align-items:center;gap:0;min-height:34px;height:auto;overflow:hidden;background:rgba(0,0,0,.22);border:1px solid var(--btn-line);border-radius:5px;padding:5px 12px;}
 /* v3.5.18 pro dispatch line: [SOURCE badge] + outlined body */
 #footer .msg-line{display:flex;align-items:center;gap:9px;line-height:1.2;padding:3px 8px;flex:1;min-width:0;background:rgba(0,0,0,.36);border-radius:0 4px 4px 0;border-left-width:4px;}
-#footer .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.5);border:1px solid rgba(224,150,46,.4);color:#f0d9a8;}/* v3.5.34 brighter base source tag (untyped COWORKER/MANAGER pop more) */
+#footer .msg-src{flex:none;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:3px;background:rgba(0,0,0,.5);border:1px solid rgba(224,150,46,.4);color:#f0d9a8;}/* v3.5.34 brighter base source tag; v3.5.145 10px->11px (read mid-game) */
 #footer .msg-body{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;letter-spacing:.3px;color:#fff;-webkit-text-stroke:.6px rgba(8,5,2,.9);paint-order:stroke fill;text-shadow:0 1px 2px rgba(0,0,0,.7);}
 #footer .msg-body b{color:#ffd98a;}
 #footer .msg-line.msg-ok .msg-src{color:#aef0c6;border-color:rgba(31,157,87,.55);background:rgba(14,74,42,.5);}
@@ -1603,7 +1605,7 @@ body[data-cb="trit"]{
 .nu-stage b{color:var(--t1);}
 .perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .perf-cell{background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:3px;padding:8px 5px;text-align:center;}
-.perf-v{font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:1px;color:var(--acc);display:block;line-height:1;}
+.perf-v{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;color:var(--acc);display:block;line-height:1;}
 .perf-l{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;color:var(--t2);font-weight:bold;display:block;margin-top:3px;}
 .safety-row{display:flex;align-items:center;gap:10px;}
 #safety-dot{width:16px;height:16px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok);flex:none;transition:background .3s,box-shadow .3s;}
@@ -1687,7 +1689,7 @@ body[data-cb="trit"]{
 .lb-at{background:linear-gradient(180deg,#efe8d7,#e2d8bf);border:1px solid #cebf9c;border-radius:8px;padding:9px 10px;box-shadow:inset 3px 0 0 #e0a838;}
 .lb-at.shame{box-shadow:inset 3px 0 0 #b3401f;}
 .lb-at-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:#8a7a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.lb-at-val{font-family:'Bebas Neue',cursive;font-size:24px;line-height:1;color:#2a1a08;margin:5px 0 2px;font-variant-numeric:tabular-nums;}
+.lb-at-val{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;color:#2a1a08;margin:5px 0 2px;font-variant-numeric:tabular-nums;}
 .lb-at.shame .lb-at-val{color:#b3401f;}
 .lb-at-nm{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;color:#5c4a30;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 /* v3.5.111 2x2 grid, high-contrast (no more gray-on-gray) */
@@ -1891,7 +1893,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.144 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.145 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2004,7 +2006,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.144 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.145 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2157,7 +2159,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.144 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.145 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2346,7 +2348,7 @@ body[data-cb="trit"]{
             <button class="btn-p" onclick="dailyRestart()">↺ RESTART DAILY — FRESH ATTEMPT</button>
           </div>
         </div>
-        <button id="maxpack-finish" onclick="nextTrailer()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
+        <button id="maxpack-finish" onclick="nextTrailer()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
         <!-- v3.5.73 WATER + THROW moved into the bottom control strip (see #conv-header) -->
         <!-- v3.5.7: floating in-game coach tip removed — coach is pause-only now -->
       </div>
@@ -2600,7 +2602,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.144
+// LOCK IN v3.5.145
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3051,7 +3053,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.144'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.145'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -6254,10 +6256,12 @@ function drawBackWall(c){
   }
   // 92% line
   var tL=gridToCanvas(0,GH*(1-WIN_H)),tR=gridToCanvas(GW,GH*(1-WIN_H));
-  c.save();c.strokeStyle='rgba(19,133,120,.32)';c.lineWidth=1;c.setLineDash([5,4]);
+  // v3.5.145 make the SEAL LINE actually visible — it's the primary "where's the finish?" signal; was a near-invisible 1px/.32 line with 7px text
+  c.save();c.strokeStyle='rgba(45,192,173,.78)';c.lineWidth=2;c.setLineDash([8,5]);
   c.beginPath();c.moveTo(tL.x,tL.y);c.lineTo(tR.x,tR.y);c.stroke();c.setLineDash([]);
-  c.fillStyle='rgba(19,133,120,.45)';c.font='bold 7px Share Tech Mono';c.textAlign='left';c.textBaseline='bottom';
-  c.fillText('92% — KEEP LOADING →',tL.x+3,tL.y-2);c.restore();
+  c.font='bold 11px Share Tech Mono';c.textAlign='left';c.textBaseline='bottom';
+  c.lineWidth=3;c.strokeStyle='rgba(4,10,8,.9)';c.strokeText('SEAL LINE — FILL TO HERE',tL.x+4,tL.y-3);
+  c.fillStyle='#5fe6d2';c.fillText('SEAL LINE — FILL TO HERE',tL.x+4,tL.y-3);c.restore();
 }
 
 function drawWallBoxes(c){
@@ -9381,7 +9385,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.144</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.145</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
