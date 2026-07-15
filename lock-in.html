@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.143
+   LOCK IN v3.5.144
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.144 - DAILY-SUBMIT FIXED + STYLED, CONSOLE-BTN CONTRAST, CLOCK STARTS ON FIRST PIECE. (1) DAILY SUBMIT "doesn't work from it": dailySubmit did finalize -> dailyFinish -> returnToMenu, but dailyFinish populates the daily-result panel that lives ON THE END SCREEN — returnToMenu tore it down instantly, so you never saw your posted rank/board. Now SUBMIT routes through endGame(false): finalizes the wall, posts the session + today's board, and SHOWS the end screen — DAILY DONE + your rank + today's board + SHARE, with MAIN MENU / TRY AGAIN. (2) DAILY SUBMIT looked like a "Microsoft 3.1 text box": #next-popup-btn-daily had a unique id with ZERO css so it rendered as a raw OS button. Every completion-popup button is now a styled card — SUBMIT & NEXT TRAILER green-primary, the rest amber, full-width, legible. (3) CONSOLE BUTTONS (ADMIN/OPERATIONS/LINEHAUL) were muddy — muted --t2 fill collapsed against the dark outline + dark panel. Fill is now bright cream on a darker panel so the inside text and the outline actually contrast. (4) THE CLOCK NOW STARTS ON THE FIRST PIECE, every mode (trailer-load / practice / gauntlet / daily / new wall). startT is null from mode-start until the first placement sets it, so elapsed + PPH never count the time before you place anything — vital on mobile where the opening piece is slower. AFK/idle protection still runs (dt-based, independent of startT). NEXT: cosmetic sweep 2 (overlay type rhythm), homepage flesh-out.
    CHANGE LOG v3.5.143 - LEGIBILITY SWEEP + PAUSE REORDER + COACH FIX. (1) THE PAUSE CLIPBOARD WAS GRAY-ON-GRAY SLOP. Every front-facing string is now outlined for contrast: light-clipboard surfaces (pause / briefing / write-up) get a light HALO on their dark text so it pops off the busy clipboard texture, the muted tans are darkened (sub/coach/hint), and the buttons are solidified (opaque bg + bold) so their labels are legible; the remaining DARK-surface front-facing text (the banner over the wall, the next-wall popup, the end-screen verdict) joins the existing hard dark-outline rule from the v3.5.140 CVD pass. The MAIN MENU is intentionally left un-outlined (per Vince). (2) PAUSE MENU REORDER: RESUME · SETTINGS · RESTART (now directly under settings) · CLOCK OUT · ACCOUNT & DATA · MAIN MENU (account + main-menu moved below clock-out, so the leave-the-game actions sit at the bottom). (3) COACH COUNT FIX: the coach claimed a broken smalls bag yields "five gap-fillers" — it's SIX (BAG_SPILL = three 2x1 + three 1x1 = 6 pieces / 9 cubes). All three coach/commentary lines corrected to six, and they now name the shape (three 2x1s + three singles). NEXT: full cosmetic sweep 2 (spacing/type rhythm across overlays), homepage flesh-out.
    CHANGE LOG v3.5.142 - CEILING SMALLS-BAG BONUS + DISPATCH BESIDE LINEHAUL + HOMEPAGE DE-ZENGINED. (1) ROOF BAGS: a 3x3 smalls bag packed against the trailer ceiling (top edge on grid row 0) now pays a HUGE +600-cube bonus — dead air up top is wasted space, and stuffing bags against the roof reclaims it. Once per bag (a lifted-and-replaced bag can't re-earn it); a full ceiling course is 5 bags (15 of the 17-wide grid). Scored statelessly in calcScore (scan row 0 for distinct bag boxes) so it always matches the wall on screen — lift a bag off the roof and its bonus is gone; a fresh wall resets to 0. First one teaches the mechanic; each roof bag flashes ROOF BAG n/5 (n=5 = FULL CEILING COURSE). (2) DISPATCH LAYOUT: the live linehaul message now sits BESIDE the ADMIN/OPERATIONS/LINEHAUL button row (to its right, filling the strip) instead of on a second line below it — space maximization, per the mockup. Boxed with the uniform --btn-line outline. (3) HOMEPAGE + LEGAL PAGES: culled the Zengine branding slop — removed the ZG badge (index/privacy/terms), the schema.org Organization is now LOCK IN / trailer-load.com (was Zengine / zengine.site), the "provisioned by Zengine" line is reworded, and every footer reads www.trailer-load.com. (Legal operating-entity naming in the Terms/Privacy body left intact — that's who runs the service, flagged for Vince's call.) NEXT: homepage flesh-out, cosmetic sweep 2.
    CHANGE LOG v3.5.141 - TUTORIAL REBUILT FULLY DETERMINISTIC + BUTTON UNIFICATION + DISPATCH REORDER. (1) TRAINING: kremsicle's jailbreaker found a "poltergeist piece" (one inset in another) and floating from step 5 on — the tutorial accepted any tapped placement, so it diverged from a valid wall. Now EVERY place-beat force-drops its piece at an EXACT scripted target + rotation the instant you tap the wall, so the build is byte-identical every run. The script is rebuilt to a real bottom-up floor: 3 NC ANCHORS FIRST (washer/fridge/range across the base — "first piece is the anchor"), then shelf cartons (place/rotate/arrows/heavy/lock-in), then the upper row (tire/stagger/hazmat/fragile/smalls), then a STAGED COLLAPSE, and BREAK JAM introduced AFTER the collapse — then water/flag/seal. Fails are OFF in training (tickChute + checkPPHFail gated on TUTORIAL_MODE) so it can never send you home or log a garbage session. Sign-off slop fixed (no "same as day one at a real hub" contradiction, no zero-bearing sentence). Verified end-to-end: all 18 beats fire in order, ZERO floating pieces, collapse->breakjam->seal, sign-off checks 18/18 with LOCK IN last. (2) BUTTONS: every action + console button (ADMIN/OPS/LINEHAUL, WATER, FLAG, BREAK JAM, ROT) now wears the SAME outline box — uniform --btn-line border, radius, and min-height — while fills stay semantic (water keeps blue, alerts keep red). (3) DISPATCH: the console row is reordered ADMIN -> OPERATIONS -> LINEHAUL (left to right) with the live dispatch message in a boxed text field BELOW the row, per Goyim. NEXT: homepage flesh-out, cosmetic sweep 2.
@@ -554,11 +555,13 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .data-tab:hover{opacity:1;border-color:var(--acc);color:var(--acc);}
 /* ── v3.5.37 BOTTOM CONSOLE — OPERATIONS / LINEHAUL / ADMIN collapsible drawers ── */
 #ops-console{display:flex;align-items:center;gap:6px;flex:none;}
+/* v3.5.144 CONTRAST FIX — the muted --t2 inside text collapsed against the dark outline + dark bg (Vince: "outline and inside DO NOT contrast enough"). Bright cream fill now pops off both the outline and the panel. */
 .console-btn{font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--t2);background:var(--bg3);border:1px solid var(--border2);
+  text-transform:uppercase;color:#f6e6c4;background:#241a10;border:1px solid var(--border2);
   border-radius:5px;padding:5px 11px;cursor:pointer;white-space:nowrap;}
-.console-btn:hover{border-color:var(--acc);color:var(--acc);}
-.console-btn.on{background:var(--acc);color:#1a1209;border-color:var(--acc);}
+.console-btn:hover{border-color:var(--acc);color:#ffdf9a;}
+.console-btn.on{background:var(--acc);color:#160c02;border-color:var(--acc);}
+.console-btn .ci{opacity:1;}
 .console-btn .ci{margin-right:5px;opacity:.85;}
 #console-drawer{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:min(1120px,100%);
   max-height:52vh;background:var(--bg2);border:1px solid var(--border2);border-bottom:none;
@@ -1061,6 +1064,13 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   border:none;font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1px;
   padding:6px 8px;border-radius:4px;pointer-events:auto;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.3);line-height:1.05;}
 #next-popup-sub{font-family:'Share Tech Mono',monospace;font-size:14px;color:rgba(120,224,168,.95);}
+/* v3.5.144 DAILY SUBMIT was a raw OS button ("Microsoft 3.1 text box"): #next-popup-btn-daily had a unique id with ZERO css. Unify every completion-popup button into legible styled cards — SUBMIT (and NEXT TRAILER) green-primary, the rest amber-secondary. */
+#next-popup .btn-p,#next-popup-btn,#next-popup-btn-daily{width:100%;font-family:'Bebas Neue',cursive;letter-spacing:1.4px;font-size:16px;line-height:1.12;
+  padding:11px 12px;border:none;border-radius:6px;cursor:pointer;text-align:center;white-space:normal;box-shadow:0 2px 10px rgba(0,0,0,.35);}
+#next-popup-btn,#next-popup-btn-daily{background:linear-gradient(180deg,#50d890,#28b870);color:#04120a;box-shadow:0 0 18px rgba(40,184,112,.4);font-weight:bold;}
+#next-popup .btn-p{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#140a02;}
+#next-popup .btn-p:hover,#next-popup-btn:hover,#next-popup-btn-daily:hover{filter:brightness(1.08);}
+#next-popup .btn-p:active,#next-popup-btn:active,#next-popup-btn-daily:active{transform:translateY(1px);}
 /* v3.5.98 FINISH TRAILER emphasis — pulses when a partial seal makes dispatch available (no interrupting menu) */
 #maxpack-finish.pulse{animation:mpfpulse 1.15s ease-in-out infinite;}
 @keyframes mpfpulse{0%,100%{box-shadow:0 0 14px rgba(40,184,112,.45);transform:scale(1);}50%{box-shadow:0 0 26px 4px rgba(80,216,144,.85);transform:scale(1.06);}}
@@ -1881,7 +1891,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.143 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.144 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -1994,7 +2004,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.143 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.144 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2147,7 +2157,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.143 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.144 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2590,7 +2600,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.143
+// LOCK IN v3.5.144
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3041,7 +3051,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.143'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.144'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4286,6 +4296,7 @@ function tryNest(src,idx,tcell){
   // v3.5.9: a nest IS a placed small — count it toward throughput + smalls totals. Was logged ONLY as a "nest",
   // so the post-sort report undercounted Pieces, PPH, Avg pieces/wall, and Smalls-utility for every nested small.
   placed++;
+  if(!startT)startT=Date.now(); // v3.5.144 clock starts on first piece (a nest counts as a placement too)
   S.totalPieces=(S.totalPieces||0)+1;
   if(sb.isBag||sb.type==='small')S.bagsPlaced=(S.bagsPlaced||0)+1; // v3.5.50 only count smalls/bags toward smalls-utility, not real boxes
   else S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 a nested REAL box is freight; nested smalls/bags never count toward pph
@@ -4618,6 +4629,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   else if(source==='bag'){G.bagSlots[sourceIdx]=null;buildBagPanel();}
 
   placed++;
+  if(!startT)startT=Date.now(); // v3.5.144 THE CLOCK STARTS ON THE FIRST PIECE — elapsed / PPH never count the time before you place anything (fair on mobile, where the opening piece is slower). startT is null from mode-start until here.
   if(typeof gcurFlash==='function')gcurFlash('drop',420); // v3.5.20 drop-glove on a successful place
   S.totalPieces=(S.totalPieces||0)+1; if(source==='bag')S.bagsPlaced=(S.bagsPlaced||0)+1; // v2.1.7
   if(!(box.type==='small'||box.isBag)&&!((box._gen||0)>0))S.boxPieces=(S.boxPieces||0)+1; // v3.5.90 PPH = REAL freight only; v3.5.99 first placement ONLY — a re-placed (churned) box earns ZERO pph, so the autoclicker's place-lift-place spam gains nothing
@@ -4959,7 +4971,7 @@ function sendToPractice(){
     S.warnings=[]; // new wall, warnings reset (incidents/record persist)
     G.grid=makeGrid();placed=0;G.score=0;G.cog=.5;G.support=1;G.integrity=100;G._finalized=false;G._practiceSent=false;
     G.drinks=0;G.throws=0;G._hyd75=false;G._hyd100=false;G.tetrisTotal=0;G.tetrisRows={};G.tetrisPaid={};G.bulkheadRows={};G.bulkheadCount=0;
-    G.practice=true;startT=Date.now();
+    G.practice=true;startT=null; // v3.5.144 clock deferred to first piece
     if(typeof wallBaseline==='function')wallBaseline(); // v3.5.81 per-wall stat baseline (practice trailer)
     selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;
     if(typeof refillBelt==='function')refillBelt();
@@ -8696,7 +8708,7 @@ function startTutorial(){
      bagSlots:Array(MAX_BAG_SLOTS).fill(null),score:0,cog:.5,support:1,integrity:100,tetrisTotal:0,tetrisRows:{},
      bulkheadRows:{},bulkheadCount:0,brickAwarded:false,crunchCount:0,hazViolations:0,recoveryCount:0,ncPlaced:0,
      beltSinceNC:0,beltSinceBag:0,practice:true,_finalized:false};
-  placed=0;startT=Date.now();gOver=false;paused=false;
+  placed=0;startT=null;gOver=false;paused=false; // v3.5.144 clock deferred to first piece
   selBeltIdx=null;selNC=-1;selBag=-1;hCell=null;
   TUT={step:0,learned:{},misses:0};
   document.getElementById('stats-panel').style.visibility='';
@@ -8879,7 +8891,7 @@ function nextTrailer(){
     G.brickAwarded=false;G.crunchCount=0;G.hazViolations=0;G.recoveryCount=0;G.ncPlaced=0;G.drinks=0;G.throws=0;
     G.preselectDepth=0;G.preselectWarned=false;G.seamWarned=false;G.segWarned=false;
     G.beltSinceNC=0;G.beltSinceBag=0;
-    placed=0;startT=Date.now();
+    placed=0;startT=null; // v3.5.144 clock deferred to first piece of the new wall
     if(typeof wallBaseline==='function')wallBaseline(); // v3.5.81 per-wall stat baseline (shift advance)
     selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;hCell=null;
     lgDangerSec=0;pphLowSec=0;
@@ -9369,7 +9381,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.143</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.144</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10661,7 +10673,7 @@ function initTruck(){
   refillBelt();
   // Seed a couple of NCs and bags so the panels aren't empty from the start
   if(gameMode==='daily'){seedDailyTray();}else if(gameMode!=='gauntlet'){for(var i=0;i<2;i++)spawnNC();for(var i=0;i<2;i++)spawnBag();} // v2.7.3 daily = deterministic 6 NC + 4 bag loadout
-  placed=0;startT=Date.now();
+  placed=0;startT=null; // v3.5.144 clock deferred to first piece
   if(typeof wallBaseline==='function')wallBaseline(); // v3.5.81 per-wall stat baseline
   selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;hCell=null;
   lgDangerSec=0;pphLowSec=0;gOver=false;
@@ -10693,13 +10705,13 @@ function showDailyComplete(){
   _elapsedFrozen=(typeof startT!=='undefined'&&startT)?(Date.now()-startT)/1000:0; // freeze PPH while you decide
 }
 function dailySubmit(){
+  // v3.5.144 FIX: was finalize+dailyFinish+returnToMenu — but dailyFinish populates the daily-result panel that lives
+  // ON THE END SCREEN, then returnToMenu tore it down instantly, so the player never saw their rank/board (Vince:
+  // "the daily score submit doesn't work from it"). Now route through endGame(false): it finalizes the wall, posts the
+  // session (zEndSession) + today's board (dailyFinish for daily), and SHOWS the end screen — DAILY DONE + your rank +
+  // today's board + SHARE, with MAIN MENU / TRY AGAIN right there. gOver is false here (submit-and-improve), so endGame runs.
   var np=document.getElementById('next-popup');if(np)np.classList.remove('vis');
-  gOver=true;if(animF){cancelAnimationFrame(animF);animF=null;}
-  try{finalizeWall();}catch(e){}
-  if(typeof dailyFinish==='function')dailyFinish();   // posts to today's daily board
-  if(typeof zEndSession==='function')zEndSession();    // posts the session -> the one record
-  if(typeof showBanner==='function')showBanner('★ SUBMITTED TO THE BOARD.','ok',1600);
-  returnToMenu();
+  if(typeof endGame==='function')endGame('WALL SUBMITTED TO THE BOARD',false);
 }
 function dailyRestart(){
   var np=document.getElementById('next-popup');if(np)np.classList.remove('vis');
@@ -10709,7 +10721,7 @@ function dailyRestart(){
 }
 function restartGame(){
   gOver=false; // v2.10.11 ensure TRY AGAIN clears the fail state
-  placed=0;startT=Date.now(); // v3.5.134 a restart is a FRESH session clock — resets elapsed/PPH AND the AFK/rate timers (startT change is the reset trigger). Was carrying over the prior run's clock (part of the false AFK kick).
+  placed=0;startT=null; // v3.5.144 restart = FRESH session; clock deferred to the first piece (startT going null->set on placement still resets the AFK/rate timers via the _afkStartT!==startT check). Was v3.5.134 Date.now().
   if(gameMode!=='level')BELT_PIECE_COUNT=BELT_DEFAULT; // v3.5.100 CHUTE BUG FIX: level's initMechanic/clearMechanic slam the global to 6 and never restore it, so a 6-piece chute leaked into every mode after Tour (or the menu demo). Standard modes now restore the default 10 on start; level sets its own after.
   document.getElementById('ov-end').classList.remove('vis');
   _killStoppage(); // v3.5.121 kremsicle: reset during a WORK STOPPAGE left the frozen overlay stuck (the level tick that clears it stopped running). Kill it on every restart.
