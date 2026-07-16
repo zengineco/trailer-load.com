@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.146
+   LOCK IN v3.5.147
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.147 - PLAYABILITY PASS 2 (game-feel + onboarding): FLOW STREAK + ANCHORED +N SCORE TICK + NESTING TEACH + FIRST-RUN FUNNEL. (1) FLOW STREAK — stacking games get addictive on the hot streak, and clean placements paid only flat per-event bonuses before. Now consecutive clean placements (no crunch, no real collapse) build a FLOW streak: from the 3rd on it pays an escalating bonus (+25, +50, +75 ...) accumulated into calcScore, with a "🔥 FLOW ×N" pip top-left of the wall that pulses on every 5th. A crunch or a real 3+-piece collapse BREAKS it (a 1-2pc slip does not — slips are still forgiving) with a shake + "FLOW BROKEN" nudge. Resets each wall (wallBaseline). (2) ANCHORED +N SCORE TICK — v3.5.5 correctly stopped floaters OVER the wall, but that killed the visceral "+250" hit entirely; the score just silently changed. A "+N" now pops on the SCORE cell itself (never over the wall, per the rule) on every scoring placement. (3) NESTING TEACH — the one mechanic the tutorial skips. The first time a flat tire is on the wall AND a bag is in staging, a one-shot banner surfaces the veteran move (drop a bag on a tire → smalls nest in the hollow for bonus cubes). Mirrors the roof-bag teach pattern. (4) FIRST-RUN FUNNEL — a brand-new player landed on the flagship (full collapse/hazmat/tires) while the 18-beat tutorial sat as an opt-in card. On a first-ever visit (localStorage 'liPlayed') the TRAINING card now pulses green with a "NEW HERE? START HERE →" tag; cleared the moment any mode starts. Verified: flow 1→2→3(+25)→4(+75) with the pip, break resets to 0; +N tick fires on the score cell; nesting condition fires on tire+bag; funnel tags on first run and clears after play. No console errors. NEXT: combo-multiplier variant, end-screen trim, share-on-flagship, daily history strip; then homepage.
    CHANGE LOG v3.5.146 - PLAYABILITY PASS 1 (the top 3 from the polish review): DAILY STREAK + SEAL-READINESS METER + PERSONAL-BEST CELEBRATION. (1) DAILY STREAK — the biggest retention miss (there was zero streak tracking, and DAILY is the classroom/brain-exercise hook). Local per-device, idempotent per UTC day: play the daily and it counts once; consecutive days increment, a skipped day resets to 1, your BEST is kept. Shows as a 🔥 N-DAY STREAK badge on the DAILY menu card + a line on the daily result panel ("come back tomorrow to keep it alive" on day 1, "YOUR BEST!" on a record). liStreakBump fires from dailyFinish. (2) SEAL-READINESS METER — the #1 "why won't it seal?" confusion: the win gate is TWO hidden conditions (height>=92% AND density>=35%), and a tall-but-loose wall just silently refused to seal. New always-on meter at the top of the wall shows both as bars that fill to GREEN at their threshold, with a live caption: "FILL BOTH BARS TO SEAL" -> "TALL BUT LOOSE — PACK TIGHTER" (height full, pack short) -> "✓ READY — SEALING". Driven from updateHUD off the same wallH()/countFilled() the gate uses; hidden in review/menu/tutorial/max-pack. (3) PERSONAL BEST — only DAILY celebrated a best before; the flagship dumped 40 tiles with no "you beat your record" moment. Now a gold "🏆 NEW PERSONAL BEST · N CUBES" ribbon fires on the end screen (endGameShift + the generic end path) when you top your local per-mode best; daily still uses its world rank instead. Verified: streak increments/resets/idempotent correctly + badge renders; PB ribbon shows on a beat and hides on a lower score; seal meter shows on first piece, flags tall-but-loose, greens at threshold. NEXT: the rest of the polish list (nesting teach, anchored +N score tick, combo/flow meter, first-run->training funnel, end-screen trim) + homepage.
    CHANGE LOG v3.5.145 - COSMETIC SWEEP 2 (type rhythm + button/legibility unification across every overlay + the strip). Audit-driven. (1) BUTTON RADIUS was 6 different values across surfaces (3/4/5/7/8px) — unified to 6px (.btn-p, .pmb, .end-act, .data-save/.data-cancel, .console-btn). (2) WHITE-ON-AMBER (~2:1) primary buttons .data-save + .auth-tab.active recolored to the dark-on-amber convention (#1c1206) used everywhere else. (3) .btn-p was the loosest button in the UI (40px side-pad / 5px tracking) — tightened to the shared 12px 24px / 2px rhythm. (4) MUTED SUB-AA TEXT raised --t3->--t2: account/data field labels (read while typing), settings helper text; .data-fld span lost its opacity:.7. (5) STRIP TYPOGRAPHY: ROT/FLAG/WATER/BREAK JAM settled on one size (17px/1.5px, was 18/17/16 mixed); the NC/SM staging pills + the ✕ separator were pulled into the v3.5.141 unified --btn-line outline + 34px strip height (they were the last 1px translucent-amber outliers). (6) STAGING TILE text 9px->11px (it's tapped mid-game) and the dispatch SOURCE badge 10px->11px. (7) SCOREBOARD label color was a hardcoded #c8c0b0 (~1.2:1 on the light theme) -> theme-aware var(--t2). (8) MOBILE: the mobile console-button compaction was being overridden by the later unified rule (media queries add no specificity) — re-scoped to #ops-console .console-btn so it wins again; and the no-wrap control strip that overflowed/crushed the dispatch line on a narrow phone now flex-wraps. (9) end-act primary DESCRIPTION was muted --t2 on amber -> darkened. (10) 'Bebas Neue' fallback standardized cursive->sans-serif in all 55 spots (a font-load failure now degrades to a condensed sans everywhere, not half-script/half-sans). (11) PLAYABILITY (legibility): the SEAL LINE (92% target) was a near-invisible 1px/.32 dashed line with 7px text — now a bright 2px dashed teal line with an outlined 11px "SEAL LINE — FILL TO HERE" label, so new players can actually see the finish. NEXT: homepage flesh-out; the larger playability items (daily streak, seal-readiness meter, personal-best celebration, first-run->training funnel) are proposed separately for Vince to pick.
    CHANGE LOG v3.5.144 - DAILY-SUBMIT FIXED + STYLED, CONSOLE-BTN CONTRAST, CLOCK STARTS ON FIRST PIECE. (1) DAILY SUBMIT "doesn't work from it": dailySubmit did finalize -> dailyFinish -> returnToMenu, but dailyFinish populates the daily-result panel that lives ON THE END SCREEN — returnToMenu tore it down instantly, so you never saw your posted rank/board. Now SUBMIT routes through endGame(false): finalizes the wall, posts the session + today's board, and SHOWS the end screen — DAILY DONE + your rank + today's board + SHARE, with MAIN MENU / TRY AGAIN. (2) DAILY SUBMIT looked like a "Microsoft 3.1 text box": #next-popup-btn-daily had a unique id with ZERO css so it rendered as a raw OS button. Every completion-popup button is now a styled card — SUBMIT & NEXT TRAILER green-primary, the rest amber, full-width, legible. (3) CONSOLE BUTTONS (ADMIN/OPERATIONS/LINEHAUL) were muddy — muted --t2 fill collapsed against the dark outline + dark panel. Fill is now bright cream on a darker panel so the inside text and the outline actually contrast. (4) THE CLOCK NOW STARTS ON THE FIRST PIECE, every mode (trailer-load / practice / gauntlet / daily / new wall). startT is null from mode-start until the first placement sets it, so elapsed + PPH never count the time before you place anything — vital on mobile where the opening piece is slower. AFK/idle protection still runs (dt-based, independent of startT). NEXT: cosmetic sweep 2 (overlay type rhythm), homepage flesh-out.
@@ -1090,6 +1091,21 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 @keyframes pbpop{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
 /* v3.5.146 DAILY streak badge on the menu card */
 .sm-streak{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;letter-spacing:.5px;color:#ffb84a;background:rgba(224,120,30,.16);border:1px solid rgba(224,150,46,.5);border-radius:20px;padding:2px 10px;margin-top:6px;text-shadow:0 1px 2px rgba(0,0,0,.5);}
+/* v3.5.147 anchored +N score tick (on the SCORE cell — never over the wall, per the v3.5.5 rule) */
+.score-pop{position:absolute;left:50%;top:-2px;transform:translateX(-50%);pointer-events:none;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:#5fe6a0;text-shadow:0 1px 3px #000,0 0 8px rgba(63,208,127,.6);opacity:0;white-space:nowrap;z-index:5;}
+.score-pop.go{animation:scorePop .8s ease-out;}
+@keyframes scorePop{0%{opacity:0;transform:translate(-50%,4px) scale(.8);}18%{opacity:1;transform:translate(-50%,-10px) scale(1.1);}100%{opacity:0;transform:translate(-50%,-30px) scale(1);}}
+/* v3.5.147 FLOW streak pip */
+#flow-pip{position:absolute;top:8px;left:8px;z-index:26;display:none;pointer-events:none;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1.5px;color:#ffd98a;background:linear-gradient(180deg,rgba(60,30,8,.92),rgba(40,20,6,.92));border:1.5px solid var(--acc);border-radius:8px;padding:5px 12px;box-shadow:0 3px 12px rgba(0,0,0,.5),0 0 14px rgba(224,150,46,.35);text-shadow:0 1px 2px #000;}
+#flow-pip b{color:#fff;font-size:19px;}
+#flow-pip.milestone{animation:flowMile .5s ease;}
+@keyframes flowMile{0%{transform:scale(1);}40%{transform:scale(1.25);box-shadow:0 0 22px 4px rgba(255,215,120,.85);}100%{transform:scale(1);}}
+#flow-pip.broke{animation:flowBroke .5s ease;border-color:var(--danger);}
+@keyframes flowBroke{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+/* v3.5.147 first-run funnel — pulse the TRAINING card + tag */
+.sm-card.mode-training.first-run{animation:frPulse 1.6s ease-in-out infinite;}
+@keyframes frPulse{0%,100%{box-shadow:0 0 0 0 rgba(132,224,166,0);}50%{box-shadow:0 0 0 3px rgba(132,224,166,.4),0 0 22px rgba(132,224,166,.35);}}
+.firstrun-tag{margin-top:8px;display:inline-block;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;letter-spacing:1px;color:#0e2018;background:linear-gradient(180deg,#8fe6ac,#4fbf7a);border-radius:20px;padding:3px 12px;}
 
 /* ── PAUSE OVERLAY ── */
 #ov-pause{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;
@@ -1911,7 +1927,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.146 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.147 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2025,7 +2041,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.146 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.147 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2178,7 +2194,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.146 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.147 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2322,7 +2338,7 @@ body[data-cb="trit"]{
   <div id="stats-panel">
     <div class="sb-cell"><div class="sp-lbl">MODE</div><span class="sp-med" id="sp-mode">SHIFT</span></div>
     <div class="sb-cell"><div class="sp-lbl">TRAILER</div><span class="sp-med" id="sp-truck">#1</span></div>
-    <div class="sb-cell"><div class="sp-lbl">SCORE</div><span class="sp-big" id="sp-score">0</span></div>
+    <div class="sb-cell" style="position:relative;"><div class="sp-lbl">SCORE</div><span class="sp-big" id="sp-score">0</span><span class="score-pop" id="score-pop"></span></div>
     <div class="sb-cell"><div class="sp-lbl">LOAD RATE</div><span class="sp-med" id="sp-pph">—</span></div>
     <div class="sb-cell sb-cog"><div class="sp-lbl">BALANCE</div><div id="sp-cog-wrap"><div id="sp-cog-g"></div><div id="sp-cog-d"></div></div><span id="sp-cog-s" style="color:var(--ok)">STABLE</span></div>
     <div class="sb-cell"><div class="sp-lbl">ELAPSED</div><span class="sp-big" id="sp-time">00:00</span></div>
@@ -2368,6 +2384,8 @@ body[data-cb="trit"]{
           </div>
         </div>
         <button id="maxpack-finish" onclick="nextTrailer()" style="display:none;position:absolute;top:10px;right:10px;z-index:30;background:linear-gradient(180deg,#50d890,#28b870);color:#040f06;border:none;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:7px 14px;border-radius:5px;cursor:pointer;box-shadow:0 0 16px rgba(40,184,112,.4);">✓ FINISH TRAILER ▶</button>
+        <!-- v3.5.147 FLOW streak pip -->
+        <div id="flow-pip" aria-hidden="true"></div>
         <!-- v3.5.146 seal-readiness meter — fill both bars (height 92% + pack 35%) to auto-seal -->
         <div id="seal-rdy" aria-hidden="true">
           <div class="sr-cap">FILL BOTH BARS TO SEAL</div>
@@ -2629,7 +2647,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.146
+// LOCK IN v3.5.147
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2683,6 +2701,7 @@ var LARGE_DANGER_FAIL=18;
 var PANIC_THRESHOLD=0.85, PANIC_DURATION=60, PANIC_BONUS_MAX=800;
 var STOW_BONUS=200, TETRIS_BONUS=500, BULKHEAD_BONUS=500, BRICK_BONUS=300;
 var BAG_CEIL_BONUS=600; // v3.5.142 huge bonus per 3x3 smalls bag packed against the trailer roof (dead air up top reclaimed); a full ceiling course = 5 bags (15 of 17 cells)
+var FLOW_MIN=3, FLOW_STEP=25; // v3.5.147 FLOW streak: consecutive clean placements (no crunch/collapse) pay an escalating bonus from the 3rd on (+25, +50, +75 ...)
 var RECOVERY_BONUS=400, CRUNCH_PENALTY=80, COLLAPSE_INT_COST=18;
 var LOAD_SEALED_BONUS=2500, HAZMAT_SHELF_BONUS=1500; // v2.1.11 hierarchy: SEAL #1, HAZMAT SHELF #2
 var HYDRATION_BONUS=300; // v2.1.37 two-drink hydration bonus
@@ -3080,7 +3099,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.146'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.147'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4603,7 +4622,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   var crushed=checkFragileCrush(box,gx,gy,rot);
   if(crushed.length){
     crushed.forEach(function(c){c.isCrushed=true;});
-    G.crunchCount=(G.crunchCount||0)+crushed.length;playSfx('crunch');addShake(8);
+    G.crunchCount=(G.crunchCount||0)+crushed.length;playSfx('crunch');addShake(8);if(typeof breakFlow==='function')breakFlow(); // v3.5.147 a crunch breaks the FLOW streak
     S.crunches=(S.crunches||0)+crushed.length;
     var _hazCr=false,_smCr=false,_cci;for(_cci=0;_cci<crushed.length;_cci++){var _cb=crushed[_cci].box;if(_cb&&_cb.hazClass)_hazCr=true;if(_cb&&(_cb.isBag||_cb.type==='small'))_smCr=true;} // v3.5.100 track smalls-crush for the right callout
     if(_hazCr)logIncident('HAZMAT_CRUSH',''); // hazmat crushed = the write-up pool (bad the first time)
@@ -4671,6 +4690,11 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     if(!G._bagCeilTaught){G._bagCeilTaught=true;showBanner('🌟 BAG ON THE ROOF — +'+BAG_CEIL_BONUS+' CUBES.<br><span style="font-size:.72em">Dead air up top is wasted space. Pack smalls bags against the ceiling — five make a full roof course.</span>','ok',3000);}
     else showBanner('🌟 ROOF BAG '+_cb+(_cb>=5?'/5 — FULL CEILING COURSE!':'/5')+' — +'+BAG_CEIL_BONUS+' CUBES.','ok',1500);
   }
+  // v3.5.147 NESTING TEACH (one-shot) — the one mechanic the tutorial skips. First time a flat tire is on the wall AND a bag is in staging, surface the veteran move.
+  if(!G._nestHintShown&&!TUTORIAL_MODE&&(G.bagSlots||[]).some(function(b){return b&&b.isBag;})&&_wallHasTire()){
+    G._nestHintShown=true;
+    showBanner('🛞 VETERAN MOVE — drop a SMALLS BAG onto a flat tire. The smalls NEST in the hollow for bonus cubes (dead air the belt can’t fill).','ok',3400);
+  }
   if(!S.sessionStartT){S.sessionStartT=startT||Date.now();ZDATA.events=[];} // v2.1.9 session clock; v3.5.132 reset the raw event timeline per session (timestamps are relative to sessionStartT) so it never accumulates across sessions — BEFORE the first place is logged
   if(typeof zLog==='function')zLog('place',{x:gx,y:gy,n:box.n||box.label||'?',r:rot||0,src:source});
   S.bestPPH=Math.max(S.bestPPH||0,getPPH()); // v2.1.9 PEAK pph (fixes the 0 bug)
@@ -4686,7 +4710,13 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   // Previously this was reversed, causing locked shelves to not protect the wall.
   checkTetris();
   G.integrity=calcIntegrity(G.grid);
+  // v3.5.147 FLOW streak — a clean placement bumps the streak + an escalating bonus (added BEFORE scoring so it lands on this piece); a crunch/collapse resets it to 0
+  G.flow=(G.flow||0)+1;
+  if(G.flow>=FLOW_MIN)G.flowBonus=(G.flowBonus||0)+FLOW_STEP*(G.flow-FLOW_MIN+1);
+  var _preScore=G.score||0;
   G.score=calcScore(_segA);
+  if(typeof _onScoreGain==='function')_onScoreGain(Math.round((G.score||0)-_preScore)); // v3.5.147 anchored +N tick on the SCORE cell (never over the wall)
+  if(typeof updateFlowPip==='function')updateFlowPip();
 
   // Cornerstone / Keystone bonus — NC placed pieces only
   if(source==='nc'){checkKeystoneBonus(gx,gy,rot,box);}
@@ -5369,6 +5399,7 @@ function collapseFreeStack(st){
     if(typeof showBanner==='function')showBanner('😅 SLIP — a piece came loose, back on the belt. Widen the base and it holds.','warn',2000);
     return;
   }
+  if(typeof breakFlow==='function')breakFlow(); // v3.5.147 a real collapse breaks the FLOW streak (slips returned above, so they don't)
   recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
   collapseEscalation(); // v3.5.66 whoopsie → trainer heads-up → safety warning → violation (was an instant incident)
 }
@@ -5613,13 +5644,14 @@ function calcScore(segOverride){
   var brickB=G.brickAwarded?BRICK_BONUS:0;
   var recovB=(G.recoveryCount||0)*RECOVERY_BONUS;
   var bagCeilB=countCeilingBags()*BAG_CEIL_BONUS; // v3.5.142 ceiling smalls-bag shelf
+  var flowB=(G.flowBonus||0); // v3.5.147 accumulated FLOW-streak bonus (reset per wall, broken by crunch/collapse)
   var crunchP=(G.crunchCount||0)*300;
   var voidP=voids*8;
   var cogP=Math.round(cogDev*200);
   var preselectP=(G.preselectDepth||0)*PRESELECT_COST; // v2.1.3 cherry-pick cost
   var seamP=countColumnSeams(G.grid)*COLUMN_SEAM_PENALTY; // v2.1.4 running-bond violation
   var arrowP=(S.arrowsMissed||0)*16; // v2.10.9 small this-side-up ding (locked-in still holds)
-  var raw=base+shelfB+bulkB+brickB+recovB+bagCeilB-crunchP-voidP-cogP-preselectP-seamP-arrowP;
+  var raw=base+shelfB+bulkB+brickB+recovB+bagCeilB+flowB-crunchP-voidP-cogP-preselectP-seamP-arrowP;
   // HAZMAT: each hazmat currently loaded above the waist line halves the score.
   // Live grid scan, so moving it back down un-penalizes. 1 viol=50%, 2=25%, etc.
   var segViol=(segOverride===undefined||segOverride===null)?countSegregationViolations(G.grid):segOverride;
@@ -5654,6 +5686,7 @@ function wallBaseline(){ // call at each wall START
   S._wallBase.incidents=(S.incidents||[]).length;
   S._wallBase.warnings=(S.warnings||[]).length;
   S._wallBase.startT=Date.now();
+  if(typeof G!=='undefined'&&G){G.flow=0;G.flowBonus=0;} // v3.5.147 FLOW resets each wall
 }
 function finalizeWall(){
   if(typeof G==='undefined'||!G||!G.grid)return;
@@ -7106,6 +7139,7 @@ function updateHUD(){
   setEl('sp-eff',Math.round(eff*100)+'%');
   setEl('sp-placed',placed);
   if(typeof updateSealRdy==='function')updateSealRdy(); // v3.5.146 seal-readiness meter
+  if(typeof updateFlowPip==='function')updateFlowPip(); // v3.5.147 flow pip (also hides it on menu/review)
   if(_drawerTab==='ops'&&typeof opsRender==='function')opsRender(); // v3.5.37 live OPERATIONS drawer
   setEl('sp-tetris',G.tetrisTotal||0);
   setEl('sp-bulkhead',G.bulkheadCount||0);
@@ -8385,12 +8419,14 @@ function showStartMenu(){
   var menu=document.getElementById('start-menu');
   if(menu)menu.style.display='flex';
   if(typeof renderDailyStreak==='function')renderDailyStreak(); // v3.5.146 show the daily 🔥 streak on the card
+  if(typeof renderFirstRunFunnel==='function')renderFirstRunFunnel(); // v3.5.147 steer first-timers to TRAINING
   setVoice(activeVoice);
   startMenuDemo(); // wall builds itself behind the dimmed menu
 }
 
 function hideStartMenu(){
   document.getElementById('start-menu').style.display='none';
+  if(typeof liMarkPlayed==='function')liMarkPlayed(); // v3.5.147 they've started a mode — first-run funnel done
   TUTORIAL_MODE=false; // v3.5.137 clear tutorial state on any mode start (startTutorial re-sets it after this call) so it never leaks into a real game
   var _tt=document.getElementById('tut-tip');if(_tt)_tt.classList.remove('vis');
   // v3.5.130 a RUNNING MODE is never under the briefing — that full-screen z-600 clipboard was invisibly eating every
@@ -9416,7 +9452,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.146</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.147</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10782,6 +10818,44 @@ function updateSealRdy(){
     else if(hf>=1){cap.textContent='TALL BUT LOOSE — PACK TIGHTER';cap.className='sr-cap loose';}
     else{cap.textContent='FILL BOTH BARS TO SEAL';cap.className='sr-cap';}
   }
+}
+// ── v3.5.147 FLOW streak juice + anchored score tick + nesting-teach helper ──
+function _wallHasTire(){if(!G||!G.grid)return false;for(var y=0;y<GH;y++)for(var x=0;x<GW;x++){var c=G.grid[y]&&G.grid[y][x];if(c&&c.box&&c.box.cat==='tire')return true;}return false;}
+function breakFlow(){
+  var was=(G&&G.flow)||0;
+  if(G)G.flow=0;
+  if(was>=FLOW_MIN){
+    var pip=document.getElementById('flow-pip');if(pip){pip.classList.add('broke');setTimeout(function(){var p=document.getElementById('flow-pip');if(p)p.classList.remove('broke');},600);}
+    if(typeof showBanner==='function')showBanner('💢 FLOW BROKEN — the ×'+was+' streak is gone. Clean placements build it back.','warn',1500);
+  }
+  updateFlowPip();
+}
+function updateFlowPip(){
+  var pip=document.getElementById('flow-pip');if(!pip)return;
+  var reviewing=(typeof _shown==='function'&&(_shown('next-popup')||_shown('ov-end')||_shown('ov-postsort')));
+  var f=(G&&G.flow)||0;
+  if(gOver||reviewing||!G||f<FLOW_MIN){pip.style.display='none';pip.classList.remove('on');return;}
+  pip.style.display='block';pip.classList.add('on');
+  pip.innerHTML='🔥 FLOW <b>×'+f+'</b>';
+  if(f>=5&&f%5===0&&f!==G._flowMilestone){G._flowMilestone=f;pip.classList.remove('milestone');void pip.offsetWidth;pip.classList.add('milestone');if(typeof playSfx==='function')playSfx('bonus');}
+}
+function _onScoreGain(n){
+  if(!(n>0))return;
+  var el=document.getElementById('score-pop');if(!el)return;
+  el.textContent='+'+n;
+  el.classList.remove('go');void el.offsetWidth;el.classList.add('go');
+}
+// ── v3.5.147 FIRST-RUN FUNNEL — steer a brand-new player to TRAINING ──
+function liHasPlayed(){try{return localStorage.getItem('liPlayed')==='1';}catch(e){return true;}}
+function liMarkPlayed(){try{localStorage.setItem('liPlayed','1');}catch(e){}}
+function renderFirstRunFunnel(){
+  var card=document.querySelector('.sm-card.mode-training');if(!card)return;
+  var tag=document.getElementById('firstrun-tag');
+  if(!liHasPlayed()){
+    card.classList.add('first-run');
+    if(!tag){tag=document.createElement('div');tag.id='firstrun-tag';tag.className='firstrun-tag';tag.textContent='NEW HERE? START HERE →';card.appendChild(tag);}
+    tag.style.display='';
+  }else{card.classList.remove('first-run');if(tag)tag.style.display='none';}
 }
 function showDailyComplete(){
   var np=document.getElementById('next-popup');if(!np)return;
