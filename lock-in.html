@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.147
+   LOCK IN v3.5.148
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.148 - ROOF-BAG vs DEHYDRATION CONTRADICTION FIXED. Vince: "I got a safety violation for putting a smalls bag at the top." Root cause: the bag was NOT penalized — it earned its +600 roof bonus fine. But placing it TOPPED THE WALL to 100%, and checkHydrationSafety fired HYDRATION_100 as a safety INCIDENT ("topped the wall bone-dry — no water the whole trailer") the instant the wall hit the ceiling. So a GREAT play (roof bag = the goal) landed a violation on your record at the same moment — reward and penalty on one placement. FIX (DECISION): dehydration now only ever WARNS — the 75% heads-up and the topped-out nudge are both warnings; neither hits the incident ladder / write-up path anymore. The top-out line even tips the cap ("Nice roof, by the way."). Verified: a dry roof-bag top-out now fires ONE warning and adds ZERO incidents to the record (was 1 incident); the +600 bonus is unaffected. NEXT: end-screen trim, then homepage.
    CHANGE LOG v3.5.147 - PLAYABILITY PASS 2 (game-feel + onboarding): FLOW STREAK + ANCHORED +N SCORE TICK + NESTING TEACH + FIRST-RUN FUNNEL. (1) FLOW STREAK — stacking games get addictive on the hot streak, and clean placements paid only flat per-event bonuses before. Now consecutive clean placements (no crunch, no real collapse) build a FLOW streak: from the 3rd on it pays an escalating bonus (+25, +50, +75 ...) accumulated into calcScore, with a "🔥 FLOW ×N" pip top-left of the wall that pulses on every 5th. A crunch or a real 3+-piece collapse BREAKS it (a 1-2pc slip does not — slips are still forgiving) with a shake + "FLOW BROKEN" nudge. Resets each wall (wallBaseline). (2) ANCHORED +N SCORE TICK — v3.5.5 correctly stopped floaters OVER the wall, but that killed the visceral "+250" hit entirely; the score just silently changed. A "+N" now pops on the SCORE cell itself (never over the wall, per the rule) on every scoring placement. (3) NESTING TEACH — the one mechanic the tutorial skips. The first time a flat tire is on the wall AND a bag is in staging, a one-shot banner surfaces the veteran move (drop a bag on a tire → smalls nest in the hollow for bonus cubes). Mirrors the roof-bag teach pattern. (4) FIRST-RUN FUNNEL — a brand-new player landed on the flagship (full collapse/hazmat/tires) while the 18-beat tutorial sat as an opt-in card. On a first-ever visit (localStorage 'liPlayed') the TRAINING card now pulses green with a "NEW HERE? START HERE →" tag; cleared the moment any mode starts. Verified: flow 1→2→3(+25)→4(+75) with the pip, break resets to 0; +N tick fires on the score cell; nesting condition fires on tire+bag; funnel tags on first run and clears after play. No console errors. NEXT: combo-multiplier variant, end-screen trim, share-on-flagship, daily history strip; then homepage.
    CHANGE LOG v3.5.146 - PLAYABILITY PASS 1 (the top 3 from the polish review): DAILY STREAK + SEAL-READINESS METER + PERSONAL-BEST CELEBRATION. (1) DAILY STREAK — the biggest retention miss (there was zero streak tracking, and DAILY is the classroom/brain-exercise hook). Local per-device, idempotent per UTC day: play the daily and it counts once; consecutive days increment, a skipped day resets to 1, your BEST is kept. Shows as a 🔥 N-DAY STREAK badge on the DAILY menu card + a line on the daily result panel ("come back tomorrow to keep it alive" on day 1, "YOUR BEST!" on a record). liStreakBump fires from dailyFinish. (2) SEAL-READINESS METER — the #1 "why won't it seal?" confusion: the win gate is TWO hidden conditions (height>=92% AND density>=35%), and a tall-but-loose wall just silently refused to seal. New always-on meter at the top of the wall shows both as bars that fill to GREEN at their threshold, with a live caption: "FILL BOTH BARS TO SEAL" -> "TALL BUT LOOSE — PACK TIGHTER" (height full, pack short) -> "✓ READY — SEALING". Driven from updateHUD off the same wallH()/countFilled() the gate uses; hidden in review/menu/tutorial/max-pack. (3) PERSONAL BEST — only DAILY celebrated a best before; the flagship dumped 40 tiles with no "you beat your record" moment. Now a gold "🏆 NEW PERSONAL BEST · N CUBES" ribbon fires on the end screen (endGameShift + the generic end path) when you top your local per-mode best; daily still uses its world rank instead. Verified: streak increments/resets/idempotent correctly + badge renders; PB ribbon shows on a beat and hides on a lower score; seal meter shows on first piece, flags tall-but-loose, greens at threshold. NEXT: the rest of the polish list (nesting teach, anchored +N score tick, combo/flow meter, first-run->training funnel, end-screen trim) + homepage.
    CHANGE LOG v3.5.145 - COSMETIC SWEEP 2 (type rhythm + button/legibility unification across every overlay + the strip). Audit-driven. (1) BUTTON RADIUS was 6 different values across surfaces (3/4/5/7/8px) — unified to 6px (.btn-p, .pmb, .end-act, .data-save/.data-cancel, .console-btn). (2) WHITE-ON-AMBER (~2:1) primary buttons .data-save + .auth-tab.active recolored to the dark-on-amber convention (#1c1206) used everywhere else. (3) .btn-p was the loosest button in the UI (40px side-pad / 5px tracking) — tightened to the shared 12px 24px / 2px rhythm. (4) MUTED SUB-AA TEXT raised --t3->--t2: account/data field labels (read while typing), settings helper text; .data-fld span lost its opacity:.7. (5) STRIP TYPOGRAPHY: ROT/FLAG/WATER/BREAK JAM settled on one size (17px/1.5px, was 18/17/16 mixed); the NC/SM staging pills + the ✕ separator were pulled into the v3.5.141 unified --btn-line outline + 34px strip height (they were the last 1px translucent-amber outliers). (6) STAGING TILE text 9px->11px (it's tapped mid-game) and the dispatch SOURCE badge 10px->11px. (7) SCOREBOARD label color was a hardcoded #c8c0b0 (~1.2:1 on the light theme) -> theme-aware var(--t2). (8) MOBILE: the mobile console-button compaction was being overridden by the later unified rule (media queries add no specificity) — re-scoped to #ops-console .console-btn so it wins again; and the no-wrap control strip that overflowed/crushed the dispatch line on a narrow phone now flex-wraps. (9) end-act primary DESCRIPTION was muted --t2 on amber -> darkened. (10) 'Bebas Neue' fallback standardized cursive->sans-serif in all 55 spots (a font-load failure now degrades to a condensed sans everywhere, not half-script/half-sans). (11) PLAYABILITY (legibility): the SEAL LINE (92% target) was a near-invisible 1px/.32 dashed line with 7px text — now a bright 2px dashed teal line with an outlined 11px "SEAL LINE — FILL TO HERE" label, so new players can actually see the finish. NEXT: homepage flesh-out; the larger playability items (daily streak, seal-readiness meter, personal-best celebration, first-run->training funnel) are proposed separately for Vince to pick.
@@ -1927,7 +1928,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.147 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.148 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2041,7 +2042,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.147 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.148 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2194,7 +2195,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.147 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.148 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2647,7 +2648,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.147
+// LOCK IN v3.5.148
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3099,7 +3100,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.147'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.148'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -5050,12 +5051,15 @@ function updateSafetyHUD(){
     el.title=w+' open warning(s), '+inc+' incident(s) on record';
   }
 }
-// HYDRATION as a safety: ~75% wall height with no drink = warning; 100% dry = incident.
+// HYDRATION as a safety: ~75% wall height with no drink = warning; topped-out dry = a second WARNING (nudge), NOT an incident.
+// v3.5.148 was an INCIDENT at 100% \u2014 but topping the wall is the GOAL (and a roof-bag tops it out for a +600 bonus), so it
+// slapped a violation on a GOOD play the instant you finished (Vince: "safety violation for putting a smalls bag at the top").
+// DECISION: dehydration now only ever WARNS (drink next trailer); it no longer hits the incident ladder / write-up path.
 function checkHydrationSafety(){
   if(typeof G==='undefined'||!G||!G.grid)return;
   var pct=Math.round(wallH()/GH*100);
-  if(pct>=75&&pct<100&&(G.drinks||0)===0&&!G._hyd75){G._hyd75=true;safetyWarn('HYDRATION','you\u2019re 75% up the wall and haven\u2019t taken a water break.');}
-  if(pct>=100&&(G.drinks||0)===0&&!G._hyd100){G._hyd100=true;safetyIncident('HYDRATION_100','topped the wall bone-dry \u2014 no water the whole trailer.');}
+  if(pct>=75&&pct<100&&(G.drinks||0)===0&&!G._hyd75){G._hyd75=true;safetyWarn('HYDRATION','you\u2019re most of the way up and haven\u2019t taken a water break \u2014 drink to stay sharp.');}
+  if(pct>=100&&(G.drinks||0)===0&&!G._hyd100){G._hyd100=true;safetyWarn('HYDRATION','topped the wall with no water all trailer \u2014 grab a break before the next one. (Nice roof, by the way.)');}
 }
 // v3.5.67 THE HEY WINDOW \u2014 throwing a box grabs you a smalls bag FAST, but the manager sees it. You get a
 // 2-second window to COVER it with a water break ("\u2026thank you for staying hydrated"). Miss it and the manager
@@ -9452,7 +9456,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.147</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.148</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
