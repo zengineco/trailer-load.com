@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LOCK IN — Warehouse Loading Training That Plays Like a Game | trailer-load.com</title>
-<meta name="description" content="LOCK IN is a freight-loading training simulator. Free for workers. A metrics dashboard for CTE schools, trade programs, and employers. Built by people who load trailers.">
+<meta name="description" content="LOCK IN is a free freight-loading training simulator that plays like a game. Play the daily challenge against the whole world, or learn the trade by watching a trainer. Free for workers; a competency dashboard for CTE schools, trade programs, and employers.">
 <link rel="canonical" href="https://www.trailer-load.com/">
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="LOCK IN">
 <meta property="og:title" content="LOCK IN — Warehouse Loading Training That Plays Like a Game">
-<meta property="og:description" content="A free browser trailer-loading simulator that plays like a game — load integrity, balance, hazmat, and the veteran tricks the docks never put in a manual. Free for workers; a competency dashboard for CTE programs and employers.">
+<meta property="og:description" content="A free browser trailer-loading simulator that plays like the job. A daily challenge everyone on Earth shares, load theory the docks never put in a manual, and a competency dashboard for CTE programs and employers.">
 <meta property="og:url" content="https://www.trailer-load.com/">
 <meta property="og:image" content="https://www.trailer-load.com/logo.png">
 <!-- Twitter -->
@@ -24,9 +24,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--t1:#2a2018;--t2:#6a5c48;--t3:#9a8b72;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--teal:#138578;--teal-bright:#19a594;--border:#cdbfa6;--ok:#1f9d57;}
+:root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--ink:#211a12;--t1:#2a2018;--t2:#544738;--t3:#8a7c66;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--acc-wash:#f6e9d3;--teal:#0f7d70;--teal-bright:#19a594;--border:#cdbfa6;--border2:#bcaa8b;--ok:#1f9d57;--sm:#7a4dd0;}
 *{box-sizing:border-box;}
-body{margin:0;background:var(--bg);color:var(--t1);font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.5;}
+html{scroll-behavior:smooth;}
+body{margin:0;background:radial-gradient(1100px 420px at 50% -160px,rgba(200,121,30,.12),transparent),var(--bg);color:var(--t1);font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased;}
 a{color:var(--teal);}
 .bar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:10px 22px;background:rgba(236,229,216,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--border);}
 .bar .left{display:flex;align-items:center;gap:10px;}
@@ -34,26 +35,48 @@ a{color:var(--teal);}
 .bar nav a{font-family:'Share Tech Mono',monospace;font-size:12px;text-decoration:none;margin-left:16px;color:var(--t2);}
 .bar nav a:hover{color:var(--acc);}
 .wrap{max-width:980px;margin:0 auto;padding:0 22px;}
-.hero{text-align:center;padding:64px 0 46px;}
+.hero{text-align:center;padding:60px 0 38px;}
 .hero .kicker{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:3px;color:var(--acc-dim);}
-.hero h1{font-family:'Bebas Neue',sans-serif;font-size:84px;line-height:.92;letter-spacing:1px;margin:10px 0 8px;}
-.hero p.sub{font-size:23px;color:var(--t2);max-width:660px;margin:0 auto 26px;}
-.btn{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:1px;text-decoration:none;padding:15px 34px;border-radius:9px;transition:transform .12s,background .15s;}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:88px;line-height:.9;letter-spacing:1px;margin:10px 0 8px;color:var(--ink);}
+.hero p.sub{font-size:23px;color:var(--t2);max-width:680px;margin:0 auto 24px;}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn{display:inline-flex;flex-direction:column;align-items:center;gap:1px;font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:1px;text-decoration:none;padding:14px 30px;border-radius:10px;transition:transform .12s,background .15s,box-shadow .15s;}
+.btn small{font-size:10px;letter-spacing:1px;opacity:.85;font-weight:normal;}
 .btn.play{background:var(--acc);color:#fff;box-shadow:0 6px 18px rgba(200,121,30,.35);}
 .btn.play:hover{background:var(--acc-bright);transform:translateY(-2px);}
-.btn.ghost{background:transparent;color:var(--teal);border:1px solid var(--teal);margin-left:10px;}
+.btn.daily{background:linear-gradient(180deg,#19a594,#0f7d70);color:#fff;box-shadow:0 6px 18px rgba(15,125,112,.32);}
+.btn.daily:hover{transform:translateY(-2px);filter:brightness(1.06);}
+.btn.ghost{background:transparent;color:var(--teal);border:1px solid var(--teal);}
 .btn.ghost:hover{background:var(--teal);color:#fff;}
-.note{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);margin-top:14px;}
-section{padding:40px 0;border-top:1px solid var(--border);}
-h2{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:1px;margin:0 0 6px;}
-.lead{color:var(--t2);max-width:720px;margin:0 0 22px;font-size:19px;}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;}
+.note{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);margin-top:16px;}
+/* stat strip */
+.stripstats{display:flex;justify-content:center;flex-wrap:wrap;gap:0;max-width:640px;margin:30px auto 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg2);}
+.stripstats div{flex:1;min-width:140px;padding:14px 10px;text-align:center;border-right:1px solid var(--border);}
+.stripstats div:last-child{border-right:none;}
+.stripstats .n{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--acc);line-height:1;letter-spacing:1px;}
+.stripstats .l{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-top:4px;}
+section{padding:44px 0;border-top:1px solid var(--border);}
+h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:0 0 6px;color:var(--ink);}
+.lead{color:var(--t2);max-width:730px;margin:0 0 24px;font-size:19px;}
+/* mode cards */
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;}
+.mode{position:relative;background:var(--bg2);border:1px solid var(--border);border-left:5px solid var(--acc);border-radius:12px;padding:22px 20px;}
+.mode.daily{border-left-color:var(--teal-bright);}
+.mode.train{border-left-color:var(--ok);}
+.mode .tag{position:absolute;top:16px;right:16px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:#fff;background:var(--acc);border-radius:20px;padding:3px 9px;}
+.mode.daily .tag{background:var(--teal-bright);}
+.mode.train .tag{background:var(--ok);}
+.mode h3{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;margin:0 0 6px;color:var(--ink);}
+.mode p{color:var(--t2);margin:0 0 14px;font-size:16px;}
+.mode a{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;text-decoration:none;color:var(--acc);}
+.mode.daily a{color:var(--teal);}.mode.train a{color:var(--ok);}
+.mode a:hover{text-decoration:underline;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;}
-.card h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin:0 0 6px;color:var(--acc);}
-.card.teal h3{color:var(--teal);}
-.card p{color:var(--t2);margin:0;}
+.card h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin:0 0 6px;color:var(--acc);}
+.card p{color:var(--t2);margin:0;font-size:16px;}
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
-.step{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:22px 20px 18px;}
+.step{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px 20px 18px;}
 .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:18px;width:30px;height:30px;background:var(--acc);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;}
 .step h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;margin:6px 0 4px;}
 .step p{color:var(--t2);margin:0;font-size:16px;}
@@ -64,24 +87,43 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:1px;margin:
 .pitch ul{padding-left:20px;color:var(--t2);margin:0;}
 .pitch li{margin-bottom:5px;}
 .who{display:flex;flex-wrap:wrap;gap:10px;}
-.tag{font-family:'Share Tech Mono',monospace;font-size:13px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;color:var(--t2);}
+.tagpill{font-family:'Share Tech Mono',monospace;font-size:13px;background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;color:var(--t2);}
 .disclaim{background:var(--bg2);border-left:4px solid var(--acc);border-radius:0 8px 8px 0;padding:14px 18px;margin-top:24px;color:var(--t2);font-size:16px;}
-footer{border-top:1px solid var(--border);padding:24px 0 40px;text-align:center;}
+/* faq */
+.faq details{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:0 18px;margin-bottom:10px;}
+.faq summary{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;color:var(--ink);cursor:pointer;padding:15px 0;list-style:none;}
+.faq summary::-webkit-details-marker{display:none;}
+.faq summary::before{content:'+ ';color:var(--acc);font-family:'Share Tech Mono',monospace;}
+.faq details[open] summary::before{content:'– ';}
+.faq details p{color:var(--t2);margin:0 0 16px;font-size:17px;}
+/* smalls companion */
+.companion{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--border);border-left:5px solid var(--sm);border-radius:12px;padding:20px 22px;}
+.companion .em{font-size:34px;}
+.companion .body{flex:1;min-width:200px;}
+.companion h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin:0 0 3px;color:var(--ink);}
+.companion p{color:var(--t2);margin:0;font-size:16px;}
+.companion a{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;text-decoration:none;color:#6a3fd0;white-space:nowrap;}
+.companion a:hover{text-decoration:underline;}
+footer{border-top:1px solid var(--border);padding:26px 0 44px;text-align:center;}
 footer .links a{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--teal);text-decoration:none;margin:0 10px;}
 footer .zw{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);margin-top:12px;}
-@media(max-width:680px){.hero h1{font-size:58px;}.pitch{grid-template-columns:1fr;}.btn.ghost{margin-left:0;margin-top:10px;}}
+footer .zw a{color:var(--acc-dim);text-decoration:none;}
+footer .zw a:hover{color:var(--acc);}
+@media(max-width:680px){.hero h1{font-size:60px;}.pitch{grid-template-columns:1fr;}}
 </style>
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@graph":[
     {"@type":"WebSite","@id":"https://www.trailer-load.com/#website","url":"https://www.trailer-load.com/","name":"LOCK IN","description":"Free browser-based warehouse trailer-loading training simulator.","publisher":{"@id":"https://www.trailer-load.com/#org"}},
-    {"@type":"Organization","@id":"https://www.trailer-load.com/#org","name":"LOCK IN","url":"https://www.trailer-load.com/","founder":{"@id":"https://www.trailer-load.com/#founder"}},
+    {"@type":"Organization","@id":"https://www.trailer-load.com/#org","name":"F-Keys","url":"https://www.f-keys.com/","founder":{"@id":"https://www.trailer-load.com/#founder"}},
     {"@type":"Person","@id":"https://www.trailer-load.com/#founder","name":"Vince Gonzalez","jobTitle":"Founder"},
-    {"@type":"VideoGame","@id":"https://www.trailer-load.com/#game","name":"LOCK IN","url":"https://trailer-load.com/lock-in.html","applicationCategory":"GameApplication","operatingSystem":"Web browser","gamePlatform":"Web","author":{"@id":"https://www.trailer-load.com/#founder"},"description":"Warehouse trailer-loading training simulator — load integrity, balance, hazmat segregation, non-conveyables, a dispatch clock, and safety incidents.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},
+    {"@type":"VideoGame","@id":"https://www.trailer-load.com/#game","name":"LOCK IN","url":"https://trailer-load.com/lock-in.html","applicationCategory":"GameApplication","operatingSystem":"Web browser","gamePlatform":"Web","author":{"@id":"https://www.trailer-load.com/#founder"},"publisher":{"@id":"https://www.trailer-load.com/#org"},"description":"Warehouse trailer-loading training simulator — load integrity, balance, hazmat segregation, non-conveyables, a dispatch clock, safety incidents, and a daily challenge everyone shares.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}},
     {"@type":"FAQPage","@id":"https://www.trailer-load.com/#faq","mainEntity":[
       {"@type":"Question","name":"Is LOCK IN free?","acceptedAnswer":{"@type":"Answer","text":"Yes. The full game is free forever, no login required. Workers and students never pay. Facilities optionally pay for a performance dashboard of opted-in players."}},
       {"@type":"Question","name":"What does LOCK IN teach?","acceptedAnswer":{"@type":"Answer","text":"Load theory: support and balance, locking complete rows into shelves, keeping the center of gravity centered, fragile on top, hazmat below the waist line, and using dead air inside tires. Every wall is scored on integrity, density, pace, and safety."}},
+      {"@type":"Question","name":"What is the daily challenge?","acceptedAnswer":{"@type":"Answer","text":"One wall, the same freight and clock for everyone on Earth, resetting at 00:00 UTC. Everybody plays the identical puzzle and posts to one shared world board. It is a two-minute daily brain-warmup — many classrooms use it to get into work mode."}},
+      {"@type":"Question","name":"Do I need experience to start?","acceptedAnswer":{"@type":"Answer","text":"No. Training walks you through a full wall one placement at a time — you watch a trainer build it the right way and sign off when you are ready, exactly like a real first day on the dock. Then you load your own."}},
       {"@type":"Question","name":"Who is the dashboard for?","acceptedAnswer":{"@type":"Answer","text":"CTE programs (Perkins-eligible), trade and technical schools, and warehouse operations teams. It reports opted-in students' loading competencies: attention to detail, follow-through, throughput, and safety."}},
       {"@type":"Question","name":"Does LOCK IN replace safety training?","acceptedAnswer":{"@type":"Answer","text":"No. LOCK IN is a training supplement that builds intuition and tracks readiness. It does not replace employer safety training, OSHA training, or any certification requirement."}}
     ]}
@@ -92,20 +134,53 @@ footer .zw{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3
 <body>
 <div class="bar">
   <div class="left"><div class="logo">LOCK IN</div></div>
-  <nav><a href="#how">How it works</a><a href="#facilities">For schools &amp; employers</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="/me/" style="color:var(--acc);font-weight:bold;">◕ Clock In</a></nav>
+  <nav><a href="#modes">Play</a><a href="#how">How it works</a><a href="#facilities">For schools &amp; employers</a><a href="#faq">FAQ</a><a href="privacy.html">Privacy</a><a href="/me/" style="color:var(--acc);font-weight:bold;">◕ Clock In</a></nav>
 </div>
 
 <div class="wrap">
   <div class="hero" id="play">
     <div class="kicker">FREIGHT LOADING · TRAINING SIMULATOR</div>
     <h1>LOAD THE TRAILER.<br>LOCK IT IN.</h1>
-    <p class="sub">Warehouse loading practice that plays like a game — real load theory, support, balance, hazmat, and the veteran tricks the docks never put in a manual.</p>
-    <a class="btn play" href="lock-in.html">PLAY FREE — NO LOGIN</a>
-    <a class="btn ghost" href="#facilities">For schools &amp; employers</a>
+    <p class="sub">Warehouse loading practice that plays like a game — real load theory, support, balance, hazmat, and the veteran tricks the docks never put in a manual. Free, in your browser, no download.</p>
+    <div class="cta-row">
+      <a class="btn play" href="lock-in.html">PLAY FREE<small>NO LOGIN</small></a>
+      <a class="btn daily" href="lock-in.html">★ DAILY CHALLENGE<small>ONE WALL · THE WHOLE WORLD</small></a>
+      <a class="btn ghost" href="#facilities">For schools &amp; employers</a>
+    </div>
+    <div class="stripstats">
+      <div><div class="n">FREE</div><div class="l">Forever, for workers</div></div>
+      <div><div class="n">00:00 UTC</div><div class="l">Daily reset</div></div>
+      <div><div class="n">14</div><div class="l">Load-theory rules</div></div>
+      <div><div class="n">0</div><div class="l">Downloads</div></div>
+    </div>
     <div class="note">Runs in your browser. Gameplay is always free. Save your stats only if you want to.</div>
-    <div class="note">Already loading? <a href="/me/">Clock in to see your record →</a></div>
   </div>
 </div>
+
+<section id="modes"><div class="wrap">
+  <h2>Three ways to load</h2>
+  <p class="lead">One game, three doors in. Warm up with the daily, grind the flagship, or learn the whole trade from scratch.</p>
+  <div class="modes">
+    <div class="mode daily">
+      <span class="tag">EVERYONE, DAILY</span>
+      <h3>★ Daily Challenge</h3>
+      <p>One wall. The same freight and the same clock for every player on Earth, resetting at midnight UTC. Post to a single shared world board and see if you're the day's #1 loader. A two-minute brain-warmup that classrooms run to get into work mode.</p>
+      <a href="lock-in.html">Play today's wall →</a>
+    </div>
+    <div class="mode">
+      <span class="tag">THE MAIN EVENT</span>
+      <h3>🚛 Trailer-Load</h3>
+      <p>Wall after wall at full tempo — forgiving enough to flow, but the pile gets mean near the top and it's almost never a layup. Chase your personal best, build a flow streak, and climb the world rank. This is where the hours go.</p>
+      <a href="lock-in.html">Start loading →</a>
+    </div>
+    <div class="mode train">
+      <span class="tag">NEW HERE? START HERE</span>
+      <h3>🎓 Training</h3>
+      <p>Never loaded a trailer? Watch a trainer build a full wall the right way, one placement at a time — anchor, shelf, stagger, seal — with the reason for every move. Sign off when you're ready, exactly like a real first day on the dock. Then load your own.</p>
+      <a href="lock-in.html">Get trained →</a>
+    </div>
+  </div>
+</div></section>
 
 <section id="how"><div class="wrap">
   <h2>How it works</h2>
@@ -114,6 +189,19 @@ footer .zw{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3
     <div class="step"><h3>Build the wall</h3><p>Select freight, place it, rotate it. Floor-up, support underneath, no floating boxes — the physics won't let you cheat gravity.</p></div>
     <div class="step"><h3>Load it right</h3><p>Lock shelves, keep the center of gravity centered, fragile on top, hazmat below the waist line, and stuff the dead air inside tires.</p></div>
     <div class="step"><h3>Get your grade</h3><p>Every wall is scored on integrity, density, pace, and safety — and ranked, from Rookie to Yard Legend.</p></div>
+  </div>
+</div></section>
+
+<section id="learn"><div class="wrap">
+  <h2>What you're actually learning</h2>
+  <p class="lead">Under the game is real freight-handling intuition — the stuff that separates a loader who packs tight and safe from one who buries the fragile and drops the hazmat.</p>
+  <div class="cards">
+    <div class="card"><h3>Support &amp; balance</h3><p>Nothing floats. Keep the center of gravity centered so the load doesn't shift the second the door cracks.</p></div>
+    <div class="card"><h3>Lock your shelves</h3><p>Fill a full row and it locks — a braced shelf that carries the weight above it. Stagger the seams like brickwork.</p></div>
+    <div class="card"><h3>Hazmat &amp; fragile</h3><p>Dangerous goods ride low and capped (49 CFR intuition); fragile rides on top. Bury either and it's a write-up.</p></div>
+    <div class="card"><h3>Density is the job</h3><p>Pack tight, fill the dead air, use smalls and bags for the gaps big freight can't. Empty space is wasted freight.</p></div>
+    <div class="card"><h3>Pace under pressure</h3><p>A dispatch clock and a load-rate that managers actually track. Fast and clean beats fast and sloppy.</p></div>
+    <div class="card"><h3>Read what you're handed</h3><p>Freight doesn't flow clean. Rotate, re-stage, and find the lock in an awkward piece instead of forcing it.</p></div>
   </div>
 </div></section>
 
@@ -142,19 +230,42 @@ footer .zw{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3
   </div>
   <h3 style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin:28px 0 10px;">Who it's for</h3>
   <div class="who">
-    <span class="tag">CTE high-school programs</span>
-    <span class="tag">Trade &amp; technical schools</span>
-    <span class="tag">Warehouse &amp; dock ops teams</span>
-    <span class="tag">Logistics employers</span>
-    <span class="tag">Workforce-readiness programs</span>
+    <span class="tagpill">CTE high-school programs</span>
+    <span class="tagpill">Trade &amp; technical schools</span>
+    <span class="tagpill">Warehouse &amp; dock ops teams</span>
+    <span class="tagpill">Logistics employers</span>
+    <span class="tagpill">Workforce-readiness programs</span>
   </div>
   <div style="margin-top:24px;"><a class="btn play" href="mailto:hello@trailer-load.com?subject=LOCK%20IN%20facility%20dashboard">Get a facility dashboard →</a></div>
   <div class="disclaim"><strong>Training supplement only.</strong> LOCK IN builds intuition and tracks readiness. It does not replace employer safety training, OSHA training, or any certification requirement. See <a href="terms.html">Terms</a>.</div>
 </div></section>
 
+<section id="faq"><div class="wrap">
+  <h2>FAQ</h2>
+  <div class="faq">
+    <details open><summary>Is LOCK IN free?</summary><p>Yes. The full game is free forever, no login required. Workers and students never pay. Facilities optionally pay for a performance dashboard of the players who opt in.</p></details>
+    <details><summary>What does it teach?</summary><p>Load theory — support and balance, locking complete rows into shelves, keeping the center of gravity centered, fragile on top, hazmat below the waist line, and using the dead air inside tires. Every wall is scored on integrity, density, pace, and safety.</p></details>
+    <details><summary>What's the daily challenge?</summary><p>One wall, the same freight and clock for everyone on Earth, resetting at 00:00 UTC. Everybody plays the identical puzzle and posts to one shared world board. It's a two-minute daily brain-warmup — many classrooms use it to get into work mode.</p></details>
+    <details><summary>Do I need experience to start?</summary><p>No. Training walks you through a full wall one placement at a time — you watch a trainer build it the right way and sign off when you're ready, exactly like a real first day on the dock. Then you load your own.</p></details>
+    <details><summary>Who is the dashboard for?</summary><p>CTE programs (Perkins-eligible), trade and technical schools, and warehouse operations teams. It reports opted-in students' loading competencies: attention to detail, follow-through, throughput, and safety.</p></details>
+    <details><summary>Does it replace safety training?</summary><p>No. LOCK IN is a training supplement that builds intuition and tracks readiness. It does not replace employer safety training, OSHA training, or any certification requirement.</p></details>
+  </div>
+</div></section>
+
+<section id="smalls"><div class="wrap">
+  <div class="companion">
+    <div class="em">📦</div>
+    <div class="body">
+      <h3>Also: SmallsSort</h3>
+      <p>A fast little companion game — sort the smalls off the belt into the right bins before the pool jams the line. Same world, pure reflex. Great for a quick round.</p>
+    </div>
+    <a href="ss/">Play SmallsSort →</a>
+  </div>
+</div></section>
+
 <footer>
-  <div class="links"><a href="#play">Play</a> · <a href="#facilities">For facilities</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a> · <a href="mailto:hello@trailer-load.com">Contact</a></div>
-  <div class="zw">www.trailer-load.com | © 2026</div>
+  <div class="links"><a href="#play">Play</a> · <a href="#modes">Modes</a> · <a href="#facilities">For facilities</a> · <a href="#faq">FAQ</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a> · <a href="mailto:hello@trailer-load.com">Contact</a></div>
+  <div class="zw">www.trailer-load.com &nbsp;·&nbsp; a project of <a href="https://www.f-keys.com/">F-Keys</a> &nbsp;·&nbsp; © 2026</div>
 </footer>
 </body>
 </html>
