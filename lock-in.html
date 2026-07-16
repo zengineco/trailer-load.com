@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.152
+   LOCK IN v3.5.153
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.153 - BAG RE-PLACE EXPLOIT FIXED + F-KEYS SPLASH. (1) EXPLOIT (Vince farmed it vs kreminal): you could pick-up-and-place a bag over and over for points. Root cause — the v3.5.147 FLOW streak incremented + paid its escalating bonus on EVERY placement, including a CHURNED re-placement (a piece already lifted). PPH was already churn-guarded (v3.5.99 box._gen), but FLOW wasn't. Now flow only builds on a FRESH piece (box._gen===0); a lifted-and-replaced piece earns ZERO flow, so the pick-up/put-down spam can't grow flowBonus or score. (The roof-bag +600 was already safe — box._bagCeilAwarded copies through a lift.) Verified: fresh flow 5 / bonus 150 / score 1376, then churning a piece 5x (gen->5) left flow 5, bonus 150, score 1376 — no farm. (2) F-KEYS COMPANY SPLASH: a brand splash now plays FIRST on boot (z-902), fades at ~1.4s, then the LOCK IN boot splash (delayed 1650->2600ms). Uses fkeys.png if present; otherwise a clean self-contained inline-SVG mark (the italic florin ƒ outlined in white + a 'keys' badge, 'AN F-KEYS PRODUCTION' under it) so it is NEVER a broken image. Tap skips. Verified: splash present + above boot, SVG fallback swaps in when fkeys.png 404s, auto-dismisses. TO GET THE EXACT LOGO: drop the real logo into the site folder as fkeys.png. NEXT: still open — human pixel QA (Vince).
    CHANGE LOG v3.5.152 - DEVS LEDGER CLEANUP (Schema / Letterman / Juice / Stopwatch). (1) DEAD-CODE CULL (The Schema): removed the legacy timer-driven training (startTraining / toggleTrainingPlay / setDemoSpeed — replaced by the deterministic startTrainDemo in v3.5.150) and the dropdown-era leaderboard (lbLoadHall / lbRenderHall — superseded by the categorical World Board in v3.5.104). All had ZERO callers; trainingLoop / demoBuildPiece / runDemoStep are KEPT (the menu demo + new training still use them). Verified: dead fns undefined, live fns present, training demo + menu demo both still run clean. (2) LETTERMAN: the last residual sub-AA captions bumped — the write-up doc's field labels (.wu-meta span 9px->11px, .wu-ack span 10px->11px, both darkened) and the account/data divider (10px/--t3 -> 11px/--t2). (3) THE JUICE: added a press (:active) scale on the console + staging controls that were missing it (.console-btn / .stg-light / .stg-sep / .pmb / #rot-btn / .bj-btn) so every tappable thing answers a press. (4) THE STOPWATCH's "4-banner stack on a seal": investigated — showBanner routes ONLY to the dispatch feed, which is newest-only (CSS), so the completion messages never visually stack (they collapse to one line) and the real completion moment is the next-popup. No visible stack; nothing to sequence. Ledger status: #5 (dead-code, this pass) + #9 (captions) + #11 (press-states) cleared; #6 assessed = non-issue. REMAINING: #3 (human pixel QA — Vince only), #4 (homepage). The interactive-tutorial machinery (startTutorial/TUT_*, entangled with #ov-tutdone + placeBox force-place) is left for a dedicated careful pass — it's inert (TUTORIAL_MODE never set), so harmless. NEXT: the homepage.
    CHANGE LOG v3.5.151 - THE DEVS' TWO OPEN-DOOR BLOCKERS (Rule-8, accessibility) + the roof/hydration illusion crack. (1) REDUCED MOTION was already gating the JS juice (shake + particle bursts + throw ricochet, via juiceOn) — the audit missed that — but the decorative CSS animations (button/pip pulses, ribbon + score pops, banner slides, chute blink, first-run pulse) still fired. Now a `body.reduce-motion *` reset (plus an OS `prefers-reduced-motion` query) forces those to ~0s / no-loop when the setting OR the OS pref is on; canvas gameplay rendering (belt/wall, JS rAF) is untouched, so only vestibular-trigger decoration stops. (2) TEXT-SCALE (data-txt lg/xl) now reaches the live HUD — the scoreboard numbers (.sp-med/.sp-big/.sp-lbl), the dispatch line (.msg-body/.msg-src), the safety indicator, and the staging tiles — was only touching coach tips + banners, so a player who scaled up for legibility got bigger tips and the actual scoreboard stayed put. Verified: sp-big 36->40->44px across normal/lg/xl. (3) THE INVISIBLE's crack: a +600 ROOF BAG that tops the wall no longer co-fires the dehydration nudge on the same tick (G._roofThisPlace guards checkHydrationSafety). Verified: reduce-motion drops CSS anim to 0.001s + juice off; HUD scales; dry roof-bag tops out with ZERO safety warnings. Devs ledger: blockers #1 + #2 cleared; #7 cleared. Remaining: #3 (human pixel QA — needs Vince on a device, I can't render), #4 homepage, #5 dead-code, #6 banner-stack, #9 captions, #11 press-states. NEXT: dead-code + banner-stack + captions + press-states cleanup, then homepage.
    CHANGE LOG v3.5.150 - TRAINING REBUILT AS A DETERMINISTIC WATCH-AND-ACKNOWLEDGE DEMO (Vince's call). The interactive 18-beat tutorial could float / poltergeist because the PLAYER placed pieces — any divergence broke it. The fix is to make training exactly like a real first day: classroom, then you WATCH the best hand build a wall before you ever touch a trailer. Now the TRAINING card runs startTrainDemo(): the trainer (computer) builds the whole first wall from the authored DEMO_SCRIPT + DEMO_TOP — 36 steps, ONE placement per NEXT click. Each step shows the principle (headline) + why (rundown) + a STEP n/36 counter; the box is placed by the machine, fully rendered, 100% deterministic — the new hire can ONLY watch + click NEXT, so it can NEVER break, float, or send you home. Even a fast click-through still SEES it done AND acknowledges training — a 2-for-1, just like the dock. Ends on the SIGN-OFF clipboard (all 9 principles pre-checked because you watched them, the safety ladder spelled out, ✍ SIGN HERE — I'M TRAINED). The wall reaches 95% / 0 voids. The old interactive tutorial (startTutorial / TUT_SCRIPT / tutBeat) is now unreferenced (flagged for deletion in the dead-code pass). Verified: 36 steps drive to sign-off, all 35 placements legal, captions sync (step 1 = ANCHOR THE HEAVIEST FREIGHT), last step = FINISH — SIGN OFF on the hazmat lesson, 9/9 checklist, no console errors. This clears "training is broken" AND the Devs' legacy-training-overlay seam. NEXT: the two Open Door accessibility blockers, then the rest of the DEFECT LEDGER.
@@ -1188,6 +1189,13 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   35%{opacity:1;}100%{opacity:1;filter:blur(0);transform:scale(1) rotate(0deg);}}
 #boot-splash.gone{opacity:0;pointer-events:none;}
 @media (prefers-reduced-motion: reduce){#boot-splash img{animation:none;filter:none;transform:none;opacity:1;}}
+/* v3.5.153 F-KEYS COMPANY SPLASH — plays first, before the LOCK IN boot splash. Uses fkeys.png if present, else a clean inline SVG mark so it's never broken. */
+#fkeys-splash{position:fixed;inset:0;z-index:902;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;background:#000;transition:opacity .5s ease;}
+#fkeys-splash.gone{opacity:0;pointer-events:none;}
+#fkeys-splash .fk-mark{width:min(52vmin,320px);height:auto;opacity:0;animation:fkIn 1.15s cubic-bezier(.22,.9,.3,1) forwards;}
+@keyframes fkIn{0%{opacity:0;transform:scale(.9);filter:blur(8px);}40%{opacity:1;}100%{opacity:1;transform:scale(1);filter:blur(0);}}
+#fkeys-splash .fk-tag{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:4px;color:#6a6a6a;opacity:0;animation:fkTag .8s ease .5s forwards;}
+@keyframes fkTag{to{opacity:1;}}
 /* v3.5.151 OPEN DOOR (Rule-8 blocker) — Reduced Motion was only gating the JS juice (shake/particles, via juiceOn); the decorative CSS animations (button pulses, ribbon/score pops, banner slides, chute blink, first-run pulse) still fired. This kills looping + near-instants one-shots when the reduce-motion setting OR the OS prefers-reduced-motion is on. Canvas gameplay rendering (belt/wall) is JS rAF, untouched — only vestibular-trigger decoration stops. */
 body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important;}
 @media (prefers-reduced-motion: reduce){body *,body *::before,body *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
@@ -1933,6 +1941,12 @@ body[data-cb="trit"]{
 </style>
 </head>
 <body>
+<!-- v3.5.153 F-KEYS company splash — drop the real logo in as fkeys.png; the inline SVG is the never-broken fallback -->
+<div id="fkeys-splash">
+  <img class="fk-mark" src="fkeys.png" alt="F-Keys" onerror="this.onerror=null;this.outerHTML=document.getElementById('fk-svg-src').innerHTML;">
+  <template id="fk-svg-src"><svg class="fk-mark" viewBox="0 0 400 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="F-Keys"><rect width="400" height="460" fill="#000"/><text x="206" y="372" font-family="Georgia,'Times New Roman',serif" font-style="italic" font-size="460" fill="none" stroke="#fff" stroke-width="7" text-anchor="middle" paint-order="stroke">&#402;</text><rect x="116" y="204" width="172" height="62" rx="31" fill="#000" stroke="#fff" stroke-width="5"/><text x="202" y="248" font-family="'Share Tech Mono',monospace" font-weight="bold" font-size="36" fill="#fff" text-anchor="middle" letter-spacing="6">keys</text></svg></template>
+  <div class="fk-tag">AN F&#8209;KEYS PRODUCTION</div>
+</div>
 <div id="boot-splash"><img src="logo.png" alt="LOCK IN"></div>
 <button id="m-pause" onclick="togglePause()" aria-label="Pause game">⏸</button>
 <div id="m-stick" aria-label="Aim joystick"><div id="m-nub"></div></div>
@@ -1960,7 +1974,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.152 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.153 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2074,7 +2088,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.152 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.153 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2227,7 +2241,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.152 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.153 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2682,7 +2696,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.152
+// LOCK IN v3.5.153
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3134,7 +3148,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.152'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.153'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4746,9 +4760,12 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   // Previously this was reversed, causing locked shelves to not protect the wall.
   checkTetris();
   G.integrity=calcIntegrity(G.grid);
-  // v3.5.147 FLOW streak — a clean placement bumps the streak + an escalating bonus (added BEFORE scoring so it lands on this piece); a crunch/collapse resets it to 0
-  G.flow=(G.flow||0)+1;
-  if(G.flow>=FLOW_MIN)G.flowBonus=(G.flowBonus||0)+FLOW_STEP*(G.flow-FLOW_MIN+1);
+  // v3.5.147 FLOW streak — a clean FRESH placement bumps the streak + an escalating bonus (added BEFORE scoring so it lands on this piece); a crunch/collapse resets it to 0.
+  // v3.5.153 EXPLOIT FIX (Vince: re-placing a bag farmed points): a CHURNED piece (box._gen>0 = already picked up at least once) earns NO flow — the pick-up/put-down spam can't grow flowBonus. Same guard PPH already uses.
+  if(!((box._gen||0)>0)){
+    G.flow=(G.flow||0)+1;
+    if(G.flow>=FLOW_MIN)G.flowBonus=(G.flowBonus||0)+FLOW_STEP*(G.flow-FLOW_MIN+1);
+  }
   var _preScore=G.score||0;
   G.score=calcScore(_segA);
   if(typeof _onScoreGain==='function')_onScoreGain(Math.round((G.score||0)-_preScore)); // v3.5.147 anchored +N tick on the SCORE cell (never over the wall)
@@ -9496,7 +9513,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.152</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.153</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -11089,12 +11106,12 @@ function applyPortrait(){
 window.addEventListener('resize',applyPortrait);
 window.addEventListener('orientationchange',function(){applyPortrait();setTimeout(resize,80);});
 applyPortrait();
-// v2.6.5 boot splash — auto-dismiss after the ring resolves; tap to skip
+// v2.6.5 boot splash — auto-dismiss after the ring resolves; tap to skip. v3.5.153 F-KEYS company splash plays FIRST, then LOCK IN.
 (function(){
-  var bs=document.getElementById('boot-splash');if(!bs)return;
-  function go(){bs.classList.add('gone');setTimeout(function(){bs.style.display='none';},560);}
-  var t=setTimeout(go,1650);
-  bs.addEventListener('pointerdown',function(){clearTimeout(t);go();},{once:true});
+  var fk=document.getElementById('fkeys-splash'),bs=document.getElementById('boot-splash');
+  function hide(el,ms){if(!el)return;el.classList.add('gone');setTimeout(function(){el.style.display='none';},ms||560);}
+  if(fk){var ft=setTimeout(function(){hide(fk,520);},1400);fk.addEventListener('pointerdown',function(){clearTimeout(ft);hide(fk,520);},{once:true});}
+  if(bs){var t=setTimeout(function(){hide(bs,560);},2600);bs.addEventListener('pointerdown',function(){clearTimeout(t);hide(bs,560);},{once:true});} // v3.5.153 1650->2600 so LOCK IN shows AFTER the F-Keys splash fades
 })();
 
 // ── BOOT ──
