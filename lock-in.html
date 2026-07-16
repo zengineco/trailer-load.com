@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.149
+   LOCK IN v3.5.150
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.150 - TRAINING REBUILT AS A DETERMINISTIC WATCH-AND-ACKNOWLEDGE DEMO (Vince's call). The interactive 18-beat tutorial could float / poltergeist because the PLAYER placed pieces — any divergence broke it. The fix is to make training exactly like a real first day: classroom, then you WATCH the best hand build a wall before you ever touch a trailer. Now the TRAINING card runs startTrainDemo(): the trainer (computer) builds the whole first wall from the authored DEMO_SCRIPT + DEMO_TOP — 36 steps, ONE placement per NEXT click. Each step shows the principle (headline) + why (rundown) + a STEP n/36 counter; the box is placed by the machine, fully rendered, 100% deterministic — the new hire can ONLY watch + click NEXT, so it can NEVER break, float, or send you home. Even a fast click-through still SEES it done AND acknowledges training — a 2-for-1, just like the dock. Ends on the SIGN-OFF clipboard (all 9 principles pre-checked because you watched them, the safety ladder spelled out, ✍ SIGN HERE — I'M TRAINED). The wall reaches 95% / 0 voids. The old interactive tutorial (startTutorial / TUT_SCRIPT / tutBeat) is now unreferenced (flagged for deletion in the dead-code pass). Verified: 36 steps drive to sign-off, all 35 placements legal, captions sync (step 1 = ANCHOR THE HEAVIEST FREIGHT), last step = FINISH — SIGN OFF on the hazmat lesson, 9/9 checklist, no console errors. This clears "training is broken" AND the Devs' legacy-training-overlay seam. NEXT: the two Open Door accessibility blockers, then the rest of the DEFECT LEDGER.
    CHANGE LOG v3.5.149 - END-SCREEN TRIM (Vince: the ~40-tile spreadsheet was the first thing you saw on finishing). Above the fold is now punchy: title + grade hero + PERSONAL-BEST ribbon + FOUR headline numbers (Total Cubes · Best PPH · Density · Shelves) + the daily board (daily) + the action buttons. The full 31-tile breakdown (PERFORMANCE/QUALITY/SAFETY/ACTIVITY/SESSION) collapses behind a "▾ SEE ALL STATS" toggle (and the printed FULL REPORT button still opens the deep dive). fillEndHeadline() copies the 4 values off the already-populated es-* tiles and resets the section collapsed on every end; toggleEsDetails() expands/hides it. Nothing removed — every number is one tap away. Verified: headline fills (12,340 / 215 / 88% / 7), details collapsed by default, toggle flips label + shows/hides the 31 tiles, no console errors. NEXT: homepage flesh-out.
    CHANGE LOG v3.5.148 - ROOF-BAG vs DEHYDRATION CONTRADICTION FIXED. Vince: "I got a safety violation for putting a smalls bag at the top." Root cause: the bag was NOT penalized — it earned its +600 roof bonus fine. But placing it TOPPED THE WALL to 100%, and checkHydrationSafety fired HYDRATION_100 as a safety INCIDENT ("topped the wall bone-dry — no water the whole trailer") the instant the wall hit the ceiling. So a GREAT play (roof bag = the goal) landed a violation on your record at the same moment — reward and penalty on one placement. FIX (DECISION): dehydration now only ever WARNS — the 75% heads-up and the topped-out nudge are both warnings; neither hits the incident ladder / write-up path anymore. The top-out line even tips the cap ("Nice roof, by the way."). Verified: a dry roof-bag top-out now fires ONE warning and adds ZERO incidents to the record (was 1 incident); the +600 bonus is unaffected. NEXT: end-screen trim, then homepage.
    CHANGE LOG v3.5.147 - PLAYABILITY PASS 2 (game-feel + onboarding): FLOW STREAK + ANCHORED +N SCORE TICK + NESTING TEACH + FIRST-RUN FUNNEL. (1) FLOW STREAK — stacking games get addictive on the hot streak, and clean placements paid only flat per-event bonuses before. Now consecutive clean placements (no crunch, no real collapse) build a FLOW streak: from the 3rd on it pays an escalating bonus (+25, +50, +75 ...) accumulated into calcScore, with a "🔥 FLOW ×N" pip top-left of the wall that pulses on every 5th. A crunch or a real 3+-piece collapse BREAKS it (a 1-2pc slip does not — slips are still forgiving) with a shake + "FLOW BROKEN" nudge. Resets each wall (wallBaseline). (2) ANCHORED +N SCORE TICK — v3.5.5 correctly stopped floaters OVER the wall, but that killed the visceral "+250" hit entirely; the score just silently changed. A "+N" now pops on the SCORE cell itself (never over the wall, per the rule) on every scoring placement. (3) NESTING TEACH — the one mechanic the tutorial skips. The first time a flat tire is on the wall AND a bag is in staging, a one-shot banner surfaces the veteran move (drop a bag on a tire → smalls nest in the hollow for bonus cubes). Mirrors the roof-bag teach pattern. (4) FIRST-RUN FUNNEL — a brand-new player landed on the flagship (full collapse/hazmat/tires) while the 18-beat tutorial sat as an opt-in card. On a first-ever visit (localStorage 'liPlayed') the TRAINING card now pulses green with a "NEW HERE? START HERE →" tag; cleared the moment any mode starts. Verified: flow 1→2→3(+25)→4(+75) with the pip, break resets to 0; +N tick fires on the score cell; nesting condition fires on tire+bag; funnel tags on first run and clears after play. No console errors. NEXT: combo-multiplier variant, end-screen trim, share-on-flagship, daily history strip; then homepage.
@@ -1937,7 +1938,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.149 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.150 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2039,7 +2040,7 @@ body[data-cb="trit"]{
       <div class="sm-card-desc">Same pieces, same timer, everyone on Earth — one shared board, 00:00–23:59 UTC. Win it and you're the day's #1 loader on the planet.</div>
       <div class="sm-streak" id="daily-streak-badge" style="display:none;"></div>
     </div>
-    <div class="sm-card mode-training" onclick="startTutorial()">
+    <div class="sm-card mode-training" onclick="startTrainDemo()">
       <div class="sm-card-ico">🎓</div>
       <div class="sm-card-name">TRAINING</div>
       <div class="sm-card-desc">Watch a perfect wall build itself, then load one yourself. Every placement teaches a real hub rule — no clock, no fails. New here? Start on this.</div>
@@ -2051,7 +2052,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.149 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.150 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2204,7 +2205,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.149 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.150 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2226,16 +2227,10 @@ body[data-cb="trit"]{
 
   <div id="to-controls">
     <div class="to-btn-row">
-      <button class="to-btn to-btn-play" onclick="toggleTrainingPlay()">▶ PLAY</button>
+      <button class="to-btn to-btn-play" id="train-next" onclick="trainNext()">NEXT ▶</button>
       <button class="to-btn to-btn-exit" onclick="exitTraining()">✕ EXIT</button>
     </div>
-    <div id="to-speed">
-      <span class="to-speed-lbl">PACE:</span>
-      <button class="to-speed-btn" onclick="setDemoSpeed(0.5)">SLOW</button>
-      <button class="to-speed-btn active" onclick="setDemoSpeed(1)">NORMAL</button>
-      <button class="to-speed-btn" onclick="setDemoSpeed(2)">FAST</button>
-    </div>
-    <div id="to-exit-hint">ESC OR ✕ EXIT TO RETURN TO MENU</div>
+    <div id="to-exit-hint">CLICK NEXT TO WATCH EACH PLACEMENT · ESC OR ✕ EXITS</div>
   </div>
 </div>
 
@@ -2543,7 +2538,7 @@ body[data-cb="trit"]{
 <div id="ov-tutdone">
   <div class="tutdone-card">
     <div class="td-hdr">LOCK IN <span class="td-badge">TRAINING RECORD</span></div>
-    <div class="td-sub">You ran the whole floor. Check off what you learned, then sign to clock in.</div>
+    <div class="td-sub">You watched a trainer load a full wall — the way it's done. Everything you saw is checked off. Sign to clock in.</div>
     <div id="tutdone-list" class="td-list"></div>
     <div class="td-ladder"><b>THE SAFETY LADDER (how you get written up):</b><br>1st slip = a heads-up. 2nd of the SAME thing = a documented WARNING. Ignore it and it becomes an INCIDENT on your record. Stack incidents and you SIGN A WRITE-UP; keep going and you're SENT HOME — back to a practice trailer. Water breaks and locking a shelf clear warnings.</div>
     <button class="td-sign" onclick="tutSign()">✍ SIGN HERE — I'M TRAINED, CLOCK ME IN</button>
@@ -2665,7 +2660,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.149
+// LOCK IN v3.5.150
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3117,7 +3112,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.149'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.150'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -8790,6 +8785,77 @@ function tutMakePiece(spec){
   box.id=uid('TUT');
   return box;
 }
+// ── v3.5.150 DETERMINISTIC TRAINING — the trainer builds the first wall, ONE placement per NEXT click. The new hire
+// only WATCHES + acknowledges (exactly like a real first day: classroom, then you watch the best hand do it before you
+// touch a trailer). 100% deterministic (DEMO_SCRIPT + DEMO_TOP, the computer places every box), zero player placement,
+// so it can NEVER break/float/poltergeist. Ends on the SIGN-OFF ("I'm trained"). Replaces the interactive tutorial.
+var TRAIN=null;
+var TRAIN_LEARN=[
+  ['anchor','Anchor the heaviest freight in a bottom corner'],
+  ['balance','Balance the opposite corner before building up'],
+  ['foundation','Fill the foundation solid — no voids'],
+  ['shelf','Tile a shelf across the full width before you climb'],
+  ['rotate','Rotate a piece to seat an odd gap'],
+  ['stagger','Stagger your seams like brickwork'],
+  ['bags','Fill what big freight can’t with smalls & bags'],
+  ['seal','Lay a long plank to lock a whole row'],
+  ['hazmat','Load hazmat low — STAGE it if there’s no legal slot']
+];
+function startTrainDemo(){
+  hideStartMenu();
+  gameMode='training';_demoMenuMode=false;
+  TRAIN={script:DEMO_SCRIPT.slice(0,17).concat(DEMO_TOP).concat([DEMO_SCRIPT[17]]),step:0};
+  _demoScript=TRAIN.script;
+  G={grid:makeGrid(),belt:[],ncSlots:Array(MAX_NC_SLOTS).fill(null),drinks:0,bagSlots:Array(MAX_BAG_SLOTS).fill(null),
+     score:0,cog:.5,support:1,integrity:100,tetrisTotal:0,tetrisRows:{},bulkheadRows:{},bulkheadCount:0,
+     brickAwarded:false,crunchCount:0,hazViolations:0,recoveryCount:0,ncPlaced:0,beltSinceNC:0,beltSinceBag:0};
+  placed=0;startT=null;gOver=false;paused=false;
+  trainingState={playing:false,speed:1,stepIdx:0,stepTimer:null,loopCount:0};
+  var ov=document.getElementById('training-overlay');if(ov)ov.classList.add('vis');
+  var sub=document.getElementById('to-sub');if(sub)sub.textContent='WATCH THE TRAINER · NEXT FOR EACH PLACEMENT';
+  trainRenderStep();
+  if(animF)cancelAnimationFrame(animF);lastLoopT=0;animF=requestAnimationFrame(trainingLoop);
+}
+function trainRenderStep(){
+  if(!TRAIN)return;
+  var s=TRAIN.script[TRAIN.step];
+  var pEl=document.getElementById('to-principle'),rEl=document.getElementById('to-reason'),
+      stEl=document.getElementById('to-status'),pCard=document.getElementById('to-principle-card');
+  if(pEl)pEl.textContent=s?(s.p||''):''; // set synchronously so it's always correct; the fade is cosmetic
+  if(rEl)rEl.textContent=s?(s.r||''):'';
+  if(pCard){pCard.style.opacity='0';setTimeout(function(){var c=document.getElementById('to-principle-card');if(c)c.style.opacity='1';},70);}
+  if(stEl)stEl.textContent='STEP '+(TRAIN.step+1)+' / '+TRAIN.script.length;
+  var nb=document.getElementById('train-next');
+  if(nb)nb.textContent=(TRAIN.step>=TRAIN.script.length-1)?'✍ FINISH — SIGN OFF':'NEXT ▶';
+}
+function trainNext(){
+  if(!TRAIN)return;
+  var s=TRAIN.script[TRAIN.step];
+  trainingState.stepIdx=TRAIN.step; // demoBuildPiece seeds off this
+  if(s&&s.src!=='stage'){
+    var piece=demoBuildPiece(s);
+    if(piece){
+      var rot=s.rot||0;
+      if(isLegal(G.grid,piece,s.gx,s.gy,rot)){
+        var d=getDims(piece,rot);
+        var cell={box:piece,id:piece.id,rx:s.gx,ry:s.gy,w:d.w,h:d.h,cells:d.cells,isCrushed:false};
+        for(var i=0;i<d.cells.length;i++){var cxx=d.cells[i][0],cyy=d.cells[i][1];G.grid[s.gy+cyy][s.gx+cxx]=cell;}
+        placed++;G.cog=calcCOG(G.grid);checkTetris();
+        if(typeof playSfx==='function')playSfx('place');
+      }
+    }
+  } else if(s){ if(typeof playSfx==='function')playSfx('deny'); } // the hazmat lesson STAGES, never places
+  TRAIN.step++;
+  if(TRAIN.step>=TRAIN.script.length){trainDemoSignoff();return;}
+  trainRenderStep();
+}
+function trainDemoSignoff(){
+  gOver=true;if(animF){cancelAnimationFrame(animF);animF=null;}
+  var ov=document.getElementById('training-overlay');if(ov)ov.classList.remove('vis');
+  var box=document.getElementById('tutdone-list');
+  if(box){var h='',i;for(i=0;i<TRAIN_LEARN.length;i++){h+='<div class="tdl-row on"><span class="tdl-box">✓</span><span class="tdl-t">'+TRAIN_LEARN[i][1]+'</span></div>';}box.innerHTML=h;}
+  var done=document.getElementById('ov-tutdone');if(done)done.classList.add('vis');
+}
 function startTutorial(){
   hideStartMenu();
   gameMode='shift';TRAILER_MODE=false;TUTORIAL_MODE=true;
@@ -9474,7 +9540,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.149</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.150</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
