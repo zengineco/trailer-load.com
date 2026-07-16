@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.148
+   LOCK IN v3.5.149
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.149 - END-SCREEN TRIM (Vince: the ~40-tile spreadsheet was the first thing you saw on finishing). Above the fold is now punchy: title + grade hero + PERSONAL-BEST ribbon + FOUR headline numbers (Total Cubes · Best PPH · Density · Shelves) + the daily board (daily) + the action buttons. The full 31-tile breakdown (PERFORMANCE/QUALITY/SAFETY/ACTIVITY/SESSION) collapses behind a "▾ SEE ALL STATS" toggle (and the printed FULL REPORT button still opens the deep dive). fillEndHeadline() copies the 4 values off the already-populated es-* tiles and resets the section collapsed on every end; toggleEsDetails() expands/hides it. Nothing removed — every number is one tap away. Verified: headline fills (12,340 / 215 / 88% / 7), details collapsed by default, toggle flips label + shows/hides the 31 tiles, no console errors. NEXT: homepage flesh-out.
    CHANGE LOG v3.5.148 - ROOF-BAG vs DEHYDRATION CONTRADICTION FIXED. Vince: "I got a safety violation for putting a smalls bag at the top." Root cause: the bag was NOT penalized — it earned its +600 roof bonus fine. But placing it TOPPED THE WALL to 100%, and checkHydrationSafety fired HYDRATION_100 as a safety INCIDENT ("topped the wall bone-dry — no water the whole trailer") the instant the wall hit the ceiling. So a GREAT play (roof bag = the goal) landed a violation on your record at the same moment — reward and penalty on one placement. FIX (DECISION): dehydration now only ever WARNS — the 75% heads-up and the topped-out nudge are both warnings; neither hits the incident ladder / write-up path anymore. The top-out line even tips the cap ("Nice roof, by the way."). Verified: a dry roof-bag top-out now fires ONE warning and adds ZERO incidents to the record (was 1 incident); the +600 bonus is unaffected. NEXT: end-screen trim, then homepage.
    CHANGE LOG v3.5.147 - PLAYABILITY PASS 2 (game-feel + onboarding): FLOW STREAK + ANCHORED +N SCORE TICK + NESTING TEACH + FIRST-RUN FUNNEL. (1) FLOW STREAK — stacking games get addictive on the hot streak, and clean placements paid only flat per-event bonuses before. Now consecutive clean placements (no crunch, no real collapse) build a FLOW streak: from the 3rd on it pays an escalating bonus (+25, +50, +75 ...) accumulated into calcScore, with a "🔥 FLOW ×N" pip top-left of the wall that pulses on every 5th. A crunch or a real 3+-piece collapse BREAKS it (a 1-2pc slip does not — slips are still forgiving) with a shake + "FLOW BROKEN" nudge. Resets each wall (wallBaseline). (2) ANCHORED +N SCORE TICK — v3.5.5 correctly stopped floaters OVER the wall, but that killed the visceral "+250" hit entirely; the score just silently changed. A "+N" now pops on the SCORE cell itself (never over the wall, per the rule) on every scoring placement. (3) NESTING TEACH — the one mechanic the tutorial skips. The first time a flat tire is on the wall AND a bag is in staging, a one-shot banner surfaces the veteran move (drop a bag on a tire → smalls nest in the hollow for bonus cubes). Mirrors the roof-bag teach pattern. (4) FIRST-RUN FUNNEL — a brand-new player landed on the flagship (full collapse/hazmat/tires) while the 18-beat tutorial sat as an opt-in card. On a first-ever visit (localStorage 'liPlayed') the TRAINING card now pulses green with a "NEW HERE? START HERE →" tag; cleared the moment any mode starts. Verified: flow 1→2→3(+25)→4(+75) with the pip, break resets to 0; +N tick fires on the score cell; nesting condition fires on tire+bag; funnel tags on first run and clears after play. No console errors. NEXT: combo-multiplier variant, end-screen trim, share-on-flagship, daily history strip; then homepage.
    CHANGE LOG v3.5.146 - PLAYABILITY PASS 1 (the top 3 from the polish review): DAILY STREAK + SEAL-READINESS METER + PERSONAL-BEST CELEBRATION. (1) DAILY STREAK — the biggest retention miss (there was zero streak tracking, and DAILY is the classroom/brain-exercise hook). Local per-device, idempotent per UTC day: play the daily and it counts once; consecutive days increment, a skipped day resets to 1, your BEST is kept. Shows as a 🔥 N-DAY STREAK badge on the DAILY menu card + a line on the daily result panel ("come back tomorrow to keep it alive" on day 1, "YOUR BEST!" on a record). liStreakBump fires from dailyFinish. (2) SEAL-READINESS METER — the #1 "why won't it seal?" confusion: the win gate is TWO hidden conditions (height>=92% AND density>=35%), and a tall-but-loose wall just silently refused to seal. New always-on meter at the top of the wall shows both as bars that fill to GREEN at their threshold, with a live caption: "FILL BOTH BARS TO SEAL" -> "TALL BUT LOOSE — PACK TIGHTER" (height full, pack short) -> "✓ READY — SEALING". Driven from updateHUD off the same wallH()/countFilled() the gate uses; hidden in review/menu/tutorial/max-pack. (3) PERSONAL BEST — only DAILY celebrated a best before; the flagship dumped 40 tiles with no "you beat your record" moment. Now a gold "🏆 NEW PERSONAL BEST · N CUBES" ribbon fires on the end screen (endGameShift + the generic end path) when you top your local per-mode best; daily still uses its world rank instead. Verified: streak increments/resets/idempotent correctly + badge renders; PB ribbon shows on a beat and hides on a lower score; seal meter shows on first piece, flags tall-but-loose, greens at threshold. NEXT: the rest of the polish list (nesting teach, anchored +N score tick, combo/flow meter, first-run->training funnel, end-screen trim) + homepage.
@@ -1301,6 +1302,14 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
 .ea-t{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;line-height:1;}
 .ea-d{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;line-height:1.15;color:var(--t2);}
 .end-act.primary .ea-d{color:#3a2408;} /* v3.5.145 the description was muted --t2 on the amber primary button — low contrast; darkened to match .ea-t */
+/* v3.5.149 END-SCREEN TRIM — 4 big headline numbers + a collapsible full breakdown */
+.es-headline{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%;max-width:560px;margin:4px 0 10px;}
+.esh{background:rgba(18,14,8,.9);border:1px solid var(--border2);border-radius:8px;padding:12px 8px;text-align:center;}
+.esh-v{display:block;font-family:'Bebas Neue',sans-serif;font-size:33px;line-height:1;color:var(--acc);letter-spacing:1px;}
+.esh-l{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.5px;margin-top:6px;}
+.es-toggle{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--t2);background:transparent;border:1px solid var(--border2);border-radius:6px;padding:8px 18px;cursor:pointer;margin-bottom:10px;}
+.es-toggle:hover{border-color:var(--acc);color:var(--acc);}
+@media(max-width:520px){.es-headline{grid-template-columns:repeat(2,1fr);}.esh-v{font-size:28px;}}
 .end-act.primary .ea-d{color:rgba(10,6,0,.72);}
 /* v3.5.127 sign-in prompt — large legible text, uniform action cards, no fine print */
 #ov-signin-prompt{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(10,7,4,.88);padding:20px;}
@@ -1928,7 +1937,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.148 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.149 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2042,7 +2051,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.148 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.149 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2195,7 +2204,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.148 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.149 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2450,7 +2459,15 @@ body[data-cb="trit"]{
     <div class="es-grade-ring" id="es-grade-ring"><span id="es-grade-big">A</span></div>
     <div class="es-hero-txt"><div class="es-rank" id="es-rank">DOCK HAND</div><div class="es-verdict" id="es-verdict">—</div></div>
   </div>
-  <div class="es-scroll">
+  <!-- v3.5.149 END-SCREEN TRIM — 4 headline numbers above the fold; the full ~40-tile breakdown collapses behind SEE ALL STATS (or the FULL REPORT button). -->
+  <div class="es-headline">
+    <div class="esh"><span class="esh-v" id="esh-score">0</span><span class="esh-l">Total Cubes</span></div>
+    <div class="esh"><span class="esh-v" id="esh-pph">0</span><span class="esh-l">Best PPH</span></div>
+    <div class="esh"><span class="esh-v" id="esh-density">0%</span><span class="esh-l">Density</span></div>
+    <div class="esh"><span class="esh-v" id="esh-shelves">0</span><span class="esh-l">Shelves</span></div>
+  </div>
+  <button id="es-toggle" class="es-toggle" onclick="toggleEsDetails()">▾ SEE ALL STATS</button>
+  <div class="es-scroll" id="es-scroll" style="display:none;">
    <div class="es-sec"><div class="es-sec-t">PERFORMANCE</div><div class="es-grid">
     <div class="sg"><span class="v" id="es-score">0</span><span class="l">Total Cubes</span></div>
     <div class="sg"><span class="v" id="es-pph">0</span><span class="l">Best PPH (peak)</span></div>
@@ -2648,7 +2665,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.148
+// LOCK IN v3.5.149
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3100,7 +3117,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.148'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.149'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9026,6 +9043,7 @@ function endGameShift(reason){
     document.getElementById('end-title').innerHTML='SHIFT<br>COMPLETE';
     document.getElementById('end-sub').textContent=reason+' · '+sessionMins+'min session · '+shiftState.walls+' walls loaded';
   }catch(_e){liShowErr('endGameShift',_e);}
+  if(typeof fillEndHeadline==='function')fillEndHeadline(); // v3.5.149 headline numbers + collapse the full breakdown
   var _ovS=document.getElementById('ov-end');if(_ovS)_ovS.classList.add('vis'); // v2.4.4 end screen ALWAYS shows
 }
 
@@ -9456,7 +9474,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.148</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.149</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10852,6 +10870,19 @@ function _onScoreGain(n){
 // ── v3.5.147 FIRST-RUN FUNNEL — steer a brand-new player to TRAINING ──
 function liHasPlayed(){try{return localStorage.getItem('liPlayed')==='1';}catch(e){return true;}}
 function liMarkPlayed(){try{localStorage.setItem('liPlayed','1');}catch(e){}}
+// ── v3.5.149 END-SCREEN TRIM — headline numbers + collapsible full breakdown ──
+function fillEndHeadline(){ // copy the 4 headline values off the already-populated es-* tiles; reset the details toggle collapsed
+  function cp(src,dst){var s=document.getElementById(src),d=document.getElementById(dst);if(s&&d)d.textContent=s.textContent;}
+  cp('es-score','esh-score');cp('es-pph','esh-pph');cp('es-density','esh-density');cp('es-shelves','esh-shelves');
+  var el=document.getElementById('es-scroll'),btn=document.getElementById('es-toggle');
+  if(el)el.style.display='none';if(btn)btn.textContent='▾ SEE ALL STATS';
+}
+function toggleEsDetails(){
+  var el=document.getElementById('es-scroll'),btn=document.getElementById('es-toggle');if(!el)return;
+  var show=(el.style.display==='none'||!el.style.display);
+  el.style.display=show?'flex':'none';
+  if(btn)btn.textContent=show?'▴ HIDE STATS':'▾ SEE ALL STATS';
+}
 function renderFirstRunFunnel(){
   var card=document.querySelector('.sm-card.mode-training');if(!card)return;
   var tag=document.getElementById('firstrun-tag');
@@ -10994,6 +11025,7 @@ function endGame(reason,win){
     document.getElementById('end-sub').textContent=reason;
     _drHide();if(gameMode==='daily'){document.getElementById('end-title').innerHTML='DAILY<br>DONE';var _pbd=document.getElementById('pb-ribbon');if(_pbd)_pbd.style.display='none';dailyFinish();}
   }catch(_e){liShowErr('endGame',_e);}
+  if(typeof fillEndHeadline==='function')fillEndHeadline(); // v3.5.149 headline numbers + collapse the full breakdown
   var _ovG=document.getElementById('ov-end');if(_ovG)_ovG.classList.add('vis'); // v2.4.4 end screen ALWAYS shows
 }
 
