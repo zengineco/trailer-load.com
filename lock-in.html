@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.150
+   LOCK IN v3.5.151
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.151 - THE DEVS' TWO OPEN-DOOR BLOCKERS (Rule-8, accessibility) + the roof/hydration illusion crack. (1) REDUCED MOTION was already gating the JS juice (shake + particle bursts + throw ricochet, via juiceOn) — the audit missed that — but the decorative CSS animations (button/pip pulses, ribbon + score pops, banner slides, chute blink, first-run pulse) still fired. Now a `body.reduce-motion *` reset (plus an OS `prefers-reduced-motion` query) forces those to ~0s / no-loop when the setting OR the OS pref is on; canvas gameplay rendering (belt/wall, JS rAF) is untouched, so only vestibular-trigger decoration stops. (2) TEXT-SCALE (data-txt lg/xl) now reaches the live HUD — the scoreboard numbers (.sp-med/.sp-big/.sp-lbl), the dispatch line (.msg-body/.msg-src), the safety indicator, and the staging tiles — was only touching coach tips + banners, so a player who scaled up for legibility got bigger tips and the actual scoreboard stayed put. Verified: sp-big 36->40->44px across normal/lg/xl. (3) THE INVISIBLE's crack: a +600 ROOF BAG that tops the wall no longer co-fires the dehydration nudge on the same tick (G._roofThisPlace guards checkHydrationSafety). Verified: reduce-motion drops CSS anim to 0.001s + juice off; HUD scales; dry roof-bag tops out with ZERO safety warnings. Devs ledger: blockers #1 + #2 cleared; #7 cleared. Remaining: #3 (human pixel QA — needs Vince on a device, I can't render), #4 homepage, #5 dead-code, #6 banner-stack, #9 captions, #11 press-states. NEXT: dead-code + banner-stack + captions + press-states cleanup, then homepage.
    CHANGE LOG v3.5.150 - TRAINING REBUILT AS A DETERMINISTIC WATCH-AND-ACKNOWLEDGE DEMO (Vince's call). The interactive 18-beat tutorial could float / poltergeist because the PLAYER placed pieces — any divergence broke it. The fix is to make training exactly like a real first day: classroom, then you WATCH the best hand build a wall before you ever touch a trailer. Now the TRAINING card runs startTrainDemo(): the trainer (computer) builds the whole first wall from the authored DEMO_SCRIPT + DEMO_TOP — 36 steps, ONE placement per NEXT click. Each step shows the principle (headline) + why (rundown) + a STEP n/36 counter; the box is placed by the machine, fully rendered, 100% deterministic — the new hire can ONLY watch + click NEXT, so it can NEVER break, float, or send you home. Even a fast click-through still SEES it done AND acknowledges training — a 2-for-1, just like the dock. Ends on the SIGN-OFF clipboard (all 9 principles pre-checked because you watched them, the safety ladder spelled out, ✍ SIGN HERE — I'M TRAINED). The wall reaches 95% / 0 voids. The old interactive tutorial (startTutorial / TUT_SCRIPT / tutBeat) is now unreferenced (flagged for deletion in the dead-code pass). Verified: 36 steps drive to sign-off, all 35 placements legal, captions sync (step 1 = ANCHOR THE HEAVIEST FREIGHT), last step = FINISH — SIGN OFF on the hazmat lesson, 9/9 checklist, no console errors. This clears "training is broken" AND the Devs' legacy-training-overlay seam. NEXT: the two Open Door accessibility blockers, then the rest of the DEFECT LEDGER.
    CHANGE LOG v3.5.149 - END-SCREEN TRIM (Vince: the ~40-tile spreadsheet was the first thing you saw on finishing). Above the fold is now punchy: title + grade hero + PERSONAL-BEST ribbon + FOUR headline numbers (Total Cubes · Best PPH · Density · Shelves) + the daily board (daily) + the action buttons. The full 31-tile breakdown (PERFORMANCE/QUALITY/SAFETY/ACTIVITY/SESSION) collapses behind a "▾ SEE ALL STATS" toggle (and the printed FULL REPORT button still opens the deep dive). fillEndHeadline() copies the 4 values off the already-populated es-* tiles and resets the section collapsed on every end; toggleEsDetails() expands/hides it. Nothing removed — every number is one tap away. Verified: headline fills (12,340 / 215 / 88% / 7), details collapsed by default, toggle flips label + shows/hides the 31 tiles, no console errors. NEXT: homepage flesh-out.
    CHANGE LOG v3.5.148 - ROOF-BAG vs DEHYDRATION CONTRADICTION FIXED. Vince: "I got a safety violation for putting a smalls bag at the top." Root cause: the bag was NOT penalized — it earned its +600 roof bonus fine. But placing it TOPPED THE WALL to 100%, and checkHydrationSafety fired HYDRATION_100 as a safety INCIDENT ("topped the wall bone-dry — no water the whole trailer") the instant the wall hit the ceiling. So a GREAT play (roof bag = the goal) landed a violation on your record at the same moment — reward and penalty on one placement. FIX (DECISION): dehydration now only ever WARNS — the 75% heads-up and the topped-out nudge are both warnings; neither hits the incident ladder / write-up path anymore. The top-out line even tips the cap ("Nice roof, by the way."). Verified: a dry roof-bag top-out now fires ONE warning and adds ZERO incidents to the record (was 1 incident); the +600 bonus is unaffected. NEXT: end-screen trim, then homepage.
@@ -1186,6 +1187,9 @@ body.m-portrait #ov-pause.vis ~ #root #fb-panel{right:0;}
   35%{opacity:1;}100%{opacity:1;filter:blur(0);transform:scale(1) rotate(0deg);}}
 #boot-splash.gone{opacity:0;pointer-events:none;}
 @media (prefers-reduced-motion: reduce){#boot-splash img{animation:none;filter:none;transform:none;opacity:1;}}
+/* v3.5.151 OPEN DOOR (Rule-8 blocker) — Reduced Motion was only gating the JS juice (shake/particles, via juiceOn); the decorative CSS animations (button pulses, ribbon/score pops, banner slides, chute blink, first-run pulse) still fired. This kills looping + near-instants one-shots when the reduce-motion setting OR the OS prefers-reduced-motion is on. Canvas gameplay rendering (belt/wall) is JS rAF, untouched — only vestibular-trigger decoration stops. */
+body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important;}
+@media (prefers-reduced-motion: reduce){body *,body *::before,body *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}}
 .pause-title{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:8px;
   color:var(--acc);text-shadow:0 0 40px rgba(200,121,30,.3);text-align:center;}
 .pause-sub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;
@@ -1573,6 +1577,21 @@ body[data-txt="xl"] #fp-tip-h{font-size:20px;}
 body[data-txt="xl"] #fp-tip-s{font-size:13px;}
 body[data-txt="xl"] #cmt-overlay{font-size:clamp(22px,3.8vw,33px);}
 body[data-txt="xl"] #banner{font-size:clamp(24px,4.4vw,38px);}
+/* v3.5.151 OPEN DOOR (Rule-8 blocker) — text-scale now reaches the live HUD numbers, the dispatch line, and the staging tiles (was only touching coach tips + banners, so a player who scaled up for legibility got bigger tips and the actual scoreboard stayed put). */
+body[data-txt="lg"] .sb-cell .sp-med{font-size:25px;}
+body[data-txt="lg"] .sb-cell .sp-big{font-size:40px;}
+body[data-txt="lg"] .sb-cell .sp-lbl{font-size:13px;}
+body[data-txt="lg"] #footer .msg-body{font-size:19px;}
+body[data-txt="lg"] #footer .msg-src{font-size:12px;}
+body[data-txt="lg"] .stg-tile{font-size:12px;}
+body[data-txt="lg"] #safety-live{font-size:16px;}
+body[data-txt="xl"] .sb-cell .sp-med{font-size:28px;}
+body[data-txt="xl"] .sb-cell .sp-big{font-size:44px;}
+body[data-txt="xl"] .sb-cell .sp-lbl{font-size:14px;}
+body[data-txt="xl"] #footer .msg-body{font-size:21px;}
+body[data-txt="xl"] #footer .msg-src{font-size:13px;}
+body[data-txt="xl"] .stg-tile{font-size:13px;}
+body[data-txt="xl"] #safety-live{font-size:18px;}
 
 /* Colorblind palettes (v2.1.26) — status colors remapped per type; hazmat placards are
    already shape + class number. Deuteranopia/Protanopia (red-green) -> blue/cyan/orange/yellow.
@@ -1938,7 +1957,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.150 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.151 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2052,7 +2071,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.150 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.151 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2205,7 +2224,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.150 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.151 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2660,7 +2679,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.150
+// LOCK IN v3.5.151
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3112,7 +3131,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.150'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.151'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4697,6 +4716,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   // v3.5.142 CEILING SMALLS-BAG BONUS — a 3x3 bag stuffed against the trailer roof (top edge at row 0) reclaims the dead air up top. Huge, once per bag (feedback only; calcScore scores the live wall). 5 bags fill a ceiling course (15 of 17 cells).
   if(box.isBag&&gy===0&&!box._bagCeilAwarded){
     box._bagCeilAwarded=true;
+    G._roofThisPlace=true; // v3.5.151 suppress a dehydration nudge on the same tick as a +600 roof bonus (The Invisible)
     if(typeof playSfx==='function')playSfx('bonus');
     if(typeof gcurFlash==='function')gcurFlash('nest',520);
     var _cb=countCeilingBags();
@@ -4787,7 +4807,8 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   }
 
   if((G.integrity||100)<=8&&!collapseAnimating)scheduleCollapse();
-  if(typeof checkHydrationSafety==='function')checkHydrationSafety(); // v3.5.59 hydration-as-safety (75% warn / 100% incident if dry)
+  if(typeof checkHydrationSafety==='function'&&!G._roofThisPlace)checkHydrationSafety(); // v3.5.59 hydration-as-safety; v3.5.151 skip on a roof-bonus tick so reward+nag don't collide
+  G._roofThisPlace=false;
   checkWin();
 
   // Reset selection
@@ -9540,7 +9561,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.150</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.151</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
