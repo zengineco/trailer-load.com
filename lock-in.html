@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.151
+   LOCK IN v3.5.152
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.152 - DEVS LEDGER CLEANUP (Schema / Letterman / Juice / Stopwatch). (1) DEAD-CODE CULL (The Schema): removed the legacy timer-driven training (startTraining / toggleTrainingPlay / setDemoSpeed — replaced by the deterministic startTrainDemo in v3.5.150) and the dropdown-era leaderboard (lbLoadHall / lbRenderHall — superseded by the categorical World Board in v3.5.104). All had ZERO callers; trainingLoop / demoBuildPiece / runDemoStep are KEPT (the menu demo + new training still use them). Verified: dead fns undefined, live fns present, training demo + menu demo both still run clean. (2) LETTERMAN: the last residual sub-AA captions bumped — the write-up doc's field labels (.wu-meta span 9px->11px, .wu-ack span 10px->11px, both darkened) and the account/data divider (10px/--t3 -> 11px/--t2). (3) THE JUICE: added a press (:active) scale on the console + staging controls that were missing it (.console-btn / .stg-light / .stg-sep / .pmb / #rot-btn / .bj-btn) so every tappable thing answers a press. (4) THE STOPWATCH's "4-banner stack on a seal": investigated — showBanner routes ONLY to the dispatch feed, which is newest-only (CSS), so the completion messages never visually stack (they collapse to one line) and the real completion moment is the next-popup. No visible stack; nothing to sequence. Ledger status: #5 (dead-code, this pass) + #9 (captions) + #11 (press-states) cleared; #6 assessed = non-issue. REMAINING: #3 (human pixel QA — Vince only), #4 (homepage). The interactive-tutorial machinery (startTutorial/TUT_*, entangled with #ov-tutdone + placeBox force-place) is left for a dedicated careful pass — it's inert (TUTORIAL_MODE never set), so harmless. NEXT: the homepage.
    CHANGE LOG v3.5.151 - THE DEVS' TWO OPEN-DOOR BLOCKERS (Rule-8, accessibility) + the roof/hydration illusion crack. (1) REDUCED MOTION was already gating the JS juice (shake + particle bursts + throw ricochet, via juiceOn) — the audit missed that — but the decorative CSS animations (button/pip pulses, ribbon + score pops, banner slides, chute blink, first-run pulse) still fired. Now a `body.reduce-motion *` reset (plus an OS `prefers-reduced-motion` query) forces those to ~0s / no-loop when the setting OR the OS pref is on; canvas gameplay rendering (belt/wall, JS rAF) is untouched, so only vestibular-trigger decoration stops. (2) TEXT-SCALE (data-txt lg/xl) now reaches the live HUD — the scoreboard numbers (.sp-med/.sp-big/.sp-lbl), the dispatch line (.msg-body/.msg-src), the safety indicator, and the staging tiles — was only touching coach tips + banners, so a player who scaled up for legibility got bigger tips and the actual scoreboard stayed put. Verified: sp-big 36->40->44px across normal/lg/xl. (3) THE INVISIBLE's crack: a +600 ROOF BAG that tops the wall no longer co-fires the dehydration nudge on the same tick (G._roofThisPlace guards checkHydrationSafety). Verified: reduce-motion drops CSS anim to 0.001s + juice off; HUD scales; dry roof-bag tops out with ZERO safety warnings. Devs ledger: blockers #1 + #2 cleared; #7 cleared. Remaining: #3 (human pixel QA — needs Vince on a device, I can't render), #4 homepage, #5 dead-code, #6 banner-stack, #9 captions, #11 press-states. NEXT: dead-code + banner-stack + captions + press-states cleanup, then homepage.
    CHANGE LOG v3.5.150 - TRAINING REBUILT AS A DETERMINISTIC WATCH-AND-ACKNOWLEDGE DEMO (Vince's call). The interactive 18-beat tutorial could float / poltergeist because the PLAYER placed pieces — any divergence broke it. The fix is to make training exactly like a real first day: classroom, then you WATCH the best hand build a wall before you ever touch a trailer. Now the TRAINING card runs startTrainDemo(): the trainer (computer) builds the whole first wall from the authored DEMO_SCRIPT + DEMO_TOP — 36 steps, ONE placement per NEXT click. Each step shows the principle (headline) + why (rundown) + a STEP n/36 counter; the box is placed by the machine, fully rendered, 100% deterministic — the new hire can ONLY watch + click NEXT, so it can NEVER break, float, or send you home. Even a fast click-through still SEES it done AND acknowledges training — a 2-for-1, just like the dock. Ends on the SIGN-OFF clipboard (all 9 principles pre-checked because you watched them, the safety ladder spelled out, ✍ SIGN HERE — I'M TRAINED). The wall reaches 95% / 0 voids. The old interactive tutorial (startTutorial / TUT_SCRIPT / tutBeat) is now unreferenced (flagged for deletion in the dead-code pass). Verified: 36 steps drive to sign-off, all 35 placements legal, captions sync (step 1 = ANCHOR THE HEAVIEST FREIGHT), last step = FINISH — SIGN OFF on the hazmat lesson, 9/9 checklist, no console errors. This clears "training is broken" AND the Devs' legacy-training-overlay seam. NEXT: the two Open Door accessibility blockers, then the rest of the DEFECT LEDGER.
    CHANGE LOG v3.5.149 - END-SCREEN TRIM (Vince: the ~40-tile spreadsheet was the first thing you saw on finishing). Above the fold is now punchy: title + grade hero + PERSONAL-BEST ribbon + FOUR headline numbers (Total Cubes · Best PPH · Density · Shelves) + the daily board (daily) + the action buttons. The full 31-tile breakdown (PERFORMANCE/QUALITY/SAFETY/ACTIVITY/SESSION) collapses behind a "▾ SEE ALL STATS" toggle (and the printed FULL REPORT button still opens the deep dive). fillEndHeadline() copies the 4 values off the already-populated es-* tiles and resets the section collapsed on every end; toggleEsDetails() expands/hides it. Nothing removed — every number is one tap away. Verified: headline fills (12,340 / 215 / 88% / 7), details collapsed by default, toggle flips label + shows/hides the 31 tiles, no console errors. NEXT: homepage flesh-out.
@@ -631,7 +632,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .auth-tab.active{background:var(--acc);color:#1c1206;font-weight:bold;border-color:var(--acc);} /* v3.5.145 was white-on-amber */
 .auth-note{font-family:'Barlow Condensed',sans-serif;font-size:12px;color:var(--t3);line-height:1.3;margin-top:2px;}
 .auth-signout{margin-top:8px;width:100%;padding:7px;background:transparent;color:var(--danger);border:1px solid var(--danger);border-radius:6px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.06em;cursor:pointer;}
-.data-divider{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.14em;color:var(--t3);border-top:1px solid var(--border2);padding-top:10px;margin-bottom:10px;}
+.data-divider{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--t2);border-top:1px solid var(--border2);padding-top:10px;margin-bottom:10px;} /* v3.5.152 (Letterman) 10px/--t3 -> 11px/--t2 */
 #voice-toggle-wrap{display:none;} /* voice moves to settings; off the menu */
 #sm-tagline{
   font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:2px;font-weight:bold;
@@ -1245,14 +1246,14 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{an
 .wu-doc{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#8a1a1a;border:1px solid #c04a2a;padding:2px 7px;border-radius:3px;}
 .wu-meta{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:14px;}
 .wu-meta div{display:flex;flex-direction:column;}
-.wu-meta span{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:#9a8a6c;}
+.wu-meta span{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#7a6a4c;} /* v3.5.152 (Letterman) 9px->11px + darker */
 .wu-meta b{font-size:16px;color:#2a1c0e;word-break:break-all;}
 .wu-inf-lbl,.wu-why-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#8a1a1a;margin-bottom:3px;}
 .wu-why-lbl{color:#7a6a4c;margin-top:14px;}
 .wu-inf{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:1px;color:#8a1a1a;line-height:1.05;}
 .wu-why{font-size:16px;line-height:1.42;color:#3a2c1a;}
 .wu-ack{margin-top:18px;border-top:1px dashed #c8b898;padding-top:12px;}
-.wu-ack span{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;color:#9a8a6c;margin-bottom:10px;line-height:1.4;}
+.wu-ack span{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;color:#7a6a4c;margin-bottom:10px;line-height:1.45;} /* v3.5.152 (Letterman) 10px->11px + darker */
 .wu-ack button{width:100%;padding:13px;border:none;border-radius:6px;cursor:pointer;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#1a0f04;background:linear-gradient(180deg,#f3b64a,#e0902e);box-shadow:0 3px 0 #a9661a;}
 .wu-ack button:active{transform:translateY(2px);box-shadow:0 1px 0 #a9661a;}
 .pause-hint{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
@@ -1378,6 +1379,8 @@ body.m-portrait #conv-header{flex-wrap:wrap;row-gap:6px;justify-content:center;}
 .strip-act.sa-throw{background:#3a2410;color:#f3c98a;}
 .strip-act:hover{filter:brightness(1.14);}
 .strip-act:active{transform:scale(.95);}
+/* v3.5.152 (The Juice) — press feedback on the console + staging controls that were missing it */
+.console-btn:active,.stg-light:active,.stg-sep:active,.pmb:active,#rot-btn:active,.bj-btn:active{transform:scale(.96);}
 /* v3.5.141 BUTTON UNIFICATION — every action + console button wears the SAME outline box (uniform --btn-line border, radius, height). Fills stay semantic (water blue, break-jam amber, alerts red) but the OUTLINE is identical everywhere, per Goyim. */
 .console-btn,.strip-act,.bj-btn,#rot-btn{border:1.5px solid var(--btn-line);border-radius:6px;padding:6px 14px;min-height:34px;line-height:1;display:inline-flex;align-items:center;justify-content:center;} /* v3.5.145 radius 5->6px = the one shared button radius */
 .console-btn:hover,.strip-act:hover,.bj-btn:hover,#rot-btn:hover{border-color:var(--btn-line);filter:brightness(1.12);}
@@ -1957,7 +1960,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.151 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.152 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2071,7 +2074,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.151 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.152 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2224,7 +2227,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.151 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.152 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2679,7 +2682,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.151
+// LOCK IN v3.5.152
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3131,7 +3134,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.151'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.152'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -8578,35 +8581,9 @@ var DEMO_TOP=[
   {src:'sml',n:'STRIP',w:3,h:1,gx:14,gy:1,rot:0,p:'SEALED. PERFECT WALL.',r:''},
 ];
 
-function startTraining(){
-  hideStartMenu();
-  gameMode='training';
-  _demoMenuMode=false;_demoScript=DEMO_SCRIPT;
-  // Reset demo grid
-  G={grid:makeGrid(),belt:[],ncSlots:Array(MAX_NC_SLOTS).fill(null),drinks:0,
-     bagSlots:Array(MAX_BAG_SLOTS).fill(null),
-     score:0,cog:.5,support:1,integrity:100,tetrisTotal:0,tetrisRows:{},
-     bulkheadRows:{},bulkheadCount:0,brickAwarded:false,crunchCount:0,hazViolations:0,
-     recoveryCount:0,ncPlaced:0,beltSinceNC:0,beltSinceBag:0};
-  trainingState={playing:false,speed:1,stepIdx:0,stepTimer:null,loopCount:0};
-  placed=0;startT=Date.now();gOver=false;paused=false;
-  document.getElementById('training-overlay').classList.add('vis');
-  // Initialize principle card
-  var pEl=document.getElementById('to-principle');
-  var rEl=document.getElementById('to-reason');
-  var stEl=document.getElementById('to-status');
-  var pCard=document.getElementById('to-principle-card');
-  if(pEl)pEl.textContent='SELECT PLAY TO BEGIN';
-  if(rEl)rEl.textContent='Each placement teaches a real hub loading principle. Study the wall — then go load one.';
-  if(stEl)stEl.textContent='';
-  if(pCard)pCard.style.opacity='1';
-  var btn=document.querySelector('.to-btn-play');
-  if(btn)btn.textContent='▶ PLAY';
-  // Start the scene render loop (no game logic)
-  if(animF)cancelAnimationFrame(animF);lastLoopT=0;
-  animF=requestAnimationFrame(trainingLoop);
-}
-
+// v3.5.152 DEAD-CODE CULL (The Schema) — the legacy timer-driven training (startTraining / toggleTrainingPlay /
+// setDemoSpeed) was replaced by the deterministic NEXT-gated startTrainDemo in v3.5.150 and had zero callers. Removed.
+// trainingLoop, demoBuildPiece and runDemoStep are KEPT — the menu demo + the new training still use them.
 function trainingLoop(ts){
   if(gameMode!=='training'){return;}
   var dt=lastLoopT?Math.min((ts-lastLoopT)/1000,.1):.016;
@@ -8616,20 +8593,6 @@ function trainingLoop(ts){
   drawScene(ts);
   drawBelt(ts);
   animF=requestAnimationFrame(trainingLoop);
-}
-
-function toggleTrainingPlay(){
-  var btn=document.querySelector('.to-btn-play');
-  if(trainingState.playing){
-    trainingState.playing=false;
-    if(trainingState.stepTimer){clearTimeout(trainingState.stepTimer);trainingState.stepTimer=null;}
-    btn.textContent='▶ PLAY';
-    document.getElementById('to-status').textContent='PAUSED';
-  } else {
-    trainingState.playing=true;
-    btn.textContent='⏸ PAUSE';
-    runDemoStep();
-  }
 }
 
 // v2.1.23 — Authored demo pieces carry explicit dims so the sequence is
@@ -8738,15 +8701,6 @@ function runDemoStep(){
   trainingState.stepTimer=setTimeout(runDemoStep,delay);
 }
 
-function setDemoSpeed(spd){
-  trainingState.speed=spd;
-  // DECISION: speed buttons use SLOW/NORMAL/FAST labels, not numeric multipliers.
-  // Map multiplier back to label for active state.
-  var labels={0.5:'SLOW',1:'NORMAL',2:'FAST'};
-  document.querySelectorAll('.to-speed-btn').forEach(function(b){
-    b.classList.toggle('active',b.textContent===labels[spd]);
-  });
-}
 
 function exitTraining(){
   trainingState.playing=false;
@@ -9268,27 +9222,8 @@ var HALL_META={
   most_collapses:{note:'🧱 MOST COLLAPSES · one wall',foot:'Kept building pillars. Kept paying for it.',rpc:'wall',metric:'most_collapses',fmt:'num'}
 };
 function lbHallFmt(v,fmt){if(v==null)return '—';if(fmt==='time'){var s=+v,m=Math.floor(s/60),ss=s%60;return m+':'+(ss<10?'0':'')+ss;}if(fmt==='pct')return v+'%';if(fmt==='pieces')return v+' pc';return ''+v;}
-function lbLoadHall(metric){
-  metric=metric||'best';var meta=HALL_META[metric]||HALL_META.best;
-  var n=document.getElementById('lb-hall-note');if(n)n.textContent=meta.note;
-  var f=document.getElementById('lb-hall-foot');if(f)f.textContent=meta.foot;
-  var b=document.getElementById('lb-hall-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
-  var url,body;
-  if(meta.rpc==='wall'){url=ZDATA.endpoint+'/rpc/lockin_wall_board';body=JSON.stringify({p_metric:meta.metric,p_limit:25});}
-  else{url=ZDATA.endpoint+'/rpc/'+meta.rpc;body=JSON.stringify({p_limit:25});}
-  try{
-    fetch(url,{method:'POST',headers:zAuthHeaders(),body:body}).then(function(r){return r.json();})
-      .then(function(j){lbRenderHall(Array.isArray(j)?j:[],meta);})
-      .catch(function(e){console.error('hallBoard:',e);lbRenderHall([],meta);});
-  }catch(e){lbRenderHall([],meta);}
-}
-function lbRenderHall(rows,meta){
-  var el=document.getElementById('lb-hall-board');if(!el)return;
-  if(!rows.length){el.innerHTML='<div class="lb-empty">No walls ranked yet — log in, seal a wall, and claim the spot.</div>';return;}
-  var me=(ZDATA.session&&ZDATA.session.email&&(''+ZDATA.session.email).split('@')[0])||(ZDATA.session&&ZDATA.session.handle)||'';
-  var h='',i;for(i=0;i<rows.length;i++){var r=rows[i];var v=(r.val!=null?r.val:(r.best_score!=null?r.best_score:(r.score!=null?r.score:null)));var mine=(me&&r.username===me)?' lb-me':'';h+='<div class="lb-row'+mine+'"><span>'+(r.rank||(i+1))+'</span><span>'+drEsc(r.username)+'</span><span>'+lbHallFmt(v,meta.fmt)+'</span></div>';}
-  el.innerHTML=h;
-}
+// v3.5.152 DEAD-CODE CULL (The Schema) — the dropdown-era lbLoadHall/lbRenderHall (superseded by the categorical
+// World Board lbLoadAllBoards/lbBoardCard in v3.5.104) had zero callers. Removed.
 // v3.5.104 THE HALL as a categorical ledger — every board at once, World-Board style (emoji medals, top 5, gold #1).
 var HALL_FAME=['best','total','fastest','cleanest','fewest'];
 var HALL_SHAME=['slowest','most_collapses','most_pieces','messiest'];
@@ -9561,7 +9496,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.151</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.152</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
