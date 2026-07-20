@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://googleads.g.doubleclick.net https://adservice.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://static.cloudflareinsights.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://googleads.g.doubleclick.net; frame-src https://googleads.g.doubleclick.net https://*.googlesyndication.com https://*.doubleclick.net https://www.google.com; manifest-src 'self' data:; base-uri 'self'">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8826956454892311" crossorigin="anonymous"></script>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://static.cloudflareinsights.com; frame-src 'none'; manifest-src 'self' data:; base-uri 'self'">
+<!-- v3.5.155 NO AD TECH ON TRAILER-LOAD.COM — EVER (Vince's order, 2026-07-20). SOPIPA-class student-privacy laws prohibit ad tech on school-purpose services; district vetting scans for the tag. The AdSense account lives on other F-Keys properties only. Do not re-add. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LOCK%C2%B7IN%22%2C%22short_name%22%3A%22LOCK%C2%B7IN%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23140d08%22%2C%22theme_color%22%3A%22%23c8791e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22ring-logo.png%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 <meta name="theme-color" content="#c8791e">
@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.154
+   LOCK IN v3.5.155
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.155 - ADSENSE STRIPPED FOREVER + MUSIC ZEROED (licensing) + PUBLISHED PRICING. Vince's orders, executed in full. (1) NO AD TECH ON TRAILER-LOAD.COM, EVER: the AdSense script/meta removed from all 7 pages (game, homepage, dashboard, /me/, /ss/, privacy, terms) + ads.txt deleted; SOPIPA-class student-privacy laws prohibit ad tech on school-purpose services and district vetting scans for the tag — this domain is now K-12-clean. Cookie-consent + privacy copy updated to a hard promise: "no ad networks, no ad tech, no personalized advertising, to anyone, ever." The AdSense ACCOUNT is untouched — it lives on other F-Keys properties. Tombstone comments guard every removal site. (2) MUSIC ZEROED: the 13 soundtrack mp3s were generated on a free-tier account whose license does NOT include distribution/commercial use — unlicensed audio in a paid school product is a vetting/contract landmine. All 13 moved to Desktop\trailer-load-archive\music-unlicensed\ (preserved, not flushed); MUSIC.list=[] makes every playback path a safe no-op; music settings rows hidden (DOM ids kept so refreshSettingsUI never breaks) with a "paused while the soundtrack is re-licensed" note; SmallsSort (ss-1.5) same treatment. SFX are code-synthesized (zero assets) and fully intact, sliders and all. Refill MUSIC.list when properly licensed tracks land. (3) PRICING PUBLISHED on the homepage (the certified structure + Vince's customization tier): Site License $1,950/school-year · Founding Programs $1,450/yr locked (first 10, free first semester) · Per-Seat $29/student/semester · Employer Bay $490/yr · CUSTOM EDITION $4,999 (school colors / custom freight mixes / facility SOPs — under every state software cap and the micro-purchase threshold, and it demonstrates we scale) · "Get a formal quote + W-9" mailto. NEXT: Wave B (scoring-economy unification, blocker #1) + crush-ladder redesign to pattern-based (Vince: one crushed box is a mistake; a PATTERN of broken boxes gets eyes on you) + rules 15-16 in the Load Theory list.
    CHANGE LOG v3.5.154 - CONTENT-SWEEP WAVE A: 3 of the Gatekeeper's 5 BLOCKERS + the crawler stopgap. The full 16-member Devs review (4 floors + operators + legal + Gatekeeper) returned NO SHIP with 5 blockers; this wave cuts the surgical three. (1) BLOCKER #2 — DAILY DETERMINISM, both breaks: (a) checkPanic fired 3 Math.random pieces into the daily belt at 85% fill (before the 92% win = nearly every run), breaking the identical-freight-for-everyone promise — in daily the DISPATCH countdown + bonus still fire but the random injections are skipped (deterministic stream untouched); (b) Settings QUICK RESET called restartGame() leaving DAILY.ptr mid-stream — forked belt + a stream-skimming exploit — now branches to startDaily() like TRY AGAIN. Verified: daily panic fires with belt delta 0 (shift still injects 3); quickReset reproduces a fresh daily byte-for-byte (ptr 10=10, identical belt sequence). (2) BLOCKER #4 — CONSENT ENFORCEMENT: privacy.html promises "leave it off and nothing about your gameplay leaves your device," but zLogWall + zSubmitDaily posted on any signed-in uid, and SmallsSort HARDCODED consent_self:true. All three now honor the same zLoadPlayer().consentSelf switch zSendSession always honored; ss (ss-1.4) reads the shared liPlayer record and passes the REAL consent flags. Verified: consentSelf=false -> 0 fetches from zLogWall + zSubmitDaily cb {anon:true}; true -> posts. (3) BLOCKER #5 — THEME COLLAPSE: #ov-end, .sip-card, #level-select, #ov-level-end have FIXED near-black backgrounds but drew ink from the ACTIVE theme vars — in the default LIGHT theme rank/verdict/stat labels rendered dark-on-dark (~1.2-2.4:1, illegible). Scoped var overrides pin dark-theme ink to those surfaces regardless of body theme. Verified: light theme, .es-rank rgb(240,230,212), .esh-l rgb(192,173,144). (4) HIGH #5/#6 stopgap: robots.txt now Disallows /old/ (34 stale builds) + /forklift/ (unreleased Zengine-branded prototype) in EVERY user-agent group (named groups override *); actual removal from the deploy = Vince's call. REMAINING BLOCKERS (next waves, each its own careful pass): #1 dual scoring model (one persistent bonus-pool economy — the big one), #3 collapse/slip re-place farm (depends on #1's persistent costs). NEXT: Wave B = blocker #1 scoring unification.
    CHANGE LOG v3.5.153 - BAG RE-PLACE EXPLOIT FIXED + F-KEYS SPLASH. (1) EXPLOIT (Vince farmed it vs kreminal): you could pick-up-and-place a bag over and over for points. Root cause — the v3.5.147 FLOW streak incremented + paid its escalating bonus on EVERY placement, including a CHURNED re-placement (a piece already lifted). PPH was already churn-guarded (v3.5.99 box._gen), but FLOW wasn't. Now flow only builds on a FRESH piece (box._gen===0); a lifted-and-replaced piece earns ZERO flow, so the pick-up/put-down spam can't grow flowBonus or score. (The roof-bag +600 was already safe — box._bagCeilAwarded copies through a lift.) Verified: fresh flow 5 / bonus 150 / score 1376, then churning a piece 5x (gen->5) left flow 5, bonus 150, score 1376 — no farm. (2) F-KEYS COMPANY SPLASH: a brand splash now plays FIRST on boot (z-902), fades at ~1.4s, then the LOCK IN boot splash (delayed 1650->2600ms). Uses fkeys.png if present; otherwise a clean self-contained inline-SVG mark (the italic florin ƒ outlined in white + a 'keys' badge, 'AN F-KEYS PRODUCTION' under it) so it is NEVER a broken image. Tap skips. Verified: splash present + above boot, SVG fallback swaps in when fkeys.png 404s, auto-dismisses. TO GET THE EXACT LOGO: drop the real logo into the site folder as fkeys.png. NEXT: still open — human pixel QA (Vince).
    CHANGE LOG v3.5.152 - DEVS LEDGER CLEANUP (Schema / Letterman / Juice / Stopwatch). (1) DEAD-CODE CULL (The Schema): removed the legacy timer-driven training (startTraining / toggleTrainingPlay / setDemoSpeed — replaced by the deterministic startTrainDemo in v3.5.150) and the dropdown-era leaderboard (lbLoadHall / lbRenderHall — superseded by the categorical World Board in v3.5.104). All had ZERO callers; trainingLoop / demoBuildPiece / runDemoStep are KEPT (the menu demo + new training still use them). Verified: dead fns undefined, live fns present, training demo + menu demo both still run clean. (2) LETTERMAN: the last residual sub-AA captions bumped — the write-up doc's field labels (.wu-meta span 9px->11px, .wu-ack span 10px->11px, both darkened) and the account/data divider (10px/--t3 -> 11px/--t2). (3) THE JUICE: added a press (:active) scale on the console + staging controls that were missing it (.console-btn / .stg-light / .stg-sep / .pmb / #rot-btn / .bj-btn) so every tappable thing answers a press. (4) THE STOPWATCH's "4-banner stack on a seal": investigated — showBanner routes ONLY to the dispatch feed, which is newest-only (CSS), so the completion messages never visually stack (they collapse to one line) and the real completion moment is the next-popup. No visible stack; nothing to sequence. Ledger status: #5 (dead-code, this pass) + #9 (captions) + #11 (press-states) cleared; #6 assessed = non-issue. REMAINING: #3 (human pixel QA — Vince only), #4 (homepage). The interactive-tutorial machinery (startTutorial/TUT_*, entangled with #ov-tutdone + placeBox force-place) is left for a dedicated careful pass — it's inert (TUTORIAL_MODE never set), so harmless. NEXT: the homepage.
@@ -1984,7 +1985,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.154 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.155 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2029,7 +2030,7 @@ body[data-cb="trit"]{
 </div>
 <div id="brief-legal">
   Training supplement only — not a substitute for employer safety training or certification. &nbsp;·&nbsp;
-  Uses Google Analytics &amp; AdSense cookies; by continuing you consent per our
+  Uses Google Analytics cookies only — no advertising on this service; by continuing you consent per our
   <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>. &nbsp;·&nbsp; &copy; 2026
 </div>
 </div>
@@ -2098,7 +2099,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.154 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.155 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2158,16 +2159,21 @@ body[data-cb="trit"]{
           <div class="set-lbl">Sound Effects</div>
           <input class="set-range" id="set-vol-sfx" type="range" min="0" max="100" value="80" oninput="setVolume('sfx',this.value)">
         </div>
-        <div class="set-row">
+        <!-- v3.5.155 music rows hidden, not removed — the slider/track ids stay in the DOM so refreshSettingsUI never breaks; unhide when re-licensed tracks land -->
+        <div class="set-row" style="display:none;">
           <div class="set-lbl">Music</div>
           <input class="set-range" id="set-vol-music" type="range" min="0" max="100" value="60" oninput="setVolume('music',this.value)">
         </div>
-        <div class="set-row" style="align-items:flex-start;">
+        <div class="set-row" style="display:none;align-items:flex-start;">
           <div class="set-lbl">Music Track</div>
           <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
             <div class="set-seg set-mtrack-grid" id="set-mtrack-seg"></div>
             <button class="set-seg-btn" style="padding:7px 16px;" onclick="musicSkip()">⏭ SKIP SONG</button>
           </div>
+        </div>
+        <div class="set-row">
+          <div class="set-lbl">Music</div>
+          <div class="set-lbl" style="text-transform:none;letter-spacing:.3px;">Paused while the soundtrack is re-licensed. Sound effects are unaffected.</div>
         </div>
       </div>
 
@@ -2251,7 +2257,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.154 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.155 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2706,7 +2712,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.154
+// LOCK IN v3.5.155
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3158,7 +3164,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.154'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.155'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -3531,7 +3537,12 @@ function playSfx(name){
   else if(name==='arrowmiss'){tone('square',400,300,0.07,0.14);tone('square',300,240,0.09,0.12);}
 }
 // ── v2.1.30: BACKGROUND MUSIC (HTML5 audio playlist, files served by path) ──
-var MUSIC={list:['1.mp3','2.mp3','3.mp3','4.mp3','5.mp3','6.mp3','7.mp3','8.mp3','9.mp3','10.mp3','11.mp3','12.mp3','13.mp3'],el:null,idx:0,started:false}; // v3.5.71 trimmed to the 13 real tracks (was 30 phantom slots)
+// v3.5.155 MUSIC ZEROED (Vince, 2026-07-20): the 13 tracks were generated on a free-tier account whose license does
+// NOT include distribution/commercial use — unlicensed audio in a paid school product is a real vetting/contract
+// problem. Empty list = musicLoad early-returns = every playback path (musicStart/startModeMusic/musicForMode/
+// musicSkip) is a safe no-op. SFX are code-synthesized (no assets) and UNAFFECTED. The engine stays intact —
+// re-licensed tracks drop back in by refilling this list. Do NOT re-add the old 1-13.mp3 files.
+var MUSIC={list:[],el:null,idx:0,started:false};
 function musicVol(){
   var m=(typeof SETTINGS!=='undefined'&&typeof SETTINGS.volMaster==='number')?SETTINGS.volMaster:80;
   var mu=(typeof SETTINGS!=='undefined'&&typeof SETTINGS.volMusic==='number')?SETTINGS.volMusic:60;
@@ -9527,7 +9538,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.154</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.155</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 

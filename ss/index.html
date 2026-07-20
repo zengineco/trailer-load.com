@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>SmallSort — LOCK IN</title>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8826956454892311" crossorigin="anonymous"></script>
+<!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Do not re-add. -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&display=swap');
 
@@ -30,7 +30,7 @@
       damaged->QA·DMG | hazmat->QA·HAZ | overnight->OVN
    6. endGame() -> result card (downtime, stoppages, QA, OVN)
    ============================================================
-   TUNABLE CONSTANTS: TUNE block. ASSET MANIFEST: Fonts, AdSense.
+   TUNABLE CONSTANTS: TUNE block. ASSET MANIFEST: Fonts.
    BOOT ORDER: boot() -> showStart(); startGame() on tap.
    ============================================================ */
 
@@ -224,9 +224,10 @@ html,body{width:100%;height:100dvh;
     <div class="set-note">Bolder bin outlines and brighter labels — easier to aim, colorblind-friendlier.</div>
 
     <div class="set-sec">SOUND</div>
-    <div class="set-note" style="margin-bottom:6px;">Same soundtrack as LOCK IN. Off by default — turn it up.</div>
-    <div class="set-row"><span>Music</span><input type="range" id="set-music" min="0" max="100" value="0" oninput="smSetVol('music',this.value)"></div>
-    <button class="btn teal" id="set-music-toggle" onclick="smToggleMusic()" style="margin-top:6px;">▶ PLAY MUSIC</button>
+    <div class="set-note" style="margin-bottom:6px;">Music is paused while the soundtrack is re-licensed.</div>
+    <!-- v1.5 music UI hidden, engine no-opped — unhide when re-licensed tracks land -->
+    <div class="set-row" style="display:none;"><span>Music</span><input type="range" id="set-music" min="0" max="100" value="0" oninput="smSetVol('music',this.value)"></div>
+    <button class="btn teal" id="set-music-toggle" onclick="smToggleMusic()" style="display:none;margin-top:6px;">▶ PLAY MUSIC</button>
 
     <button class="btn" onclick="smCloseSettings()" style="margin-top:16px;">✕ CLOSE</button>
   </div>
@@ -686,7 +687,7 @@ function smSubmitSession(acc,tput,grade){
     if(!_pl||!_pl.consentSelf)return; // no save without self-consent — identical rule to the game's zSendSession
     var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
     var rec={
-      user_id:s.uid, mode:'smalls', app_ver:'ss-1.4',
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.5',
       consent_self:!!_pl.consentSelf, consent_share:!!_pl.consentShare, opt_in_share:!!_pl.consentShare,
       started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
       duration_s:dur,
@@ -746,6 +747,7 @@ function smSetVol(kind,v){v=parseInt(v,10)||0;if(kind==='music'){SM_MUSICVOL=v;i
 function smSetDiff(d){if(!DIFF_MULT[d])d='normal';SM_DIFF=d;var seg=document.getElementById('seg-diff');if(seg){var bs=seg.querySelectorAll('button'),i;for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-d')===d);}smSaveSettings();}
 function smToggleHicon(){SM_HICON=!SM_HICON;var tg=document.getElementById('tgl-hicon');if(tg){tg.textContent=SM_HICON?'ON':'OFF';tg.classList.toggle('on',SM_HICON);}smSaveSettings();if(!STATE.running)draw();}
 function smToggleMusic(){
+  return; // v1.5 MUSIC ZEROED — the 1-13.mp3 tracks were free-tier-generated without distribution rights; removed from the deploy. Refill when re-licensed audio lands.
   var btn=document.getElementById('set-music-toggle');
   if(!SM_AUDIO){SM_AUDIO=new Audio();SM_AUDIO.addEventListener('ended',function(){SM_TRACK=SM_TRACK>=13?1:SM_TRACK+1;SM_AUDIO.src='/'+SM_TRACK+'.mp3';SM_AUDIO.play().catch(function(){});});}
   if(SM_AUDIO.paused){
