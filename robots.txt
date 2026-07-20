@@ -1,33 +1,62 @@
 # trailer-load.com — read us, cite us. AI crawlers explicitly welcome.
+# /old/ (stale archived builds) and /forklift/ (unreleased prototype) are not the product — stay out.
 User-agent: *
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 
 # Answer / generative engines — allowed on purpose
 User-agent: GPTBot
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: ChatGPT-User
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: OAI-SearchBot
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: ClaudeBot
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: Claude-Web
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: anthropic-ai
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: PerplexityBot
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: Perplexity-User
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: Google-Extended
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: Applebot-Extended
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: CCBot
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: Amazonbot
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 User-agent: Bytespider
+Disallow: /old/
+Disallow: /forklift/
 Allow: /
 
 Sitemap: https://trailer-load.com/sitemap.xml

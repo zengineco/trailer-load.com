@@ -680,10 +680,14 @@ function smSubmitSession(acc,tput,grade){
   try{
     var s=smReadAuth();
     if(!s||!s.uid||!s.access_token)return; // signed-in only — the same account as the game
+    // v1.4 BLOCKER FIX (Gatekeeper #4): honor the game's save-my-stats consent switch (same-origin liPlayer).
+    // consent_self was HARDCODED true here — posting sessions the privacy policy promised stay on-device.
+    var _pl=null;try{_pl=JSON.parse(localStorage.getItem('liPlayer')||'null');}catch(e){}
+    if(!_pl||!_pl.consentSelf)return; // no save without self-consent — identical rule to the game's zSendSession
     var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
     var rec={
-      user_id:s.uid, mode:'smalls', app_ver:'ss-1.3',
-      consent_self:true, consent_share:false, opt_in_share:false,
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.4',
+      consent_self:!!_pl.consentSelf, consent_share:!!_pl.consentShare, opt_in_share:!!_pl.consentShare,
       started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
       duration_s:dur,
       total_score:STATE.score||0, best_pph:tput||0, walls_loaded:0, avg_integrity:acc||0, incident_count:STATE.miss||0,

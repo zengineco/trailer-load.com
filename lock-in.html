@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.153
+   LOCK IN v3.5.154
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.154 - CONTENT-SWEEP WAVE A: 3 of the Gatekeeper's 5 BLOCKERS + the crawler stopgap. The full 16-member Devs review (4 floors + operators + legal + Gatekeeper) returned NO SHIP with 5 blockers; this wave cuts the surgical three. (1) BLOCKER #2 — DAILY DETERMINISM, both breaks: (a) checkPanic fired 3 Math.random pieces into the daily belt at 85% fill (before the 92% win = nearly every run), breaking the identical-freight-for-everyone promise — in daily the DISPATCH countdown + bonus still fire but the random injections are skipped (deterministic stream untouched); (b) Settings QUICK RESET called restartGame() leaving DAILY.ptr mid-stream — forked belt + a stream-skimming exploit — now branches to startDaily() like TRY AGAIN. Verified: daily panic fires with belt delta 0 (shift still injects 3); quickReset reproduces a fresh daily byte-for-byte (ptr 10=10, identical belt sequence). (2) BLOCKER #4 — CONSENT ENFORCEMENT: privacy.html promises "leave it off and nothing about your gameplay leaves your device," but zLogWall + zSubmitDaily posted on any signed-in uid, and SmallsSort HARDCODED consent_self:true. All three now honor the same zLoadPlayer().consentSelf switch zSendSession always honored; ss (ss-1.4) reads the shared liPlayer record and passes the REAL consent flags. Verified: consentSelf=false -> 0 fetches from zLogWall + zSubmitDaily cb {anon:true}; true -> posts. (3) BLOCKER #5 — THEME COLLAPSE: #ov-end, .sip-card, #level-select, #ov-level-end have FIXED near-black backgrounds but drew ink from the ACTIVE theme vars — in the default LIGHT theme rank/verdict/stat labels rendered dark-on-dark (~1.2-2.4:1, illegible). Scoped var overrides pin dark-theme ink to those surfaces regardless of body theme. Verified: light theme, .es-rank rgb(240,230,212), .esh-l rgb(192,173,144). (4) HIGH #5/#6 stopgap: robots.txt now Disallows /old/ (34 stale builds) + /forklift/ (unreleased Zengine-branded prototype) in EVERY user-agent group (named groups override *); actual removal from the deploy = Vince's call. REMAINING BLOCKERS (next waves, each its own careful pass): #1 dual scoring model (one persistent bonus-pool economy — the big one), #3 collapse/slip re-place farm (depends on #1's persistent costs). NEXT: Wave B = blocker #1 scoring unification.
    CHANGE LOG v3.5.153 - BAG RE-PLACE EXPLOIT FIXED + F-KEYS SPLASH. (1) EXPLOIT (Vince farmed it vs kreminal): you could pick-up-and-place a bag over and over for points. Root cause — the v3.5.147 FLOW streak incremented + paid its escalating bonus on EVERY placement, including a CHURNED re-placement (a piece already lifted). PPH was already churn-guarded (v3.5.99 box._gen), but FLOW wasn't. Now flow only builds on a FRESH piece (box._gen===0); a lifted-and-replaced piece earns ZERO flow, so the pick-up/put-down spam can't grow flowBonus or score. (The roof-bag +600 was already safe — box._bagCeilAwarded copies through a lift.) Verified: fresh flow 5 / bonus 150 / score 1376, then churning a piece 5x (gen->5) left flow 5, bonus 150, score 1376 — no farm. (2) F-KEYS COMPANY SPLASH: a brand splash now plays FIRST on boot (z-902), fades at ~1.4s, then the LOCK IN boot splash (delayed 1650->2600ms). Uses fkeys.png if present; otherwise a clean self-contained inline-SVG mark (the italic florin ƒ outlined in white + a 'keys' badge, 'AN F-KEYS PRODUCTION' under it) so it is NEVER a broken image. Tap skips. Verified: splash present + above boot, SVG fallback swaps in when fkeys.png 404s, auto-dismisses. TO GET THE EXACT LOGO: drop the real logo into the site folder as fkeys.png. NEXT: still open — human pixel QA (Vince).
    CHANGE LOG v3.5.152 - DEVS LEDGER CLEANUP (Schema / Letterman / Juice / Stopwatch). (1) DEAD-CODE CULL (The Schema): removed the legacy timer-driven training (startTraining / toggleTrainingPlay / setDemoSpeed — replaced by the deterministic startTrainDemo in v3.5.150) and the dropdown-era leaderboard (lbLoadHall / lbRenderHall — superseded by the categorical World Board in v3.5.104). All had ZERO callers; trainingLoop / demoBuildPiece / runDemoStep are KEPT (the menu demo + new training still use them). Verified: dead fns undefined, live fns present, training demo + menu demo both still run clean. (2) LETTERMAN: the last residual sub-AA captions bumped — the write-up doc's field labels (.wu-meta span 9px->11px, .wu-ack span 10px->11px, both darkened) and the account/data divider (10px/--t3 -> 11px/--t2). (3) THE JUICE: added a press (:active) scale on the console + staging controls that were missing it (.console-btn / .stg-light / .stg-sep / .pmb / #rot-btn / .bj-btn) so every tappable thing answers a press. (4) THE STOPWATCH's "4-banner stack on a seal": investigated — showBanner routes ONLY to the dispatch feed, which is newest-only (CSS), so the completion messages never visually stack (they collapse to one line) and the real completion moment is the next-popup. No visible stack; nothing to sequence. Ledger status: #5 (dead-code, this pass) + #9 (captions) + #11 (press-states) cleared; #6 assessed = non-issue. REMAINING: #3 (human pixel QA — Vince only), #4 (homepage). The interactive-tutorial machinery (startTutorial/TUT_*, entangled with #ov-tutdone + placeBox force-place) is left for a dedicated careful pass — it's inert (TUTORIAL_MODE never set), so harmless. NEXT: the homepage.
    CHANGE LOG v3.5.151 - THE DEVS' TWO OPEN-DOOR BLOCKERS (Rule-8, accessibility) + the roof/hydration illusion crack. (1) REDUCED MOTION was already gating the JS juice (shake + particle bursts + throw ricochet, via juiceOn) — the audit missed that — but the decorative CSS animations (button/pip pulses, ribbon + score pops, banner slides, chute blink, first-run pulse) still fired. Now a `body.reduce-motion *` reset (plus an OS `prefers-reduced-motion` query) forces those to ~0s / no-loop when the setting OR the OS pref is on; canvas gameplay rendering (belt/wall, JS rAF) is untouched, so only vestibular-trigger decoration stops. (2) TEXT-SCALE (data-txt lg/xl) now reaches the live HUD — the scoreboard numbers (.sp-med/.sp-big/.sp-lbl), the dispatch line (.msg-body/.msg-src), the safety indicator, and the staging tiles — was only touching coach tips + banners, so a player who scaled up for legibility got bigger tips and the actual scoreboard stayed put. Verified: sp-big 36->40->44px across normal/lg/xl. (3) THE INVISIBLE's crack: a +600 ROOF BAG that tops the wall no longer co-fires the dehydration nudge on the same tick (G._roofThisPlace guards checkHydrationSafety). Verified: reduce-motion drops CSS anim to 0.001s + juice off; HUD scales; dry roof-bag tops out with ZERO safety warnings. Devs ledger: blockers #1 + #2 cleared; #7 cleared. Remaining: #3 (human pixel QA — needs Vince on a device, I can't render), #4 homepage, #5 dead-code, #6 banner-stack, #9 captions, #11 press-states. NEXT: dead-code + banner-stack + captions + press-states cleanup, then homepage.
@@ -350,6 +351,15 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
   --lg:#d86060;--lg-bright:#e88080;
   --pause-bg:rgba(28,20,16,.97);
   --btn-line:#c8963c;
+}
+/* v3.5.154 BLOCKER FIX (Gatekeeper #5): these overlays have FIXED near-black backgrounds but drew ink from the
+   ACTIVE theme's vars — in the default LIGHT theme --t1/--t2 resolve near-black, so rank/verdict/stat labels/
+   sign-in copy rendered dark-on-dark (~1.2-2.4:1, illegible). Scoped var overrides pin dark-surface ink to the
+   dark-theme palette regardless of which theme the body wears. */
+#ov-end,#ov-signin-prompt,.sip-card,#level-select,#ov-level-end{
+  --t1:#f0e6d4;--t2:#c0ad90;--t3:#8a7860;
+  --border:#3a2c20;--border2:#4a3826;--border3:#5a4632;
+  --acc:#e0962e;--acc-bright:#f0ad4a;--acc-dim:#b07820;
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1974,7 +1984,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.153 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.154 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2088,7 +2098,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.153 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.154 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2241,7 +2251,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.153 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.154 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2696,7 +2706,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.153
+// LOCK IN v3.5.154
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3148,7 +3158,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.153'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.154'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -5616,7 +5626,10 @@ function checkPanic(){
     flash('fl-panic');
     if(typeof playSfx==='function')playSfx('panic');
     showBanner('DISPATCH IN 60s! ⚡<br><span style="font-size:.72em">SEAL THE WALL — BONUS IF YOU BEAT THE CLOCK!</span>','panic',3000);
-    for(var i=0;i<3;i++){if(G.belt.length<BELT_PIECE_COUNT)G.belt.push(genPiece(true,false));}
+    // v3.5.154 BLOCKER FIX (Gatekeeper #2a): in DAILY the panic countdown + bonus still fire, but the RANDOM
+    // panic pieces are NOT injected — they were Math.random freight entering the "identical belt for everyone"
+    // promise at 85% fill (before the 92% win, i.e. nearly every run). Daily stays 100% deterministic.
+    if(gameMode!=='daily'){for(var i=0;i<3;i++){if(G.belt.length<BELT_PIECE_COUNT)G.belt.push(genPiece(true,false));}}
   }
   if(panicActive&&!panicSealed&&!gOver){
     var el2=(Date.now()-panicStartT)/1000;
@@ -9284,6 +9297,7 @@ function lbBoardCard(grid,key,side){
 function zLogWall(){
   try{
     if(!(ZDATA.session&&ZDATA.session.uid))return;
+    var _cp=zLoadPlayer();if(!_cp.consentSelf)return; // v3.5.154 BLOCKER FIX (Gatekeeper #4): the privacy policy promises "nothing leaves your device" without the save-my-stats opt-in — per-wall board posts now honor the same switch zSendSession already honors
     var wl=S.wallLog||[],w=wl[wl.length-1];if(!w)return;
     fetch(ZDATA.endpoint+'/rpc/lockin_log_wall',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({
       p_mode:gameMode||'',p_score:Math.round(w.score||0),p_pieces:Math.round(w.pieces||0),
@@ -9513,7 +9527,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.153</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.154</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10742,6 +10756,9 @@ function quickReset(){
   var np=document.getElementById('next-popup');if(np)np.classList.remove('vis');
   var oe=document.getElementById('ov-end');if(oe)oe.classList.remove('vis');
   _killStoppage(); // v3.5.121 admin -> reset during a stoppage must not leave the frozen overlay stuck
+  // v3.5.154 BLOCKER FIX (Gatekeeper #2b): QUICK RESET in DAILY must replay the SAME seeded stream from the top.
+  // restartGame() left DAILY.ptr mid-stream — forking the belt off the shared daily (and a stream-skimming exploit).
+  if(gameMode==='daily'&&typeof startDaily==='function'){startDaily();if(typeof showBanner==='function')showBanner('↺ RESET — same daily, from the top.','ok',1600);return;}
   if(typeof gameMode!=='undefined'&&gameMode&&typeof restartGame==='function'){
     restartGame(); // resets S + initTruck() + restarts the loop, keeps the current mode
     if(typeof showBanner==='function')showBanner('↺ RESET — fresh trailer.','ok',1600);
@@ -10976,6 +10993,7 @@ function _drHide(){var e=document.getElementById('daily-result');if(e)e.style.di
 function zSubmitDaily(score,walls,integ,inc,cb){
   var sx=ZDATA.session;
   if(!sx||!sx.uid){cb&&cb({anon:true});return;}
+  var _cp2=zLoadPlayer();if(!_cp2.consentSelf){cb&&cb({anon:true});return;} // v3.5.154 BLOCKER FIX (Gatekeeper #4): daily board post honors the save-my-stats switch like zSendSession
   try{
     fetch(ZDATA.endpoint+'/rpc/lockin_submit_daily',{method:'POST',headers:zAuthHeaders(),
       body:JSON.stringify({p_score:score,p_walls:walls,p_integrity:integ,p_incidents:inc})})
