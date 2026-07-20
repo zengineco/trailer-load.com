@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.159
+   LOCK IN v3.5.160
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.160 - LEDGER HIGH BATCH 2 — ALL 16 GATEKEEPER HIGHs NOW DEAD. (1) HIGH #3 EXPIRED-TOKEN LYING STATES, all three satellites: GoTrue tokens live ~1h, and a stale restored session made every fetch 401 while the pages rendered "No students have opted in yet" / "No walls on record yet" — an apparently WIPED roster/record (poison for a dashboard demo). Now: JWT exp is checked on boot-restore (30s skew), any 401 on the cohort/lifetime loaders routes to a real "Session expired — sign in again" state that clears the stored session and shows login, and empty-record copy can ONLY render on a genuine 200-empty. SmallsSort treats a stale token as signed-out for posting (SIGN IN link shows, runs never silently vanish) but NEVER deletes liAuth — that's the game's shared session and the game refreshes it. Verified: crafted expired JWT -> login + message + storage cleared; fresh JWT boots through; ss stale reads null with liAuth preserved. (2) HIGH #12 TOUR MIGRATED — the last old-format surface: 9-10px type raised to the 11px floor (+--t3 ink brightened), the INVISIBLE empty stars (dark-transparent on dark cards) now visible light-ink, and .le-btn joins the unified law (1.5px --btn-line, 6px radius, 34px). (3) HIGH #14 CHUTE LIGHT: the hardcoded #1f9d57/#d4820f/#c23a1a literals bypassed the colorblind data-cb remap entirely — now theme VARS (verified: deut remaps the light to blue) PLUS a glyph cue (✓ / ! / ✕) so chute state never rides color alone. (4) HIGH #16 SMALLSSORT SOUND (ss-1.7): a code-synthesized sfx kit like the flagship's (zero assets, zero licensing) — sort/wrong/strike/stoppage/struck-out/line-resumed all wired, with a persisted Sound Effects slider in settings (declared before the settings loader so the saved value survives — hoisting clobber caught in review). Verified: all six fire no-throw, ctx created, slider persists (35 roundtrip). LEDGER STATE: 5/5 blockers + 16/16 HIGHs dead; remaining = 31 MED + 21 LOW batches, then the VOICE PASS with Vince, then determinism-audit + Amnesiac passes, then the Gatekeeper re-verdict. NEXT: MED batch 1 (mechanics/state cluster).
    CHANGE LOG v3.5.159 - LEDGER HIGH BATCH 1 (10 of the Gatekeeper's 16 HIGHs, across all four surfaces). (1) ACCOUNT & DATA rendered raw JS-escape text — the password placeholder literally showed "••..." and the facility-consent checkbox (the most legally sensitive string in the product) showed "facility’s" — real bullets + a real apostrophe now. (2) THE SIGNED WRITE-UP LIED: "five sends you to a practice trailer" — the code sends you HOME at 4 write-ups; practice trailer is 5 INCIDENTS. The document players sign now states the real ladder. (3) BRIEFING RULE 8 taught two RETIRED mechanics (double-click a bag — impossible on touch since v3.5.114; "throw a box to summon" — language eradicated v3.5.115) — now teaches the ✂ BREAK chip + FLAG. (4) The briefing done-flag moved sessionStorage->localStorage — veterans no longer re-acknowledge the 9-rule clipboard EVERY browser session. (5) CONSENT CARD AUTO-POP: fired 650ms after EVERY clock-out forever because NOT NOW was never recorded — trained reflex-dismissal of the one dialog that matters. NOT NOW now persists (consentAsked); the card auto-pops ONCE and stays reachable via ADMIN → ACCOUNT & DATA. (6) PAUSE BUTTONS had NO border — var(--pause-border) was defined NOWHERE, the shorthand collapsed to none; now 1.5px var(--btn-line) + the 34px height law (the motif template itself finally obeys the outline law). (7) /me/ FOLLOW checked j.error but the RPC returns j.ok/j.err (the game checks correctly) — following a NONEXISTENT user reported "Following ✓" as false success; now matches the real contract incl. not_logged_in. (8) SmallsSort (ss-1.6): BOARD/SETTINGS overlays now FREEZE the belt (SM_UIPAUSE + zeroed clock) — you could previously take a FOREVER stoppage strike or strike OUT entirely while adjusting a slider. (9) ss viewport dropped maximum-scale=1/user-scalable=no — pinch-zoom restored (WCAG 1.4.4). (10) 'Bebas Neue',cursive fallback swept to sans-serif across all three satellites (dashboard/me/ss — 19 occurrences; the flagship was purged in v3.5.145). Verified in-browser: real bullets/apostrophe render, consentAsked persists + auto-pop gate closes, briefing flag on localStorage, write-up + rule-8 copy live, pause buttons carry the unified border spec + 34px. REMAINING HIGHs (batch 2): expired-token lying states (dashboard/me/ss), TOUR old-format migration, chute-light colorblind literals, ss sound effects. NEXT: batch 2, then MED/LOW.
    CHANGE LOG v3.5.158 - CRUSHED BOXES STAY ONE BOX (Vince: "why did a big box turn into two small boxes?... it really messes up the beautiful game. i hate this"). ROOT CAUSE: the crushed render early-returned into a FLAT PER-CELL RED SILHOUETTE — piecePath paths each grid cell separately, so a multi-cell crushed box painted as disconnected small red blocks with no cardboard, no tape, no label: "red cell confetti," reading as one box splitting into several. FIX: the crushed early-return is gone — a crushed box now renders FULLY (gradient, cardboard texture, tape, shipping label — still itself), then drawCrushOverlay() lays ONE unified damage layer across the whole piece: a dark bruise wash + faint red tinge + three seeded crack lines spanning the box as a single object (deterministic LCG off box.seed — no Math.random, daily-safe). A crushed BAG keeps its bag skin with the same overlay; the fragile pulse-glow still stops when crushed (no alarm on a dead box). PIXEL-VERIFIED against a healthy twin: crushed brightness 104 vs 179 (bruise applied) with texture variance 1008 (the old flat fill reads ~0) — a box, not confetti. ALSO: THE "undefined" LABEL KILLED at three layers (Vince's screenshot showed a box literally labeled "undefined"): the wall + strip label builders fall back to a real service code when labelDef.s is missing, and drawShippingLabel itself refuses to print any text containing "undefined" as a last line of defense. NEXT: the 16 HIGHs in batches; VOICE PASS held for Vince.
    CHANGE LOG v3.5.157 - PATTERN-BASED CRUSH LADDER (Vince's design: "it's not a write-up after one box gets crushed... it's only when your trailer constantly has broken boxes — when it becomes a pattern"). Crushing a box was firing the FRAGILE_CRUSH safety warning on the FIRST offense — but one crushed box already costs you (-300 real score per box, FLOW broken, the freight itself ruined): that is a MISTAKE, not a safety event. Now the safetyWarn ladder only starts from the 3rd crushed box of the session — and since safetyWarn itself still requires a REPEAT to become an incident, actual paper lands only on a genuine pattern of destruction. HAZMAT crush is UNCHANGED (instant write-up-pool — a hurt-somebody event at any count). The 3rd+ warn line acknowledges the pattern: "that's not the first box you've broken." Verified in-browser: crush event #1 (2 boxes) = 0 safety warns, just the cost; crush event #2 (session count 4) = FRAGILE_CRUSH warn fires. ALSO THIS SESSION: the LOAD THEORY CODEX extracted — 38 named rules / ~40 enforcement paths documented from code (Desktop lock-in-load-theory.txt), 6 marked [HIDDEN] (support multiplier, balance dock, arrow tax, killer pairs, tire-as-floor, speed curve) = coach/briefing teaching candidates. Rule #14's banner undersells the real crunch cost (-80 shown vs -300 actual) — queued for the copy pass. NEXT: the 16 HIGHs in batches, then MED/LOW; VOICE PASS held for Vince.
@@ -833,8 +834,8 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 .to-btn-exit:hover{border-color:var(--acc);color:var(--acc);}
 #to-speed{display:flex;gap:5px;align-items:center;}
 .to-speed-lbl{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  color:var(--t3);letter-spacing:.5px;margin-right:2px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:var(--t2);letter-spacing:.5px;margin-right:2px;
 }
 .to-speed-btn{
   flex:1;
@@ -903,16 +904,16 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   background:var(--ls-accent,var(--border2));
 }
 .ls-num{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  letter-spacing:2px;color:var(--t3);
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  letter-spacing:2px;color:var(--t2);
 }
 .ls-name{
   font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;
   color:var(--t1);line-height:1;
 }
 .ls-hub{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  color:var(--t3);letter-spacing:.5px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:var(--t2);letter-spacing:.5px;
 }
 .ls-diff{
   font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;
@@ -924,7 +925,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 }
 .ls-star{font-size:14px;line-height:1;}
 .ls-star.earned{color:#e8c060;}
-.ls-star.empty{color:rgba(42,32,24,.18);}
+.ls-star.empty{color:rgba(240,230,212,.30);}
 .ls-lock-icon{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   font-size:28px;opacity:.4;
@@ -952,14 +953,14 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 #le-stars{display:flex;gap:8px;margin-bottom:8px;}
 .le-star{font-size:40px;transition:transform .3s;}
 .le-star.earned{color:#e8c060;text-shadow:0 0 20px rgba(232,192,96,.5);}
-.le-star.empty{color:rgba(42,32,24,.18);}
+.le-star.empty{color:rgba(240,230,212,.28);}
 #le-title{
   font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:6px;
   color:var(--acc);margin-bottom:2px;
 }
 #le-hub{
-  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;
-  color:var(--t3);margin-bottom:16px;
+  font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;
+  color:var(--t2);margin-bottom:16px;
 }
 #le-grade{
   font-family:'Bebas Neue',sans-serif;font-size:80px;letter-spacing:6px;
@@ -979,23 +980,23 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   color:var(--t1);display:block;line-height:1;
 }
 .le-stat-l{
-  font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;
-  color:var(--t3);display:block;margin-top:3px;text-transform:uppercase;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
+  color:var(--t2);display:block;margin-top:3px;text-transform:uppercase;
 }
 #le-flavor{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  color:var(--t3);letter-spacing:.8px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:var(--t2);letter-spacing:.8px;
   text-align:center;max-width:480px;margin-bottom:20px;
   font-style:italic;
 }
 #le-btn-row{display:flex;gap:10px;}
 .le-btn{
   font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;
-  padding:10px 22px;border-radius:4px;cursor:pointer;border:1px solid;
+  padding:10px 22px;border-radius:6px;cursor:pointer;border:1.5px solid var(--btn-line);min-height:34px; /* v3.5.160 unified outline law reaches TOUR */
 }
-.le-btn-restart{background:transparent;color:var(--t2);border-color:var(--border2);}
+.le-btn-restart{background:transparent;color:var(--t1);}
 .le-btn-restart:hover{color:var(--acc);border-color:var(--acc);}
-.le-btn-menu{background:transparent;color:var(--t2);border-color:var(--border2);}
+.le-btn-menu{background:transparent;color:var(--t1);}
 .le-btn-menu:hover{color:var(--acc);border-color:var(--acc);}
 .le-btn-next{
   background:linear-gradient(180deg,var(--ok),#1a8048);
@@ -1410,10 +1411,14 @@ body.m-portrait #conv-header{flex-wrap:wrap;row-gap:6px;justify-content:center;}
 .console-btn.on{border-color:var(--btn-line);}
 @keyframes bjpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
 @keyframes bjblink{0%{opacity:1;}50%{opacity:.4;}}
-.chute-light{width:14px;height:14px;border-radius:50%;display:inline-block;flex:none;background:#1f9d57;box-shadow:0 0 8px #1f9d57;}
-.chute-light.cl-ok{background:#1f9d57;box-shadow:0 0 8px #1f9d57;}
-.chute-light.cl-warn{background:#d4820f;box-shadow:0 0 9px #d4820f;}
-.chute-light.cl-crit{background:#c23a1a;box-shadow:0 0 12px #c23a1a;animation:bjblink .5s steps(2) infinite;}
+/* v3.5.160 HIGH #14: theme VARS (so the colorblind data-cb remap actually reaches the light) + a GLYPH cue so state never rides color alone */
+.chute-light{width:14px;height:14px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:none;background:var(--ok);box-shadow:0 0 8px var(--ok);font:bold 9px 'Share Tech Mono',monospace;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.85);}
+.chute-light.cl-ok{background:var(--ok);box-shadow:0 0 8px var(--ok);}
+.chute-light.cl-ok::after{content:'✓';}
+.chute-light.cl-warn{background:var(--warn);box-shadow:0 0 9px var(--warn);}
+.chute-light.cl-warn::after{content:'!';}
+.chute-light.cl-crit{background:var(--danger);box-shadow:0 0 12px var(--danger);animation:bjblink .5s steps(2) infinite;}
+.chute-light.cl-crit::after{content:'✕';}
 /* v3.4.12 NC/SMALLS pie-chart lights + wheel HUD */
 /* v3.5.112 NC/staging pill sized to match the strip buttons (was tiny 11px = "different game") */
 .stg-light{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 11px;min-height:34px;border-radius:6px;background:rgba(0,0,0,.34);border:1.5px solid var(--btn-line);font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#e8d6b0;user-select:none;} /* v3.5.145 pulled into the unified --btn-line outline system + strip height */
@@ -1989,7 +1994,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.159 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.160 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2103,7 +2108,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.159 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.160 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2261,7 +2266,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.159 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.160 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2716,7 +2721,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.159
+// LOCK IN v3.5.160
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3168,7 +3173,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.159'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.160'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9581,7 +9586,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.159</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.160</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 

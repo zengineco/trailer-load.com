@@ -307,7 +307,8 @@ function mFetch(){
   var emp=document.getElementById('empty');if(emp){emp.style.display='block';emp.textContent='Loading your record…';}
   try{
     fetch(ME.endpoint+'/lockin_lifetime?select=*',{headers:mHeaders()})
-      .then(function(r){return r.json();}).then(function(j){
+      .then(function(r){if(r.status===401){mExpired();return null;}return r.json();}).then(function(j){
+        if(j===null)return; // v1.1 (HIGH #3) a 401 is a session problem, never "No walls on record"
         ME.rows=(j&&j.length)?j:[];
         mRender();
       }).catch(function(e){console.error('mFetch:',e);if(emp)emp.textContent='Could not load your record — try again.';});
@@ -359,8 +360,17 @@ function mSignOut(){
   document.getElementById('login').style.display='block';
   mMsg('Clocked out.','good');
 }
+// v1.1 (HIGH #3) — honest session expiry: stale tokens said "No walls on record yet" instead of the truth.
+function mJwtFresh(tok){try{var p=JSON.parse(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return (p.exp||0)*1000>Date.now()+30000;}catch(e){return true;}}
+function mExpired(){
+  try{localStorage.removeItem('lockinMeAuth');}catch(e){}
+  ME.session=null;
+  var d=document.getElementById('me');if(d)d.style.display='none';
+  var l=document.getElementById('login');if(l)l.style.display='block';
+  var m=document.getElementById('login-msg');if(m){m.textContent='Session expired — sign in again.';m.className='err';}
+}
 function mBoot(){
-  try{var r=localStorage.getItem('lockinMeAuth');if(r){ME.session=JSON.parse(r);if(ME.session&&ME.session.access_token){mEnter();return;}}}catch(e){console.error('mBoot:',e);}
+  try{var r=localStorage.getItem('lockinMeAuth');if(r){ME.session=JSON.parse(r);if(ME.session&&ME.session.access_token){if(!mJwtFresh(ME.session.access_token)){mExpired();return;}mEnter();return;}}}catch(e){console.error('mBoot:',e);}
 }
 mBoot();
 </script>

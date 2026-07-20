@@ -225,6 +225,7 @@ html,body{width:100%;height:100dvh;
 
     <div class="set-sec">SOUND</div>
     <div class="set-note" style="margin-bottom:6px;">Music is paused while the soundtrack is re-licensed.</div>
+    <div class="set-row"><span>Sound effects</span><input type="range" id="set-sfx" min="0" max="100" value="70" oninput="smSetVol('sfx',this.value)"></div>
     <!-- v1.5 music UI hidden, engine no-opped — unhide when re-licensed tracks land -->
     <div class="set-row" style="display:none;"><span>Music</span><input type="range" id="set-music" min="0" max="100" value="0" oninput="smSetVol('music',this.value)"></div>
     <button class="btn teal" id="set-music-toggle" onclick="smToggleMusic()" style="display:none;margin-top:6px;">▶ PLAY MUSIC</button>
@@ -292,8 +293,8 @@ var STATE={
   busyRoute:BUSY_ROUTE
 };
 // v1.3 settings (persisted): difficulty + high-contrast bins
-var SM_DIFF='normal', SM_HICON=false;
-try{var _ss0=JSON.parse(localStorage.getItem('smSettings')||'{}');if(_ss0){if(_ss0.diff)SM_DIFF=_ss0.diff;if(typeof _ss0.hicon==='boolean')SM_HICON=_ss0.hicon;}}catch(e){}
+var SM_DIFF='normal', SM_HICON=false, SM_SFXVOL=70; // sfx vol declared BEFORE the settings loader so the saved value isn't clobbered
+try{var _ss0=JSON.parse(localStorage.getItem('smSettings')||'{}');if(_ss0){if(_ss0.diff)SM_DIFF=_ss0.diff;if(typeof _ss0.hicon==='boolean')SM_HICON=_ss0.hicon;if(typeof _ss0.sfx==='number')SM_SFXVOL=_ss0.sfx;}}catch(e){}
 
 var cv=document.getElementById('cv');var cx=cv.getContext('2d');
 var W=1,H=1;
@@ -405,10 +406,10 @@ function resolveSort(pkg,binIdx,from){
     var bonus=Math.min(TUNE.comboBonusMax,STATE.combo*2);var gain=TUNE.sortBase+bonus;
     if(isQA(pkg)){gain+=5;STATE.qaCaught++;}
     STATE.score+=gain;STATE.sorted++;
-    popText(bin.rect.x+bin.rect.w/2,bin.rect.y,'+'+gain,'#2db86a');
+    popText(bin.rect.x+bin.rect.w/2,bin.rect.y,'+'+gain,'#2db86a');smSfx('sort');
   }else{
     STATE.combo=0;STATE.score=Math.max(0,STATE.score-TUNE.missPenalty);STATE.miss++;
-    popText(bin.rect.x+bin.rect.w/2,bin.rect.y,'WRONG BIN','#e0502a');
+    popText(bin.rect.x+bin.rect.w/2,bin.rect.y,'WRONG BIN','#e0502a');smSfx('wrong');
     if(STATE.mode==='forever')addStrike('MISSORT');
   }
   if(from==='pool'){var pi=STATE.pool.indexOf(pkg);if(pi>=0)STATE.pool.splice(pi,1);}
@@ -419,7 +420,7 @@ function resolveSort(pkg,binIdx,from){
 function addStrike(reason){
   if(STATE.mode!=='forever'||!STATE.running)return;
   STATE.strikes++;STATE.strikeFlash=Date.now();
-  var lives=TUNE.maxStrikes-STATE.strikes;
+  var lives=TUNE.maxStrikes-STATE.strikes;smSfx(lives>0?'strike':'out');
   popText(W/2,H*0.36,(lives>0?'STRIKE '+STATE.strikes+'/'+TUNE.maxStrikes:'STRUCK OUT')+(reason?' · '+reason:''),'#e0502a');
   updateHUD();
   if(STATE.strikes>=TUNE.maxStrikes)endGame('strikes');
@@ -599,13 +600,13 @@ function loop(ts){
   STATE.beltSpeed=(TUNE.beltSpeedStart+ramp*(TUNE.beltSpeedEnd-TUNE.beltSpeedStart))*dm.spd;
   STATE.spawnGap=(TUNE.spawnGapStart-ramp*(TUNE.spawnGapStart-TUNE.spawnGapEnd))*dm.gap;
   if(STATE.stopped){
-    if(poolFrac()<=TUNE.poolClearFrac){STATE.downtime+=(Date.now()-STATE.stopStart)/1000;STATE.stopped=false;popText(W/2,H*0.4,'LINE RESUMED','#2db86a');}
+    if(poolFrac()<=TUNE.poolClearFrac){STATE.downtime+=(Date.now()-STATE.stopStart)/1000;STATE.stopped=false;popText(W/2,H*0.4,'LINE RESUMED','#2db86a');smSfx('resume');}
     draw();updateHUD();updateTimer();requestAnimationFrame(loop);return;
   }
   if(ts-STATE.lastSpawn>STATE.spawnGap){STATE.lastSpawn=ts;spawnSmall();}
   STATE.convOff+=STATE.beltSpeed;
   for(var i=STATE.belt.length-1;i>=0;i--){var pk=STATE.belt[i];if(pk.grabbed)continue;pk.y+=STATE.beltSpeed*(dt/16.7);if(pk.y>=BELT_BOT-PKG*0.3){STATE.belt.splice(i,1);pk.inPool=true;pk.poolX=W/2+(Math.random()*2-1)*(BELT_W*0.26);STATE.pool.push(pk);STATE.combo=0;}}
-  if(poolFrac()>=TUNE.poolJamFrac&&!STATE.stopped){STATE.stopped=true;STATE.stopStart=Date.now();STATE.stoppages++;STATE.score=Math.max(0,STATE.score-TUNE.stoppageHit);if(STATE.mode==='forever')addStrike('BELT STOPPAGE');}
+  if(poolFrac()>=TUNE.poolJamFrac&&!STATE.stopped){STATE.stopped=true;STATE.stopStart=Date.now();STATE.stoppages++;smSfx('stoppage');STATE.score=Math.max(0,STATE.score-TUNE.stoppageHit);if(STATE.mode==='forever')addStrike('BELT STOPPAGE');}
   draw();updateHUD();updateTimer();requestAnimationFrame(loop);
 }
 
@@ -690,7 +691,7 @@ function smSubmitSession(acc,tput,grade){
     if(!_pl||!_pl.consentSelf)return; // no save without self-consent — identical rule to the game's zSendSession
     var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
     var rec={
-      user_id:s.uid, mode:'smalls', app_ver:'ss-1.6',
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.7',
       consent_self:!!_pl.consentSelf, consent_share:!!_pl.consentShare, opt_in_share:!!_pl.consentShare,
       started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
       duration_s:dur,
@@ -737,17 +738,41 @@ function smLoadBoard(metric){
     }).catch(function(e){console.error('smBoard:',e);el.innerHTML='<div class="bd-empty">Could not load the board.</div>';});
 }
 // ── v1.2 SETTINGS + MUSIC (same tracks as LOCK IN, off by default) ──
+// ── v1.7 (HIGH #16) SOUND EFFECTS — code-synthesized like the flagship's kit (zero assets, zero licensing) ──
+var SM_AC=null;
+function smSfx(kind){
+  if(!SM_SFXVOL)return;
+  try{
+    if(!SM_AC)SM_AC=new (window.AudioContext||window.webkitAudioContext)();
+    if(SM_AC.state==='suspended')SM_AC.resume();
+    var t=SM_AC.currentTime,V=SM_SFXVOL/100;
+    function tone(f,d,type,dl,vol){
+      var o=SM_AC.createOscillator(),g=SM_AC.createGain();
+      o.type=type||'sine';o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t+dl);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.001,(vol||0.5)*V),t+dl+0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dl+d);
+      o.connect(g);g.connect(SM_AC.destination);o.start(t+dl);o.stop(t+dl+d+0.05);
+    }
+    if(kind==='sort'){tone(660,0.07,'triangle',0,0.45);tone(880,0.06,'triangle',0.05,0.3);}
+    else if(kind==='wrong'){tone(170,0.18,'sawtooth',0,0.4);}
+    else if(kind==='strike'){tone(420,0.12,'square',0,0.45);tone(300,0.16,'square',0.1,0.45);}
+    else if(kind==='stoppage'){tone(520,0.14,'square',0,0.45);tone(390,0.14,'square',0.16,0.45);tone(520,0.14,'square',0.32,0.45);}
+    else if(kind==='out'){tone(392,0.16,'sawtooth',0,0.45);tone(311,0.16,'sawtooth',0.14,0.45);tone(233,0.3,'sawtooth',0.28,0.5);}
+    else if(kind==='resume'){tone(523,0.1,'triangle',0,0.4);tone(659,0.12,'triangle',0.08,0.4);}
+  }catch(e){}
+}
 var SM_AUDIO=null, SM_TRACK=1, SM_MUSICVOL=0;
 try{var _sv=JSON.parse(localStorage.getItem('smSettings')||'{}');if(_sv&&typeof _sv.music==='number')SM_MUSICVOL=_sv.music;}catch(e){}
-function smSaveSettings(){try{localStorage.setItem('smSettings',JSON.stringify({music:SM_MUSICVOL,diff:SM_DIFF,hicon:SM_HICON}));}catch(e){}}
-function smOpenSettings(){SM_UIPAUSE=true;
+function smSaveSettings(){try{localStorage.setItem('smSettings',JSON.stringify({music:SM_MUSICVOL,diff:SM_DIFF,hicon:SM_HICON,sfx:SM_SFXVOL}));}catch(e){}}
+function smOpenSettings(){SM_UIPAUSE=true;var _sx=document.getElementById('set-sfx');if(_sx)_sx.value=SM_SFXVOL;
   var m=document.getElementById('set-music');if(m)m.value=SM_MUSICVOL;
   var seg=document.getElementById('seg-diff');if(seg){var bs=seg.querySelectorAll('button'),i;for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-d')===SM_DIFF);}
   var tg=document.getElementById('tgl-hicon');if(tg){tg.textContent=SM_HICON?'ON':'OFF';tg.classList.toggle('on',SM_HICON);}
   document.getElementById('ov-settings').classList.add('vis');
 }
 function smCloseSettings(){SM_UIPAUSE=false;document.getElementById('ov-settings').classList.remove('vis');}
-function smSetVol(kind,v){v=parseInt(v,10)||0;if(kind==='music'){SM_MUSICVOL=v;if(SM_AUDIO)SM_AUDIO.volume=v/100;}smSaveSettings();}
+function smSetVol(kind,v){v=parseInt(v,10)||0;if(kind==='music'){SM_MUSICVOL=v;if(SM_AUDIO)SM_AUDIO.volume=v/100;}else if(kind==='sfx'){SM_SFXVOL=v;smSfx('sort');}smSaveSettings();}
 function smSetDiff(d){if(!DIFF_MULT[d])d='normal';SM_DIFF=d;var seg=document.getElementById('seg-diff');if(seg){var bs=seg.querySelectorAll('button'),i;for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-d')===d);}smSaveSettings();}
 function smToggleHicon(){SM_HICON=!SM_HICON;var tg=document.getElementById('tgl-hicon');if(tg){tg.textContent=SM_HICON?'ON':'OFF';tg.classList.toggle('on',SM_HICON);}smSaveSettings();if(!STATE.running)draw();}
 function smToggleMusic(){
@@ -778,7 +803,12 @@ function boot(){
 // reads the same localStorage session ('liAuth'). This is what makes SIGN OUT reachable from here
 // (was the reported gap). Sign-IN lives in the main game's profile, so we link there rather than
 // duplicate the whole auth form.
-function smReadAuth(){try{var r=localStorage.getItem('liAuth');return r?JSON.parse(r):null;}catch(e){return null;}}
+function smReadAuth(){try{var r=localStorage.getItem('liAuth');if(!r)return null;var s=JSON.parse(r);
+  // v1.7 (HIGH #3) stale-token honesty: a ~1h GoTrue token past exp means every POST silently 401s.
+  // Treat expired as signed-out here (SIGN IN link shows, runs don't silently vanish) — but NEVER delete
+  // liAuth: it's the GAME's shared session and the game knows how to refresh it.
+  try{var p=JSON.parse(atob((s.access_token||'').split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));if((p.exp||0)*1000<=Date.now()+30000)return null;}catch(e){}
+  return s;}catch(e){return null;}}
 function smAcctRender(){
   var el=document.getElementById('sm-acct');if(!el)return;
   var s=smReadAuth();

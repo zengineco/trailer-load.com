@@ -189,7 +189,8 @@ function dEnter(){
 function dFetchFacility(){
   try{
     fetch(DASH.endpoint+'/lockin_facilities?select=name,facility_code',{headers:dHeaders()})
-      .then(function(r){return r.json();}).then(function(j){
+      .then(function(r){if(r.status===401)return null;return r.json();}).then(function(j){
+        if(j===null)return; // 401 handled by the cohort path's dExpired
         if(j&&j.length){DASH.name=j[0].name||j[0].facility_code||'Your program';var who=document.getElementById('who');if(who)who.innerHTML='<b>'+dEsc(DASH.name)+'</b>'+dEsc(DASH.session&&DASH.session.email||'');}
       }).catch(function(e){console.error('dFetchFacility:',e);});
   }catch(e){console.error('dFetchFacility:',e);}
@@ -200,7 +201,8 @@ function dFetchCohort(){
   var emp=document.getElementById('empty');if(emp){emp.style.display='block';emp.textContent='Loading roster…';}
   try{
     fetch(DASH.endpoint+'/lockin_cohort?select=*',{headers:dHeaders()})
-      .then(function(r){return r.json();}).then(function(j){
+      .then(function(r){if(r.status===401){dExpired();return null;}return r.json();}).then(function(j){
+        if(j===null)return; // v1.1 (HIGH #3) a 401 is a session problem, never an empty roster
         // drop the instructor's own handle (it comes back via the self-read policy with all zeros)
         DASH.rows=(j&&j.length)?j.filter(function(r){return !(DASH.session&&r.user_id===DASH.session.uid);}):[];
         var st=document.getElementById('stamp');if(st)st.textContent=DASH.rows.length+' students on roster';
@@ -293,8 +295,19 @@ function dSignOut(){
   var who=document.getElementById('who');if(who)who.style.display='none';
   dMsg('Signed out.','good');
 }
+// v1.1 (HIGH #3) — GoTrue tokens live ~1h; restoring a stale one made every fetch 401 and the page rendered
+// "No students have opted in yet" — an apparently WIPED roster. Expired now means expired, said out loud.
+function dJwtFresh(tok){try{var p=JSON.parse(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return (p.exp||0)*1000>Date.now()+30000;}catch(e){return true;}}
+function dExpired(){
+  try{localStorage.removeItem('lockinDashAuth');}catch(e){}
+  DASH.session=null;
+  var d=document.getElementById('dash');if(d)d.style.display='none';
+  var w=document.getElementById('who');if(w)w.style.display='none';
+  var l=document.getElementById('login');if(l)l.style.display='block';
+  var m=document.getElementById('login-msg');if(m){m.textContent='Session expired — sign in again.';m.className='err';}
+}
 function dBoot(){
-  try{var r=localStorage.getItem('lockinDashAuth');if(r){DASH.session=JSON.parse(r);if(DASH.session&&DASH.session.access_token){dEnter();return;}}}catch(e){console.error('dBoot:',e);}
+  try{var r=localStorage.getItem('lockinDashAuth');if(r){DASH.session=JSON.parse(r);if(DASH.session&&DASH.session.access_token){if(!dJwtFresh(DASH.session.access_token)){dExpired();return;}dEnter();return;}}}catch(e){console.error('dBoot:',e);}
 }
 dBoot();
 </script>
