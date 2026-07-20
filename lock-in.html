@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.155
+   LOCK IN v3.5.156
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.156 - WAVE B: THE SCORING ECONOMY UNIFIED (Gatekeeper blockers #1 + #3 — the last two). (1) BLOCKER #1: ~10 systems mutated G.score directly (nest, keystone/cornerstone/void-filler, hazmat-shelf +1500, seal payout, hydration bonus, dispatch bonus, throw penalty, over-hydration penalty, unseal -150, collapse -80n) while calcScore() statelessly overwrote it on the next placement/lift — every one of those amounts silently EVAPORATED. The hazmat-shelf +1500 was a pure no-op (added and overwritten inside the same placeBox call), and KEEP LOADING after a seal erased the whole seal payout — improving a daily wall literally COST points on the world board. NOW: one economy. bankScore(n) is the single entry point — every one-shot amount accumulates in a persistent per-wall G.bonusPool that calcScore ALWAYS includes, added post-multiplier so banked magnitudes match the old direct-add semantics exactly. All 11 sites converted; pool resets in wallBaseline (after the sealed wall's score is banked into S.totalScore); the redundant TETRIS direct-add is left alone (already persistent via the shelfB term — converting it would double-count). (2) BLOCKER #3: shed pieces (collapse, tall-tower shed, vertical-tire shed) now come back CHURN-MARKED (_gen+1) and take their placement credit with them (placed-1) — re-placing shed freight earns zero PPH, zero FLOW, and the collapse cost is persistent, so the place-slip-replace multiplier farm is dead. Verified in-browser: bankScore(777) survives a REAL placement recompute (delta exactly 777), penalty banking (-200 -> 577), wallBaseline zeroes the pool, 3-piece shed -> all _gen>0 + placed 10->7 + collapse counted. ALL FIVE GATEKEEPER BLOCKERS ARE NOW DEAD. NEXT: crush-ladder redesign to pattern-based (Vince's order), then the 16 HIGHs, then MED/LOW batches; rules-extraction agent hunting the full mechanics list in parallel; in-game VOICE PASS queued as its own sweep with Vince.
    CHANGE LOG v3.5.155 - ADSENSE STRIPPED FOREVER + MUSIC ZEROED (licensing) + PUBLISHED PRICING. Vince's orders, executed in full. (1) NO AD TECH ON TRAILER-LOAD.COM, EVER: the AdSense script/meta removed from all 7 pages (game, homepage, dashboard, /me/, /ss/, privacy, terms) + ads.txt deleted; SOPIPA-class student-privacy laws prohibit ad tech on school-purpose services and district vetting scans for the tag — this domain is now K-12-clean. Cookie-consent + privacy copy updated to a hard promise: "no ad networks, no ad tech, no personalized advertising, to anyone, ever." The AdSense ACCOUNT is untouched — it lives on other F-Keys properties. Tombstone comments guard every removal site. (2) MUSIC ZEROED: the 13 soundtrack mp3s were generated on a free-tier account whose license does NOT include distribution/commercial use — unlicensed audio in a paid school product is a vetting/contract landmine. All 13 moved to Desktop\trailer-load-archive\music-unlicensed\ (preserved, not flushed); MUSIC.list=[] makes every playback path a safe no-op; music settings rows hidden (DOM ids kept so refreshSettingsUI never breaks) with a "paused while the soundtrack is re-licensed" note; SmallsSort (ss-1.5) same treatment. SFX are code-synthesized (zero assets) and fully intact, sliders and all. Refill MUSIC.list when properly licensed tracks land. (3) PRICING PUBLISHED on the homepage (the certified structure + Vince's customization tier): Site License $1,950/school-year · Founding Programs $1,450/yr locked (first 10, free first semester) · Per-Seat $29/student/semester · Employer Bay $490/yr · CUSTOM EDITION $4,999 (school colors / custom freight mixes / facility SOPs — under every state software cap and the micro-purchase threshold, and it demonstrates we scale) · "Get a formal quote + W-9" mailto. NEXT: Wave B (scoring-economy unification, blocker #1) + crush-ladder redesign to pattern-based (Vince: one crushed box is a mistake; a PATTERN of broken boxes gets eyes on you) + rules 15-16 in the Load Theory list.
    CHANGE LOG v3.5.154 - CONTENT-SWEEP WAVE A: 3 of the Gatekeeper's 5 BLOCKERS + the crawler stopgap. The full 16-member Devs review (4 floors + operators + legal + Gatekeeper) returned NO SHIP with 5 blockers; this wave cuts the surgical three. (1) BLOCKER #2 — DAILY DETERMINISM, both breaks: (a) checkPanic fired 3 Math.random pieces into the daily belt at 85% fill (before the 92% win = nearly every run), breaking the identical-freight-for-everyone promise — in daily the DISPATCH countdown + bonus still fire but the random injections are skipped (deterministic stream untouched); (b) Settings QUICK RESET called restartGame() leaving DAILY.ptr mid-stream — forked belt + a stream-skimming exploit — now branches to startDaily() like TRY AGAIN. Verified: daily panic fires with belt delta 0 (shift still injects 3); quickReset reproduces a fresh daily byte-for-byte (ptr 10=10, identical belt sequence). (2) BLOCKER #4 — CONSENT ENFORCEMENT: privacy.html promises "leave it off and nothing about your gameplay leaves your device," but zLogWall + zSubmitDaily posted on any signed-in uid, and SmallsSort HARDCODED consent_self:true. All three now honor the same zLoadPlayer().consentSelf switch zSendSession always honored; ss (ss-1.4) reads the shared liPlayer record and passes the REAL consent flags. Verified: consentSelf=false -> 0 fetches from zLogWall + zSubmitDaily cb {anon:true}; true -> posts. (3) BLOCKER #5 — THEME COLLAPSE: #ov-end, .sip-card, #level-select, #ov-level-end have FIXED near-black backgrounds but drew ink from the ACTIVE theme vars — in the default LIGHT theme rank/verdict/stat labels rendered dark-on-dark (~1.2-2.4:1, illegible). Scoped var overrides pin dark-theme ink to those surfaces regardless of body theme. Verified: light theme, .es-rank rgb(240,230,212), .esh-l rgb(192,173,144). (4) HIGH #5/#6 stopgap: robots.txt now Disallows /old/ (34 stale builds) + /forklift/ (unreleased Zengine-branded prototype) in EVERY user-agent group (named groups override *); actual removal from the deploy = Vince's call. REMAINING BLOCKERS (next waves, each its own careful pass): #1 dual scoring model (one persistent bonus-pool economy — the big one), #3 collapse/slip re-place farm (depends on #1's persistent costs). NEXT: Wave B = blocker #1 scoring unification.
    CHANGE LOG v3.5.153 - BAG RE-PLACE EXPLOIT FIXED + F-KEYS SPLASH. (1) EXPLOIT (Vince farmed it vs kreminal): you could pick-up-and-place a bag over and over for points. Root cause — the v3.5.147 FLOW streak incremented + paid its escalating bonus on EVERY placement, including a CHURNED re-placement (a piece already lifted). PPH was already churn-guarded (v3.5.99 box._gen), but FLOW wasn't. Now flow only builds on a FRESH piece (box._gen===0); a lifted-and-replaced piece earns ZERO flow, so the pick-up/put-down spam can't grow flowBonus or score. (The roof-bag +600 was already safe — box._bagCeilAwarded copies through a lift.) Verified: fresh flow 5 / bonus 150 / score 1376, then churning a piece 5x (gen->5) left flow 5, bonus 150, score 1376 — no farm. (2) F-KEYS COMPANY SPLASH: a brand splash now plays FIRST on boot (z-902), fades at ~1.4s, then the LOCK IN boot splash (delayed 1650->2600ms). Uses fkeys.png if present; otherwise a clean self-contained inline-SVG mark (the italic florin ƒ outlined in white + a 'keys' badge, 'AN F-KEYS PRODUCTION' under it) so it is NEVER a broken image. Tap skips. Verified: splash present + above boot, SVG fallback swaps in when fkeys.png 404s, auto-dismisses. TO GET THE EXACT LOGO: drop the real logo into the site folder as fkeys.png. NEXT: still open — human pixel QA (Vince).
@@ -1985,7 +1986,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.155 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.156 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2099,7 +2100,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.155 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.156 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2257,7 +2258,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.155 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.156 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2712,7 +2713,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.155
+// LOCK IN v3.5.156
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3164,7 +3165,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.155'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.156'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4283,7 +4284,7 @@ function takeDrink(){
     // v3.5.64 escalating SCORE penalty: 4th drink -100, 5th -200, 6th -300... you CAN still drink your way
     // out of a warning, but it costs you. Keeps the escape valve honest instead of free.
     var _dpen=(G.drinks-3)*100;
-    G.score=Math.max(0,(G.score||0)-_dpen);
+    bankScore(-_dpen); // v3.5.156 banked — persists through recomputes
     S.waterSabotage=(S.waterSabotage||0)+1;
     showBanner('\ud83d\udeab OVER-HYDRATING TO DODGE SAFETIES IS SABOTAGE \u2014 logged. \u2212'+_dpen+' CUBES'+(cleared?' (warning still cleared).':'.'),'danger',2400);
   }else if(_covered){showBanner('\ud83d\udc77 MANAGER: \u2026THANK YOU FOR STAYING HYDRATED. \ud83d\udca7','ok',2400);}
@@ -4408,7 +4409,7 @@ function tryNest(src,idx,tcell){
   else{G.bagSlots[idx]=null;selBag=-1;if(typeof buildBagPanel==='function')buildBagPanel();}
   var _realBox=!(sb.type==='small'||sb.isBag)&&_area>=2; // a real regular/large box, not a smalls/bag
   var bonus=70+30*cost+(isHaz?120:0)+(_realBox?200*(_area-1):0); // v3.5.50 BIG bonus for stuffing an actual box into the hollow
-  G.score=(G.score||0)+bonus;
+  bankScore(bonus); // v3.5.156 banked — the nest bonus used to evaporate on the next placement's recompute
   S.nests=(S.nests||0)+1;
   if(typeof gcurFlash==='function')gcurFlash('nest',520); // v3.5.22 nest-glove on a tire stuff
   // v3.5.9: a nest IS a placed small — count it toward throughput + smalls totals. Was logged ONLY as a "nest",
@@ -4457,7 +4458,7 @@ function liftBox(cell){
   G.tetrisRows=G.tetrisRows||{};
   var _lc=cell.cells||makeRect(cell.w,cell.h),_lci,_lbroke=false;
   for(_lci=0;_lci<_lc.length;_lci++){var _lry=cell.ry+_lc[_lci][1];if(G.tetrisRows[_lry]){delete G.tetrisRows[_lry];_lbroke=true;}}
-  if(_lbroke){G.score=Math.max(0,(G.score||0)-150);G.tetrisTotal=Math.max(0,(G.tetrisTotal||0)-1);if(typeof showBanner==='function')showBanner('⚠ UNSEALED A LOCKED SHELF — −150 CUBES','danger',2200);if(typeof playSfx==='function')playSfx('error');}
+  if(_lbroke){bankScore(-150);G.tetrisTotal=Math.max(0,(G.tetrisTotal||0)-1);if(typeof showBanner==='function')showBanner('⚠ UNSEALED A LOCKED SHELF — −150 CUBES','danger',2200);if(typeof playSfx==='function')playSfx('error');}
   // Remove from grid
   var cells2=cell.cells||makeRect(cell.w,cell.h);
   for(var i=0;i<cells2.length;i++){
@@ -5167,7 +5168,7 @@ function throwBox(){
   // v3.5.65 escalating throw penalty \u2014 PERFECT SYMMETRY with the drink rule (4th throw -100, 5th -200, 6th -300...).
   // Kills the "throw forever, place 1000 smalls from bags" exploit: you CAN do it, it just goes deep score-negative.
   var _tpen=0;
-  if((G.throws||0)>3){_tpen=(G.throws-3)*100;G.score=Math.max(0,(G.score||0)-_tpen);}
+  if((G.throws||0)>3){_tpen=(G.throws-3)*100;bankScore(-_tpen);} // v3.5.156 banked
   if(typeof playSfx==='function')playSfx('place');
   if(typeof refillBelt==='function')refillBelt();
   _openThrowWindow(_tpen); // v3.5.67 THE HEY WINDOW \u2014 a bag hits the belt, manager says "HEY \u2014"; DRINK within 2s to cover it or it's a violation
@@ -5420,7 +5421,7 @@ function tireSetIn(cell){
 function _shedToBelt(cells){
   var i,g=0;for(i=0;i<cells.length;i++){var c=cells[i];if(!c)continue;
     var cs=c.cells||makeRect(c.w,c.h),j;for(j=0;j<cs.length;j++){var ax=c.rx+cs[j][0],ay=c.ry+cs[j][1];if(G.grid[ay]&&G.grid[ay][ax]===c)G.grid[ay][ax]=null;}
-    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...c.box,id:'V'+Date.now().toString(36)+(g++)});}
+    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...c.box,id:'V'+Date.now().toString(36)+(g++),_gen:(c.box._gen||0)+1});placed=Math.max(0,placed-1);} // v3.5.156 churn-marked + credit removed
   if(typeof settleFloaters==='function')settleFloaters();
   G.cog=calcCOG(G.grid);G.support=supportScore(G.grid);
 }
@@ -5458,7 +5459,8 @@ function collapseFreeStack(st){
   st.boxes.forEach(function(cell){
     var cs=cell.cells||makeRect(cell.w,cell.h),i;
     for(i=0;i<cs.length;i++){var ax=cell.rx+cs[i][0],ay=cell.ry+cs[i][1];if(G.grid[ay]&&G.grid[ay][ax]===cell)G.grid[ay][ax]=null;}
-    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)+(n++)});
+    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)+(n++),_gen:(cell.box._gen||0)+1}); // v3.5.156 BLOCKER #3: a shed piece is CHURNED — re-placing it earns zero PPH and zero FLOW (the place-slip-replace farm is dead)
+    placed=Math.max(0,placed-1); // v3.5.156 its placement credit leaves with it
   });
   settleFloaters(); // v3.5.56 sweep anything left hanging by the topple
   G.integrity=clamp((G.integrity||100)-(_slip?5:COLLAPSE_INT_COST),0,100);
@@ -5508,7 +5510,7 @@ function checkTetris(){
         if(_hcell&&_hcell.box&&_hcell.box.hazClass&&!_hseen[_hcell.id]&&!G.hazShelved[_hcell.id]){_hseen[_hcell.id]=true;G.hazShelved[_hcell.id]=true;_hzc++;}
       }}
       if(_hzc>0){
-        G.score=(G.score||0)+HAZMAT_SHELF_BONUS;
+        bankScore(HAZMAT_SHELF_BONUS); // v3.5.156 banked — this +1500 was a PURE NO-OP before (added then overwritten inside the same placeBox call)
         G.hazShelfLocks=(G.hazShelfLocks||0)+1;S.hazShelfLocks=(S.hazShelfLocks||0)+1;if(typeof playSfx==='function')playSfx('hazmatlock');
         showBanner('\u2622 HAZMAT SHELF LOCKED +'+HAZMAT_SHELF_BONUS+'<br><span style="font-size:.72em">LOADED LOW, CAPPED, SECURED \u2014 THE VET MOVE.</span>','ok',3400);
       }
@@ -5610,7 +5612,7 @@ function checkKeystoneBonus(gx,gy,rot,box){
     }
   }
   if(bonus>0){
-    G.score=(G.score||0)+bonus;
+    bankScore(bonus); // v3.5.156 banked — keystone/cornerstone/void-filler used to evaporate
     if(box)box._bonusEarned=true; // v2.10.2 mark earned
     showBanner(msg,'ok',2400);flash('fl-ok');
   }
@@ -5679,10 +5681,11 @@ function triggerCollapse(){
       var cx=cells2[i][0],cy=cells2[i][1];
       if(G.grid[cell.ry+cy]&&G.grid[cell.ry+cy][cell.rx+cx]===cell)G.grid[cell.ry+cy][cell.rx+cx]=null;
     }
-    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)});
+    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36),_gen:(cell.box._gen||0)+1}); // v3.5.156 churn-marked
+    placed=Math.max(0,placed-1); // v3.5.156
   });
   G.integrity=clamp((G.integrity||100)-COLLAPSE_INT_COST,0,100);
-  G.score=Math.max(0,(G.score||0)-80*toRemove.length);
+  bankScore(-80*toRemove.length); // v3.5.156 banked — collapse cost is PERSISTENT now (was wiped by the next recompute)
   recoveryActive=true;recoveryT=Date.now();recoveryCount=0;
   addShake(22);playSfx('collapse');hapt('collapse');if(typeof gridToCanvas==='function'){var _cc=gridToCanvas(GW/2,GH*0.5);spawnBurst(_cc.x,_cc.y,40,'rgba(120,90,60,.95)',180,0.7,280);}
   flash('fl-danger');
@@ -5737,7 +5740,19 @@ function calcScore(segOverride){
   // Live grid scan, so moving it back down un-penalizes. 1 viol=50%, 2=25%, etc.
   var segViol=(segOverride===undefined||segOverride===null)?countSegregationViolations(G.grid):segOverride;
   var hazMult=Math.pow(0.5, countHazmatViolations(G.grid)+segViol);
-  return Math.max(0,Math.round(raw*speedM*supM*integM*hazMult));
+  // v3.5.156 BLOCKER #1 FIX (Gatekeeper): + the persistent one-shot pool, POST-multiplier (direct adds always
+  // bypassed the multipliers, so banked bonuses/penalties keep their exact old magnitudes — they just STOP evaporating).
+  return Math.max(0,Math.round(raw*speedM*supM*integM*hazMult)+Math.round((G&&G.bonusPool)||0));
+}
+// v3.5.156 ONE SCORING ECONOMY (Gatekeeper blocker #1). Before this, ~10 systems mutated G.score directly while
+// calcScore() statelessly overwrote it on the next placement/lift — so nest/keystone/hazmat-shelf/seal/hydration/
+// dispatch bonuses and throw/drink/unseal/shed penalties all silently EVAPORATED (hazmat-shelf +1500 was a pure
+// no-op, and improving a daily wall after sealing COST the whole seal payout on the board). Every one-shot amount
+// now banks into a per-wall G.bonusPool that calcScore always includes. bankScore() is the single entry point.
+function bankScore(n){
+  if(typeof G==='undefined'||!G)return;
+  G.bonusPool=(G.bonusPool||0)+n;
+  G.score=calcScore();
 }
 var _elapsedFrozen=null; // v3.5.138 the clock STOPS whenever you're REVIEWING (game over, post-sort report, or the wall-complete popup) — so PPH/elapsed don't keep dropping while you read your stats (kremsicle: "PPH still counts when reviewing statistics")
 function _reviewing(){return gOver||(typeof _shown==='function'&&(_shown('ov-postsort')||_shown('next-popup')||_shown('ov-end')));}
@@ -5767,7 +5782,7 @@ function wallBaseline(){ // call at each wall START
   S._wallBase.incidents=(S.incidents||[]).length;
   S._wallBase.warnings=(S.warnings||[]).length;
   S._wallBase.startT=Date.now();
-  if(typeof G!=='undefined'&&G){G.flow=0;G.flowBonus=0;} // v3.5.147 FLOW resets each wall
+  if(typeof G!=='undefined'&&G){G.flow=0;G.flowBonus=0;G.bonusPool=0;} // v3.5.147 FLOW resets each wall; v3.5.156 the one-shot pool too (the sealed wall's score was already banked into S.totalScore before this runs)
 }
 function finalizeWall(){
   if(typeof G==='undefined'||!G||!G.grid)return;
@@ -5816,20 +5831,20 @@ function sealWall(reason){
   G.sealed=true;
   if(typeof zLog==='function')zLog('seal',{density:Math.round((typeof wallSolidity==='function'?wallSolidity(G.grid):0)*100),fill:packPct(),pph:getPPH(),pieces:(typeof gridPieceCount==='function'?gridPieceCount():placed)}); // v3.5.132 raw timeline
   if(typeof gcurFlash==='function')gcurFlash('finish',1300); // v3.5.22 finish-glove on sealing the wall
-  if((G.drinks||0)>=2){G.score=(G.score||0)+HYDRATION_BONUS;showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);}
+  if((G.drinks||0)>=2){bankScore(HYDRATION_BONUS);showBanner('\ud83d\udca7 HYDRATED \u2014 +'+HYDRATION_BONUS+' CUBES (took your water breaks).','ok',2200);} // v3.5.156 banked
   if(typeof playSfx==='function')playSfx('win');
   var _dens=Math.min(1,(typeof wallSolidity==='function')?wallSolidity(G.grid):(countFilled()/(GW*GH))); // v3.5.50 SOLIDITY (gapless fill up to wall height), not raw volume
   var _sealPay=Math.round(LOAD_SEALED_BONUS*_dens); // seal payout SCALED BY FILL \u2014 a loose wall earns a loose payout (kills the panic-bail-at-threshold A+ exploit)
   try{finalizeWall();}catch(_dh){} // v3.5.57 capture this wall's integrity+density once (single source of truth)
   try{if(typeof zLogWall==='function')zLogWall();}catch(_lw){} // v3.5.83 post this sealed wall to the per-wall boards
-  G.score=(G.score||0)+_sealPay; // v2.1.11 #1 payout, v3.5.46 density-scaled
+  bankScore(_sealPay); // v2.1.11 #1 payout, v3.5.46 density-scaled; v3.5.156 BANKED — KEEP LOADING after a seal no longer erases the payout (the "improving a daily wall COSTS you ~3300 on the board" blocker)
   showBanner('\u2713 LOAD SEALED +'+_sealPay+'<br><span style="font-size:.72em">'+packPct()+'% PACKED \u2014 PAYOUT SCALES WITH FILL.</span>','ok',3000);
   if(panicActive&&!panicSealed){
     panicSealed=true;
     var rem=Math.max(0,PANIC_DURATION-(Date.now()-panicStartT)/1000);
     if(rem>0){
       var bonus=Math.round(PANIC_BONUS_MAX*(rem/PANIC_DURATION)*_dens); // v3.5.46 dispatch bonus also scaled by fill — no reward for speed-bailing a loose wall
-      G.score+=bonus;
+      bankScore(bonus); // v3.5.156 banked
       showBanner('DISPATCH BONUS! ⚡<br><span style="font-size:.72em">+'+bonus+' CUBES — SEALED WITH '+Math.ceil(rem)+'s LEFT!</span>','ok',3000);
     }
     document.getElementById('panic-wrap').classList.remove('vis');
@@ -9538,7 +9553,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.155</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.156</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
