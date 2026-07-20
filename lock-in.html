@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.158
+   LOCK IN v3.5.159
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.159 - LEDGER HIGH BATCH 1 (10 of the Gatekeeper's 16 HIGHs, across all four surfaces). (1) ACCOUNT & DATA rendered raw JS-escape text — the password placeholder literally showed "••..." and the facility-consent checkbox (the most legally sensitive string in the product) showed "facility’s" — real bullets + a real apostrophe now. (2) THE SIGNED WRITE-UP LIED: "five sends you to a practice trailer" — the code sends you HOME at 4 write-ups; practice trailer is 5 INCIDENTS. The document players sign now states the real ladder. (3) BRIEFING RULE 8 taught two RETIRED mechanics (double-click a bag — impossible on touch since v3.5.114; "throw a box to summon" — language eradicated v3.5.115) — now teaches the ✂ BREAK chip + FLAG. (4) The briefing done-flag moved sessionStorage->localStorage — veterans no longer re-acknowledge the 9-rule clipboard EVERY browser session. (5) CONSENT CARD AUTO-POP: fired 650ms after EVERY clock-out forever because NOT NOW was never recorded — trained reflex-dismissal of the one dialog that matters. NOT NOW now persists (consentAsked); the card auto-pops ONCE and stays reachable via ADMIN → ACCOUNT & DATA. (6) PAUSE BUTTONS had NO border — var(--pause-border) was defined NOWHERE, the shorthand collapsed to none; now 1.5px var(--btn-line) + the 34px height law (the motif template itself finally obeys the outline law). (7) /me/ FOLLOW checked j.error but the RPC returns j.ok/j.err (the game checks correctly) — following a NONEXISTENT user reported "Following ✓" as false success; now matches the real contract incl. not_logged_in. (8) SmallsSort (ss-1.6): BOARD/SETTINGS overlays now FREEZE the belt (SM_UIPAUSE + zeroed clock) — you could previously take a FOREVER stoppage strike or strike OUT entirely while adjusting a slider. (9) ss viewport dropped maximum-scale=1/user-scalable=no — pinch-zoom restored (WCAG 1.4.4). (10) 'Bebas Neue',cursive fallback swept to sans-serif across all three satellites (dashboard/me/ss — 19 occurrences; the flagship was purged in v3.5.145). Verified in-browser: real bullets/apostrophe render, consentAsked persists + auto-pop gate closes, briefing flag on localStorage, write-up + rule-8 copy live, pause buttons carry the unified border spec + 34px. REMAINING HIGHs (batch 2): expired-token lying states (dashboard/me/ss), TOUR old-format migration, chute-light colorblind literals, ss sound effects. NEXT: batch 2, then MED/LOW.
    CHANGE LOG v3.5.158 - CRUSHED BOXES STAY ONE BOX (Vince: "why did a big box turn into two small boxes?... it really messes up the beautiful game. i hate this"). ROOT CAUSE: the crushed render early-returned into a FLAT PER-CELL RED SILHOUETTE — piecePath paths each grid cell separately, so a multi-cell crushed box painted as disconnected small red blocks with no cardboard, no tape, no label: "red cell confetti," reading as one box splitting into several. FIX: the crushed early-return is gone — a crushed box now renders FULLY (gradient, cardboard texture, tape, shipping label — still itself), then drawCrushOverlay() lays ONE unified damage layer across the whole piece: a dark bruise wash + faint red tinge + three seeded crack lines spanning the box as a single object (deterministic LCG off box.seed — no Math.random, daily-safe). A crushed BAG keeps its bag skin with the same overlay; the fragile pulse-glow still stops when crushed (no alarm on a dead box). PIXEL-VERIFIED against a healthy twin: crushed brightness 104 vs 179 (bruise applied) with texture variance 1008 (the old flat fill reads ~0) — a box, not confetti. ALSO: THE "undefined" LABEL KILLED at three layers (Vince's screenshot showed a box literally labeled "undefined"): the wall + strip label builders fall back to a real service code when labelDef.s is missing, and drawShippingLabel itself refuses to print any text containing "undefined" as a last line of defense. NEXT: the 16 HIGHs in batches; VOICE PASS held for Vince.
    CHANGE LOG v3.5.157 - PATTERN-BASED CRUSH LADDER (Vince's design: "it's not a write-up after one box gets crushed... it's only when your trailer constantly has broken boxes — when it becomes a pattern"). Crushing a box was firing the FRAGILE_CRUSH safety warning on the FIRST offense — but one crushed box already costs you (-300 real score per box, FLOW broken, the freight itself ruined): that is a MISTAKE, not a safety event. Now the safetyWarn ladder only starts from the 3rd crushed box of the session — and since safetyWarn itself still requires a REPEAT to become an incident, actual paper lands only on a genuine pattern of destruction. HAZMAT crush is UNCHANGED (instant write-up-pool — a hurt-somebody event at any count). The 3rd+ warn line acknowledges the pattern: "that's not the first box you've broken." Verified in-browser: crush event #1 (2 boxes) = 0 safety warns, just the cost; crush event #2 (session count 4) = FRAGILE_CRUSH warn fires. ALSO THIS SESSION: the LOAD THEORY CODEX extracted — 38 named rules / ~40 enforcement paths documented from code (Desktop lock-in-load-theory.txt), 6 marked [HIDDEN] (support multiplier, balance dock, arrow tax, killer pairs, tire-as-floor, speed curve) = coach/briefing teaching candidates. Rule #14's banner undersells the real crunch cost (-80 shown vs -300 actual) — queued for the copy pass. NEXT: the 16 HIGHs in batches, then MED/LOW; VOICE PASS held for Vince.
    CHANGE LOG v3.5.156 - WAVE B: THE SCORING ECONOMY UNIFIED (Gatekeeper blockers #1 + #3 — the last two). (1) BLOCKER #1: ~10 systems mutated G.score directly (nest, keystone/cornerstone/void-filler, hazmat-shelf +1500, seal payout, hydration bonus, dispatch bonus, throw penalty, over-hydration penalty, unseal -150, collapse -80n) while calcScore() statelessly overwrote it on the next placement/lift — every one of those amounts silently EVAPORATED. The hazmat-shelf +1500 was a pure no-op (added and overwritten inside the same placeBox call), and KEEP LOADING after a seal erased the whole seal payout — improving a daily wall literally COST points on the world board. NOW: one economy. bankScore(n) is the single entry point — every one-shot amount accumulates in a persistent per-wall G.bonusPool that calcScore ALWAYS includes, added post-multiplier so banked magnitudes match the old direct-add semantics exactly. All 11 sites converted; pool resets in wallBaseline (after the sealed wall's score is banked into S.totalScore); the redundant TETRIS direct-add is left alone (already persistent via the shelfB term — converting it would double-count). (2) BLOCKER #3: shed pieces (collapse, tall-tower shed, vertical-tire shed) now come back CHURN-MARKED (_gen+1) and take their placement credit with them (placed-1) — re-placing shed freight earns zero PPH, zero FLOW, and the collapse cost is persistent, so the place-slip-replace multiplier farm is dead. Verified in-browser: bankScore(777) survives a REAL placement recompute (delta exactly 777), penalty banking (-200 -> 577), wallBaseline zeroes the pool, 3-piece shed -> all _gen>0 + placed 10->7 + collapse counted. ALL FIVE GATEKEEPER BLOCKERS ARE NOW DEAD. NEXT: crush-ladder redesign to pattern-based (Vince's order), then the 16 HIGHs, then MED/LOW batches; rules-extraction agent hunting the full mechanics list in parallel; in-game VOICE PASS queued as its own sweep with Vince.
@@ -1220,7 +1221,7 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{an
 .pause-menu{display:flex;flex-direction:column;gap:8px;width:100%;max-width:280px;margin-top:6px;}
 .pmb{width:100%;padding:11px 0;border-radius:6px;cursor:pointer;
   font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:5px;
-  border:1px solid var(--pause-border);text-align:center;transition:all .15s;}
+  border:1.5px solid var(--btn-line);min-height:34px;text-align:center;transition:all .15s;} /* v3.5.159 --pause-border was DEFINED NOWHERE — the border shorthand collapsed to none, so the pause motif itself broke the outline law. Now on the unified --btn-line + the 34px height law. */
 .pmb-resume{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;border-color:var(--acc);}
 .pmb-resume:hover{filter:brightness(1.1);}
 .pmb-restart{background:transparent;color:var(--t1);border-color:var(--border2);}
@@ -1988,7 +1989,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.158 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.159 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2023,7 +2024,7 @@ body[data-cb="trit"]{
       <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile &amp; glass ride on top.</b> Never bury them — a crush is a write-up.<span class="brief-why">Load them near the top with only light pieces above.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Hazmat low &amp; locked.</b> Floor it, cap it under a shelf.<span class="brief-why">A hazmat in ANY collapse ends the round — keep it stable.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Lay tires flat.</b> On its edge, a tire rolls the second the door opens.<span class="brief-why">Standing one up is a safety warning — lay it flat before the door opens.</span></div></div>
-      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>Bags spill smalls.</b> Double-click a bag to fill the gaps a box can't reach.<span class="brief-why">Out of smalls? Throw a box to summon a bag in a pinch.</span></div></div>
+      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>Bags spill smalls.</b> Tap the ✂ BREAK chip on a staged bag to spill gap-fillers a box can't reach.<span class="brief-why">Out of smalls? FLAG a coworker for a hand — they'll toss you a bag (the manager notices if you overdo it).</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">9</div><div class="brief-rule-txt"><b>Pack tight, then seal.</b> Density is the job — fill, seal at height, beat the clock.<span class="brief-why">Cube fill, not just height — the manager calls the target.</span></div></div>
     </div>
   </div>
@@ -2102,7 +2103,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.158 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.159 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2119,7 +2120,7 @@ body[data-cb="trit"]{
     <div class="wu-why-lbl">WHY IT MATTERS</div>
     <div class="wu-why" id="wu-why">—</div>
     <div class="wu-ack">
-      <span id="wu-ack-note">By signing, you acknowledge the safety briefing. Repeat infractions escalate — five sends you to a practice trailer.</span>
+      <span id="wu-ack-note">By signing, you acknowledge the safety briefing. Repeat infractions escalate — five incidents put you on a practice trailer; four write-ups and you're sent home.</span>
       <button id="wu-signbtn" onclick="signWriteup()">✍ SIGN &amp; CONTINUE</button>
     </div>
   </div>
@@ -2260,7 +2261,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.158 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.159 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2368,7 +2369,7 @@ body[data-cb="trit"]{
     <div class="auth-box">
       <div class="auth-toggle"><button id="auth-tab-w" class="auth-tab active" onclick="zAuthMode('worker')">WORKER</button><button id="auth-tab-f" class="auth-tab" onclick="zAuthMode('facility')">FACILITY</button></div>
       <label class="data-fld"><span id="auth-id-lbl">USERNAME</span><input id="auth-email" type="text" autocomplete="username" placeholder="pick a handle"></label>
-      <label class="data-fld">PASSWORD<input id="auth-pw" type="password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022"></label>
+      <label class="data-fld">PASSWORD<input id="auth-pw" type="password" placeholder="••••••"></label>
       <label class="data-fld">CONFIRM PASSWORD <span>(new accounts)</span><input id="auth-pw2" type="password" placeholder="re-type to confirm"></label>
       <div class="data-btns"><button class="data-save" id="auth-signin" onclick="zAuthLogin()">SIGN IN</button><button class="data-cancel" id="auth-signup" onclick="zAuthSignup()">CREATE ACCOUNT</button></div>
       <div class="auth-note" id="auth-note">Pick a username + password to keep your record across devices. No email needed. Free, always.</div>
@@ -2386,7 +2387,7 @@ body[data-cb="trit"]{
     <label class="data-fld">EMAIL <span>(optional — keeps your record across devices)</span><input id="data-email" type="email" placeholder="you@email.com"></label>
     <label class="data-fld">FACILITY CODE <span>(from your school / employer, if you have one)</span><input id="data-facility" type="text" placeholder="e.g. ZG-DEMO-01"></label>
     <label class="data-chk"><input id="data-c1" type="checkbox"> Save my loading stats (my record).</label>
-    <label class="data-chk"><input id="data-c2" type="checkbox"> Share my stats with my facility\u2019s dashboard.</label>
+    <label class="data-chk"><input id="data-c2" type="checkbox"> Share my stats with my facility’s dashboard.</label>
     <div class="data-btns"><button class="data-save" onclick="zSaveConsent()">SAVE</button><button class="data-cancel" onclick="zCloseData()">NOT NOW</button></div>
     <div class="data-note">Double opt-in: facility sharing needs BOTH boxes. Change it anytime from the DATA tab.</div>
   </div>
@@ -2715,7 +2716,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.158
+// LOCK IN v3.5.159
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3167,7 +3168,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.158'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.159'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -3210,7 +3211,7 @@ function zSendSession(){
   if(!ZDATA.endpoint||!ZDATA.anonKey)return;             // cloud only when configured
   try{var _hh=zAuthHeaders();_hh['Prefer']='return=minimal';fetch(ZDATA.endpoint+'/'+ZDATA.table,{method:'POST',headers:_hh,body:JSON.stringify(rec)}).catch(function(err){console.error('zSendSession net:',err);});}catch(e){console.error('zSendSession:',e);}
 }
-function zEndSession(){zLoadPlayer();zSendSession();if(!ZDATA.player.consentDecided)setTimeout(zOpenData,650);}
+function zEndSession(){zLoadPlayer();zSendSession();if(!ZDATA.player.consentDecided&&!ZDATA.player.consentAsked)setTimeout(zOpenData,650);} // v3.5.159 the consent card auto-pops ONCE — "NOT NOW" is remembered (was interrupting EVERY clock-out forever, training reflex-dismissal of the one dialog that matters); still reachable anytime via ADMIN → ACCOUNT & DATA
 // ── v2.1.40 AUTH (Supabase GoTrue REST — no SDK) ──
 function zAuthHeaders(){
   var h={'Content-Type':'application/json','apikey':ZDATA.anonKey};
@@ -3345,7 +3346,7 @@ function zOpenData(){
   zAuthLoad();zAuthMode(ZDATA.authMode||'worker');zAuthStatus();
   var ov=document.getElementById('ov-data');if(ov)ov.classList.add('vis');
 }
-function zCloseData(){var ov=document.getElementById('ov-data');if(ov)ov.classList.remove('vis');}
+function zCloseData(){var ov=document.getElementById('ov-data');if(ov)ov.classList.remove('vis');var p=zLoadPlayer();if(!p.consentAsked){p.consentAsked=true;zSavePlayer();}} // v3.5.159 NOT NOW is a real answer — persist it so the card never auto-pops again
 function zSaveConsent(){
   var p=zLoadPlayer();
   var e=document.getElementById('data-email'),f=document.getElementById('data-facility');
@@ -8164,7 +8165,7 @@ function acknowledgeBriefing(){
   // even when sessionStorage appears accessible. Without this, the briefing
   // never clears and the player is stuck on the clipboard forever.
   try{sessionStorage.setItem('liVoice',activeVoice);}catch(e){}
-  try{sessionStorage.setItem('liBriefingDone','1');}catch(e){}
+  try{localStorage.setItem('liBriefingDone','1');}catch(e){}
   var b=document.getElementById('briefing');
   if(b){b.classList.add('gone');b.style.display='none';}
   setVoice(activeVoice);
@@ -9580,7 +9581,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.158</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.159</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -11204,7 +11205,7 @@ try{var _bv=sessionStorage.getItem('liVoice');if(_bv)activeVoice=_bv;}catch(e){}
 try{loadSettings();applySettings();}catch(e){console.error('settings boot:',e);}
 
 var _briefingDone=false;
-try{_briefingDone=sessionStorage.getItem('liBriefingDone')==='1';}catch(e){}
+try{_briefingDone=localStorage.getItem('liBriefingDone')==='1';}catch(e){}
 
 var _br=document.getElementById('briefing');
 if(_briefingDone){

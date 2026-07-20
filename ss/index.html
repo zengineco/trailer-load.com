@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1"><!-- v1.6 pinch-zoom restored (WCAG 1.4.4); canvas touch-action:none already guards gameplay -->
 <title>SmallSort — LOCK IN</title>
 <!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Do not re-add. -->
 <style>
@@ -65,7 +65,7 @@ html,body{width:100%;height:100dvh;
   border-bottom:1px solid #1e1e20;position:relative;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.4);}
 #hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--acc) 25%,var(--teal) 75%,transparent);opacity:.6;}
-.logo{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:4px;color:var(--acc);line-height:1;display:flex;align-items:baseline;gap:7px;text-shadow:0 1px 2px rgba(0,0,0,.5);}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--acc);line-height:1;display:flex;align-items:baseline;gap:7px;text-shadow:0 1px 2px rgba(0,0,0,.5);}
 .logo sub{font-size:9px;letter-spacing:1px;color:var(--t3);font-family:'Share Tech Mono',monospace;}
 .logo-img{display:block;}
 
@@ -73,7 +73,7 @@ html,body{width:100%;height:100dvh;
 .stat{flex:1;text-align:center;padding:4px 2px;border-right:1px solid #1e1e20;}
 .stat:last-child{border-right:none;}
 .stat .lbl{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.5px;color:var(--t2);text-transform:uppercase;font-weight:bold;}
-.stat .val{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:1px;color:var(--acc);line-height:1.05;}
+.stat .val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--acc);line-height:1.05;}
 .stat .val.ok{color:var(--ok);}.stat .val.warn{color:var(--warn);}.stat .val.danger{color:var(--danger);}
 .stat .val.teal{color:var(--teal);}
 
@@ -101,7 +101,7 @@ html,body{width:100%;height:100dvh;
 .set-row{display:flex;align-items:center;justify-content:space-between;gap:16px;width:min(340px,80vw);margin:10px 0;font-family:'Share Tech Mono',monospace;font-size:14px;color:#ddd;}
 .set-row input[type=range]{flex:1;max-width:180px;}
 /* v1.3 fleshed-out settings + mode select */
-.set-sec{font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:3px;color:var(--acc);margin:18px 0 5px;border-bottom:1px solid var(--border2);padding-bottom:3px;width:min(340px,80vw);text-align:left;}
+.set-sec{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:var(--acc);margin:18px 0 5px;border-bottom:1px solid var(--border2);padding-bottom:3px;width:min(340px,80vw);text-align:left;}
 .set-note{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t3);width:min(340px,80vw);text-align:left;margin:2px 0 2px;line-height:1.45;}
 .seg{display:flex;gap:6px;width:min(340px,80vw);}
 .seg button{flex:1;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--t2);background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:9px 4px;cursor:pointer;}
@@ -109,26 +109,26 @@ html,body{width:100%;height:100dvh;
 .tgl{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--t2);background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:7px 18px;cursor:pointer;min-width:66px;}
 .tgl.on{background:var(--teal);color:#0e2420;border-color:var(--teal-bright);font-weight:bold;}
 .start-modes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
-.mode-btn{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Bebas Neue',cursive;letter-spacing:2px;color:#1c1c1e;border:none;border-radius:9px;padding:12px 22px;cursor:pointer;box-shadow:var(--shadow-md);}
+.mode-btn{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;color:#1c1c1e;border:none;border-radius:9px;padding:12px 22px;cursor:pointer;box-shadow:var(--shadow-md);}
 .mode-btn small{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;opacity:.8;}
 .mode-btn.fv{background:linear-gradient(180deg,var(--acc-bright),var(--acc));font-size:26px;}
 .mode-btn.sh{background:linear-gradient(180deg,var(--teal-bright),var(--teal));color:#0e2420;font-size:20px;}
 .mode-btn:active{transform:translateY(2px);}
-.ov h1{font-family:'Bebas Neue',cursive;font-size:54px;letter-spacing:5px;color:var(--acc);line-height:.95;text-shadow:0 2px 8px rgba(0,0,0,.5);}
+.ov h1{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:5px;color:var(--acc);line-height:.95;text-shadow:0 2px 8px rgba(0,0,0,.5);}
 .ov h2{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:14px;font-weight:bold;}
 .ov p{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--t2);max-width:470px;line-height:1.4;margin-bottom:6px;}
 .ov .rules{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t1);background:#2c2c2e;border:1px solid var(--border2);border-left:3px solid var(--acc);border-radius:6px;padding:11px 15px;margin:12px 0;text-align:left;line-height:1.7;max-width:490px;}
-.btn{font-family:'Bebas Neue',cursive;font-size:23px;letter-spacing:3px;color:#1c1c1e;background:linear-gradient(180deg,var(--acc-bright),var(--acc));border:none;border-radius:8px;padding:11px 34px;cursor:pointer;box-shadow:var(--shadow-md);margin-top:6px;}
+.btn{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:3px;color:#1c1c1e;background:linear-gradient(180deg,var(--acc-bright),var(--acc));border:none;border-radius:8px;padding:11px 34px;cursor:pointer;box-shadow:var(--shadow-md);margin-top:6px;}
 .btn:active{transform:translateY(2px);}
 .btn.teal{background:linear-gradient(180deg,var(--teal-bright),var(--teal));color:#0e2420;}
 
 #result-card{background:#2c2c2e;border:2px solid var(--acc);border-radius:12px;padding:14px 18px;box-shadow:var(--shadow-lg);max-width:400px;width:100%;}
-#result-grade{font-family:'Bebas Neue',cursive;font-size:58px;line-height:.9;color:var(--ok);letter-spacing:3px;}
+#result-grade{font-family:'Bebas Neue',sans-serif;font-size:58px;line-height:.9;color:var(--ok);letter-spacing:3px;}
 #result-grade-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--t2);margin-bottom:8px;}
 .res-row{display:flex;justify-content:space-between;align-items:baseline;padding:3px 0;border-bottom:1px solid var(--border);}
 .res-row:last-of-type{border-bottom:none;}
 .res-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t2);letter-spacing:.5px;text-transform:uppercase;font-weight:bold;}
-.res-val{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--t1);letter-spacing:1px;}
+.res-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--t1);letter-spacing:1px;}
 .res-val.ok{color:var(--ok);}.res-val.warn{color:var(--warn);}.res-val.danger{color:var(--danger);}
 #copy-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--teal);background:var(--teal-wash);border:1px solid var(--teal);border-radius:6px;padding:8px 14px;cursor:pointer;margin-top:10px;width:100%;font-weight:bold;}
 #copy-btn:active{transform:translateY(1px);}
@@ -581,6 +581,9 @@ function rrI(x,y,w,h,r,ins){rr(x+ins,y+ins,w-2*ins,h-2*ins,Math.max(2,r-ins));} 
 // ── LOOP ──
 function loop(ts){
   if(!STATE.running)return;
+  // v1.6 UI PAUSE — the belt froze NOWHERE while BOARD/SETTINGS overlays were open, so in FOREVER mode you
+  // could take a stoppage strike (or strike out entirely) while adjusting a slider. Frozen frame, zeroed clock.
+  if(SM_UIPAUSE){STATE.lastTick=0;requestAnimationFrame(loop);return;}
   if(!STATE.lastTick)STATE.lastTick=ts;
   var dt=ts-STATE.lastTick;STATE.lastTick=ts;
   var ramp;
@@ -687,7 +690,7 @@ function smSubmitSession(acc,tput,grade){
     if(!_pl||!_pl.consentSelf)return; // no save without self-consent — identical rule to the game's zSendSession
     var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
     var rec={
-      user_id:s.uid, mode:'smalls', app_ver:'ss-1.5',
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.6',
       consent_self:!!_pl.consentSelf, consent_share:!!_pl.consentShare, opt_in_share:!!_pl.consentShare,
       started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
       duration_s:dur,
@@ -715,8 +718,9 @@ function copyResult(){
 // ── v1.2 LEADERBOARD (public lockin_smalls_board RPC — the same shared backend as LOCK IN) ──
 var SM_BOARD_METRIC='rate';
 function smEsc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return c==='&'?'&amp;':c==='<'?'&lt;':c==='>'?'&gt;':'&quot;';});}
-function smOpenBoard(){document.getElementById('ov-board').classList.add('vis');smLoadBoard(SM_BOARD_METRIC);}
-function smCloseBoard(){document.getElementById('ov-board').classList.remove('vis');}
+var SM_UIPAUSE=false; // v1.6 true while a full-screen overlay (board/settings) is up — loop freezes, no strikes mid-menu
+function smOpenBoard(){SM_UIPAUSE=true;document.getElementById('ov-board').classList.add('vis');smLoadBoard(SM_BOARD_METRIC);}
+function smCloseBoard(){SM_UIPAUSE=false;document.getElementById('ov-board').classList.remove('vis');}
 function smBoardTab(m){SM_BOARD_METRIC=m;var tabs=document.querySelectorAll('.bd-tab'),i;for(i=0;i<tabs.length;i++)tabs[i].classList.toggle('active',tabs[i].getAttribute('data-m')===m);smLoadBoard(m);}
 function smLoadBoard(metric){
   var el=document.getElementById('sm-board-list');if(!el)return;el.innerHTML='<div class="bd-empty">Loading…</div>';
@@ -736,13 +740,13 @@ function smLoadBoard(metric){
 var SM_AUDIO=null, SM_TRACK=1, SM_MUSICVOL=0;
 try{var _sv=JSON.parse(localStorage.getItem('smSettings')||'{}');if(_sv&&typeof _sv.music==='number')SM_MUSICVOL=_sv.music;}catch(e){}
 function smSaveSettings(){try{localStorage.setItem('smSettings',JSON.stringify({music:SM_MUSICVOL,diff:SM_DIFF,hicon:SM_HICON}));}catch(e){}}
-function smOpenSettings(){
+function smOpenSettings(){SM_UIPAUSE=true;
   var m=document.getElementById('set-music');if(m)m.value=SM_MUSICVOL;
   var seg=document.getElementById('seg-diff');if(seg){var bs=seg.querySelectorAll('button'),i;for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-d')===SM_DIFF);}
   var tg=document.getElementById('tgl-hicon');if(tg){tg.textContent=SM_HICON?'ON':'OFF';tg.classList.toggle('on',SM_HICON);}
   document.getElementById('ov-settings').classList.add('vis');
 }
-function smCloseSettings(){document.getElementById('ov-settings').classList.remove('vis');}
+function smCloseSettings(){SM_UIPAUSE=false;document.getElementById('ov-settings').classList.remove('vis');}
 function smSetVol(kind,v){v=parseInt(v,10)||0;if(kind==='music'){SM_MUSICVOL=v;if(SM_AUDIO)SM_AUDIO.volume=v/100;}smSaveSettings();}
 function smSetDiff(d){if(!DIFF_MULT[d])d='normal';SM_DIFF=d;var seg=document.getElementById('seg-diff');if(seg){var bs=seg.querySelectorAll('button'),i;for(i=0;i<bs.length;i++)bs[i].classList.toggle('on',bs[i].getAttribute('data-d')===d);}smSaveSettings();}
 function smToggleHicon(){SM_HICON=!SM_HICON;var tg=document.getElementById('tgl-hicon');if(tg){tg.textContent=SM_HICON?'ON':'OFF';tg.classList.toggle('on',SM_HICON);}smSaveSettings();if(!STATE.running)draw();}
