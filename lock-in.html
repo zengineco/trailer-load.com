@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.156
+   LOCK IN v3.5.157
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.157 - PATTERN-BASED CRUSH LADDER (Vince's design: "it's not a write-up after one box gets crushed... it's only when your trailer constantly has broken boxes — when it becomes a pattern"). Crushing a box was firing the FRAGILE_CRUSH safety warning on the FIRST offense — but one crushed box already costs you (-300 real score per box, FLOW broken, the freight itself ruined): that is a MISTAKE, not a safety event. Now the safetyWarn ladder only starts from the 3rd crushed box of the session — and since safetyWarn itself still requires a REPEAT to become an incident, actual paper lands only on a genuine pattern of destruction. HAZMAT crush is UNCHANGED (instant write-up-pool — a hurt-somebody event at any count). The 3rd+ warn line acknowledges the pattern: "that's not the first box you've broken." Verified in-browser: crush event #1 (2 boxes) = 0 safety warns, just the cost; crush event #2 (session count 4) = FRAGILE_CRUSH warn fires. ALSO THIS SESSION: the LOAD THEORY CODEX extracted — 38 named rules / ~40 enforcement paths documented from code (Desktop lock-in-load-theory.txt), 6 marked [HIDDEN] (support multiplier, balance dock, arrow tax, killer pairs, tire-as-floor, speed curve) = coach/briefing teaching candidates. Rule #14's banner undersells the real crunch cost (-80 shown vs -300 actual) — queued for the copy pass. NEXT: the 16 HIGHs in batches, then MED/LOW; VOICE PASS held for Vince.
    CHANGE LOG v3.5.156 - WAVE B: THE SCORING ECONOMY UNIFIED (Gatekeeper blockers #1 + #3 — the last two). (1) BLOCKER #1: ~10 systems mutated G.score directly (nest, keystone/cornerstone/void-filler, hazmat-shelf +1500, seal payout, hydration bonus, dispatch bonus, throw penalty, over-hydration penalty, unseal -150, collapse -80n) while calcScore() statelessly overwrote it on the next placement/lift — every one of those amounts silently EVAPORATED. The hazmat-shelf +1500 was a pure no-op (added and overwritten inside the same placeBox call), and KEEP LOADING after a seal erased the whole seal payout — improving a daily wall literally COST points on the world board. NOW: one economy. bankScore(n) is the single entry point — every one-shot amount accumulates in a persistent per-wall G.bonusPool that calcScore ALWAYS includes, added post-multiplier so banked magnitudes match the old direct-add semantics exactly. All 11 sites converted; pool resets in wallBaseline (after the sealed wall's score is banked into S.totalScore); the redundant TETRIS direct-add is left alone (already persistent via the shelfB term — converting it would double-count). (2) BLOCKER #3: shed pieces (collapse, tall-tower shed, vertical-tire shed) now come back CHURN-MARKED (_gen+1) and take their placement credit with them (placed-1) — re-placing shed freight earns zero PPH, zero FLOW, and the collapse cost is persistent, so the place-slip-replace multiplier farm is dead. Verified in-browser: bankScore(777) survives a REAL placement recompute (delta exactly 777), penalty banking (-200 -> 577), wallBaseline zeroes the pool, 3-piece shed -> all _gen>0 + placed 10->7 + collapse counted. ALL FIVE GATEKEEPER BLOCKERS ARE NOW DEAD. NEXT: crush-ladder redesign to pattern-based (Vince's order), then the 16 HIGHs, then MED/LOW batches; rules-extraction agent hunting the full mechanics list in parallel; in-game VOICE PASS queued as its own sweep with Vince.
    CHANGE LOG v3.5.155 - ADSENSE STRIPPED FOREVER + MUSIC ZEROED (licensing) + PUBLISHED PRICING. Vince's orders, executed in full. (1) NO AD TECH ON TRAILER-LOAD.COM, EVER: the AdSense script/meta removed from all 7 pages (game, homepage, dashboard, /me/, /ss/, privacy, terms) + ads.txt deleted; SOPIPA-class student-privacy laws prohibit ad tech on school-purpose services and district vetting scans for the tag — this domain is now K-12-clean. Cookie-consent + privacy copy updated to a hard promise: "no ad networks, no ad tech, no personalized advertising, to anyone, ever." The AdSense ACCOUNT is untouched — it lives on other F-Keys properties. Tombstone comments guard every removal site. (2) MUSIC ZEROED: the 13 soundtrack mp3s were generated on a free-tier account whose license does NOT include distribution/commercial use — unlicensed audio in a paid school product is a vetting/contract landmine. All 13 moved to Desktop\trailer-load-archive\music-unlicensed\ (preserved, not flushed); MUSIC.list=[] makes every playback path a safe no-op; music settings rows hidden (DOM ids kept so refreshSettingsUI never breaks) with a "paused while the soundtrack is re-licensed" note; SmallsSort (ss-1.5) same treatment. SFX are code-synthesized (zero assets) and fully intact, sliders and all. Refill MUSIC.list when properly licensed tracks land. (3) PRICING PUBLISHED on the homepage (the certified structure + Vince's customization tier): Site License $1,950/school-year · Founding Programs $1,450/yr locked (first 10, free first semester) · Per-Seat $29/student/semester · Employer Bay $490/yr · CUSTOM EDITION $4,999 (school colors / custom freight mixes / facility SOPs — under every state software cap and the micro-purchase threshold, and it demonstrates we scale) · "Get a formal quote + W-9" mailto. NEXT: Wave B (scoring-economy unification, blocker #1) + crush-ladder redesign to pattern-based (Vince: one crushed box is a mistake; a PATTERN of broken boxes gets eyes on you) + rules 15-16 in the Load Theory list.
    CHANGE LOG v3.5.154 - CONTENT-SWEEP WAVE A: 3 of the Gatekeeper's 5 BLOCKERS + the crawler stopgap. The full 16-member Devs review (4 floors + operators + legal + Gatekeeper) returned NO SHIP with 5 blockers; this wave cuts the surgical three. (1) BLOCKER #2 — DAILY DETERMINISM, both breaks: (a) checkPanic fired 3 Math.random pieces into the daily belt at 85% fill (before the 92% win = nearly every run), breaking the identical-freight-for-everyone promise — in daily the DISPATCH countdown + bonus still fire but the random injections are skipped (deterministic stream untouched); (b) Settings QUICK RESET called restartGame() leaving DAILY.ptr mid-stream — forked belt + a stream-skimming exploit — now branches to startDaily() like TRY AGAIN. Verified: daily panic fires with belt delta 0 (shift still injects 3); quickReset reproduces a fresh daily byte-for-byte (ptr 10=10, identical belt sequence). (2) BLOCKER #4 — CONSENT ENFORCEMENT: privacy.html promises "leave it off and nothing about your gameplay leaves your device," but zLogWall + zSubmitDaily posted on any signed-in uid, and SmallsSort HARDCODED consent_self:true. All three now honor the same zLoadPlayer().consentSelf switch zSendSession always honored; ss (ss-1.4) reads the shared liPlayer record and passes the REAL consent flags. Verified: consentSelf=false -> 0 fetches from zLogWall + zSubmitDaily cb {anon:true}; true -> posts. (3) BLOCKER #5 — THEME COLLAPSE: #ov-end, .sip-card, #level-select, #ov-level-end have FIXED near-black backgrounds but drew ink from the ACTIVE theme vars — in the default LIGHT theme rank/verdict/stat labels rendered dark-on-dark (~1.2-2.4:1, illegible). Scoped var overrides pin dark-theme ink to those surfaces regardless of body theme. Verified: light theme, .es-rank rgb(240,230,212), .esh-l rgb(192,173,144). (4) HIGH #5/#6 stopgap: robots.txt now Disallows /old/ (34 stale builds) + /forklift/ (unreleased Zengine-branded prototype) in EVERY user-agent group (named groups override *); actual removal from the deploy = Vince's call. REMAINING BLOCKERS (next waves, each its own careful pass): #1 dual scoring model (one persistent bonus-pool economy — the big one), #3 collapse/slip re-place farm (depends on #1's persistent costs). NEXT: Wave B = blocker #1 scoring unification.
@@ -1986,7 +1987,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.156 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.157 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2100,7 +2101,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.156 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.157 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2258,7 +2259,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.156 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.157 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2713,7 +2714,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.156
+// LOCK IN v3.5.157
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3165,7 +3166,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.156'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.157'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4696,8 +4697,12 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     G.crunchCount=(G.crunchCount||0)+crushed.length;playSfx('crunch');addShake(8);if(typeof breakFlow==='function')breakFlow(); // v3.5.147 a crunch breaks the FLOW streak
     S.crunches=(S.crunches||0)+crushed.length;
     var _hazCr=false,_smCr=false,_cci;for(_cci=0;_cci<crushed.length;_cci++){var _cb=crushed[_cci].box;if(_cb&&_cb.hazClass)_hazCr=true;if(_cb&&(_cb.isBag||_cb.type==='small'))_smCr=true;} // v3.5.100 track smalls-crush for the right callout
-    if(_hazCr)logIncident('HAZMAT_CRUSH',''); // hazmat crushed = the write-up pool (bad the first time)
-    else if(typeof safetyWarn==='function')safetyWarn('FRAGILE_CRUSH',_smCr?'you smashed a bag of smalls — those are customers’ packages.':'you crushed a fragile — it rides on TOP.'); // v3.5.72 warning first; v3.5.100 smalls-aware
+    if(_hazCr)logIncident('HAZMAT_CRUSH',''); // hazmat crushed = the write-up pool (bad the first time — a hurt-somebody event, unchanged)
+    // v3.5.157 PATTERN-BASED CRUSH LADDER (Vince's design): ONE crushed box is a mistake that already costs you
+    // (-300 real score each, flow broken, the freight itself ruined) — that is NOT a safety event. Eyes go on you
+    // when the trailer KEEPS having broken boxes: from the 3rd crushed box of the session the safetyWarn ladder
+    // starts (and safetyWarn itself still needs a repeat to become an incident — so paper lands on a PATTERN).
+    else if((S.crunches||0)>=3&&typeof safetyWarn==='function')safetyWarn('FRAGILE_CRUSH',_smCr?'you smashed a bag of smalls — those are customers’ packages.':'that’s not the first box you’ve broken — fragile rides on TOP.');
     flash('fl-crunch');
     showBanner('💥 CRUNCH! -'+(CRUNCH_PENALTY*crushed.length)+' CUBES<br><span style="font-size:.72em">'+(_hazCr?'HAZMAT CRUSHED — that’s a write-up.':_smCr?'NOTHING HEAVY ON SMALLS — you just smashed customers’ packages. Lock a shelf over them or keep them up top.':'FRAGILE goes on TOP — safety warning. Lock a shelf to protect it.')+'</span>','danger',3000);
   }
@@ -9553,7 +9558,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.156</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.157</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
