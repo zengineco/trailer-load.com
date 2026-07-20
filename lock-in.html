@@ -26,10 +26,11 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.157
+   LOCK IN v3.5.158
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
 
+   CHANGE LOG v3.5.158 - CRUSHED BOXES STAY ONE BOX (Vince: "why did a big box turn into two small boxes?... it really messes up the beautiful game. i hate this"). ROOT CAUSE: the crushed render early-returned into a FLAT PER-CELL RED SILHOUETTE — piecePath paths each grid cell separately, so a multi-cell crushed box painted as disconnected small red blocks with no cardboard, no tape, no label: "red cell confetti," reading as one box splitting into several. FIX: the crushed early-return is gone — a crushed box now renders FULLY (gradient, cardboard texture, tape, shipping label — still itself), then drawCrushOverlay() lays ONE unified damage layer across the whole piece: a dark bruise wash + faint red tinge + three seeded crack lines spanning the box as a single object (deterministic LCG off box.seed — no Math.random, daily-safe). A crushed BAG keeps its bag skin with the same overlay; the fragile pulse-glow still stops when crushed (no alarm on a dead box). PIXEL-VERIFIED against a healthy twin: crushed brightness 104 vs 179 (bruise applied) with texture variance 1008 (the old flat fill reads ~0) — a box, not confetti. ALSO: THE "undefined" LABEL KILLED at three layers (Vince's screenshot showed a box literally labeled "undefined"): the wall + strip label builders fall back to a real service code when labelDef.s is missing, and drawShippingLabel itself refuses to print any text containing "undefined" as a last line of defense. NEXT: the 16 HIGHs in batches; VOICE PASS held for Vince.
    CHANGE LOG v3.5.157 - PATTERN-BASED CRUSH LADDER (Vince's design: "it's not a write-up after one box gets crushed... it's only when your trailer constantly has broken boxes — when it becomes a pattern"). Crushing a box was firing the FRAGILE_CRUSH safety warning on the FIRST offense — but one crushed box already costs you (-300 real score per box, FLOW broken, the freight itself ruined): that is a MISTAKE, not a safety event. Now the safetyWarn ladder only starts from the 3rd crushed box of the session — and since safetyWarn itself still requires a REPEAT to become an incident, actual paper lands only on a genuine pattern of destruction. HAZMAT crush is UNCHANGED (instant write-up-pool — a hurt-somebody event at any count). The 3rd+ warn line acknowledges the pattern: "that's not the first box you've broken." Verified in-browser: crush event #1 (2 boxes) = 0 safety warns, just the cost; crush event #2 (session count 4) = FRAGILE_CRUSH warn fires. ALSO THIS SESSION: the LOAD THEORY CODEX extracted — 38 named rules / ~40 enforcement paths documented from code (Desktop lock-in-load-theory.txt), 6 marked [HIDDEN] (support multiplier, balance dock, arrow tax, killer pairs, tire-as-floor, speed curve) = coach/briefing teaching candidates. Rule #14's banner undersells the real crunch cost (-80 shown vs -300 actual) — queued for the copy pass. NEXT: the 16 HIGHs in batches, then MED/LOW; VOICE PASS held for Vince.
    CHANGE LOG v3.5.156 - WAVE B: THE SCORING ECONOMY UNIFIED (Gatekeeper blockers #1 + #3 — the last two). (1) BLOCKER #1: ~10 systems mutated G.score directly (nest, keystone/cornerstone/void-filler, hazmat-shelf +1500, seal payout, hydration bonus, dispatch bonus, throw penalty, over-hydration penalty, unseal -150, collapse -80n) while calcScore() statelessly overwrote it on the next placement/lift — every one of those amounts silently EVAPORATED. The hazmat-shelf +1500 was a pure no-op (added and overwritten inside the same placeBox call), and KEEP LOADING after a seal erased the whole seal payout — improving a daily wall literally COST points on the world board. NOW: one economy. bankScore(n) is the single entry point — every one-shot amount accumulates in a persistent per-wall G.bonusPool that calcScore ALWAYS includes, added post-multiplier so banked magnitudes match the old direct-add semantics exactly. All 11 sites converted; pool resets in wallBaseline (after the sealed wall's score is banked into S.totalScore); the redundant TETRIS direct-add is left alone (already persistent via the shelfB term — converting it would double-count). (2) BLOCKER #3: shed pieces (collapse, tall-tower shed, vertical-tire shed) now come back CHURN-MARKED (_gen+1) and take their placement credit with them (placed-1) — re-placing shed freight earns zero PPH, zero FLOW, and the collapse cost is persistent, so the place-slip-replace multiplier farm is dead. Verified in-browser: bankScore(777) survives a REAL placement recompute (delta exactly 777), penalty banking (-200 -> 577), wallBaseline zeroes the pool, 3-piece shed -> all _gen>0 + placed 10->7 + collapse counted. ALL FIVE GATEKEEPER BLOCKERS ARE NOW DEAD. NEXT: crush-ladder redesign to pattern-based (Vince's order), then the 16 HIGHs, then MED/LOW batches; rules-extraction agent hunting the full mechanics list in parallel; in-game VOICE PASS queued as its own sweep with Vince.
    CHANGE LOG v3.5.155 - ADSENSE STRIPPED FOREVER + MUSIC ZEROED (licensing) + PUBLISHED PRICING. Vince's orders, executed in full. (1) NO AD TECH ON TRAILER-LOAD.COM, EVER: the AdSense script/meta removed from all 7 pages (game, homepage, dashboard, /me/, /ss/, privacy, terms) + ads.txt deleted; SOPIPA-class student-privacy laws prohibit ad tech on school-purpose services and district vetting scans for the tag — this domain is now K-12-clean. Cookie-consent + privacy copy updated to a hard promise: "no ad networks, no ad tech, no personalized advertising, to anyone, ever." The AdSense ACCOUNT is untouched — it lives on other F-Keys properties. Tombstone comments guard every removal site. (2) MUSIC ZEROED: the 13 soundtrack mp3s were generated on a free-tier account whose license does NOT include distribution/commercial use — unlicensed audio in a paid school product is a vetting/contract landmine. All 13 moved to Desktop\trailer-load-archive\music-unlicensed\ (preserved, not flushed); MUSIC.list=[] makes every playback path a safe no-op; music settings rows hidden (DOM ids kept so refreshSettingsUI never breaks) with a "paused while the soundtrack is re-licensed" note; SmallsSort (ss-1.5) same treatment. SFX are code-synthesized (zero assets) and fully intact, sliders and all. Refill MUSIC.list when properly licensed tracks land. (3) PRICING PUBLISHED on the homepage (the certified structure + Vince's customization tier): Site License $1,950/school-year · Founding Programs $1,450/yr locked (first 10, free first semester) · Per-Seat $29/student/semester · Employer Bay $490/yr · CUSTOM EDITION $4,999 (school colors / custom freight mixes / facility SOPs — under every state software cap and the micro-purchase threshold, and it demonstrates we scale) · "Get a formal quote + W-9" mailto. NEXT: Wave B (scoring-economy unification, blocker #1) + crush-ladder redesign to pattern-based (Vince: one crushed box is a mistake; a PATTERN of broken boxes gets eyes on you) + rules 15-16 in the Load Theory list.
@@ -1987,7 +1988,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.157 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.158 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2101,7 +2102,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.157 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.158 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2259,7 +2260,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.157 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.158 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2714,7 +2715,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.157
+// LOCK IN v3.5.158
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3166,7 +3167,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.157'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.158'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -6530,6 +6531,26 @@ function drawWallBoxes(c){
   c.restore();
 }
 
+// v3.5.158 CRUSHED = ONE DAMAGED BOX (Vince: "why did a big box turn into two small boxes?... it really messes up
+// the beautiful game"). The old crushed render early-returned into a flat per-cell red silhouette, so a multi-cell
+// box fragmented into disconnected red blocks. Now the box renders FULLY (cardboard, tape, label — still itself),
+// and this overlay lays a single unified bruise + seeded cracks across the whole piece. Deterministic (no Math.random).
+function drawCrushOverlay(c,cell,pathFn){
+  var seed=((cell.box&&cell.box.seed)||1)>>>0;
+  c.save();pathFn();c.clip();
+  pathFn();c.fillStyle='rgba(22,9,6,.38)';c.fill();      // dark bruise — the box art stays visible under it
+  pathFn();c.fillStyle='rgba(210,40,15,.12)';c.fill();   // faint red tinge, one wash over the WHOLE box
+  var tl=gridToCanvas(cell.rx,cell.ry),br=gridToCanvas(cell.rx+cell.w,cell.ry+cell.h);
+  var w=br.x-tl.x,h=br.y-tl.y,i,r=seed;
+  c.strokeStyle='rgba(12,5,3,.75)';c.lineWidth=Math.max(1.2,Math.min(Math.abs(w),Math.abs(h))*0.035);c.lineCap='round';
+  for(i=0;i<3;i++){ // three seeded crack lines spanning the piece as one object
+    r=(r*1103515245+12345)>>>0;var x1=tl.x+(r%1000)/1000*w;
+    r=(r*1103515245+12345)>>>0;var xm=tl.x+(r%1000)/1000*w;
+    r=(r*1103515245+12345)>>>0;var ym=tl.y+(0.3+((r%1000)/1000)*0.4)*h;
+    c.beginPath();c.moveTo(x1,tl.y);c.lineTo(xm,ym);c.lineTo(xm+(x1>xm?-1:1)*w*0.08,br.y);c.stroke();
+  }
+  c.restore();
+}
 function renderWallBox(c,cell){
   var p=cell.box.pal||{b:'#c89050',l:'#e0a868',d:'#9a6830',t:'rgba(210,190,120,.5)'};
   var tl=gridToCanvas(cell.rx,cell.ry);
@@ -6537,7 +6558,7 @@ function renderWallBox(c,cell){
   var bl=gridToCanvas(cell.rx,cell.ry+cell.h);
   var br=gridToCanvas(cell.rx+cell.w,cell.ry+cell.h);
   // v3.5.33 BAG SKIN on the wall — new square bag.png tile, tiny overlap for the stuffed-bag bulge
-  if(cell.box&&cell.box.isBag&&BAGIMG_OK&&!cell.isCrushed){
+  if(cell.box&&cell.box.isBag&&BAGIMG_OK){ // v3.5.158 a crushed bag KEEPS its bag skin (one object) — damage overlays it
     var _bminx=Math.min(tl.x,bl.x),_bmaxx=Math.max(tr.x,br.x),_bminy=Math.min(tl.y,tr.y),_bmaxy=Math.max(bl.y,br.y);
     var _bgw=_bmaxx-_bminx,_bgh=_bmaxy-_bminy,_bov=Math.max(_bgw,_bgh)*0.04;
     c.save();
@@ -6545,6 +6566,7 @@ function renderWallBox(c,cell){
     drawBagSkin(c,_bminx-_bov,_bminy-_bov,_bgw+_bov*2,_bgh+_bov*2);
     c.restore();
     drawBoxLabel(c,cell,tl,tr,bl,br,p);
+    if(cell.isCrushed)drawCrushOverlay(c,cell,function(){c.beginPath();c.moveTo(tl.x,tl.y);c.lineTo(tr.x,tr.y);c.lineTo(br.x,br.y);c.lineTo(bl.x,bl.y);c.closePath();});
     return;
   }
 
@@ -6569,12 +6591,8 @@ function renderWallBox(c,cell){
     }
   }
 
-  if(cell.isCrushed){
-    c.save();piecePath();c.clip();
-    c.globalAlpha=.6;c.fillStyle='#1a0808';c.fill();
-    c.globalAlpha=1;c.fillStyle='rgba(255,30,0,.4)';c.fill();
-    c.restore();return;
-  }
+  // v3.5.158 crushed boxes NO LONGER early-return into a flat per-cell red silhouette — the box renders fully
+  // (one box, still itself) and drawCrushOverlay lays the damage at the end of this function.
 
   // ── FILL PASS ── all fills inside clip
   c.save();
@@ -6685,6 +6703,7 @@ function renderWallBox(c,cell){
     c.stroke();
     c.restore();
   }
+  if(cell.isCrushed)drawCrushOverlay(c,cell,piecePath); // v3.5.158 one unified damage layer over the fully-drawn box
 }
 
 // v2.1.25 — Colorblind-safe DOT-style hazmat placard: a diamond (square on point)
@@ -6734,7 +6753,8 @@ function drawBoxLabel(c,cell,tl,tr,bl,br,p){
   var stV=hasArrow?0.32:0.50,sp=qp(0.5,stV);
   var lw=Math.max(14,boxW*.64),lh=Math.max(11,boxH*.42);
   var _wPlain=(ld.s==='STD'||ld.s==='SP');
-  var _wtxt=_wPlain?svcCode(box):(ld.ico?ld.ico+' '+ld.s:ld.s);
+  var _wls=(ld.s==null)?svcCode(box):ld.s; // v3.5.158 a labelDef without .s printed literal "undefined" on the box — fall back to a real service code
+  var _wtxt=_wPlain?svcCode(box):(ld.ico?ld.ico+' '+_wls:_wls);
   drawShippingLabel(c,sp.x-lw/2,sp.y-lh/2,lw,lh,_wtxt,_wPlain?null:ld.bg,seed,destCode(box));
   // THIS SIDE UP arrows — rotate with placed rot; red if shipped off-vertical
   if(hasArrow){
@@ -6964,6 +6984,7 @@ function loadedBoxTex(){var a=[],i;for(i=0;i<BOXTEX.length;i++){if(BOXTEX[i].okk
 function drawShippingLabel(c,x,y,w,h,txt,accent,seed,sub){
   // v3.4.3 shipping label: SERVICE code on top, DESTINATION below, varying-width barcode underneath, handling-color accent stripe
   if(w<12||h<9)return;
+  if(txt==null||(''+txt).indexOf('undefined')>=0)txt=svcCode(null); // v3.5.158 last line of defense — "undefined" never prints on freight
   c.fillStyle='#f5f2ea';c.fillRect(x,y,w,h);
   c.strokeStyle='rgba(40,28,10,.42)';c.lineWidth=.6;c.strokeRect(x,y,w,h);
   var accH=accent?Math.max(2,h*0.15):0;
@@ -7131,7 +7152,8 @@ function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
     var lw=Math.max(14,Math.min(w*.80,w-3)),lh=Math.max(11,Math.min(h*.62,h-3));
     var lx=x+(w-lw)*.5,ly2=y+(h-lh)*.52;
     var _isPlain=(ld.s==='STD'||ld.s==='SP');
-    var _sTxt=_isPlain?svcCode(piece):(ld.ico?ld.ico+' '+ld.s:ld.s);
+    var _sls=(ld.s==null)?svcCode(piece):ld.s; // v3.5.158 same "undefined" guard as the wall labels
+    var _sTxt=_isPlain?svcCode(piece):(ld.ico?ld.ico+' '+_sls:_sls);
     drawShippingLabel(c,lx,ly2,lw,lh,_sTxt,_isPlain?null:ld.bg,piece.seed,destCode(piece));
   }
 
@@ -9558,7 +9580,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.157</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.158</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
