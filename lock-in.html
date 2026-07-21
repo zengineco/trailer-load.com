@@ -26,9 +26,22 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.160
+   LOCK IN v3.5.161
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.161 - LEDGER MED BATCH 1 (mechanics/state, 7 items). (1) UNSEAL/RELOCK SYMMETRY: every shelf lock now
+     counts in the shelf score term (unseal -1 / re-lock +1 nets zero) so restoring a shelf restores its score; the -150
+     unseal fine is the only lasting cost; one-time extras (integrity heal, hazmat-shelf bonus, stat) stay pay-once; both
+     banners now tell the truth (unseal says the score is off until re-locked, re-lock announces the restore). (2) REJECTED
+     PLACEMENT = NO SIDE-EFFECTS: the LV9 orientation reject moved ABOVE the crush + hazmat blocks in placeBox — a refused
+     placement can no longer crush freight or charge incidents. (3) WRITE-UP STOPS THE CLOCK: ov-writeup joined the review
+     set and raiseWriteup freezes elapsed — paperwork reading time no longer sinks PPH/DISPATCH. (4) REVIEW TIME OFF THE
+     CLOCK FOR GOOD: elapsed() now re-anchors startT/wallBase/sessionStart past the frozen span when a review overlay
+     closes (before, the frozen seconds landed right back on the pace at resume). (5) PRACTICE IS ONE TRAILER: the shift
+     advance clears G.practice, so a practice kick no longer kills the DISPATCH clock for the whole session (exploit dead).
+     (6) /me/ v1.2 reads the game’s shared liAuth session first (read-only) — players stop logging in twice. (7) THE HEY
+     WINDOW always works: the cover drink bypasses the 6s drink cooldown (it used to demand a drink the cooldown forbade).
 
    CHANGE LOG v3.5.160 - LEDGER HIGH BATCH 2 — ALL 16 GATEKEEPER HIGHs NOW DEAD. (1) HIGH #3 EXPIRED-TOKEN LYING STATES, all three satellites: GoTrue tokens live ~1h, and a stale restored session made every fetch 401 while the pages rendered "No students have opted in yet" / "No walls on record yet" — an apparently WIPED roster/record (poison for a dashboard demo). Now: JWT exp is checked on boot-restore (30s skew), any 401 on the cohort/lifetime loaders routes to a real "Session expired — sign in again" state that clears the stored session and shows login, and empty-record copy can ONLY render on a genuine 200-empty. SmallsSort treats a stale token as signed-out for posting (SIGN IN link shows, runs never silently vanish) but NEVER deletes liAuth — that's the game's shared session and the game refreshes it. Verified: crafted expired JWT -> login + message + storage cleared; fresh JWT boots through; ss stale reads null with liAuth preserved. (2) HIGH #12 TOUR MIGRATED — the last old-format surface: 9-10px type raised to the 11px floor (+--t3 ink brightened), the INVISIBLE empty stars (dark-transparent on dark cards) now visible light-ink, and .le-btn joins the unified law (1.5px --btn-line, 6px radius, 34px). (3) HIGH #14 CHUTE LIGHT: the hardcoded #1f9d57/#d4820f/#c23a1a literals bypassed the colorblind data-cb remap entirely — now theme VARS (verified: deut remaps the light to blue) PLUS a glyph cue (✓ / ! / ✕) so chute state never rides color alone. (4) HIGH #16 SMALLSSORT SOUND (ss-1.7): a code-synthesized sfx kit like the flagship's (zero assets, zero licensing) — sort/wrong/strike/stoppage/struck-out/line-resumed all wired, with a persisted Sound Effects slider in settings (declared before the settings loader so the saved value survives — hoisting clobber caught in review). Verified: all six fire no-throw, ctx created, slider persists (35 roundtrip). LEDGER STATE: 5/5 blockers + 16/16 HIGHs dead; remaining = 31 MED + 21 LOW batches, then the VOICE PASS with Vince, then determinism-audit + Amnesiac passes, then the Gatekeeper re-verdict. NEXT: MED batch 1 (mechanics/state cluster).
    CHANGE LOG v3.5.159 - LEDGER HIGH BATCH 1 (10 of the Gatekeeper's 16 HIGHs, across all four surfaces). (1) ACCOUNT & DATA rendered raw JS-escape text — the password placeholder literally showed "••..." and the facility-consent checkbox (the most legally sensitive string in the product) showed "facility’s" — real bullets + a real apostrophe now. (2) THE SIGNED WRITE-UP LIED: "five sends you to a practice trailer" — the code sends you HOME at 4 write-ups; practice trailer is 5 INCIDENTS. The document players sign now states the real ladder. (3) BRIEFING RULE 8 taught two RETIRED mechanics (double-click a bag — impossible on touch since v3.5.114; "throw a box to summon" — language eradicated v3.5.115) — now teaches the ✂ BREAK chip + FLAG. (4) The briefing done-flag moved sessionStorage->localStorage — veterans no longer re-acknowledge the 9-rule clipboard EVERY browser session. (5) CONSENT CARD AUTO-POP: fired 650ms after EVERY clock-out forever because NOT NOW was never recorded — trained reflex-dismissal of the one dialog that matters. NOT NOW now persists (consentAsked); the card auto-pops ONCE and stays reachable via ADMIN → ACCOUNT & DATA. (6) PAUSE BUTTONS had NO border — var(--pause-border) was defined NOWHERE, the shorthand collapsed to none; now 1.5px var(--btn-line) + the 34px height law (the motif template itself finally obeys the outline law). (7) /me/ FOLLOW checked j.error but the RPC returns j.ok/j.err (the game checks correctly) — following a NONEXISTENT user reported "Following ✓" as false success; now matches the real contract incl. not_logged_in. (8) SmallsSort (ss-1.6): BOARD/SETTINGS overlays now FREEZE the belt (SM_UIPAUSE + zeroed clock) — you could previously take a FOREVER stoppage strike or strike OUT entirely while adjusting a slider. (9) ss viewport dropped maximum-scale=1/user-scalable=no — pinch-zoom restored (WCAG 1.4.4). (10) 'Bebas Neue',cursive fallback swept to sans-serif across all three satellites (dashboard/me/ss — 19 occurrences; the flagship was purged in v3.5.145). Verified in-browser: real bullets/apostrophe render, consentAsked persists + auto-pop gate closes, briefing flag on localStorage, write-up + rule-8 copy live, pause buttons carry the unified border spec + 34px. REMAINING HIGHs (batch 2): expired-token lying states (dashboard/me/ss), TOUR old-format migration, chute-light colorblind literals, ss sound effects. NEXT: batch 2, then MED/LOW.
@@ -1994,7 +2007,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.160 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.161 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2108,7 +2121,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.160 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.161 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2266,7 +2279,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.160 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.161 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2721,7 +2734,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.160
+// LOCK IN v3.5.161
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3173,7 +3186,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.160'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.161'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4277,7 +4290,7 @@ var THROW_CD=5000,DRINK_CD=6000,_lastThrowT=0,_lastDrinkT=0;
 function _coolBtn(id,ms){var b=document.getElementById(id);if(!b)return;b.style.opacity='.4';b.style.pointerEvents='none';setTimeout(function(){var e=document.getElementById(id);if(e){e.style.opacity='';e.style.pointerEvents='';}},ms);}
 function takeDrink(){
   if(gOver)return;
-  if(Date.now()-_lastDrinkT<DRINK_CD){showBanner('💧 EASY — you just drank. Give it a few seconds.','',1100);return;}
+  if(Date.now()-_lastDrinkT<DRINK_CD&&!(typeof _throwPending!=='undefined'&&_throwPending)){showBanner('💧 EASY — you just drank. Give it a few seconds.','',1100);return;} // v3.5.161 the HEY window bypasses the cooldown — the cover play must ALWAYS be possible
   _lastDrinkT=Date.now();_coolBtn('water-side',DRINK_CD);
   if(typeof zLog==='function')zLog('water',{n:(S.drinks||0)+1}); // v3.5.132 raw timeline
   if(TUTORIAL_MODE&&typeof tutAct==='function')tutAct('water');
@@ -4466,7 +4479,7 @@ function liftBox(cell){
   G.tetrisRows=G.tetrisRows||{};
   var _lc=cell.cells||makeRect(cell.w,cell.h),_lci,_lbroke=false;
   for(_lci=0;_lci<_lc.length;_lci++){var _lry=cell.ry+_lc[_lci][1];if(G.tetrisRows[_lry]){delete G.tetrisRows[_lry];_lbroke=true;}}
-  if(_lbroke){bankScore(-150);G.tetrisTotal=Math.max(0,(G.tetrisTotal||0)-1);if(typeof showBanner==='function')showBanner('⚠ UNSEALED A LOCKED SHELF — −150 CUBES','danger',2200);if(typeof playSfx==='function')playSfx('error');}
+  if(_lbroke){bankScore(-150);G.tetrisTotal=Math.max(0,(G.tetrisTotal||0)-1);if(typeof showBanner==='function')showBanner('⚠ UNSEALED A LOCKED SHELF — −150, shelf score off until it’s re-locked','danger',2400);if(typeof playSfx==='function')playSfx('error');}
   // Remove from grid
   var cells2=cell.cells||makeRect(cell.w,cell.h);
   for(var i=0;i<cells2.length;i++){
@@ -4697,6 +4710,13 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   if(!isLegal(G.grid,box,gx,gy,rot)){S.rejects=(S.rejects||0)+1;if(typeof zLog==='function')zLog('reject',{x:gx,y:gy});if(typeof gcurFlash==='function')gcurFlash('bad',420);if(typeof playSfx==='function')playSfx('error');if(typeof addShake==='function')addShake(7);if(typeof spawnBurst==='function'&&typeof gridToCanvas==='function'){var _rj=gridToCanvas(gx+0.5,gy+0.5);spawnBurst(_rj.x,_rj.y,14,'rgba(214,64,40,.92)',150,0.5,60);} /* v3.5.24 misplace red shards */hapt('error');if(typeof showBanner==='function'&&(!G._rejWarn||Date.now()-G._rejWarn>2500)){G._rejWarn=Date.now();showBanner('\u2715 NO SUPPORT THERE \u2014 every box needs something solid under it.','warn',1800);}return false;} // v2.1.9 / v2.1.33 reject feedback
   var _segB=countSegregationViolations(G.grid),_kB=anyKillerTooClose(G.grid); // v2.1.6 pre-commit state
 
+  // LV9: Orientation requirement check — reject BEFORE any side-effects (v3.5.161: a rejected
+  // placement used to fall through and still crush freight + charge hazmat incidents below)
+  if(source==='nc'&&!checkOrientOnPlace(box,rot)){
+    selNC=-1; // return NC to staging — it was already there, just clear selection
+    return false;
+  }
+
   // Fragile crush check — only fires for wc>=5, locked rows protect boxes
   var crushed=checkFragileCrush(box,gx,gy,rot);
   if(crushed.length){
@@ -4724,12 +4744,6 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   }
 
   var d=getDims(box,rot);
-  // LV9: Orientation requirement check — reject if wrong rotation
-  if(source==='nc'&&!checkOrientOnPlace(box,rot)){
-    // Return NC to staging — it was already there, just clear selection
-    selNC=-1;
-    return false;
-  }
   var cell={box:box,id:box.id,rx:gx,ry:gy,w:d.w,h:d.h,cells:d.cells,isCrushed:false,rot:rot};
   for(var i=0;i<d.cells.length;i++){
     var cx=d.cells[i][0],cy=d.cells[i][1];
@@ -5061,6 +5075,7 @@ function raiseWriteup(offense,num){
   set('wu-num',S.writeups);set('wu-title',doc.t);set('wu-why',doc.w); // v3.5.109 wu-num = the running write-up count
   var _sb=document.getElementById('wu-signbtn');if(_sb)_sb.textContent=terminal?'✍ SIGN — CLOCK OUT':'✍ SIGN & CONTINUE';
   if(terminal&&G)G._sentHome=true; // v3.5.109 sign -> game over
+  if(_elapsedFrozen==null)_elapsedFrozen=startT?(Date.now()-startT)/1000:0; // v3.5.161 write-up stops the pace clock (elapsed() re-anchors on sign)
   paused=true;if(animF){cancelAnimationFrame(animF);animF=null;}
   var ov=document.getElementById('ov-writeup');if(ov)ov.classList.add('vis');
   if(typeof playSfx==='function')playSfx('lose');
@@ -5507,9 +5522,13 @@ function checkTetris(){
     if(full&&!G.tetrisRows[y]){
       G.tetrisRows[y]=true;newLocks++;
       G.tetrisPaid=G.tetrisPaid||{};
+      // v3.5.161 EVERY lock counts in the shelf score term: unseal −1 / re-lock +1 nets zero, so restoring
+      // a shelf restores its score (the −150 unseal fine stays the only lasting cost). One-time extras below.
+      G.tetrisTotal=(G.tetrisTotal||0)+1;
+      if(typeof playSfx==='function')playSfx('lock');
       if(!G.tetrisPaid[y]){
       G.tetrisPaid[y]=true; // v2.10.2 lock bonus pays once per row per trailer (unseal+relock can't refarm)
-      G.tetrisTotal=(G.tetrisTotal||0)+1;S.shelvesLocked=(S.shelvesLocked||0)+1;if(typeof playSfx==='function')playSfx('lock'); // v2.1.8 / v2.11.1 shelf-lock sfx
+      S.shelvesLocked=(S.shelvesLocked||0)+1; // v2.1.8 / v2.11.1 distinct shelves earned
       if(typeof mitigateWarn==='function'&&mitigateWarn('lock')&&typeof showBanner==='function')showBanner('🔒 SHELF LOCKED — open safety warning neutralized (still on the record as washed).','ok',2000); // v3.5.59 lock = instant mitigation
       var prevInt=G.integrity||100;
       var intBonus=Math.min(30,100-prevInt);
@@ -5526,7 +5545,7 @@ function checkTetris(){
         G.hazShelfLocks=(G.hazShelfLocks||0)+1;S.hazShelfLocks=(S.hazShelfLocks||0)+1;if(typeof playSfx==='function')playSfx('hazmatlock');
         showBanner('\u2622 HAZMAT SHELF LOCKED +'+HAZMAT_SHELF_BONUS+'<br><span style="font-size:.72em">LOADED LOW, CAPPED, SECURED \u2014 THE VET MOVE.</span>','ok',3400);
       }
-      } // v2.10.2 end lock-pay guard
+      } else if(typeof showBanner==='function')showBanner('🔒 SHELF RE-LOCKED — brace and shelf score restored','ok',1900); // v2.10.2 end lock-pay guard · v3.5.161 relock honesty
     }
   }
   if(newLocks>0){
@@ -5767,8 +5786,18 @@ function bankScore(n){
   G.score=calcScore();
 }
 var _elapsedFrozen=null; // v3.5.138 the clock STOPS whenever you're REVIEWING (game over, post-sort report, or the wall-complete popup) — so PPH/elapsed don't keep dropping while you read your stats (kremsicle: "PPH still counts when reviewing statistics")
-function _reviewing(){return gOver||(typeof _shown==='function'&&(_shown('ov-postsort')||_shown('next-popup')||_shown('ov-end')));}
-function elapsed(){if(_elapsedFrozen!=null&&_reviewing())return _elapsedFrozen;return startT?(Date.now()-startT)/1000:0;}
+function _reviewing(){return gOver||(typeof _shown==='function'&&(_shown('ov-postsort')||_shown('next-popup')||_shown('ov-end')||_shown('ov-writeup')));} // v3.5.161 + write-up
+function elapsed(){
+  if(_elapsedFrozen!=null){
+    if(_reviewing())return _elapsedFrozen;
+    // v3.5.161 leaving a review: advance every clock PAST the frozen span so reading time never
+    // lands back on the pace (mirrors the v3.5.130 pause compensation in togglePause)
+    var _fs=(startT?(Date.now()-startT)/1000:0)-_elapsedFrozen;
+    if(_fs>0){var _fms=Math.round(_fs*1000);if(startT)startT+=_fms;if(S&&S._wallBase&&S._wallBase.startT)S._wallBase.startT+=_fms;if(S&&S.sessionStartT)S.sessionStartT+=_fms;}
+    _elapsedFrozen=null;
+  }
+  return startT?(Date.now()-startT)/1000:0;
+}
 // v3.5.90 PPH = REAL FREIGHT per hour (boxes only). This wall's freight = S.boxPieces since the wall baseline.
 // Smalls/bags never entered boxPieces, so they can't inflate pph — and the seconds they cost still count, so
 // stopping to break down a bag genuinely drags your number. Gross (no lift-decrement): pph = freight moved / time.
@@ -9111,6 +9140,7 @@ function nextTrailer(){
     G.brickAwarded=false;G.crunchCount=0;G.hazViolations=0;G.recoveryCount=0;G.ncPlaced=0;G.drinks=0;G.throws=0;
     G.preselectDepth=0;G.preselectWarned=false;G.seamWarned=false;G.segWarned=false;
     G.beltSinceNC=0;G.beltSinceBag=0;
+    G.practice=false; // v3.5.161 a practice kick lasts ONE trailer — the next wall is real freight (DISPATCH clock back on)
     placed=0;startT=null; // v3.5.144 clock deferred to first piece of the new wall
     if(typeof wallBaseline==='function')wallBaseline(); // v3.5.81 per-wall stat baseline (shift advance)
     selBeltIdx=null;selBeltRot=0;selNC=-1;selBag=-1;hCell=null;
@@ -9586,7 +9616,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.160</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.161</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 

@@ -370,6 +370,12 @@ function mExpired(){
   var m=document.getElementById('login-msg');if(m){m.textContent='Session expired — sign in again.';m.className='err';}
 }
 function mBoot(){
+  // v1.2 (MED) ONE login for players: read the GAME's shared liAuth session first (read-only — never
+  // write or delete it; the game owns the refresh). lockinMeAuth stays as this page's own fallback store.
+  try{var g=localStorage.getItem('liAuth');if(g){var gs=JSON.parse(g);
+    if(gs&&gs.access_token&&mJwtFresh(gs.access_token)){ME.session=gs;mEnter();return;}
+    if(gs&&gs.access_token)mMsg('Session expired — sign in again.','err');
+  }}catch(e){}
   try{var r=localStorage.getItem('lockinMeAuth');if(r){ME.session=JSON.parse(r);if(ME.session&&ME.session.access_token){if(!mJwtFresh(ME.session.access_token)){mExpired();return;}mEnter();return;}}}catch(e){console.error('mBoot:',e);}
 }
 mBoot();
