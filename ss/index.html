@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><!-- v1.6 pinch-zoom restored (WCAG 1.4.4); canvas touch-action:none already guards gameplay -->
-<title>SmallSort — LOCK IN</title>
+<title>Smalls Sort — LOCK IN</title>
 <!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Do not re-add. -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700;900&display=swap');
 
 /* ============================================================
-   SMALLSORT (LOCK IN)  v1.3
+   SMALLS SORT (LOCK IN)  v1.8
    Drag-sort: 6 routes (NE double-binned at pool corners),
    GENTLE/FLOOR, split QA (DAMAGE+HAZMAT), OVERNIGHT, recovery
    pool, belt-stoppage jam. Industrial-grit palette.
@@ -17,7 +17,7 @@
    ramping belt) as the primary/addictive mode + 60-SEC SHIFT kept;
    fleshed-out settings (difficulty CHILL/NORMAL/BRUTAL + high-contrast
    bins); crisp double-outlined bins.
-   LOCK IN · SMALLSORT · trailer-load.com
+   LOCK IN · SMALLS SORT · trailer-load.com
    ============================================================
    WORKFLOW STACK:
    1. boot() sizes canvas, builds bins (NE bins pinned to column
@@ -66,13 +66,13 @@ html,body{width:100%;height:100dvh;
 #hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--acc) 25%,var(--teal) 75%,transparent);opacity:.6;}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--acc);line-height:1;display:flex;align-items:baseline;gap:7px;text-shadow:0 1px 2px rgba(0,0,0,.5);}
-.logo sub{font-size:9px;letter-spacing:1px;color:var(--t3);font-family:'Share Tech Mono',monospace;}
+.logo sub{font-size:10px;letter-spacing:1px;color:var(--t3);font-family:'Share Tech Mono',monospace;}
 .logo-img{display:block;}
 
 #statbar{flex-shrink:0;display:flex;background:linear-gradient(180deg,#2e2e30,#262628);border-bottom:1px solid #1c1c1e;}
 .stat{flex:1;text-align:center;padding:4px 2px;border-right:1px solid #1e1e20;}
 .stat:last-child{border-right:none;}
-.stat .lbl{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.5px;color:var(--t2);text-transform:uppercase;font-weight:bold;}
+.stat .lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:var(--t2);text-transform:uppercase;font-weight:bold;}
 .stat .val{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;color:var(--acc);line-height:1.05;}
 .stat .val.ok{color:var(--ok);}.stat .val.warn{color:var(--warn);}.stat .val.danger{color:var(--danger);}
 .stat .val.teal{color:var(--teal);}
@@ -80,7 +80,7 @@ html,body{width:100%;height:100dvh;
 #field{flex:1;position:relative;min-height:0;}
 #cv{display:block;width:100%;height:100%;touch-action:none;}
 
-#ftr{flex-shrink:0;text-align:center;padding:4px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1px;background:#262628;border-top:1px solid #1c1c1e;}
+#ftr{flex-shrink:0;text-align:center;padding:4px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:1px;background:#262628;border-top:1px solid #1c1c1e;}
 
 .ov{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;
   background:radial-gradient(ellipse 120% 100% at 50% 40%,#3a3a3e,#262628);padding:18px;text-align:center;overflow-y:auto;}
@@ -110,7 +110,7 @@ html,body{width:100%;height:100dvh;
 .tgl.on{background:var(--teal);color:#0e2420;border-color:var(--teal-bright);font-weight:bold;}
 .start-modes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;}
 .mode-btn{display:flex;flex-direction:column;align-items:center;gap:2px;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;color:#1c1c1e;border:none;border-radius:9px;padding:12px 22px;cursor:pointer;box-shadow:var(--shadow-md);}
-.mode-btn small{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;opacity:.8;}
+.mode-btn small{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;opacity:.8;}
 .mode-btn.fv{background:linear-gradient(180deg,var(--acc-bright),var(--acc));font-size:26px;}
 .mode-btn.sh{background:linear-gradient(180deg,var(--teal-bright),var(--teal));color:#0e2420;font-size:20px;}
 .mode-btn:active{transform:translateY(2px);}
@@ -138,7 +138,7 @@ html,body{width:100%;height:100dvh;
 <body>
 <div id="root">
   <div id="hdr">
-    <img class="logo-img" src="logo.png" alt="SMALLSORT" style="height:42px;width:auto;">
+    <img class="logo-img" src="logo.png" alt="SMALLS SORT" style="height:42px;width:auto;">
     <div style="display:flex;align-items:center;gap:12px;">
       <span id="sm-acct" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;"></span>
       <button id="sm-board-btn" onclick="smOpenBoard()">★ BOARD</button>
@@ -155,10 +155,10 @@ html,body{width:100%;height:100dvh;
     <div class="stat"><div class="lbl" id="lbl-time">Time</div><div class="val" id="s-time">1:00</div></div>
   </div>
   <div id="field"><canvas id="cv"></canvas></div>
-  <div id="ftr">SMALLSORT · a LOCK IN companion · trailer-load.com · © 2026</div>
+  <div id="ftr">SMALLS SORT · a LOCK IN companion · trailer-load.com · © 2026</div>
 
   <div class="ov vis" id="ov-start">
-    <h1>SMALLSORT</h1>
+    <h1>SMALLS SORT</h1>
     <h2>Sort · Survive · QA</h2>
     <p>Packages ride down the belt. <b>Drag</b> each into the right bin — bins line both sides.</p>
     <div class="rules">
@@ -237,7 +237,7 @@ html,body{width:100%;height:100dvh;
 
 <script>
 // ============================================================
-// SMALLSORT v0.5.0 | var-only | single STATE object
+// SMALLS SORT v1.8 | var-only | single STATE object
 // ============================================================
 
 // ───── TUNE ─────
@@ -714,8 +714,8 @@ function copyResult(){
   var fv=(STATE.mode==='forever');
   var tput=fv?Math.round(STATE.sorted/Math.max(1/60,STATE.survivalT/60)):STATE.sorted;
   var gr=fv?foreverGrade(STATE.sorted):gradeFor(acc,tput,STATE.downtime);
-  var head=fv?('SMALLSORT — FOREVER\n--------------------------------\nSurvived:    '+fmtMS(STATE.survivalT)+'\nGrade:       '+gr[0]):('SMALLSORT — 60-Sec Shift\n--------------------------------\nGrade:       '+gr[0]);
-  var txt=head+'\nScore:       '+STATE.score+'\nAccuracy:    '+acc+'%\nThroughput:  '+tput+'/min\nBest Combo:  '+STATE.bestCombo+'\nSorted:      '+STATE.sorted+'\nMisroutes:   '+STATE.miss+'\nQA Caught:   '+STATE.qaCaught+'\nStoppages:   '+STATE.stoppages+'\nDowntime:    '+dts+'s\n--------------------------------\nLOCK IN · SMALLSORT · trailer-load.com · © 2026';
+  var head=fv?('SMALLS SORT — FOREVER\n--------------------------------\nSurvived:    '+fmtMS(STATE.survivalT)+'\nGrade:       '+gr[0]):('SMALLS SORT — 60-Sec Shift\n--------------------------------\nGrade:       '+gr[0]);
+  var txt=head+'\nScore:       '+STATE.score+'\nAccuracy:    '+acc+'%\nThroughput:  '+tput+'/min\nBest Combo:  '+STATE.bestCombo+'\nSorted:      '+STATE.sorted+'\nMisroutes:   '+STATE.miss+'\nQA Caught:   '+STATE.qaCaught+'\nStoppages:   '+STATE.stoppages+'\nDowntime:    '+dts+'s\n--------------------------------\nLOCK IN · SMALLS SORT · trailer-load.com · © 2026';
   try{navigator.clipboard.writeText(txt);var b=document.getElementById('copy-btn');var o=b.textContent;b.textContent='✓ COPIED';setTimeout(function(){b.textContent=o;},1400);}
   catch(err){console.error('copyResult:',err);window.prompt('Copy result:',txt);}
 }
@@ -802,7 +802,7 @@ function boot(){
   window.addEventListener('resize',resize);
   smAcctRender();
 }
-// v1.x ACCOUNT STATE — SmallsSort shares the same origin (trailer-load.com) as LOCK IN, so it
+// v1.x ACCOUNT STATE — Smalls Sort shares the same origin (trailer-load.com) as LOCK IN, so it
 // reads the same localStorage session ('liAuth'). This is what makes SIGN OUT reachable from here
 // (was the reported gap). Sign-IN lives in the main game's profile, so we link there rather than
 // duplicate the whole auth form.

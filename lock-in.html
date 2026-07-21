@@ -26,9 +26,24 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.162
+   LOCK IN v3.5.163
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.163 - VOICE PASS (K-12 STANDARD, his direction) + LEDGER MED BATCH 3a (look/copy/seams, 9 of 16).
+     THE VOICE: PLACE_CMT_HUB recalibrated to a real floor supervisor — stern, productively optimistic, always about the
+     WORK, never the worker. Culled: "Do better." x3, "More passion." x2, "Do you even care?" x2, "This guy wants to go
+     home." x2, "Why’s your face so red?" x2, both fart lines, "MORE BOXES!!!!!", "It’s just a bag of pet food",
+     "embarrassing", "tragedy", sarcastic "Allegedly". Replacements teach: wider base, split the weight, clear staging,
+     protect the freight, reps build speed. STD voice + NH_BANNERS were already clean and untouched. COPY SEAMS: consent
+     note points to ADMIN → ACCOUNT & DATA (DATA tab retired v3.5.39) · "Haz Incidents" → "Safety Incidents" (it counts
+     ALL incidents) · training sign-off says TRAINING COMPLETE (CLOCK IN already means two other things) · safety-ladder
+     card now states the real ladder (5 incidents = practice trailer, 4 write-ups = shift over) · "Log in from PROFILE"
+     x2 → "Sign in on the ME tab" (a button that exists) · /me/ v1.2 rank ladder aligned to the game (95/87/76/62/48 +
+     RE-TRAIN bottom; was 90/82/72/60/45 + IN TRAINING) · SMALLS SORT spelled ONE way across game + companion (was 4
+     spellings; title "Smalls Sort — LOCK IN"). TYPE + TARGETS: 18 sub-AA micro-type bumps to 10-11px (SOCIAL clipboard,
+     seal meter, briefing, settings, TOUR subtitles) · ss HUD labels 8→10px · .lb-unfollow/.stg-sep hit targets ≥24px ·
+     white-on-amber killed on homepage/privacy/terms (dark ink on amber, the in-game v3.5.145 rule).
 
    CHANGE LOG v3.5.162 - LEDGER MED BATCH 2 (funnel/feel, 8 items). (1) ONE tap now skips BOTH boot splashes, and
      returning players (briefing done) skip the F-Keys company splash entirely (short LOCK IN ride only). (2) The guest
@@ -800,7 +815,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   color:var(--ok);line-height:1;display:block;
 }
 #to-sub{
-  font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1.5px;
+  font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:1.5px;
   color:var(--t3);display:block;margin-top:3px;text-transform:uppercase;
 }
 
@@ -869,7 +884,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 }
 .to-speed-btn.active{border-color:var(--ok);color:var(--ok);background:rgba(40,184,112,.1);}
 #to-exit-hint{
-  font-family:'Share Tech Mono',monospace;font-size:9px;
+  font-family:'Share Tech Mono',monospace;font-size:10.5px;
   color:var(--t3);letter-spacing:.8px;text-align:center;
 }
 
@@ -900,7 +915,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   color:var(--acc);
 }
 #ls-subtitle{
-  font-family:'Share Tech Mono',monospace;font-size:10px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
   letter-spacing:2px;color:var(--t3);
 }
 #ls-back{
@@ -1124,14 +1139,14 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 @keyframes mpfpulse{0%,100%{box-shadow:0 0 14px rgba(40,184,112,.45);transform:scale(1);}50%{box-shadow:0 0 26px 4px rgba(80,216,144,.85);transform:scale(1.06);}}
 /* v3.5.146 SEAL-READINESS METER — the win gate is two hidden conditions (height>=92% AND density>=35%); this shows both, filling to green so "tall but loose" is visible, not silent. */
 #seal-rdy{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:26;display:none;pointer-events:none;background:rgba(8,10,8,.82);border:1px solid var(--border2);border-radius:8px;padding:6px 11px 7px;min-width:214px;box-shadow:0 3px 12px rgba(0,0,0,.45);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
-.sr-cap{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);text-align:center;margin-bottom:5px;text-transform:uppercase;font-weight:bold;text-shadow:0 1px 2px #000;}
+.sr-cap{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--t2);text-align:center;margin-bottom:5px;text-transform:uppercase;font-weight:bold;text-shadow:0 1px 2px #000;}
 .sr-cap.rdy{color:#5fe6b0;}.sr-cap.loose{color:#f0b84a;}
 .sr-row{display:flex;align-items:center;gap:7px;margin-top:3px;}
-.sr-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.4px;color:var(--t2);width:46px;font-weight:bold;text-align:right;}
+.sr-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.4px;color:var(--t2);width:46px;font-weight:bold;text-align:right;}
 .sr-track{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.5);overflow:hidden;border:1px solid rgba(0,0,0,.5);}
 .sr-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c8791e,#e0a64e);transition:width .18s ease;border-radius:4px;}
 .sr-track i.sr-full{background:linear-gradient(90deg,#1f9d57,#3fd07f);}
-.sr-v{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t1);width:34px;font-weight:bold;text-shadow:0 1px 2px #000;}
+.sr-v{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t1);width:34px;font-weight:bold;text-shadow:0 1px 2px #000;}
 /* v3.5.146 PERSONAL-BEST ribbon on the end screen */
 #pb-ribbon{display:none;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:2px;color:#1a1206;background:linear-gradient(180deg,#ffdf7a,#f0b428);border:1px solid #d89a1a;border-radius:6px;padding:8px 18px;box-shadow:0 0 24px rgba(240,180,40,.5);text-align:center;margin:2px auto 8px;animation:pbpop .4s ease;}
 @keyframes pbpop{from{transform:scale(.8);opacity:0;}to{transform:scale(1);opacity:1;}}
@@ -1462,7 +1477,7 @@ body.m-portrait .stg-wheel{bottom:288px;}
 /* v3.5.114 touch-friendly bag break: a tappable chip replaces the impossible-on-mobile double-click */
 .stg-brk{position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);white-space:nowrap;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;color:#0d0805;background:var(--acc-bright);border:1px solid #7a4a12;border-radius:5px;padding:2px 9px;box-shadow:0 2px 7px rgba(0,0,0,.55);pointer-events:auto;cursor:pointer;z-index:2;}
 .stg-brk:active{background:#fff;}
-.stg-sep{cursor:pointer;padding:3px 10px;border-radius:6px;background:rgba(200,121,30,.16);border:1.5px solid var(--btn-line);font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;color:var(--acc-bright);font-size:13px;white-space:nowrap;}
+.stg-sep{cursor:pointer;padding:6px 12px;min-height:24px;border-radius:6px;background:rgba(200,121,30,.16);border:1.5px solid var(--btn-line);font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;color:var(--acc-bright);font-size:13px;white-space:nowrap;}
 .stg-sep::after{content:' ✕';color:var(--t2);font-family:monospace;font-size:11px;}
 .stg-empty{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);white-space:nowrap;color:var(--t3);font-size:12px;background:rgba(20,14,9,.95);padding:6px 12px;border-radius:6px;pointer-events:auto;}
 
@@ -1499,9 +1514,9 @@ body.m-portrait .stg-wheel{bottom:288px;}
   padding:11px 26px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.45);}
 #brief-cta:hover{filter:brightness(1.1);}
 #brief-legal{max-width:560px;margin:12px auto 0;font-family:'Share Tech Mono',monospace;
-  font-size:9px;color:#7a6e5c;line-height:1.5;text-align:center;padding:0 10px;flex:none;}
+  font-size:10.5px;color:#7a6e5c;line-height:1.5;text-align:center;padding:0 10px;flex:none;}
 #brief-legal a{color:#c8791e;}
-#brief-voice-note{font-family:'Share Tech Mono',monospace;font-size:9px;
+#brief-voice-note{font-family:'Share Tech Mono',monospace;font-size:10.5px;
   letter-spacing:1px;color:#888;text-align:right;max-width:150px;line-height:1.4;}
 
 /* ── VOICE TOGGLE ── */
@@ -1610,9 +1625,9 @@ body.m-portrait .stg-wheel{bottom:288px;}
 .set-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;
   background:var(--acc);border:2px solid var(--bg2);cursor:pointer;}
 .set-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--acc);border:2px solid var(--bg2);cursor:pointer;}
-.set-note{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;
+.set-note{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;
   color:var(--t3);line-height:1.5;margin-top:8px;font-style:italic;}
-.set-foot{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;
+.set-foot{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
   color:var(--t3);text-align:center;padding:12px 0 2px;}
 /* Reduced-motion: kill CSS animations/transitions (the canvas render loop is unaffected) */
 body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{
@@ -1761,7 +1776,7 @@ body[data-cb="trit"]{
 .lb-row span:last-child{color:#8b4513;font-weight:bold;}
 .lb-row.lb-me{background:rgba(200,121,30,.14);border-radius:3px;}
 .lb-empty{color:#a08b6a;font-style:italic;padding:10px 4px;}
-.lb-note{font-family:'Share Tech Mono',monospace;font-size:10.5px;color:#a08b6a;line-height:1.5;margin-top:6px;border-top:1px dashed #d8cdb4;padding-top:8px;}
+.lb-note{font-family:'Share Tech Mono',monospace;font-size:11px;color:#a08b6a;line-height:1.5;margin-top:6px;border-top:1px dashed #d8cdb4;padding-top:8px;}
 .lb-hall-select{width:100%;margin-bottom:11px;padding:9px 10px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.8px;color:#2a1a08;background:#fff;border:1px solid #8b4513;border-radius:5px;cursor:pointer;}
 .lb-hall-select optgroup{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#8b6a3a;}
 .lb-hall-select option{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#2a1a08;letter-spacing:0;}
@@ -1778,7 +1793,7 @@ body[data-cb="trit"]{
 .lb-card.shame{box-shadow:inset 3px 0 0 #b3401f;}
 .lb-card-hd{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.6px;color:#2a1a08;display:flex;align-items:center;gap:7px;line-height:1;}
 .lb-card-hd .em{font-size:16px;}
-.lb-card-sub{font-family:'Share Tech Mono',monospace;font-size:8.5px;letter-spacing:.2px;color:#9a8763;margin:2px 0 8px;line-height:1.35;}
+.lb-card-sub{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.2px;color:#9a8763;margin:2px 0 8px;line-height:1.35;}
 .lb-card-rows{display:flex;flex-direction:column;gap:2px;}
 .lb-crow{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:7px;padding:4px 7px;border-radius:5px;background:rgba(255,255,255,.5);}
 .lb-crow .rk{font-family:'Bebas Neue',sans-serif;font-size:15px;color:#a08b6a;text-align:center;line-height:1;}
@@ -1794,7 +1809,7 @@ body[data-cb="trit"]{
 /* v3.5.86 DAILY = the crown jewel: the world's #1 loader gets a hero, + a live reset countdown */
 .lb-daily-crown{background:linear-gradient(135deg,#f6dc90,#e0a838);border:1px solid #b5651a;border-radius:7px;padding:11px 14px;margin-bottom:11px;text-align:center;box-shadow:0 3px 14px rgba(224,150,46,.42);}
 .lb-daily-crown.empty{background:linear-gradient(135deg,#efe7d4,#ddd0b4);box-shadow:none;}
-.lb-daily-crown .dc-lbl{font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:1.4px;color:#6a3a08;}
+.lb-daily-crown .dc-lbl{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:1.4px;color:#6a3a08;}
 .lb-daily-crown .dc-name{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;color:#3a1e04;line-height:1;margin:3px 0 2px;word-break:break-all;}
 .lb-daily-crown .dc-score{font-family:'Share Tech Mono',monospace;font-size:12px;color:#6a3a08;font-weight:bold;}
 .lb-daily-reset{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:#8b6a3a;text-align:center;margin-top:7px;}
@@ -1805,7 +1820,7 @@ body[data-cb="trit"]{
 .lb-at-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .lb-at{background:linear-gradient(180deg,#efe8d7,#e2d8bf);border:1px solid #cebf9c;border-radius:8px;padding:9px 10px;box-shadow:inset 3px 0 0 #e0a838;}
 .lb-at.shame{box-shadow:inset 3px 0 0 #b3401f;}
-.lb-at-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.4px;text-transform:uppercase;color:#8a7a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-at-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:#8a7a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lb-at-val{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;color:#2a1a08;margin:5px 0 2px;font-variant-numeric:tabular-nums;}
 .lb-at.shame .lb-at-val{color:#b3401f;}
 .lb-at-nm{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;color:#5c4a30;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -1819,7 +1834,7 @@ body[data-cb="trit"]{
 #lb-follow-input:focus{outline:none;border-color:#8b4513;}
 #lb-follow-btn{padding:8px 16px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:#fff;background:#8b4513;border:none;border-radius:4px;cursor:pointer;}
 #lb-follow-btn:hover{background:#a0531a;}
-.lb-unfollow{background:none;border:none;color:#c08b6a;font-size:15px;cursor:pointer;padding:0 2px;line-height:1;margin-left:8px;}
+.lb-unfollow{background:none;border:none;color:#c08b6a;font-size:16px;cursor:pointer;padding:4px 8px;min-width:24px;min-height:24px;line-height:1;margin-left:8px;}
 .lb-unfollow:hover{color:#c23a1a;}
 .lb-row .lb-uwrap{flex:1;display:flex;align-items:center;justify-content:flex-end;gap:0;}
 .pf-card{background:#f5f0e8;border:none;border-radius:3px;width:min(540px,94vw);max-width:540px;box-shadow:0 12px 48px rgba(0,0,0,.75);position:relative;display:flex;flex-direction:column;max-height:86vh;}
@@ -1861,10 +1876,10 @@ body[data-cb="trit"]{
 .pf-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;}
 .pf-tile{background:linear-gradient(180deg,#f1ebde,#e3dbc7);border:1px solid #cbbca0;border-radius:6px;padding:12px 6px 9px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 2px rgba(80,54,30,.08);}
 .pf-tval{font-family:'Bebas Neue',sans-serif;font-size:29px;color:#7a4a12;line-height:1;letter-spacing:.5px;font-variant-numeric:tabular-nums;}
-.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:8.5px;letter-spacing:1px;color:#8a7a5c;margin-top:5px;text-transform:uppercase;}
+.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#8a7a5c;margin-top:5px;text-transform:uppercase;}
 .pf-sec{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#7a4a12;text-transform:uppercase;border-bottom:2px solid #8b4513;padding-bottom:5px;margin:20px 0 9px;}
 .pf-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:16px;}
-.pf-table th{font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:1px;color:#6a5a3e;text-transform:uppercase;text-align:left;padding:8px 8px;background:#e2dac4;border-bottom:1.5px solid #b8a582;position:sticky;top:0;z-index:1;}
+.pf-table th{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:1px;color:#6a5a3e;text-transform:uppercase;text-align:left;padding:8px 8px;background:#e2dac4;border-bottom:1.5px solid #b8a582;position:sticky;top:0;z-index:1;}
 .pf-table td{padding:8px 8px;color:#2a1a08;border-bottom:1px solid #e2d8c2;}
 .pf-table td:not(:first-child){font-variant-numeric:tabular-nums;}
 .pf-table tr:nth-child(2n) td{background:rgba(160,130,80,.06);}
@@ -2018,7 +2033,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.162 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.163 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2132,7 +2147,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.162 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.163 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2290,7 +2305,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.162 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.163 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2418,7 +2433,7 @@ body[data-cb="trit"]{
     <label class="data-chk"><input id="data-c1" type="checkbox"> Save my loading stats (my record).</label>
     <label class="data-chk"><input id="data-c2" type="checkbox"> Share my stats with my facility’s dashboard.</label>
     <div class="data-btns"><button class="data-save" onclick="zSaveConsent()">SAVE</button><button class="data-cancel" onclick="zCloseData()">NOT NOW</button></div>
-    <div class="data-note">Double opt-in: facility sharing needs BOTH boxes. Change it anytime from the DATA tab.</div>
+    <div class="data-note">Double opt-in: facility sharing needs BOTH boxes. Change it anytime in ADMIN (pause) → ACCOUNT &amp; DATA.</div>
   </div>
 </div>
 
@@ -2569,7 +2584,7 @@ body[data-cb="trit"]{
     <div class="sg"><span class="v" id="es-arrows">0 / 0</span><span class="l">Arrows Up / Missed</span></div>
    </div></div>
    <div class="es-sec"><div class="es-sec-t">SAFETY</div><div class="es-grid">
-    <div class="sg"><span class="v" id="es-incidents">0</span><span class="l">Haz Incidents</span></div>
+    <div class="sg"><span class="v" id="es-incidents">0</span><span class="l">Safety Incidents</span></div>
     <div class="sg"><span class="v" id="es-hazshelf">0</span><span class="l">Hazmat Shelves Locked</span></div>
     <div class="sg"><span class="v" id="es-crunches">0</span><span class="l">Crunches</span></div>
     <div class="sg"><span class="v" id="es-collapses">0</span><span class="l">Collapses</span></div>
@@ -2625,8 +2640,8 @@ body[data-cb="trit"]{
     <div class="td-hdr">LOCK IN <span class="td-badge">TRAINING RECORD</span></div>
     <div class="td-sub">You watched a trainer load a full wall — the way it's done. Everything you saw is checked off. Sign to clock in.</div>
     <div id="tutdone-list" class="td-list"></div>
-    <div class="td-ladder"><b>THE SAFETY LADDER (how you get written up):</b><br>1st slip = a heads-up. 2nd of the SAME thing = a documented WARNING. Ignore it and it becomes an INCIDENT on your record. Stack incidents and you SIGN A WRITE-UP; keep going and you're SENT HOME — back to a practice trailer. Water breaks and locking a shelf clear warnings.</div>
-    <button class="td-sign" onclick="tutSign()">✍ SIGN HERE — I'M TRAINED, CLOCK ME IN</button>
+    <div class="td-ladder"><b>THE SAFETY LADDER (how you get written up):</b><br>1st slip = a heads-up. 2nd of the SAME thing = a documented WARNING. Ignore it and it becomes an INCIDENT on your record. Stack incidents and you SIGN A WRITE-UP. Five incidents puts you on a practice trailer; four write-ups ends your shift. Water breaks and locking a shelf clear warnings.</div>
+    <button class="td-sign" onclick="tutSign()">✍ SIGN HERE — TRAINING COMPLETE</button>
     <button class="td-skip" onclick="tutExit()">Skip — back to menu</button>
   </div>
 </div>
@@ -2692,7 +2707,7 @@ body[data-cb="trit"]{
     <div class="lb-note">Rank everyone, every way — one wall, all-time. 🥇 the podium · 💀 the hall of shame.</div>
   </div>
   <div id="lb-pane-friends" style="display:none">
-    <div id="lb-friends-auth" class="lb-empty" style="display:none">Log in from <b>◆ PROFILE</b> to follow loaders and track their boards.</div>
+    <div id="lb-friends-auth" class="lb-empty" style="display:none">Sign in on the <b>ME</b> tab to follow loaders and track their boards.</div>
     <div id="lb-friends-main">
       <div class="lb-follow-row">
         <input id="lb-follow-input" type="text" maxlength="24" placeholder="follow a username…" autocomplete="off">
@@ -2745,7 +2760,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.162
+// LOCK IN v3.5.163
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3197,7 +3212,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.162'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.163'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -6364,7 +6379,7 @@ function drawLights(c,ts){
 // The conveyor in the scene — shows the belt running from the opening to the wall
 // The actual pieces on the belt are rendered in drawBelt() on the footer canvas
 // v2.9.9 LIVE FREIGHT ON THE BELT - the real G.belt queue rides UP the aisle to the wall and POOLS,
-// SmallSort-style. Reskinned cardboard, reflects the ACTUAL upcoming pieces. Render-only, no state touched.
+// Smalls Sort-style. Reskinned cardboard, reflects the ACTUAL upcoming pieces. Render-only, no state touched.
 function drawBeltFreight(c,ts){
   BELT_FREIGHT_HITS=[];
   if(typeof G==='undefined'||!G.belt||!G.belt.length)return;
@@ -7579,7 +7594,7 @@ scene.addEventListener('pointerup',function(e){
     }
   }
 
-  // v2.10.1 GRAB OFF THE BELT — click a freight box riding the aisle to pick it up (SmallSort-style)
+  // v2.10.1 GRAB OFF THE BELT — click a freight box riding the aisle to pick it up (Smalls Sort-style)
   if(BELT_FREIGHT_HITS&&BELT_FREIGHT_HITS.length){
     var _fi,_fr,_fhit=-1;
     for(_fi=0;_fi<BELT_FREIGHT_HITS.length;_fi++){_fr=BELT_FREIGHT_HITS[_fi];if(c2.mx>=_fr.x&&c2.mx<=_fr.x+_fr.w&&c2.my>=_fr.y&&c2.my<=_fr.y+_fr.h&&(_fhit<0||_fr.idx<_fhit)){_fhit=_fr.idx;}}
@@ -8377,10 +8392,10 @@ var PLACE_CMT_STD={
 };
 var PLACE_CMT_HUB={
   nc:[
-    'NC on the wall. Finally.',
+    'NC on the wall. First priority, handled.',
     'That\'s where the irreg goes. Not the floor.',
     'IC in the corner. Classic. Do it again.',
-    'One non-con down. How many more you ignoring?',
+    'One non-con down. Clear the rest of staging.',
     'SP placed. Supervisor exhales.',
     'An irreg. On the wall. As intended.',
     'See the staging lane? Not a parking spot for ICs.',
@@ -8388,45 +8403,45 @@ var PLACE_CMT_HUB={
   ],
   fragile:[
     'Fragile. Top only. You know the rules.',
-    'You put fragile up top? Good. Don\'t mess it up.',
+    'Fragile up top? Good. Keep it protected.',
     'GLASS goes on top. Not "somewhere in the middle."',
     'Fragile on top. Write that down.',
-    'That\'s the correct move. Don\'t get comfortable.',
+    'That\'s the correct move. Make it a habit.',
   ],
   frag_bad:[
-    'That fragile piece is going to have a bad time.',
+    'That fragile piece is exposed. Something will land on it.',
     'Something heavy is going above that. You know it.',
     'You\'ll regret that placement. But you\'ll learn.',
-    'FRAG mid-wall. Brave choice. Wrong choice.',
+    'FRAG mid-wall is a claim waiting to happen. Load it high.',
   ],
   small:[
     'Smalls. The unsung heroes of a wall.',
     'Gap filled. Look at you go.',
-    'Finally using the smalls.',
+    'Smalls in play — that\'s how walls get tight.',
     'Nobody teaches that. You figured it out.',
-    'More passion.',
-    'That gap was embarrassing. Good.',
+    'Faster hands. Same care.',
+    'That gap was costing you cubes. Not anymore.',
     'Smalls go where regulars can\'t. Fill the gaps.',
-    'You can\'t fit a fart in that wall — fill it.',
-    'It\'s just a bag of pet food.',
-    'I hear there\'s boxes next door, too.',
+    'No daylight in that wall. Keep it airtight.',
+    'Bags flex where boxes can\'t. Use that.',
+    'Gaps filled — now keep the belt moving too.',
   ],
   large:[
     'Heavy. Flat. Good. Don\'t overthink it.',
     'Big piece in. Straighten your COG.',
     'Large freight on a solid base. Acceptable.',
-    'Do better.',
-    'That\'s a big piece. It needs a big base. Think.',
+    'Wider base next time. Big freight earns big support.',
+    'That\'s a big piece. It needs a big base. Plan ahead.',
     'Heavy freight laid flat. Textbook. Keep up.',
-    'MORE BOXES!!!!!',
+    'Keep the freight coming.',
   ],
   support_good:[
     'Every cell supported. Textbook.',
     'Solid. Your foreman would nod exactly once.',
     'That\'s a supported placement. Yes, there\'s a difference.',
-    'Do better. ...okay that was actually good.',
+    'Now THAT is a supported placement. Keep that standard.',
     'Full support. That\'s the job.',
-    'More passion would\'ve gotten it there faster. But fine.',
+    'Clean work. Now do it at pace.',
     'The customer thanks you for your service.',
     'Look at that. Supported. On purpose.',
   ],
@@ -8434,22 +8449,22 @@ var PLACE_CMT_HUB={
   // Checked in fireCommentary() via G.support>.90 && getPPH()<80
   low_pph_high_support:[
     'I need you to pick it up.',
-    'This guy wants to go home.',
-    'Do you even care?',
+    'The clean work is there. Now find the speed.',
+    'The schedule doesn\'t wait. Move with purpose.',
     'The belt is moving faster than you are.',
     'Pick it up. Please.',
-    'Beautiful placement. Shame about the pace.',
-    'Technically correct. Incredibly slow.',
-    'Your support score is great. Your PPH is a tragedy.',
+    'Beautiful placement. Now give me two more, faster.',
+    'Technically correct — and behind schedule. Reps build speed.',
+    'Your support is excellent. Your pace is not. Close that gap.',
   ],
   cog_warn:[
     'You\'re loading heavy on one side. The trailer knows.',
     'COG is drifting. Other side. Now.',
-    'Balance. It\'s a concept. Apply it.',
+    'Split the weight. Left and right, every course.',
     'You can feel the trailer leaning. Fix it.',
     'One side heavy. You know better than this.',
     'That\'s a COG problem. Solve it before it solves you.',
-    'Why\'s your face so red?',
+    'Heavy side is winning. Load the light side.',
   ],
   generic:[
     'Keep moving.',
@@ -8457,21 +8472,21 @@ var PLACE_CMT_HUB={
     'Load it.',
     'Go.',
     'There you go.',
-    'Do better.',
-    'More passion.',
+    'Make the next one cleaner.',
+    'Bring the energy up.',
     'That\'ll do.',
     'Not bad. Not great. Not bad.',
     'Clock\'s running.',
     'The trailer won\'t load itself.',
     'That\'s a placement. It\'s fine.',
     'One piece at a time. All shift.',
-    'This guy wants to go home.',
-    'Do you even care?',
-    'Why\'s your face so red?',
-    'I heard that fart.',
+    'Finish strong and everybody goes home on time.',
+    'Every placement goes on your record. Load like it.',
+    'Straight rows. Square corners.',
+    'Protect the freight. It pays the wages.',
     'The customer thanks you for your service.',
     'Look alive.',
-    'Management is watching. Allegedly.',
+    'Management notices clean walls. Keep building them.',
   ],
 };
 var _lastCmtTime=0;
@@ -8498,7 +8513,7 @@ function fireCommentary(source,box,gx,gy,rot){
     lines=(pctH>=0.5)?pool.frag_bad:pool.fragile;
   } else if(activeVoice==='hub'&&G.support&&G.support>0.90&&getPPH()<80&&elapsed()>60){
     // DECISION: "meticulous but slow" context — great wall quality, terrible pace
-    // "I need you to pick it up." / "This guy wants to go home."
+    // "I need you to pick it up." / "The clean work is there. Now find the speed."
     lines=pool.low_pph_high_support||pool.generic;
   } else if(box.type==='small'||box.w<=2&&box.h<=2){
     lines=pool.small;
@@ -9462,7 +9477,7 @@ function lbRenderFriends(rows){
 }
 function lbFollow(){
   var inp=document.getElementById('lb-follow-input');if(!inp)return;var u=(inp.value||'').trim();if(!u)return;
-  if(!(ZDATA.session&&ZDATA.session.uid)){if(typeof showBanner==='function')showBanner('Log in from PROFILE to follow loaders.','warn',2200);return;}
+  if(!(ZDATA.session&&ZDATA.session.uid)){if(typeof showBanner==='function')showBanner('Sign in on the ME tab to follow loaders.','warn',2200);return;}
   try{
     fetch(ZDATA.endpoint+'/rpc/lockin_follow',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({p_username:u})})
       .then(function(r){return r.json();})
@@ -9637,7 +9652,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.162</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.163</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 

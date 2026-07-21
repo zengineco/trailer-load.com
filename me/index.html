@@ -317,8 +317,9 @@ function mFetch(){
   }catch(e){console.error('mFetch:',e);}
 }
 function mRank(ai){
-  if(ai>=90)return 'YARD LEGEND';if(ai>=82)return 'DOCK VETERAN';if(ai>=72)return 'SOLID HAND';
-  if(ai>=60)return 'GREENHORN+';if(ai>=45)return 'ROOKIE';return 'IN TRAINING';
+  // v1.2 (MED) aligned to the game's wall-report ladder — same titles, SAME cutoffs, same bottom rank (was 90/82/72/60/45 + "IN TRAINING")
+  if(ai>=95)return 'YARD LEGEND';if(ai>=87)return 'DOCK VETERAN';if(ai>=76)return 'SOLID HAND';
+  if(ai>=62)return 'GREENHORN+';if(ai>=48)return 'ROOKIE';return 'RE-TRAIN';
 }
 function mRender(){
   var rows=ME.rows;
