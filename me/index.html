@@ -116,9 +116,11 @@ tr:hover td{background:#fbf9f4;}
 <div id="login">
   <h1>Clock In</h1>
   <div class="sub">See your loading record</div>
+  <form onsubmit="mLogin();return false;"><!-- v1.2 (MED funnel #5) ONE submit path: Enter and the button both land here; return false blocks the reload -->
   <label class="fld"><span>Username</span><input id="li-user" type="text" autocomplete="username" placeholder="your handle"></label>
   <label class="fld"><span>Password</span><input id="li-pw" type="password" autocomplete="current-password" placeholder="••••••••"></label>
-  <button class="btn btn-acc" onclick="mLogin()">CLOCK IN</button>
+  <button type="submit" class="btn btn-acc">CLOCK IN</button>
+  </form>
   <div id="login-msg"></div>
   <div id="login-note">No account yet? It's free — <a href="/lock-in.html">play the game</a>, then create one under ADMIN → ACCOUNT &amp; DATA. Your stats only save if you opt in.</div>
 </div>

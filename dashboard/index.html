@@ -96,9 +96,11 @@ tr:hover td{background:#fbf9f4;}
 <div id="login">
   <h1>Program Sign-In</h1>
   <div class="sub">Facility / instructor access</div>
+  <form onsubmit="dLogin();return false;"><!-- v1.2 (MED funnel #5) ONE submit path: Enter and the button both land here; return false blocks the reload -->
   <label class="fld"><span>Program email</span><input id="li-email" type="email" autocomplete="username" placeholder="you@school.edu"></label>
   <label class="fld"><span>Password</span><input id="li-pw" type="password" autocomplete="current-password" placeholder="••••••••"></label>
-  <button class="btn btn-acc" onclick="dLogin()">SIGN IN</button>
+  <button type="submit" class="btn btn-acc">SIGN IN</button>
+  </form>
   <div id="login-msg"></div>
   <div id="login-note">Program credentials are issued by LOCK IN. Don't have access yet? Email <a href="mailto:vince@trailer-load.com">vince@trailer-load.com</a> to set up your program.</div>
 </div>

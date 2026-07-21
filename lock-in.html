@@ -26,9 +26,20 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.161
+   LOCK IN v3.5.162
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.162 - LEDGER MED BATCH 2 (funnel/feel, 8 items). (1) ONE tap now skips BOTH boot splashes, and
+     returning players (briefing done) skip the F-Keys company splash entirely (short LOCK IN ride only). (2) The guest
+     choice on the sign-in interstitial persists in localStorage — pick PLAY AS GUEST once, never nagged again. (3) Sign-in
+     resumes the launch: choosing DAILY then signing in lands you IN the daily (was: mode discarded, dumped on a profile);
+     bailing out of the profile/social panel without signing in drops the queued launch. (4) Homepage CTAs deep-link:
+     #daily / #shift / #training land in the promised mode (first-timers still get the briefing). (5) Dashboard + /me/
+     logins wrapped in forms — Enter submits. (6) showBanner FINALLY honors its dur argument (discarded at ~60 call
+     sites; RECOVERY CODE and friends get their intended dwell, 1200ms floor, defaults unchanged). (7) SmallsSort ss-1.8:
+     a dead combo (>=5) says COMBO xN BROKEN at both break sites (wrong bin + belt overflow). (8) ss-1.8 result card
+     tells the truth about recording: RUN RECORDED / sign-in needed / stats-saving off / server refused / offline.
 
    CHANGE LOG v3.5.161 - LEDGER MED BATCH 1 (mechanics/state, 7 items). (1) UNSEAL/RELOCK SYMMETRY: every shelf lock now
      counts in the shelf score term (unseal -1 / re-lock +1 nets zero) so restoring a shelf restores its score; the -150
@@ -2007,7 +2018,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.161 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.162 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2121,7 +2132,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.161 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.162 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2279,7 +2290,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.161 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.162 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2734,7 +2745,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.161
+// LOCK IN v3.5.162
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3186,7 +3197,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.161'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.162'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -7961,7 +7972,7 @@ var bannerTO=null;
 // v3.5.19 voices: COWORKER praises (ok), MANAGER handles rules/dispatch/can't-do-that (everything corrective), TRAINER coaches (tagged on commentary)
 function _msgSource(type){return type==='ok'?'COWORKER':'MANAGER';}
 var _linehaulLog=[],_linehaulOpen=false; // v3.5.19 persistent dispatch record (the Linehaul board)
-function pushMsg(html,type,source){
+function pushMsg(html,type,source,dur){
   if(html==null)return;
   var body=(''+html).replace(/<br\s*\/?>/gi,' — ');
   var src=source||_msgSource(type);
@@ -7983,11 +7994,11 @@ function pushMsg(html,type,source){
   el.innerHTML='<span class="msg-body">'+body+'</span>';
   feed.insertBefore(el,feed.firstChild);
   while(feed.children.length>1){if(feed.lastChild)feed.removeChild(feed.lastChild);else break;}
-  var dwell=(type==='danger'||type==='warn')?4400:2700;
+  var dwell=(dur&&dur>0)?Math.max(1200,dur):((type==='danger'||type==='warn')?4400:2700); // v3.5.162 explicit durations win (1200ms floor); defaults unchanged
   setTimeout(function(){el.classList.add('msg-out');setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},520);},dwell);
 }
 function _msgType(cls){if(!cls)return '';if(cls.indexOf('danger')>=0||cls.indexOf('panic')>=0)return 'danger';if(cls.indexOf('warn')>=0)return 'warn';if(cls.indexOf('ok')>=0)return 'ok';return '';}
-function showBanner(html,cls,dur){pushMsg(html,_msgType(cls));}
+function showBanner(html,cls,dur){pushMsg(html,_msgType(cls),null,dur);} // v3.5.162 (MED funnel #6) dur finally honored — was discarded at ~60 call sites
 function showPop(x,y,t,col){pushMsg(t,(col&&(''+col).indexOf('40,184')>=0)?'ok':'');}
 // ── v3.5.19 LINEHAUL BOARD (persistent dispatch record) ──
 var _lhPausedLoop=false;
@@ -9078,14 +9089,24 @@ function startShift(){
 // v3.5.127 SIGN-IN PROMPT (kremsicle): clicking a game while not clocked in asks log-in-or-guest first. Once you pick
 // guest, we don't nag again this session (_guestAck); if you sign in later, isSignedIn() short-circuits the gate.
 var _pendingLaunch=null,_guestAck=false;
+try{_guestAck=localStorage.getItem('liGuestAck')==='1';}catch(e){} // v3.5.162 (MED funnel #2) the guest choice is remembered across loads, not re-asked forever
 function isSignedIn(){return !!(typeof ZDATA!=='undefined'&&ZDATA.session&&ZDATA.session.uid);}
 function guardLaunch(fn){
   if(isSignedIn()||_guestAck){if(typeof fn==='function')fn();return;}
   _pendingLaunch=fn;
   var ov=document.getElementById('ov-signin-prompt');if(ov)ov.classList.add('vis');
 }
-function signinPromptGuest(){_guestAck=true;var ov=document.getElementById('ov-signin-prompt');if(ov)ov.classList.remove('vis');var fn=_pendingLaunch;_pendingLaunch=null;if(typeof fn==='function')fn();}
-function signinPromptLogin(){var ov=document.getElementById('ov-signin-prompt');if(ov)ov.classList.remove('vis');_pendingLaunch=null;if(typeof openSocial==='function')openSocial('me');}
+function signinPromptGuest(){_guestAck=true;try{localStorage.setItem('liGuestAck','1');}catch(e){}var ov=document.getElementById('ov-signin-prompt');if(ov)ov.classList.remove('vis');var fn=_pendingLaunch;_pendingLaunch=null;if(typeof fn==='function')fn();}
+function signinPromptLogin(){var ov=document.getElementById('ov-signin-prompt');if(ov)ov.classList.remove('vis');if(typeof openSocial==='function')openSocial('me');} // v3.5.162 KEEPS _pendingLaunch — signing in resumes the mode you chose
+// v3.5.162 (MED funnel #3) sign-in success finishes the launch that opened the prompt. Returns true if it took over.
+function _resumePendingLaunch(){
+  if(!_pendingLaunch||!isSignedIn())return false;
+  var fn=_pendingLaunch;_pendingLaunch=null;
+  var _ids=['ov-signin-prompt','ov-leaderboard','ov-profile'],_ri;
+  for(_ri=0;_ri<_ids.length;_ri++){var _re=document.getElementById(_ids[_ri]);if(_re)_re.classList.remove('vis');}
+  setTimeout(function(){try{fn();}catch(e){console.error('pendingLaunch:',e);}},420);
+  return true;
+}
 function startTrailerLoad(){
   hideStartMenu();
   gameMode='shift';TRAILER_MODE=true;
@@ -9238,9 +9259,9 @@ function openPostSort(){
   fetchLifetime(function(state,life){psBuild(state,life);});
 }
 function closePostSort(){var ov=document.getElementById('ov-postsort');if(ov)ov.classList.remove('vis');}
-function closeProfile(){var ov=document.getElementById('ov-profile');if(ov)ov.classList.remove('vis');}
+function closeProfile(){var ov=document.getElementById('ov-profile');if(ov)ov.classList.remove('vis');_pendingLaunch=null;} // v3.5.162 bailing without signing in drops the queued launch
 // ── v3.5.13 LEADERBOARD (standalone screen; daily board is public-read) ──
-function closeLeaderboard(){var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.remove('vis');if(_dailyCD){clearInterval(_dailyCD);_dailyCD=null;}} // v3.5.86 stop the countdown
+function closeLeaderboard(){var ov=document.getElementById('ov-leaderboard');if(ov)ov.classList.remove('vis');if(_dailyCD){clearInterval(_dailyCD);_dailyCD=null;}_pendingLaunch=null;} // v3.5.86 stop the countdown · v3.5.162 bail drops the queued launch
 function lbRenderInto(id,rows,emptyMsg){
   var el=document.getElementById(id);if(!el)return;
   if(!rows||!rows.length){el.innerHTML='<div class="lb-empty">'+(emptyMsg||'No scores posted yet today — be the first.')+'</div>';return;}
@@ -9511,7 +9532,7 @@ function pfDoLogin(){
   try{fetch(ZDATA.authUrl+'/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey},body:JSON.stringify({email:email,password:pass})})
     .then(function(r){return r.json();}).then(function(j){
       if(j&&j.access_token){zSaveSession(j,email,fac?email:handle);var pl=zLoadPlayer();pl.email=email;pl.handle=fac?'':handle;if(!fac){pl.consentSelf=true;pl.consentDecided=true;}if(ZDATA.session.facility)pl.facility=ZDATA.session.facility;zSavePlayer();
-        if(typeof showBanner==='function')showBanner('\u2713 Signed in.','ok',1700);openProfile();}
+        if(typeof showBanner==='function')showBanner('\u2713 Signed in.','ok',1700);if(!(typeof _resumePendingLaunch==='function'&&_resumePendingLaunch()))openProfile();}
       else{if(nt)nt.textContent='\u2715 '+((j&&(j.error_description||j.msg||j.error))||'Sign-in failed \u2014 check your credentials.');}
     }).catch(function(e){console.error('pfDoLogin:',e);if(nt)nt.textContent='\u2715 Network error \u2014 try again.';});}catch(e){console.error('pfDoLogin:',e);}
 }
@@ -9530,7 +9551,7 @@ function pfDoSignup(){
         if(nt)nt.textContent='Signing you in\u2026';
         fetch(ZDATA.authUrl+'/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey},body:JSON.stringify({email:email,password:pass})})
           .then(function(r2){return r2.json();}).then(function(t){
-            if(t&&t.access_token){zSaveSession(t,email,handle);var pl=zLoadPlayer();pl.email=email;pl.handle=handle;pl.consentSelf=true;pl.consentDecided=true;if(j.recovery)pl.recovery=j.recovery;zSavePlayer();if(typeof showBanner==='function')showBanner('\u2713 Welcome, '+handle+' \u2014 locked in.','ok',2200);openProfile();}
+            if(t&&t.access_token){zSaveSession(t,email,handle);var pl=zLoadPlayer();pl.email=email;pl.handle=handle;pl.consentSelf=true;pl.consentDecided=true;if(j.recovery)pl.recovery=j.recovery;zSavePlayer();if(typeof showBanner==='function')showBanner('\u2713 Welcome, '+handle+' \u2014 locked in.','ok',2200);if(!(typeof _resumePendingLaunch==='function'&&_resumePendingLaunch()))openProfile();}
             else{if(nt)nt.textContent='\u2713 Account made \u2014 tap SIGN IN to enter.';}
           }).catch(function(e2){if(nt)nt.textContent='\u2713 Account made \u2014 tap SIGN IN to enter.';});
       }
@@ -9616,7 +9637,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.161</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.162</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -11217,8 +11238,15 @@ applyPortrait();
 (function(){
   var fk=document.getElementById('fkeys-splash'),bs=document.getElementById('boot-splash');
   function hide(el,ms){if(!el)return;el.classList.add('gone');setTimeout(function(){el.style.display='none';},ms||560);}
-  if(fk){var ft=setTimeout(function(){hide(fk,520);},1400);fk.addEventListener('pointerdown',function(){clearTimeout(ft);hide(fk,520);},{once:true});}
-  if(bs){var t=setTimeout(function(){hide(bs,560);},2600);bs.addEventListener('pointerdown',function(){clearTimeout(t);hide(bs,560);},{once:true});} // v3.5.153 1650->2600 so LOCK IN shows AFTER the F-Keys splash fades
+  // v3.5.162 (MED funnel #1) returners skip the company splash entirely, and ONE tap skips BOTH splashes.
+  var _splashRet=false;try{_splashRet=localStorage.getItem('liBriefingDone')==='1';}catch(e){}
+  var ft=null,t=null;
+  function skipAll(){if(ft)clearTimeout(ft);if(t)clearTimeout(t);hide(fk,520);hide(bs,560);}
+  if(fk){
+    if(_splashRet){fk.style.display='none';}
+    else{ft=setTimeout(function(){hide(fk,520);},1400);fk.addEventListener('pointerdown',skipAll,{once:true});}
+  }
+  if(bs){t=setTimeout(function(){hide(bs,560);},_splashRet?1500:2600);bs.addEventListener('pointerdown',skipAll,{once:true});} // v3.5.153 2600 so LOCK IN shows AFTER the F-Keys splash fades; v3.5.162 returners get the short ride
 })();
 
 // ── BOOT ──
@@ -11252,7 +11280,15 @@ if(_briefingDone){
   try{briefTab(activeVoice);}catch(e){console.error('briefTab:',e);}
 }
 // v3.5.58 — SmallsSort's "SIGN IN →" links here with #signin; open the profile/sign-in panel.
-try{if(location.hash==='#signin'&&typeof openProfile==='function')setTimeout(openProfile,300);}catch(e){}
+try{
+  var _dlh=location.hash;
+  if(_dlh==='#signin'&&typeof openProfile==='function')setTimeout(openProfile,300);
+  else if(_briefingDone){ // v3.5.162 (MED funnel #4) homepage CTAs land in the promised mode; first-timers still get the briefing first
+    if(_dlh==='#daily')setTimeout(function(){guardLaunch(startDaily);},380);
+    else if(_dlh==='#shift')setTimeout(function(){guardLaunch(startTrailerLoad);},380);
+    else if(_dlh==='#training')setTimeout(function(){startTrainDemo();},380);
+  }
+}catch(e){}
 </script>
 </body>
 </html>
