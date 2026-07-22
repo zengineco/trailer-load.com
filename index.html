@@ -152,6 +152,8 @@ footer .zw a:hover{color:var(--acc);}
     <div class="stripstats">
       <div><div class="n">FREE</div><div class="l">Forever, for workers</div></div>
       <div><div class="n">00:00 UTC</div><div class="l">Daily reset</div></div>
+      <div><div class="n" id="stat-walls">—</div><div class="l">Walls loaded</div></div><!-- LIVE counter, public aggregate RPC lockin_stats() -->
+      <div><div class="n" id="stat-players">—</div><div class="l">Loaders signed on</div></div>
       <div><div class="n">38</div><div class="l">Load-theory rules</div></div><!-- counted from the shipped mechanics 2026-07-20: 38 named rules / ~40 enforcement paths, 6 of them unwritten veteran knowledge -->
       <div><div class="n">0</div><div class="l">Downloads needed</div></div><!-- v3.5.166 Amnesiac pass: bare "Downloads: 0" read as "nobody downloaded this" -->
     </div>
@@ -278,5 +280,20 @@ footer .zw a:hover{color:var(--acc);}
   <div class="links"><a href="#play">Play</a> · <a href="#modes">Modes</a> · <a href="#facilities">For facilities</a> · <a href="#faq">FAQ</a> · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Service</a> · <a href="mailto:hello@trailer-load.com">Contact</a></div>
   <div class="zw">www.trailer-load.com &nbsp;·&nbsp; a project of <a href="https://www.f-keys.com/">F-Keys</a> &nbsp;·&nbsp; © 2026</div>
 </footer>
+<script>
+/* LIVE COUNTER — public aggregate only (lockin_stats RPC returns counts, never a player record).
+   Fails silently to the em-dash placeholders if the backend is unreachable; never blocks the page. */
+(function(){
+  var EP='https://igqpgsqogfrpujdgvefs.supabase.co/rest/v1/rpc/lockin_stats';
+  var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlncXBnc3FvZ2ZycHVqZGd2ZWZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Njc1MzQsImV4cCI6MjA5NjQ0MzUzNH0.8Pn459HUFkqZu7ORSX15E13u9fWSD96OKR0w6yiuJQo';
+  function put(id,v){var e=document.getElementById(id);if(e&&v!=null)e.textContent=(+v).toLocaleString();}
+  try{
+    fetch(EP,{method:'POST',headers:{'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json'},body:'{}'})
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(j){if(!j)return;put('stat-walls',j.walls);put('stat-players',j.players);})
+      .catch(function(){});
+  }catch(e){}
+})();
+</script>
 </body>
 </html>

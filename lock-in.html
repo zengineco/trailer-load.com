@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://static.cloudflareinsights.com; frame-src 'none'; manifest-src 'self' data:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://static.cloudflareinsights.com; frame-src 'none'; manifest-src 'self' data:; base-uri 'self'">
 <!-- v3.5.155 NO AD TECH ON TRAILER-LOAD.COM — EVER (Vince's order, 2026-07-20). SOPIPA-class student-privacy laws prohibit ad tech on school-purpose services; district vetting scans for the tag. The AdSense account lives on other F-Keys properties only. Do not re-add. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LOCK%C2%B7IN%22%2C%22short_name%22%3A%22LOCK%C2%B7IN%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23140d08%22%2C%22theme_color%22%3A%22%23c8791e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22ring-logo.png%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
@@ -14,21 +14,36 @@
 <meta name="apple-mobile-web-app-title" content="LOCK·IN">
 <link rel="apple-touch-icon" href="ring-logo.png">
 <title>LOCK IN</title>
-<!-- Google tag (gtag.js) — GA4 · G-FJBRX2G0E5 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-FJBRX2G0E5"></script>
-<script>
-window.dataLayer=window.dataLayer||[];
-function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());
-gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
-</script>
+<!-- NO THIRD-PARTY ANALYTICS ON TRAILER-LOAD.COM (v3.5.169). GA4 was removed before the first K-12 district
+     vetting packet: reviewers scan for googletagmanager.com the same way they scan for ad tech, and "we ship zero
+     third-party analytics" is a one-line answer instead of a meeting. Usage lives in our own consent-gated
+     Supabase tables + the public aggregate counter. Do not re-add. -->
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.168
+   LOCK IN v3.5.169
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.169 - **CRITICAL: DEAD SESSIONS WERE SILENTLY EATING PLAYERS’ SCORES.** Found while debugging a
+     live report during a Facebook push. isSignedIn() only checked that a uid EXISTED, never whether the token was
+     still valid — so a session that expired days earlier still read as signed in: the corner showed your name, every
+     POST carried the dead JWT, Supabase answered 401/403, and the client threw the response away. Proven live on the
+     owner’s own browser: stored token 10.7 DAYS past expiry, server replying 403 invalid JWT, isSignedIn() returning
+     true. The satellites got this exact fix in v3.5.160; THE GAME NEVER DID. Now: zSessionAlive() (uid + token +
+     inside expiry) backs isSignedIn(), the corner button and the ACCOUNT status; zWithAuth() refreshes before every
+     post and, when the refresh token is also dead, calls zSessionDead() — which clears storage, flips the UI to
+     CLOCK-IN and says so in a banner; a 401/403 on any write is treated as an expiry; the daily result panel now
+     reports "NOT POSTED — YOUR SESSION EXPIRED" with what to do about it instead of inventing a rank. Boot no longer
+     trusts a stored session.
+     ALSO: **HOMEPAGE LIVE COUNTER** (asked for weeks ago, finally shipped) — new SECURITY DEFINER RPC lockin_stats()
+     returns aggregate counts ONLY (no rows, no identities, RLS untouched); the strip now shows WALLS LOADED and
+     LOADERS SIGNED ON, live, degrading silently to em-dashes if the backend is unreachable.
+     ALSO: **GA4 REMOVED ENTIRELY** (owner decision, recorded): loader, config, CSP origins, and the privacy §07 claim.
+     District reviewers scan for googletagmanager.com exactly like ad tech, the product already owns consent-gated
+     first-party telemetry, and traffic today is small enough that the measurement loss is negligible — so "we ship
+     zero third-party analytics" is now literally true. gaEvent/gaPlay remain as inert no-ops. Do not re-add.
 
    CHANGE LOG v3.5.168 - GATEKEEPER RE-VERDICT: **SHIP WITH CONDITIONS** (was NO SHIP / 5 blockers / 73 defects on
      2026-07-19). All 5 blockers independently re-verified FIXED with its own greps. It found 7 defects we missed;
@@ -2038,7 +2053,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.168 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.169 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2144,7 +2159,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.168 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.169 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2302,7 +2317,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.168 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.169 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2754,7 +2769,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.168
+// LOCK IN v3.5.169
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3206,7 +3221,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.168'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.169'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -3247,10 +3262,57 @@ function zSendSession(){
   var rec=zBuildSession();
   try{var h=JSON.parse(localStorage.getItem('liSessions')||'[]');h.push(rec);if(h.length>50)h=h.slice(-50);localStorage.setItem('liSessions',JSON.stringify(h));}catch(e){console.error('zSendSession local:',e);}
   if(!ZDATA.endpoint||!ZDATA.anonKey)return;             // cloud only when configured
-  try{var _hh=zAuthHeaders();_hh['Prefer']='return=minimal';fetch(ZDATA.endpoint+'/'+ZDATA.table,{method:'POST',headers:_hh,body:JSON.stringify(rec)}).catch(function(err){console.error('zSendSession net:',err);});}catch(e){console.error('zSendSession:',e);}
+  // v3.5.169 refresh-then-post, and a 401/403 now surfaces instead of vanishing
+  if(!ZDATA.session||!ZDATA.session.uid)return; // guests keep their local history only
+  zWithAuth(function(ok){
+    if(!ok)return; // zWithAuth already told the player
+    try{var _hh=zAuthHeaders();_hh['Prefer']='return=minimal';
+      fetch(ZDATA.endpoint+'/'+ZDATA.table,{method:'POST',headers:_hh,body:JSON.stringify(rec)})
+        .then(function(r){if(!r.ok){zAuthReject(r.status);console.error('zSendSession http',r.status);}})
+        .catch(function(err){console.error('zSendSession net:',err);});
+    }catch(e){console.error('zSendSession:',e);}
+  });
 }
 function zEndSession(){zLoadPlayer();zSendSession();if(!ZDATA.player.consentDecided&&!ZDATA.player.consentAsked)setTimeout(zOpenData,650);} // v3.5.159 the consent card auto-pops ONCE — "NOT NOW" is remembered (was interrupting EVERY clock-out forever, training reflex-dismissal of the one dialog that matters); still reachable anytime via ADMIN → ACCOUNT & DATA
 // ── v2.1.40 AUTH (Supabase GoTrue REST — no SDK) ──
+// v3.5.169 CRITICAL — DEAD SESSIONS WERE POSTING SILENTLY. isSignedIn() only checked for a uid, so a token that
+// expired days ago still read as "signed in": the corner showed your name, every POST carried the dead JWT,
+// Supabase answered 401/403, and the client threw the response away. Players did a daily and watched it never
+// reach the board. (The satellites got this fix in v3.5.160; the GAME never did.) Three rules now:
+//   zSessionAlive() - a session is only alive if it has a uid, a token, AND is inside its expiry
+//   zSessionDead()  - kill it loudly: clear storage, flip the UI to CLOCK-IN, tell the player why
+//   zWithAuth(cb)   - refresh-then-run: every posting path goes through here, so a long session can't silently rot
+function zSessionAlive(){
+  var sx=(typeof ZDATA!=='undefined')&&ZDATA.session;
+  return !!(sx&&sx.uid&&sx.access_token&&(!sx.exp||Date.now()<sx.exp-5000));
+}
+function zSessionDead(quiet){
+  ZDATA.session=null;
+  try{localStorage.removeItem('liAuth');}catch(e){}
+  if(typeof zAuthStatus==='function')zAuthStatus();
+  if(!quiet&&typeof showBanner==='function')showBanner('\u26a0 SIGNED OUT \u2014 your session expired.<br><span style="font-size:.72em">Scores can\u2019t post until you sign in again \u2014 \u25c6 CLOCK-IN, top corner.</span>','danger',6000);
+}
+// Runs cb(true) with a VALID token, or cb(false) if the player must sign in again.
+function zWithAuth(cb){
+  var sx=(typeof ZDATA!=='undefined')&&ZDATA.session;
+  if(!sx||!sx.uid||!sx.access_token){cb(false);return;}
+  if(zSessionAlive()){cb(true);return;}
+  if(!sx.refresh_token){zSessionDead();cb(false);return;}
+  try{
+    fetch(ZDATA.authUrl+'/token?grant_type=refresh_token',{method:'POST',headers:{'Content-Type':'application/json','apikey':ZDATA.anonKey},body:JSON.stringify({refresh_token:sx.refresh_token})})
+      .then(function(r){return r.json();})
+      .then(function(j){
+        if(j&&j.access_token){zSaveSession(j,sx.email,sx.handle);cb(true);}
+        else{zSessionDead();cb(false);}   // refresh tokens expire too — this is the case that was invisible
+      })
+      .catch(function(e){console.error('zWithAuth refresh:',e);cb(false);}); // network blip: don't nuke the session
+  }catch(e){console.error('zWithAuth:',e);cb(false);}
+}
+// A 401/403 on any write means the token died mid-session — treat it exactly like an expiry.
+function zAuthReject(status){
+  if(status===401||status===403){zSessionDead();return true;}
+  return false;
+}
 function zAuthHeaders(){
   var h={'Content-Type':'application/json','apikey':ZDATA.anonKey};
   var sx=ZDATA.session;
@@ -3271,11 +3333,12 @@ function zAuthMode(m){
 }
 function zAuthStatus(){
   var sx=ZDATA.session,el=document.getElementById('auth-status'),so=document.getElementById('auth-signout');
-  if(sx&&sx.email){if(el){el.textContent='\u2713 Signed in as '+(sx.handle||sx.email)+(sx.facility?(' \u00b7 FACILITY '+sx.facility):'');el.style.display='block';}if(so)so.style.display='';}
+  if(sx&&sx.email&&(typeof zSessionAlive!=='function'||zSessionAlive())){if(el){el.textContent='\u2713 Signed in as '+(sx.handle||sx.email)+(sx.facility?(' \u00b7 FACILITY '+sx.facility):'');el.style.display='block';}if(so)so.style.display='';}
   else{if(el)el.style.display='none';if(so)so.style.display='none';}
   // v3.5.108 TOP-CORNER LOGIN INDICATOR: your NAME when signed in (the persistence you can SEE), CLOCK-IN when not.
   var lb=document.getElementById('sm-loginbtn');
-  if(lb){var on=!!(sx&&sx.uid);lb.textContent=on?('\u25c6 '+((typeof zWho==='function')?zWho():(sx.handle||'YOU'))):'\u25c6 CLOCK-IN';lb.classList.toggle('signed-in',on);}
+  if(lb){var on=(typeof zSessionAlive==='function')?zSessionAlive():!!(sx&&sx.uid); // v3.5.169 a dead session reads as CLOCK-IN, not as your name
+lb.textContent=on?('\u25c6 '+((typeof zWho==='function')?zWho():(sx.handle||'YOU'))):'\u25c6 CLOCK-IN';lb.classList.toggle('signed-in',on);}
 }
 // v3.5.102 DAILY-SUBMIT BUG FIX: read the user id from the access token's `sub` claim (always present) — NOT just
 // j.user, which a refresh-token response omits. Without this a token refresh wiped uid to null while you were still
@@ -3299,7 +3362,12 @@ function zWho(){var s=ZDATA.session;if(s&&s.uid)return s.handle||((s.email||'').
 function zAuthLoad(){
   if(!ZDATA.session){try{var r=localStorage.getItem('liAuth');if(r)ZDATA.session=JSON.parse(r);}catch(e){console.error('zAuthLoad:',e);}}
   var sx=ZDATA.session;
-  if(sx&&sx.exp&&Date.now()>sx.exp-60000&&sx.refresh_token)zAuthRefresh();
+  // v3.5.169 boot no longer trusts a stored session: if it's past expiry we refresh, and if the refresh
+  // fails we clear it instead of leaving a corpse that looks signed-in and silently fails every post.
+  if(sx&&sx.access_token&&!zSessionAlive()){
+    if(sx.refresh_token)zWithAuth(function(){});
+    else zSessionDead(true);
+  }
   zAuthStatus();
 }
 function zAuthRefresh(){
@@ -8554,11 +8622,11 @@ function fireCommentary(source,box,gx,gy,rot){
 
 // ── GA4 EVENT HELPER ──
 // READS: window.gtag | WRITES: GA4 event stream
-// Wraps gtag() in a guard so events fail silently if GA4 doesn't load
+// v3.5.169 GA4 removed — these are inert no-ops kept so the call sites stay valid
 // (ad blockers, private browsing, etc.)
-function gaEvent(name,params){
-  try{if(window.gtag)gtag('event',name,params||{});}catch(e){}
-}
+// v3.5.169 GA4 REMOVED — kept as a no-op so the call sites stay valid and nothing throws.
+// If analytics ever returns it must be cookieless/first-party; see the decision note in the change log.
+function gaEvent(name,params){}
 // v3.5.167 (re-verdict pass) GAMEPLAY analytics honor the save-my-stats switch. privacy.html discloses analytics,
 // but it ALSO promises "nothing about your gameplay leaves your device" when the switch is off — and shelf_locked /
 // level_* carry real performance payloads. Site-usage pings (settings opened, menu navigation) stay: they carry no
@@ -9128,7 +9196,7 @@ function startShift(){
 // guest, we don't nag again this session (_guestAck); if you sign in later, isSignedIn() short-circuits the gate.
 var _pendingLaunch=null,_guestAck=false;
 try{_guestAck=localStorage.getItem('liGuestAck')==='1';}catch(e){} // v3.5.162 (MED funnel #2) the guest choice is remembered across loads, not re-asked forever
-function isSignedIn(){return !!(typeof ZDATA!=='undefined'&&ZDATA.session&&ZDATA.session.uid);}
+function isSignedIn(){return (typeof zSessionAlive==='function')?zSessionAlive():!!(typeof ZDATA!=='undefined'&&ZDATA.session&&ZDATA.session.uid);} // v3.5.169 alive, not merely present
 function guardLaunch(fn){
   if(isSignedIn()||_guestAck){if(typeof fn==='function')fn();return;}
   _pendingLaunch=fn;
@@ -9447,6 +9515,7 @@ function zLogWall(){
     if(!(ZDATA.session&&ZDATA.session.uid))return;
     var _cp=zLoadPlayer();if(!_cp.consentSelf)return; // v3.5.154 BLOCKER FIX (Gatekeeper #4): the privacy policy promises "nothing leaves your device" without the save-my-stats opt-in — per-wall board posts now honor the same switch zSendSession already honors
     var wl=S.wallLog||[],w=wl[wl.length-1];if(!w)return;
+    if(!zSessionAlive()){zWithAuth(function(){});return;} // v3.5.169 don't fire a wall log on a dead token
     fetch(ZDATA.endpoint+'/rpc/lockin_log_wall',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({
       p_mode:gameMode||'',p_score:Math.round(w.score||0),p_pieces:Math.round(w.pieces||0),
       p_dur:Math.round(w.durS||0),p_integrity:Math.round(w.integrity||0),p_density:Math.round(w.density!=null?w.density:(w.cubePct||0)), // v3.5.129 post the STRUCTURED density (matches the grade), not raw cube-fill
@@ -9657,7 +9726,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.168</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.169</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -11128,11 +11197,21 @@ function _drHide(){var e=document.getElementById('daily-result');if(e)e.style.di
 function zSubmitDaily(score,walls,integ,inc,cb){
   var sx=ZDATA.session;
   if(!sx||!sx.uid){cb&&cb({anon:true});return;}
+  // v3.5.169 a dead/expired token used to post anyway, get rejected, and report nothing. Refresh first;
+  // if the session is unrecoverable, say so out loud so the player can re-sign-in and re-submit.
+  if(!zSessionAlive()){
+    zWithAuth(function(ok){
+      if(!ok){cb&&cb({expired:true});return;}
+      zSubmitDaily(score,walls,integ,inc,cb);
+    });
+    return;
+  }
   var _cp2=zLoadPlayer();if(!_cp2.consentSelf){cb&&cb({anon:true});return;} // v3.5.154 BLOCKER FIX (Gatekeeper #4): daily board post honors the save-my-stats switch like zSendSession
   try{
     fetch(ZDATA.endpoint+'/rpc/lockin_submit_daily',{method:'POST',headers:zAuthHeaders(),
       body:JSON.stringify({p_score:score,p_walls:walls,p_integrity:integ,p_incidents:inc})})
-      .then(function(r){return r.json();}).then(function(j){cb&&cb(j||{});})
+      .then(function(r){var _st=r.status;return r.json().then(function(j){return {j:j,st:_st};});})
+      .then(function(x){if(zAuthReject(x.st)){cb&&cb({expired:true});return;}cb&&cb(x.j||{});})
       .catch(function(e){console.error('submitDaily:',e);cb&&cb({err:true});});
   }catch(e){cb&&cb({err:true});}
 }
@@ -11172,7 +11251,7 @@ function dailyFinish(){
   var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
   var score=S.totalScore||0,walls=S.trucksDone||S.truck||1,inc=(S.incidents||[]).length;
   var rk=document.getElementById('dr-rank');
-  if(!ZDATA.session||!ZDATA.session.uid){
+  if(!zSessionAlive()){ // v3.5.169 an expired session gets the SIGN-IN-TO-CLAIM path, not a fake rank
     // v3.5.86 anon CTA: if this score would crack the daily top 10, prompt to sign in and CLAIM it
     zLoadDailyBoard(function(rows){
       renderDailyBoard(rows);
@@ -11187,6 +11266,7 @@ function dailyFinish(){
   if(rk)rk.textContent='Posting your score\u2026';
   zSubmitDaily(score,walls,avgInt,inc,function(j){
     if(j&&j.ok){if(rk)rk.innerHTML='RANK <b>'+j.rank+'</b> of '+j.total+(j.improved?' \u00b7 new best':'');}
+    else if(j&&j.expired){if(rk)rk.innerHTML='\u26a0 <b>NOT POSTED \u2014 YOUR SESSION EXPIRED</b><br><span style="font-size:.62em">Sign in again (\u25c6 CLOCK-IN) and replay today\u2019s wall to claim your rank.</span>';}
     else if(rk)rk.textContent='(could not post \u2014 played offline?)';
     zLoadDailyBoard(renderDailyBoard);
   });
