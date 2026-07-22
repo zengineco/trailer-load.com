@@ -26,9 +26,26 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.167
+   LOCK IN v3.5.168
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.168 - GATEKEEPER RE-VERDICT: **SHIP WITH CONDITIONS** (was NO SHIP / 5 blockers / 73 defects on
+     2026-07-19). All 5 blockers independently re-verified FIXED with its own greps. It found 7 defects we missed;
+     these are the fixes. MED (release condition): privacy.html’s CONSENT paragraph still told players to change the
+     switches in the "Data & Privacy" panel — renamed ACCOUNT & DATA in v3.5.165, so the one paragraph a district
+     counsel reads pointed at a control that does not exist. MED: THROW silently returned NOTHING in the daily —
+     spawnBag() no-ops there, so the only ranked mode charged the full escalating penalty + the HEY window and handed
+     back no bag; daily now mints the bag off the date seed + this wall’s throw index (identical for every player).
+     MED: triggerCollapse minted DUPLICATE piece ids when it shed two boxes in the same millisecond (both sibling shed
+     sites already carried a counter) — cell-id dedup then folded them into one, quietly costing a roof-bag +600 or a
+     collapse candidate; +_ci makes them collision-free. LOW: the "+N" score tick was snapshotted AFTER the bonus
+     checks, so the biggest awards in the game (shelf lock, hazmat shelf) flashed +0 — snapshot moved above them.
+     LOW: the server-clock anchor was a race (a daily opened before the HEAD landed was stamped from the DEVICE clock,
+     the exact tamper it closes) — when the edge answers we now re-derive and, if the date really differs and nothing
+     is placed yet, restart onto the correct wall; mid-wall rollover just says which board it posts to. LOW: culled two
+     dead board loaders writing into DOM nodes that no longer exist. LOW: write-up labels 10->11px, .lg-sp contrast.
+     STILL OPEN AND OWNER-ONLY: human pixel QA; the GA4 keep-or-cut decision; the 3 parked non-code items.
 
    CHANGE LOG v3.5.167 - RE-VERDICT VERIFICATION PASS (adversarial self-audit of every blocker fix). Three real
      findings, all fixed. (1) DAILY DETERMINISM, ROUND TWO: triggerCollapse chose how many boxes to shed with
@@ -1331,7 +1348,7 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{an
 .wu-meta div{display:flex;flex-direction:column;}
 .wu-meta span{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#7a6a4c;} /* v3.5.152 (Letterman) 9px->11px + darker */
 .wu-meta b{font-size:16px;color:#2a1c0e;word-break:break-all;}
-.wu-inf-lbl,.wu-why-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#8a1a1a;margin-bottom:3px;}
+.wu-inf-lbl,.wu-why-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;color:#8a1a1a;margin-bottom:3px;}
 .wu-why-lbl{color:#7a6a4c;margin-top:14px;}
 .wu-inf{font-family:'Bebas Neue',sans-serif;font-size:23px;letter-spacing:1px;color:#8a1a1a;line-height:1.05;}
 .wu-why{font-size:16px;line-height:1.42;color:#3a2c1a;}
@@ -1737,7 +1754,7 @@ body[data-cb="trit"]{
 .safety-txt b{font-size:19px;color:var(--t1);}
 .safety-l{font-size:12px;color:var(--t3);}
 .legend-line{display:flex;align-items:center;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--t2);margin-bottom:6px;}
-.lg-sp{display:inline-block;background:rgba(255,60,40,.85);color:#fff;font-weight:bold;font-size:9px;padding:1px 5px;border-radius:2px;margin-right:6px;letter-spacing:1px;}
+.lg-sp{display:inline-block;background:rgba(176,28,10,.95);color:#fff;font-weight:bold;font-size:10px;padding:1px 5px;border-radius:2px;margin-right:6px;letter-spacing:1px;}
 .legend-haz{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px;}
 .lg-d{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;background:var(--acc-wash);border:1.5px solid var(--t1);transform:rotate(45deg);}
 .lg-d > i{transform:rotate(-45deg);font-style:normal;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;color:var(--t1);}
@@ -2021,7 +2038,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.167 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.168 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2127,7 +2144,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.167 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.168 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2285,7 +2302,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.167 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.168 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2737,7 +2754,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.167
+// LOCK IN v3.5.168
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3189,7 +3206,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.167'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.168'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4627,8 +4644,20 @@ function genBeltPiece(isPanic){
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 var DAILY={seed:0,ptr:0,key:'',active:false};
 var _srvClockOff=0; // v3.5.165 (LOW) server-minus-client ms; the daily date anchors to the EDGE clock, not a settable device clock
-try{fetch(location.origin+'/?ck='+Math.floor(Math.random()*1e9),{method:'HEAD',cache:'no-store'}).then(function(r){var d=r.headers.get('Date');if(d){var t=new Date(d).getTime();if(t>0)_srvClockOff=t-Date.now();}}).catch(function(e){});}catch(e){}
-function dailyKey(){return new Date(Date.now()+_srvClockOff).toISOString().slice(0,10);} // UTC YYYY-MM-DD
+try{fetch(location.origin+'/?ck='+Math.floor(Math.random()*1e9),{method:'HEAD',cache:'no-store'}).then(function(r){var d=r.headers.get('Date');if(d){var t=new Date(d).getTime();if(t>0){_srvClockOff=t-Date.now();if(typeof _srvClockSettled==='function')_srvClockSettled();}}}).catch(function(e){});}catch(e){}
+function dailyKey(){return new Date(Date.now()+_srvClockOff).toISOString().slice(0,10);}
+// v3.5.168 (Gatekeeper) the offset above arrives async — a daily opened before it lands is stamped from the
+// DEVICE clock. When the edge answers, re-derive: if the date actually differs and the player hasn't placed
+// anything yet, restart onto the correct wall instead of scoring them against the wrong day's board.
+function _srvClockSettled(){
+  try{
+    if(!DAILY.active||gameMode!=='daily')return;
+    var k=dailyKey();
+    if(k===DAILY.key)return;
+    if((placed||0)>0){if(typeof showBanner==='function')showBanner('\u23f1 The daily rolled over mid-wall \u2014 this run posts to '+DAILY.key+'.','warn',3200);return;}
+    if(typeof startDaily==='function'){startDaily();if(typeof showBanner==='function')showBanner('\u23f1 Clock synced \u2014 loading today\u2019s wall ('+k+').','',2600);}
+  }catch(e){}
+} // UTC YYYY-MM-DD
 function keyToSeed(k){var h=2166136261>>>0,i=0;for(i=0;i<k.length;i++){h^=k.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function dailyPieceAt(seed,idx){
   var m=mulberry32((seed^Math.imul(idx+1,2654435761))>>>0);
@@ -4693,7 +4722,7 @@ function startDaily(){
   paused=false;
   if(typeof musicForMode==='function')musicForMode('daily');
   restartGame();
-  if(typeof G!=='undefined'&&G)G.collapseN=0; // v3.5.167 collapse-shed index restarts with the wall (TRY AGAIN/QUICK RESET replay identically)
+  if(typeof G!=='undefined'&&G){G.collapseN=0;G.throwN=0;} // v3.5.167 · v3.5.168 throw index too collapse-shed index restarts with the wall (TRY AGAIN/QUICK RESET replay identically)
 }
 
 // ── PLACE BOX ──
@@ -4801,6 +4830,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   fireCommentary(source,box,gx,gy,rot);
   G.cog=calcCOG(G.grid);
   G.support=supportScore(G.grid);
+  var _preScore=G.score||0; // v3.5.168 (Gatekeeper) snapshot BEFORE the bonus checks — shelf/hazmat-shelf bonuses land between here and the recompute, and a post-bonus snapshot showed a +0 tick on the largest awards in the game
   // DECISION: checkTetris MUST run before calcIntegrity so that any newly
   // completed shelf row is registered in G.tetrisRows before integrity is scored.
   // Previously this was reversed, causing locked shelves to not protect the wall.
@@ -4812,7 +4842,6 @@ function placeBox(source,sourceIdx,gx,gy,rot){
     G.flow=(G.flow||0)+1;
     if(G.flow>=FLOW_MIN)G.flowBonus=(G.flowBonus||0)+FLOW_STEP*(G.flow-FLOW_MIN+1);
   }
-  var _preScore=G.score||0;
   G.score=calcScore(_segA);
   if(typeof _onScoreGain==='function')_onScoreGain(Math.round((G.score||0)-_preScore)); // v3.5.147 anchored +N tick on the SCORE cell (never over the wall)
   if(typeof updateFlowPip==='function')updateFlowPip();
@@ -5188,7 +5217,18 @@ function throwBox(){
   var idx=(selBeltIdx!=null)?selBeltIdx:0;if(idx<0||idx>=G.belt.length)idx=0;
   G.belt.splice(idx,1);selBeltIdx=null;selBeltRot=0;
   S.throws=(S.throws||0)+1;G.throws=(G.throws||0)+1;
-  if(typeof spawnBag==='function')spawnBag(); // throwing ALWAYS puts a bag of smalls on the belt
+  // v3.5.168 (Gatekeeper) in DAILY spawnBag() no-ops (it would fork the seeded stream), so THROW silently
+  // returned nothing in the only ranked mode — full penalty, no bag. The daily bag is minted off the date seed
+  // + this wall's throw index, so it is identical for every player who throws the same number of times.
+  if(gameMode==='daily'){
+    G.throwN=(G.throwN||0)+1;
+    if(G.belt.length<BELT_PIECE_COUNT+5&&typeof makeBagPiece==='function'){
+      var _tb=makeBagPiece();
+      _tb.seed=100+Math.floor(mulberry32((DAILY.seed^Math.imul(G.throwN,0x27D4EB2F))>>>0)()*9800);
+      _tb.id='DTB'+G.throwN;
+      G.belt.push(_tb);
+    }
+  } else if(typeof spawnBag==='function')spawnBag(); // throwing ALWAYS puts a bag of smalls on the belt
   if(typeof spawnThrow==='function')spawnThrow(); // v3.5.69 the tumbling-box ricochet
   // v3.5.65 escalating throw penalty \u2014 PERFECT SYMMETRY with the drink rule (4th throw -100, 5th -200, 6th -300...).
   // Kills the "throw forever, place 1000 smalls from bags" exploit: you CAN do it, it just goes deep score-negative.
@@ -5712,13 +5752,13 @@ function triggerCollapse(){
   var _shedN=rnd(1,2);
   if(gameMode==='daily'){G.collapseN=(G.collapseN||0)+1;_shedN=(mulberry32((DAILY.seed^Math.imul(G.collapseN,0xC2B2AE35))>>>0)()<0.5)?1:2;}
   var toRemove=candidates.slice(0,_shedN);
-  toRemove.forEach(function(cell){
+  toRemove.forEach(function(cell,_ci){ // v3.5.168 (Gatekeeper) _ci -> unique ids; same-ms shed pieces collided and deduped into one
     var cells2=cell.cells||makeRect(cell.w,cell.h);
     for(var i=0;i<cells2.length;i++){
       var cx=cells2[i][0],cy=cells2[i][1];
       if(G.grid[cell.ry+cy]&&G.grid[cell.ry+cy][cell.rx+cx]===cell)G.grid[cell.ry+cy][cell.rx+cx]=null;
     }
-    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36),_gen:(cell.box._gen||0)+1}); // v3.5.156 churn-marked
+    if(G.belt.length<BELT_PIECE_COUNT)G.belt.push({...cell.box,id:'C'+Date.now().toString(36)+_ci,_gen:(cell.box._gen||0)+1}); // v3.5.156 churn-marked · v3.5.168 +_ci = collision-free
     placed=Math.max(0,placed-1); // v3.5.156
   });
   G.integrity=clamp((G.integrity||100)-COLLAPSE_INT_COST,0,100);
@@ -9415,24 +9455,6 @@ function zLogWall(){
   }catch(e){}
 }
 // v3.5.80 TOTAL LOADED — lifetime cumulative score (sum of every session), the consistency board (RPC lockin_total_board)
-function lbLoadTotal(){
-  var b=document.getElementById('lb-total-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
-  try{
-    fetch(ZDATA.endpoint+'/rpc/lockin_total_board',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({p_limit:25})})
-      .then(function(r){return r.json();})
-      .then(function(j){lbRenderInto('lb-total-board',Array.isArray(j)?j:[],'No ranked loaders yet — log in, play, and stack a lifetime total.');})
-      .catch(function(e){console.error('totalBoard:',e);lbRenderInto('lb-total-board',[],'Could not load the board.');});
-  }catch(e){lbRenderInto('lb-total-board',[],'Could not load the board.');}
-}
-function lbLoadAlltime(){
-  var b=document.getElementById('lb-all-board');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
-  try{
-    fetch(ZDATA.endpoint+'/rpc/lockin_alltime_board',{method:'POST',headers:zAuthHeaders(),body:JSON.stringify({p_limit:25})})
-      .then(function(r){return r.json();})
-      .then(function(j){lbRenderInto('lb-all-board',Array.isArray(j)?j:[],'No ranked loaders yet — log in, play, and claim the top spot.');})
-      .catch(function(e){console.error('alltimeBoard:',e);lbRenderInto('lb-all-board',[],'Could not load the board.');});
-  }catch(e){lbRenderInto('lb-all-board',[],'Could not load the board.');}
-}
 // ── v3.5.15 FRIENDS (one-way follow) ──
 function lbLoadFriends(){
   var auth=document.getElementById('lb-friends-auth'),main=document.getElementById('lb-friends-main');
@@ -9635,7 +9657,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.167</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.168</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
