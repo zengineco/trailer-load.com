@@ -26,9 +26,18 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.165
+   LOCK IN v3.5.166
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.166 - DETERMINISM AUDIT (closing pass #1) — CAUGHT AND SEALED A REAL LEAK. Two fresh loads of the
+     same daily serialized (belt+tray+bags+200 stream pieces, all gameplay fields) and diffed: 8 lines differed, every one
+     a DRUM differing ONLY in paint — seedPal()’s drum branch used pick() (Math.random) instead of the seed. Fixed:
+     drums[seed%3]. Also caught: the daily still dealt DO NOT STACK / KEEP DRY (retired v3.5.126 as untruthful tape) —
+     replaced with GROUND/OVERNIGHT; and seedDailyTray’s dead spawnBag() call + false "1 bag" comment removed (spawnBag
+     no-ops in daily; bags ride the seeded stream). PROOF after fix: two cold loads, hash 401c15b3 === 401c15b3,
+     27,954 bytes BYTE-IDENTICAL (blob compare, not just hash), 0 banned labels in 200 pieces, all 3 drum colors alive.
+     Full certification artifact: Desktop\lock-in-determinism-audit.txt (a sales document — the promise is now provable).
 
    CHANGE LOG v3.5.165 - THE LOW SWEEP (21 ledger LOWs — the tier cleared in one pass). Honesty: belt overflow now says
      "one piece routed back to the hub" instead of silently deleting freight x2 sites · dashboard CSV export refuses the
@@ -1994,7 +2003,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.165 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.166 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2100,7 +2109,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.165 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.166 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2258,7 +2267,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.165 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.166 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2710,7 +2719,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.165
+// LOCK IN v3.5.166
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3067,7 +3076,7 @@ function seedPal(seed,type,shape,ncColor){
       {b:'#c03010',l:'#d84828',d:'#882008',t:'rgba(185,80,30,.65)'},
       {b:'#1060a0',l:'#2878b8',d:'#084878',t:'rgba(30,90,150,.65)'},
     ];
-    return pick(drums);
+    return drums[(seed>>>0)%drums.length]; // v3.5.166 DETERMINISM AUDIT: pick(drums) was Math.random — the ONE leak in the daily stream (audit hashes 9ad52606 vs 752a539, 8 lines, all drum paint). Seed-indexed keeps the variety and seals the promise.
   }
   if(shape==='pallet')return{b:'#8a6030',l:'#a87848',d:'#604018',t:'rgba(140,105,55,.6)'};
   var sr=sRand(seed);
@@ -3162,7 +3171,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.165'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.166'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4611,7 +4620,7 @@ function dailyPieceAt(seed,idx){
   var palSeed=100+Math.floor(m()*9800);
   var lab;
   if(m()<0.16){lab=(m()<0.5)?LABELS[2]:LABELS[7];} // FRAGILE or GLASS (deterministic, scoring-relevant)
-  else{var nf=[LABELS[0],LABELS[1],LABELS[3],LABELS[5],LABELS[6]];lab=nf[Math.floor(m()*nf.length)];}
+  else{var nf=[LABELS[0],LABELS[1],LABELS[3],LABELS[15],LABELS[16]];lab=nf[Math.floor(m()*nf.length)];} // v3.5.166 DNS/KEEP DRY out of the daily too (v3.5.126 truthful-labels rule) — GROUND/OVERNIGHT in (honest service tape)
   return {arr:arr,ti:ti,palSeed:palSeed,lab:lab};
 }
 function buildDailyPiece(seed,idx){
@@ -4655,7 +4664,8 @@ function seedDailyTray(){
   var hz=byCat('haz');
   dailyNCStage(hz[Math.floor(m()*hz.length)],true,m);   // 1 hazmat (seat-low bonus)
   buildNCPanel();
-  spawnBag();                                            // 1 bag (the single gap-filler)
+  // v3.5.166 audit note: a spawnBag() call sat here claiming "1 bag" — spawnBag no-ops in daily
+  // (guarded since the determinism fix), so the tray never had one. Daily bags ride the seeded belt stream (~1 in 8).
 }
 function startDaily(){
   hideStartMenu();
@@ -9590,7 +9600,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.165</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.166</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
