@@ -22,9 +22,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.169
+   LOCK IN v3.5.170
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.170 - ROUND-TRIP PROOF + REPRESENTATION. The v3.5.169 post-mortem exposed the real design sin:
+     the client BELIEVED every post it never checked. Now the daily submit is verified against reality — after the
+     server accepts a score the game re-reads the PUBLIC board and physically looks for the player’s name. Confirmed
+     shows "✓ CONFIRMED ON THE WORLD BOARD"; a readable board that does NOT contain them shows "NOT ON THE BOARD"
+     with what to do; an unreadable board reports unknown and is never treated as success. Silence can no longer pass
+     for a posted score. REPRESENTATION (why 19 signed-up players saw no trace of themselves): the DAILY board only
+     ever holds people who played THAT date, and the boards that hold EVERY player who ever sealed a wall —
+     lockin_total_board / lockin_alltime_board — were buried in the 4th tab, capped at the top 5. Nine real ranked
+     players were sitting in the database unseen. HALL cards now pull 10, and TOTAL LOADED leads the fame column
+     because it is the one board every loader appears on.
 
    CHANGE LOG v3.5.169 - **CRITICAL: DEAD SESSIONS WERE SILENTLY EATING PLAYERS’ SCORES.** Found while debugging a
      live report during a Facebook push. isSignedIn() only checked that a uid EXISTED, never whether the token was
@@ -2053,7 +2064,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.169 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.170 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2159,7 +2170,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.169 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.170 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2317,7 +2328,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.169 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.170 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2769,7 +2780,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.169
+// LOCK IN v3.5.170
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3221,7 +3232,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.169'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.170'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9471,7 +9482,7 @@ function lbHallFmt(v,fmt){if(v==null)return '—';if(fmt==='time'){var s=+v,m=Ma
 // v3.5.152 DEAD-CODE CULL (The Schema) — the dropdown-era lbLoadHall/lbRenderHall (superseded by the categorical
 // World Board lbLoadAllBoards/lbBoardCard in v3.5.104) had zero callers. Removed.
 // v3.5.104 THE HALL as a categorical ledger — every board at once, World-Board style (emoji medals, top 5, gold #1).
-var HALL_FAME=['best','total','fastest','cleanest','fewest'];
+var HALL_FAME=['total','best','fastest','cleanest','fewest']; // v3.5.170 TOTAL leads — it's the only board every player who ever loaded a wall appears on (the daily board only holds people who played THAT day)
 var HALL_SHAME=['slowest','most_collapses','most_pieces','messiest'];
 var HALL_EMOJI={best:'🏆',total:'▲',fastest:'⚡',cleanest:'✦',fewest:'✂',slowest:'🐌',most_collapses:'🧱',most_pieces:'📦',messiest:'💀'};
 var HALL_TITLE={best:'BEST WALL',total:'TOTAL LOADED',fastest:'FASTEST WALL',cleanest:'CLEANEST WALL',fewest:'FEWEST PIECES',slowest:'SLOWEST WALL',most_collapses:'MOST COLLAPSES',most_pieces:'THE GRIND',messiest:'BARELY HELD'};
@@ -9501,8 +9512,8 @@ function lbBoardCard(grid,key,side){
   card.innerHTML='<div class="lb-card-hd"><span class="em">'+(HALL_EMOJI[key]||'')+'</span>'+(HALL_TITLE[key]||key)+'</div><div class="lb-card-sub">'+drEsc(meta.foot||'')+'</div><div class="lb-card-rows"><div class="lb-empty">Loading…</div></div>';
   grid.appendChild(card);
   var url,body;
-  if(meta.rpc==='wall'){url=ZDATA.endpoint+'/rpc/lockin_wall_board';body=JSON.stringify({p_metric:meta.metric,p_limit:5});}
-  else{url=ZDATA.endpoint+'/rpc/'+meta.rpc;body=JSON.stringify({p_limit:5});}
+  if(meta.rpc==='wall'){url=ZDATA.endpoint+'/rpc/lockin_wall_board';body=JSON.stringify({p_metric:meta.metric,p_limit:10});}
+  else{url=ZDATA.endpoint+'/rpc/'+meta.rpc;body=JSON.stringify({p_limit:10});}
   try{
     fetch(url,{method:'POST',headers:zAuthHeaders(),body:body}).then(function(r){return r.json();})
       .then(function(j){var box=document.getElementById(cardId);if(box){var rb=box.querySelector('.lb-card-rows');if(rb)rb.innerHTML=lbMedalRows(Array.isArray(j)?j:[],meta.fmt,side,5);}})
@@ -9726,7 +9737,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.169</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.170</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -11222,6 +11233,24 @@ function zLoadDailyBoard(cb){
       .catch(function(e){console.error('dailyBoard:',e);cb&&cb([]);});
   }catch(e){cb&&cb([]);}
 }
+// v3.5.170 the proof step: read the PUBLIC board back and confirm this player is really on it.
+// Silence is never treated as success — an unreadable board reports 'unknown', a readable board that
+// lacks the player reports 'missing'. This is the check whose absence cost a whole launch push.
+function zVerifyOnBoard(score,cb){
+  var me=(ZDATA.session&&ZDATA.session.handle)||((ZDATA.session&&ZDATA.session.email)||'').split('@')[0];
+  if(!me){cb('unknown');return;}
+  setTimeout(function(){
+    try{
+      var url=ZDATA.endpoint+'/lockin_daily_board?puzzle_date=eq.'+encodeURIComponent(dailyKey())+'&username=eq.'+encodeURIComponent(me)+'&select=username,score';
+      fetch(url,{headers:zAuthHeaders()}).then(function(r){return r.ok?r.json():null;})
+        .then(function(rows){
+          if(!rows){cb('unknown');return;}
+          cb((rows.length&&rows[0]&&rows[0].username===me)?'confirmed':'missing');
+        })
+        .catch(function(){cb('unknown');});
+    }catch(e){cb('unknown');}
+  },900); // give the write a beat to settle before reading it back
+}
 function renderDailyBoard(rows){
   var el=document.getElementById('dr-board');if(!el)return;
   if(!rows||!rows.length){el.innerHTML='<div class="dr-empty">No scores posted yet today \u2014 be the first.</div>';return;}
@@ -11265,7 +11294,17 @@ function dailyFinish(){
   }
   if(rk)rk.textContent='Posting your score\u2026';
   zSubmitDaily(score,walls,avgInt,inc,function(j){
-    if(j&&j.ok){if(rk)rk.innerHTML='RANK <b>'+j.rank+'</b> of '+j.total+(j.improved?' \u00b7 new best':'');}
+    if(j&&j.ok){
+      if(rk)rk.innerHTML='RANK <b>'+j.rank+'</b> of '+j.total+(j.improved?' \u00b7 new best':'');
+      // v3.5.170 ROUND-TRIP PROOF. The whole reason players lost scores is that the client BELIEVED a post
+      // it never checked. Now the game re-reads the public board and physically looks for the player's name.
+      // Confirmed -> say so. Missing -> say THAT, loudly, instead of showing a rank nobody else can see.
+      zVerifyOnBoard(score,function(state){
+        if(!rk)return;
+        if(state==='confirmed')rk.innerHTML+='<br><span style="font-size:.58em;color:var(--ok)">\u2713 CONFIRMED ON THE WORLD BOARD</span>';
+        else if(state==='missing')rk.innerHTML='\u26a0 <b>NOT ON THE BOARD</b><br><span style="font-size:.62em">The server took your score but it isn\u2019t showing. Sign out and back in, then replay \u2014 and tell Vince.</span>';
+      });
+    }
     else if(j&&j.expired){if(rk)rk.innerHTML='\u26a0 <b>NOT POSTED \u2014 YOUR SESSION EXPIRED</b><br><span style="font-size:.62em">Sign in again (\u25c6 CLOCK-IN) and replay today\u2019s wall to claim your rank.</span>';}
     else if(rk)rk.textContent='(could not post \u2014 played offline?)';
     zLoadDailyBoard(renderDailyBoard);
