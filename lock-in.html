@@ -26,9 +26,27 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.166
+   LOCK IN v3.5.167
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.167 - RE-VERDICT VERIFICATION PASS (adversarial self-audit of every blocker fix). Three real
+     findings, all fixed. (1) DAILY DETERMINISM, ROUND TWO: triggerCollapse chose how many boxes to shed with
+     rnd(1,2) — Math.random — and collapses happen in the daily. Two players making byte-identical moves could lose a
+     different number of boxes and a different -80/box. The v3.5.166 audit only covered the GENERATION stream; this was
+     CONSEQUENCE randomness. In daily the shed count now derives from the date seed + this wall’s collapse index
+     (G.collapseN, reset in startDaily so TRY AGAIN / QUICK RESET replay identically). Regular modes keep rnd(1,2).
+     (2) LAST DUAL-SCORING RESIDUE: checkTetris still did G.score+=TETRIS_BONUS inside the pay guard — the exact
+     "added then overwritten in the same placeBox call" pattern the Gatekeeper cited, since calcScore’s shelfB term
+     ((G.tetrisTotal)*TETRIS_BONUS) already pays every lock. Removed: one scoring source now, no behavior change.
+     (3) GAMEPLAY ANALYTICS NOW HONOR CONSENT: privacy.html discloses analytics, but also promises "nothing about your
+     gameplay leaves your device" when save-my-stats is off — while shelf_locked / level_start / level_complete sent
+     real performance payloads to GA4 regardless. New gaPlay() gates those on consentSelf (same rule as zSendSession /
+     zLogWall / zSubmitDaily); pure site-usage pings stay, which is what the disclosure covers. Also: last
+     white-on-amber in the product (privacy.html TOC hover) and the dead vt-btn alternation left by the v3.5.164 cull.
+     VERIFIED CLEAN in the same pass: all 4 gameplay network writes consent-gated · daily generation stream has zero
+     Math.random reach (genPiece is daily-guarded, refillBelt returns early) · zero voice-slop survivors product-wide ·
+     zero dangling references to culled code.
 
    CHANGE LOG v3.5.166 - DETERMINISM AUDIT (closing pass #1) — CAUGHT AND SEALED A REAL LEAK. Two fresh loads of the
      same daily serialized (belt+tray+bags+200 stream pieces, all gameplay fields) and diffed: 8 lines differed, every one
@@ -2003,7 +2021,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.166 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.167 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2109,7 +2127,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.166 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.167 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2267,7 +2285,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.166 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.167 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2719,7 +2737,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.166
+// LOCK IN v3.5.167
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3171,7 +3189,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.166'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.167'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -3631,7 +3649,7 @@ function musicForMode(m){
 document.addEventListener('click',function(e){
   var el=e.target,n=0;
   while(el&&el.tagName&&n<5){
-    if(el.tagName==='BUTTON'||(typeof el.className==='string'&&/sm-card|set-seg-btn|pmb|btn-p|le-btn|brief-tab|ls-card|vt-btn|sm-iconbtn|sm-loginbtn/.test(el.className))){
+    if(el.tagName==='BUTTON'||(typeof el.className==='string'&&/sm-card|set-seg-btn|pmb|btn-p|le-btn|brief-tab|ls-card|sm-iconbtn|sm-loginbtn/.test(el.className))){
       if(typeof playSfx==='function')playSfx('ui');return;
     }
     el=el.parentNode;n++;
@@ -4675,6 +4693,7 @@ function startDaily(){
   paused=false;
   if(typeof musicForMode==='function')musicForMode('daily');
   restartGame();
+  if(typeof G!=='undefined'&&G)G.collapseN=0; // v3.5.167 collapse-shed index restarts with the wall (TRY AGAIN/QUICK RESET replay identically)
 }
 
 // ── PLACE BOX ──
@@ -5512,7 +5531,9 @@ function checkTetris(){
       var prevInt=G.integrity||100;
       var intBonus=Math.min(30,100-prevInt);
       G.integrity=Math.min(100,prevInt+intBonus);
-      G.score=(G.score||0)+TETRIS_BONUS;
+      // v3.5.167 the +TETRIS_BONUS direct-add that lived here is GONE: calcScore's shelfB term
+      // ((G.tetrisTotal)*TETRIS_BONUS) already pays every lock, and placeBox recomputes right after —
+      // so the add was overwritten in the same call. Last residue of the dual-scoring model. One source now.
       // v2.1.11 HAZMAT SHELF LOCKED — vet move: hazmat loaded low, now capped by a locked shelf
       var _hzc=0,_hseen={},_hy,_hx,_hcell;
       for(_hy=y+1;_hy<GH;_hy++){for(_hx=0;_hx<GW;_hx++){
@@ -5684,7 +5705,13 @@ function triggerCollapse(){
     if(_le&&_re&&_pph>_pH){_pH=_pph;_pTop=_ptc;}
   }
   if(_pTop){var _pin=false,_pj;for(_pj=0;_pj<candidates.length;_pj++)if(candidates[_pj]===_pTop){_pin=true;break;}if(!_pin)candidates.unshift(_pTop);}
-  var toRemove=candidates.slice(0,rnd(1,2));
+  // v3.5.167 DETERMINISM (re-verdict pass): the shed COUNT was rnd(1,2) — Math.random. Collapses happen in the
+  // daily, so two players making byte-identical moves could lose a different number of boxes and take a different
+  // -80/box hit. The audit only covered the GENERATION stream; this is CONSEQUENCE randomness. In daily the count
+  // now comes off the date seed + this wall's collapse index, so the same mistake costs everyone the same.
+  var _shedN=rnd(1,2);
+  if(gameMode==='daily'){G.collapseN=(G.collapseN||0)+1;_shedN=(mulberry32((DAILY.seed^Math.imul(G.collapseN,0xC2B2AE35))>>>0)()<0.5)?1:2;}
+  var toRemove=candidates.slice(0,_shedN);
   toRemove.forEach(function(cell){
     var cells2=cell.cells||makeRect(cell.w,cell.h);
     for(var i=0;i<cells2.length;i++){
@@ -8219,7 +8246,7 @@ var _lockinFlashTO=null;
 
 function fireLockinFlash(isBulkhead,count,pts){
   if(typeof gcurFlash==='function')gcurFlash('lock',650); // v3.5.20 lock-glove on a shelf lock-in
-  gaEvent('shelf_locked',{is_bulkhead:isBulkhead,count:count,
+  gaPlay('shelf_locked',{is_bulkhead:isBulkhead,count:count,
     total_shelves:G.tetrisTotal||0,voice:activeVoice,
     wall_pct:Math.round(wallH()/GH*100)});
   var word=document.getElementById('tf-word');
@@ -8491,6 +8518,14 @@ function fireCommentary(source,box,gx,gy,rot){
 // (ad blockers, private browsing, etc.)
 function gaEvent(name,params){
   try{if(window.gtag)gtag('event',name,params||{});}catch(e){}
+}
+// v3.5.167 (re-verdict pass) GAMEPLAY analytics honor the save-my-stats switch. privacy.html discloses analytics,
+// but it ALSO promises "nothing about your gameplay leaves your device" when the switch is off — and shelf_locked /
+// level_* carry real performance payloads. Site-usage pings (settings opened, menu navigation) stay: they carry no
+// gameplay data and are what the analytics disclosure covers. Same rule as zSendSession/zLogWall/zSubmitDaily.
+function gaPlay(name,params){
+  try{var _p=(typeof zLoadPlayer==='function')?zLoadPlayer():null;if(!_p||!_p.consentSelf)return;}catch(e){return;}
+  gaEvent(name,params);
 }
 
 // ── START MENU + MODE SYSTEM ──
@@ -9600,7 +9635,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.166</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.167</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9963,7 +9998,7 @@ function startLevel(n){
     }
   }
   if(animF)cancelAnimationFrame(animF);lastLoopT=0;
-  gaEvent('level_start',{level_number:n,level_name:lv.name,voice:activeVoice});
+  gaPlay('level_start',{level_number:n,level_name:lv.name,voice:activeVoice});
   // Init level mechanics AFTER initTruck (which resets belt AND initializes G.ncSlots).
   // BUGFIX: initMechanic must never run before initTruck() has committed G to a fresh state.
   // Level 3 (Miami) pre-spawns 2 NCs — if G.ncSlots isn't initialized, hazard fires immediately.
@@ -10078,7 +10113,7 @@ function showLevelEnd(reason,failed){
 
   var stars=failed?0:calcStars(currentLevel,grade,elapsed,G.crunchCount||0);
   // GA4: track level outcome
-  gaEvent(failed?'level_fail':'level_complete',{
+  gaPlay(failed?'level_fail':'level_complete',{
     level_number:currentLevel,
     level_name:lv?lv.name:'',
     stars_earned:stars,
