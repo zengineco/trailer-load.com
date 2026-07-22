@@ -278,12 +278,6 @@ function mDaily(){
     .then(function(r){return r.json();}).then(function(j){mBoardRows('lb-daily',Array.isArray(j)?j:[],'No scores on today’s board yet — play Daily and be the first.',false);})
     .catch(function(e){console.error('mDaily:',e);mBoardRows('lb-daily',[],'Could not load the board.',false);});}catch(e){console.error('mDaily:',e);}
 }
-function mAlltime(){
-  var b=document.getElementById('lb-all');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
-  try{fetch(ME.endpoint+'/rpc/lockin_alltime_board',{method:'POST',headers:mHeaders(),body:JSON.stringify({p_limit:25})})
-    .then(function(r){return r.json();}).then(function(j){mBoardRows('lb-all',Array.isArray(j)?j:[],'No ranked loaders yet — play and claim the top spot.',false);})
-    .catch(function(e){console.error('mAlltime:',e);mBoardRows('lb-all',[],'Could not load the board.',false);});}catch(e){console.error('mAlltime:',e);}
-}
 function mFriends(){
   var b=document.getElementById('lb-friends');if(b)b.innerHTML='<div class="lb-empty">Loading…</div>';
   try{fetch(ME.endpoint+'/rpc/lockin_friends_board',{method:'POST',headers:mHeaders(),body:'{}'})

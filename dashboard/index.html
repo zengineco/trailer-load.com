@@ -68,7 +68,7 @@ table{width:100%;border-collapse:collapse;min-width:760px;}
 th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink2);text-transform:uppercase;text-align:right;padding:12px 14px;border-bottom:2px solid var(--line2);cursor:pointer;white-space:nowrap;user-select:none;background:#faf7f0;position:sticky;top:0;}
 th:first-child{text-align:left;}
 th:hover{color:var(--acc-dim);}
-th .comp{display:block;font-size:9px;color:var(--ink3);letter-spacing:.5px;font-weight:normal;text-transform:none;}
+th .comp{display:block;font-size:10px;color:var(--ink3);letter-spacing:.5px;font-weight:normal;text-transform:none;}
 th.sorted{color:var(--acc-dim);}
 th .arr{color:var(--acc);}
 td{font-family:'Share Tech Mono',monospace;font-size:15px;padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--ink);}
@@ -102,7 +102,7 @@ tr:hover td{background:#fbf9f4;}
   <button type="submit" class="btn btn-acc">SIGN IN</button>
   </form>
   <div id="login-msg"></div>
-  <div id="login-note">Program credentials are issued by LOCK IN. Don't have access yet? Email <a href="mailto:vince@trailer-load.com">vince@trailer-load.com</a> to set up your program.</div>
+  <div id="login-note">Program credentials are issued by LOCK IN. Don't have access yet? Email <a href="mailto:hello@trailer-load.com">hello@trailer-load.com</a> to set up your program.</div>
 </div>
 
 <!-- DASHBOARD -->
@@ -278,6 +278,8 @@ function dRender(){
 }
 function dExport(){
   var rows=DASH.rows.slice();
+  var _xb=document.querySelector('button[onclick="dExport()"]');
+  if(!rows.length){if(_xb){_xb.textContent='NO OPTED-IN STUDENTS YET';setTimeout(function(){if(_xb)_xb.textContent='⭳ EXPORT CSV';},2200);}return;} // v1.2 (LOW) no more silent header-only file
   var head=['student','sessions','walls','avg_integrity_pct','best_pph','best_score','incidents','last_seen'];
   var lines=[head.join(',')],i;
   function q(v){v=(v==null?'':(''+v));return /[",\n]/.test(v)?('"'+v.replace(/"/g,'""')+'"'):v;}
@@ -287,6 +289,7 @@ function dExport(){
   var url=URL.createObjectURL(blob),a=document.createElement('a');
   a.href=url;a.download='lockin-cohort-'+((DASH.name||'program').toLowerCase().replace(/[^a-z0-9]+/g,'-'))+'.csv';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
+  if(_xb){_xb.textContent='✓ EXPORTED ('+rows.length+' students)';setTimeout(function(){if(_xb)_xb.textContent='⭳ EXPORT CSV';},2200);} // v1.2 (LOW) the click is acknowledged
   setTimeout(function(){URL.revokeObjectURL(url);},1500);
 }
 function dSignOut(){

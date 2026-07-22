@@ -26,9 +26,22 @@ gtag('config','G-FJBRX2G0E5',{anonymize_ip:true});
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.164
+   LOCK IN v3.5.165
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.165 - THE LOW SWEEP (21 ledger LOWs — the tier cleared in one pass). Honesty: belt overflow now says
+     "one piece routed back to the hub" instead of silently deleting freight x2 sites · dashboard CSV export refuses the
+     silent header-only file (NO OPTED-IN STUDENTS YET) and acknowledges real exports (✓ EXPORTED (N)) · storage-blocked
+     browsers keep PBs in memory so every run isn’t a fake NEW PERSONAL BEST. Fairness: dailyKey anchors to the EDGE
+     server’s Date header (same-origin HEAD; client clock = fallback) — setting your device clock ahead no longer opens
+     tomorrow’s wall early. Feel: DANGER/WARN lines hold the live feed 1.6s against routine chatter (LINEHAUL keeps all) ·
+     QUICK RESET two-tap arm replaces the native window.confirm · TRAINING gets an AUTO ▶▶ toggle (2.8s cadence, stops at
+     sign-off/exit). Copy/type: PRESS NEXT TO BEGIN (PLAY died v3.5.150) · Text Scale caption matches v3.5.151 reality ·
+     FAC-DEMO-01 placeholder (last ZG string) · Peak PPH ONE name across game+/me/ · panel header matches its button
+     (ACCOUNT & DATA) · bare font-family stacks got fallbacks (10 sites) · #ws-sub/.drought alpha raised · dashboard th
+     10px · email unified on hello@trailer-load.com. Culls: genPieceRaw, mAlltime (/me/), dup smEsc (ss-1.8), the stray
+     Gemini PNG out of the ss/ deploy.
 
    CHANGE LOG v3.5.164 - LEDGER MED BATCH 3b: DEAD-CODE CULL + BUTTON-GEOMETRY LAW (look/copy/seams closeout).
      CULLED after per-item liveness audit (grep callers, not the ledger’s word): the whole #ov-linehaul overlay chain
@@ -527,7 +540,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 }
 #drought-banner.vis{display:block;}
 #drought-timer{font-family:'Share Tech Mono',monospace;font-size:11px;
-  color:rgba(200,121,30,.7);letter-spacing:2px;display:block;margin-top:1px;}
+  color:rgba(200,121,30,.92);letter-spacing:2px;display:block;margin-top:1px;}
 
 /* LV8: INSPECTION HOLD — belt slot overlay */
 .belt-hold-flash{
@@ -574,7 +587,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 #ws-title{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:8px;
   color:#cc3820;text-shadow:0 0 40px rgba(204,56,32,.5);}
 #ws-sub{font-family:'Share Tech Mono',monospace;font-size:12px;
-  color:rgba(255,255,255,.5);letter-spacing:2px;text-align:center;}
+  color:rgba(255,255,255,.82);letter-spacing:2px;text-align:center;}
 #ws-timer{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#e08060;letter-spacing:4px;}
 
 /* ═══════════════════════════════════════════════════════
@@ -1901,48 +1914,48 @@ body[data-cb="trit"]{
 .ps-card{max-width:1020px;margin:0 auto;background:linear-gradient(180deg,#f5eede,#efe6d3);
   border:1px solid #cdbf9f;border-radius:6px;box-shadow:0 22px 50px rgba(20,12,4,.45);padding:26px 26px 16px;position:relative;}
 .ps-mast{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #2a2018;padding-bottom:7px;}
-.ps-mast .lg{font-family:'Bebas Neue';font-size:40px;line-height:.85;color:#2a2018;}
+.ps-mast .lg{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:.85;color:#2a2018;}
 .ps-mast .lg b{color:#c8791e;}
-.ps-mast .doc{font-family:'Bebas Neue';font-size:20px;letter-spacing:.15em;color:#6a5c48;margin-left:10px;}
-.ps-mast .stamp{font-family:'Share Tech Mono';font-size:10px;color:#c23a1a;border:2px solid #c23a1a;border-radius:4px;padding:3px 8px;transform:rotate(-4deg);letter-spacing:.06em;}
+.ps-mast .doc{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.15em;color:#6a5c48;margin-left:10px;}
+.ps-mast .stamp{font-family:'Share Tech Mono',monospace;font-size:10px;color:#c23a1a;border:2px solid #c23a1a;border-radius:4px;padding:3px 8px;transform:rotate(-4deg);letter-spacing:.06em;}
 .ps-rule{height:2px;background:#c8791e;margin:0 0 12px;}
-.ps-id{display:grid;grid-template-columns:repeat(4,1fr);gap:1px 22px;font-family:'Share Tech Mono';margin-bottom:14px;}
+.ps-id{display:grid;grid-template-columns:repeat(4,1fr);gap:1px 22px;font-family:'Share Tech Mono',monospace;margin-bottom:14px;}
 .ps-id div{padding:4px 0;border-bottom:1px dotted #cdbf9f;}
 .ps-id .k{font-size:9px;letter-spacing:.12em;color:#9a8b72;display:block;}
 .ps-id .v{font-size:14px;color:#2a2018;}
 .ps-legend{display:flex;gap:0;margin-bottom:6px;align-items:flex-end;}
-.ps-legend .sp{margin-right:auto;font-family:'Barlow Condensed';font-weight:600;font-size:10px;letter-spacing:.08em;color:#9a8b72;text-transform:uppercase;align-self:center;}
-.ps-legend .h{width:86px;text-align:center;font-family:'Share Tech Mono';font-size:10px;letter-spacing:.08em;padding:3px 0;border-radius:3px 3px 0 0;}
+.ps-legend .sp{margin-right:auto;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:10px;letter-spacing:.08em;color:#9a8b72;text-transform:uppercase;align-self:center;}
+.ps-legend .h{width:86px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.08em;padding:3px 0;border-radius:3px 3px 0 0;}
 .ps-legend .h.w{color:#0e6b60;background:#e0efec;}
 .ps-legend .h.s{color:#9a5c12;background:#f4e6cf;}
 .ps-legend .h.l{color:#8a6a3a;background:#efe6d0;}
 .ps-blocks{column-count:2;column-gap:28px;}
 @media(max-width:700px){.ps-blocks{column-count:1;}#ov-postsort{padding:14px 6px 40px;}.ps-card{padding:18px 14px;}}
 .ps-block{break-inside:avoid;margin-bottom:15px;}
-.ps-block h4{font-family:'Bebas Neue';font-size:17px;letter-spacing:.07em;color:#2a2018;border-bottom:2px solid #2a2018;padding-bottom:2px;margin:0 0 1px;}
+.ps-block h4{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.07em;color:#2a2018;border-bottom:2px solid #2a2018;padding-bottom:2px;margin:0 0 1px;}
 .ps-block h4 .d{color:#c8791e;font-size:10px;}
 .ps-row{display:grid;grid-template-columns:1fr 86px 86px 86px;align-items:center;border-bottom:1px solid #d9cdb4;min-height:22px;}
 .ps-row:nth-child(odd){background:rgba(120,96,40,.022);}
-.ps-row .m{font-family:'Barlow Condensed';font-size:13.5px;font-weight:500;color:#2a2018;padding-left:2px;}
+.ps-row .m{font-family:'Barlow Condensed',sans-serif;font-size:13.5px;font-weight:500;color:#2a2018;padding-left:2px;}
 .ps-row .m.sub{font-size:12px;color:#6a5c48;padding-left:12px;}
-.ps-row .n{font-family:'Share Tech Mono';font-size:13px;text-align:center;font-variant-numeric:tabular-nums;}
+.ps-row .n{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;font-variant-numeric:tabular-nums;}
 .ps-row .n.w{color:#0e6b60;}
 .ps-row .n.s{color:#2a2018;font-weight:bold;}
 .ps-row .n.l{color:#8a6a3a;}
 .ps-verdict{break-inside:avoid;margin-top:2px;border:2px solid #2a2018;border-radius:6px;background:linear-gradient(180deg,#fff8ec,#f5eede);padding:13px 15px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
 .ps-ring{width:74px;height:74px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:5px solid #1f9d57;box-shadow:0 0 0 3px #f5eede;flex:0 0 auto;}
-.ps-ring span{font-family:'Bebas Neue';font-size:44px;color:#1f9d57;line-height:1;}
+.ps-ring span{font-family:'Bebas Neue',sans-serif;font-size:44px;color:#1f9d57;line-height:1;}
 .ps-vmid{flex:1;min-width:160px;}
-.ps-vmid .rk{font-family:'Bebas Neue';font-size:27px;letter-spacing:.04em;color:#2a2018;}
-.ps-vmid .ln{font-family:'Barlow Condensed';font-style:italic;font-size:14px;color:#6a5c48;}
-.ps-vsum{font-family:'Share Tech Mono';font-size:11px;min-width:210px;flex:0 0 auto;}
+.ps-vmid .rk{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:.04em;color:#2a2018;}
+.ps-vmid .ln{font-family:'Barlow Condensed',sans-serif;font-style:italic;font-size:14px;color:#6a5c48;}
+.ps-vsum{font-family:'Share Tech Mono',monospace;font-size:11px;min-width:210px;flex:0 0 auto;}
 .ps-vsum .vr{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px dotted #cdbf9f;}
 .ps-vsum .vr .lb{color:#9a8b72;letter-spacing:.06em;}
 .ps-vsum .vr.s .va{color:#9a5c12;font-weight:bold;}
 .ps-vsum .vr.l .va{color:#8a6a3a;}
-.ps-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:2px solid #cdbf9f;padding-top:7px;font-family:'Share Tech Mono';font-size:10px;color:#9a8b72;letter-spacing:.05em;}
+.ps-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:2px solid #cdbf9f;padding-top:7px;font-family:'Share Tech Mono',monospace;font-size:10px;color:#9a8b72;letter-spacing:.05em;}
 .ps-tools{position:sticky;top:0;display:flex;gap:8px;justify-content:flex-end;margin:-12px -12px 8px 0;}
-.ps-tools button{font-family:'Share Tech Mono';font-size:11px;letter-spacing:.05em;cursor:pointer;background:#2a2018;color:#f5eede;border:0;border-radius:5px;padding:7px 11px;}
+.ps-tools button{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.05em;cursor:pointer;background:#2a2018;color:#f5eede;border:0;border-radius:5px;padding:7px 11px;}
 .ps-login{color:#c23a1a;font-size:10px;}
 @media print{#ov-postsort{position:static;background:#fff;padding:0;}.ps-tools{display:none;}.ps-card{box-shadow:none;border:1px solid #999;max-width:none;}}
 </style>
@@ -1981,7 +1994,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.164 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.165 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2087,7 +2100,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.164 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.165 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2213,7 +2226,7 @@ body[data-cb="trit"]{
           </div>
         </div>
         <div class="set-row">
-          <div class="set-lbl">Text Scale<small>Sizes the coach, commentary and banner text</small></div>
+          <div class="set-lbl">Text Scale<small>Sizes the coach, banners, HUD numbers and dispatch text</small></div>
           <div class="set-seg">
             <button class="set-seg-btn" id="set-txt-n" onclick="setTextScale('normal')">NORMAL</button>
             <button class="set-seg-btn" id="set-txt-lg" onclick="setTextScale('lg')">LARGE</button>
@@ -2245,7 +2258,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.164 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.165 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2258,7 +2271,7 @@ body[data-cb="trit"]{
     <span id="to-sub">WATCH THE WALL · READ THE PRINCIPLE</span>
   </div>
 
-  <div id="to-status">PRESS PLAY TO BEGIN</div>
+  <div id="to-status">PRESS NEXT TO BEGIN</div>
 
   <div id="to-principle-card">
     <div id="to-principle">LOCK IN — FREIGHT LOADING SIMULATOR</div>
@@ -2268,6 +2281,7 @@ body[data-cb="trit"]{
   <div id="to-controls">
     <div class="to-btn-row">
       <button class="to-btn to-btn-play" id="train-next" onclick="trainNext()">NEXT ▶</button>
+      <button class="to-btn" id="train-auto" onclick="trainAuto()" title="Advance every step automatically">AUTO ▶▶</button>
       <button class="to-btn to-btn-exit" onclick="exitTraining()">✕ EXIT</button>
     </div>
     <div id="to-exit-hint">CLICK NEXT TO WATCH EACH PLACEMENT · ESC OR ✕ EXITS</div>
@@ -2348,7 +2362,7 @@ body[data-cb="trit"]{
 <!-- v3.5.39 floating ◈ DATA tab retired — account/privacy/consent now lives in ADMIN (pause) as ACCOUNT & DATA; zOpenData/ov-data overlay unchanged -->
 <div id="ov-data" class="ov-data">
   <div class="data-card">
-    <div class="data-hdr">◈ DATA &amp; PRIVACY</div>
+    <div class="data-hdr">◈ ACCOUNT &amp; DATA</div>
     <div id="auth-status" class="auth-status" style="display:none;"></div>
     <div class="auth-box">
       <div class="auth-toggle"><button id="auth-tab-w" class="auth-tab active" onclick="zAuthMode('worker')">WORKER</button><button id="auth-tab-f" class="auth-tab" onclick="zAuthMode('facility')">FACILITY</button></div>
@@ -2369,7 +2383,7 @@ body[data-cb="trit"]{
     <div class="data-divider">PRIVACY &amp; CONSENT</div>
     <p class="data-p">LOCK IN can save your loading stats. Gameplay is always free. Your data is yours — sharing it with a facility is separate and optional.</p>
     <label class="data-fld">EMAIL <span>(optional — keeps your record across devices)</span><input id="data-email" type="email" placeholder="you@email.com"></label>
-    <label class="data-fld">FACILITY CODE <span>(from your school / employer, if you have one)</span><input id="data-facility" type="text" placeholder="e.g. ZG-DEMO-01"></label>
+    <label class="data-fld">FACILITY CODE <span>(from your school / employer, if you have one)</span><input id="data-facility" type="text" placeholder="e.g. FAC-DEMO-01"></label>
     <label class="data-chk"><input id="data-c1" type="checkbox"> Save my loading stats (my record).</label>
     <label class="data-chk"><input id="data-c2" type="checkbox"> Share my stats with my facility’s dashboard.</label>
     <div class="data-btns"><button class="data-save" onclick="zSaveConsent()">SAVE</button><button class="data-cancel" onclick="zCloseData()">NOT NOW</button></div>
@@ -2497,7 +2511,7 @@ body[data-cb="trit"]{
   <!-- v3.5.149 END-SCREEN TRIM — 4 headline numbers above the fold; the full ~40-tile breakdown collapses behind SEE ALL STATS (or the FULL REPORT button). -->
   <div class="es-headline">
     <div class="esh"><span class="esh-v" id="esh-score">0</span><span class="esh-l">Total Cubes</span></div>
-    <div class="esh"><span class="esh-v" id="esh-pph">0</span><span class="esh-l">Best PPH</span></div>
+    <div class="esh"><span class="esh-v" id="esh-pph">0</span><span class="esh-l">Peak PPH</span></div>
     <div class="esh"><span class="esh-v" id="esh-density">0%</span><span class="esh-l">Density</span></div>
     <div class="esh"><span class="esh-v" id="esh-shelves">0</span><span class="esh-l">Shelves</span></div>
   </div>
@@ -2505,7 +2519,7 @@ body[data-cb="trit"]{
   <div class="es-scroll" id="es-scroll" style="display:none;">
    <div class="es-sec"><div class="es-sec-t">PERFORMANCE</div><div class="es-grid">
     <div class="sg"><span class="v" id="es-score">0</span><span class="l">Total Cubes</span></div>
-    <div class="sg"><span class="v" id="es-pph">0</span><span class="l">Best PPH (peak)</span></div>
+    <div class="sg"><span class="v" id="es-pph">0</span><span class="l">Peak PPH</span></div>
     <div class="sg"><span class="v" id="es-avgpph">0</span><span class="l">Avg PPH (session)</span></div>
     <div class="sg"><span class="v" id="es-tavg">0</span><span class="l">Best Trailer Avg</span></div>
     <div class="sg"><span class="v" id="es-cubesmin">0</span><span class="l">Cubes / Min</span></div>
@@ -2696,7 +2710,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.164
+// LOCK IN v3.5.165
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3148,7 +3162,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.164'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.165'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -4344,15 +4358,6 @@ function breakdownBag(idx){
   checkPanelFill();
 }
 
-function genPieceRaw(isGap){
-  var tmpl={...pick(isGap?P_GAP:P_SMALL)};
-  tmpl.cells=(tmpl.cells||makeRect(tmpl.w,tmpl.h)).map(function(c){return[c[0],c[1]];});
-  var seed=rnd(100,9999);
-  var pal={b:'#9060cc',l:'#b080ec',d:'#602090',t:'rgba(140,80,200,.55)'};
-  var labelDef=LABELS[14];
-  return{...tmpl,id:uid('GP'),
-    pal,labelDef,label:'FILL',seed,isFrag:false,isGap:true,isBrokenBag:true,wc:tmpl.wc||1};
-}
 
 // ── LIFT MECHANIC ──
 // Click a placed box with nothing selected → lifts it back to its origin panel.
@@ -4468,16 +4473,16 @@ function liftBox(cell){
     } else {
       // No open NC slot — send to belt as fallback
       G.belt.unshift(box);
-      if(G.belt.length>BELT_PIECE_COUNT+2)G.belt.pop();
+      var _bofN=false;if(G.belt.length>BELT_PIECE_COUNT+2){G.belt.pop();_bofN=true;} // v3.5.165 overflow is announced, not silent
       selBeltIdx=0;selBeltRot=0;selNC=-1;selBag=-1;
-      showBanner('📦 SP LIFTED → BELT (STAGING FULL)','warn',1800);
+      showBanner('📦 SP LIFTED → BELT (STAGING FULL)'+(_bofN?' — belt full, one piece routed back to the hub':''),'warn',1800);
     }
   } else {
     // Regular / bag pieces return to front of belt
     G.belt.unshift(box);
-    if(G.belt.length>BELT_PIECE_COUNT+2)G.belt.pop();
+    var _bofR=false;if(G.belt.length>BELT_PIECE_COUNT+2){G.belt.pop();_bofR=true;} // v3.5.165 overflow is announced, not silent
     selBeltIdx=0;selBeltRot=0;selNC=-1;selBag=-1;
-    showBanner('📦 LIFTED — REPOSITION IT','',1200);
+    showBanner('📦 LIFTED — REPOSITION IT'+(_bofR?' (belt full — one piece routed back to the hub)':''),'',1200);
   }
 
   placed=Math.max(0,placed-1);
@@ -4594,7 +4599,9 @@ function genBeltPiece(isPanic){
 // else (commentary, particles, SFX) can ever desync the sequence between players.
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 var DAILY={seed:0,ptr:0,key:'',active:false};
-function dailyKey(){return new Date().toISOString().slice(0,10);} // UTC YYYY-MM-DD
+var _srvClockOff=0; // v3.5.165 (LOW) server-minus-client ms; the daily date anchors to the EDGE clock, not a settable device clock
+try{fetch(location.origin+'/?ck='+Math.floor(Math.random()*1e9),{method:'HEAD',cache:'no-store'}).then(function(r){var d=r.headers.get('Date');if(d){var t=new Date(d).getTime();if(t>0)_srvClockOff=t-Date.now();}}).catch(function(e){});}catch(e){}
+function dailyKey(){return new Date(Date.now()+_srvClockOff).toISOString().slice(0,10);} // UTC YYYY-MM-DD
 function keyToSeed(k){var h=2166136261>>>0,i=0;for(i=0;i<k.length;i++){h^=k.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
 function dailyPieceAt(seed,idx){
   var m=mulberry32((seed^Math.imul(idx+1,2654435761))>>>0);
@@ -7922,7 +7929,7 @@ var bannerTO=null;
 // v3.5.18 DISPATCH: every line carries a SOURCE (announcer / coach / safety / dispatch) + outlined pro text
 // v3.5.19 voices: COWORKER praises (ok), MANAGER handles rules/dispatch/can't-do-that (everything corrective), TRAINER coaches (tagged on commentary)
 function _msgSource(type){return type==='ok'?'COWORKER':'MANAGER';}
-var _linehaulLog=[]; // v3.5.164 overlay retired (drawer is the record) // v3.5.19 persistent dispatch record (the Linehaul board)
+var _linehaulLog=[],_dangerHeldT=0; // v3.5.164 overlay retired (drawer is the record) // v3.5.19 persistent dispatch record (the Linehaul board)
 function pushMsg(html,type,source,dur){
   if(html==null)return;
   var body=(''+html).replace(/<br\s*\/?>/gi,' — ');
@@ -7939,6 +7946,9 @@ function pushMsg(html,type,source,dur){
     if(_drawerTab==='linehaul'&&typeof cdLinehaulRender==='function')cdLinehaulRender(); // v3.5.37 live LINEHAUL drawer
   }
   var feed=document.getElementById('msg-feed');if(!feed)return;
+  // v3.5.165 (LOW) a DANGER/WARN line holds the feed for 1.6s — routine chatter can't evict it (LINEHAUL log has everything)
+  if(type==='danger'||type==='warn')_dangerHeldT=Date.now();
+  else if(Date.now()-_dangerHeldT<1600)return;
   var el=document.createElement('div');el.className='msg-line'+(type?(' msg-'+type):'');
   // v3.5.116 live line = the message only (no COWORKER/MANAGER source chip); the full speakered log lives in LINEHAUL.
   el.innerHTML='<span class="msg-body">'+body+'</span>';
@@ -8765,6 +8775,7 @@ function runDemoStep(){
 
 
 function exitTraining(){
+  if(typeof _trainAutoStop==='function')_trainAutoStop(); // v3.5.165
   trainingState.playing=false;
   if(trainingState.stepTimer){clearTimeout(trainingState.stepTimer);trainingState.stepTimer=null;}
   document.getElementById('training-overlay').classList.remove('vis');
@@ -8865,6 +8876,14 @@ function trainRenderStep(){
   var nb=document.getElementById('train-next');
   if(nb)nb.textContent=(TRAIN.step>=TRAIN.script.length-1)?'✍ FINISH — SIGN OFF':'NEXT ▶';
 }
+var _trainAutoIv=null; // v3.5.165 (LOW) AUTO advance for the NEXT-gated demo
+function _trainAutoStop(){if(_trainAutoIv){clearInterval(_trainAutoIv);_trainAutoIv=null;}var b=document.getElementById('train-auto');if(b)b.classList.remove('active');}
+function trainAuto(){
+  if(_trainAutoIv){_trainAutoStop();return;}
+  var b=document.getElementById('train-auto');if(b)b.classList.add('active');
+  _trainAutoIv=setInterval(function(){if(typeof TRAIN==='undefined'||!TRAIN){_trainAutoStop();return;}trainNext();},2800);
+  trainNext();
+}
 function trainNext(){
   if(!TRAIN)return;
   var s=TRAIN.script[TRAIN.step];
@@ -8887,6 +8906,7 @@ function trainNext(){
   trainRenderStep();
 }
 function trainDemoSignoff(){
+  _trainAutoStop(); // v3.5.165 AUTO ends with the script
   gOver=true;if(animF){cancelAnimationFrame(animF);animF=null;}
   var ov=document.getElementById('training-overlay');if(ov)ov.classList.remove('vis');
   var box=document.getElementById('tutdone-list');
@@ -9570,7 +9590,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.164</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.165</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -10791,8 +10811,12 @@ function closeSettings(){
   if(ov)ov.classList.remove('vis');
 }
 // v3.5.58 QUICK RESET — restart the current load from an empty trailer, straight from Settings.
+var _qrArmT=0;
 function quickReset(){
-  if(!window.confirm('Quick reset — restart this load from an empty trailer? The current wall is lost.'))return;
+  // v3.5.165 (LOW) window.confirm broke the clipboard language — two-tap arm instead
+  var _qb=document.querySelector('button[onclick^="quickRese"]');
+  if(Date.now()-_qrArmT>2600){_qrArmT=Date.now();if(_qb)_qb.textContent='⚠ TAP AGAIN — WALL IS LOST';setTimeout(function(){if(_qb&&Date.now()-_qrArmT>=2500)_qb.textContent='↺ QUICK RESET';},2700);return;}
+  _qrArmT=0;if(_qb)_qb.textContent='↺ QUICK RESET';
   closeSettings();
   paused=false;
   var pov=document.getElementById('ov-pause');if(pov)pov.classList.remove('vis');
@@ -10905,8 +10929,9 @@ function renderDailyStreak(){
   else{b.style.display='none';}
 }
 // ── v3.5.146 PERSONAL BEST (local, per mode) ──
-function liPBGet(mode){try{return parseInt(localStorage.getItem('liPB_'+(mode||'shift'))||'0',10)||0;}catch(e){return 0;}}
-function liPBSet(mode,v){try{localStorage.setItem('liPB_'+(mode||'shift'),''+v);}catch(e){}}
+var _pbMem={}; // v3.5.165 (LOW) storage-blocked browsers: PBs live here for the session so EVERY run isn't a 'new best'
+function liPBGet(mode){var k='liPB_'+(mode||'shift');try{return parseInt(localStorage.getItem(k)||'0',10)||_pbMem[k]||0;}catch(e){return _pbMem[k]||0;}}
+function liPBSet(mode,v){var k='liPB_'+(mode||'shift');_pbMem[k]=v;try{localStorage.setItem(k,''+v);}catch(e){}}
 function checkPersonalBest(finalScore){
   var rib=document.getElementById('pb-ribbon');
   var mode=gameMode||'shift',prev=liPBGet(mode),isPB=(finalScore>prev&&finalScore>0);
