@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co https://*.google-analytics.com https://*.analytics.google.com https://static.cloudflareinsights.com; frame-src 'none'; manifest-src 'self' data:; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://igqpgsqogfrpujdgvefs.supabase.co; frame-src 'none'; manifest-src 'self' data:; base-uri 'self'">
 <!-- v3.5.155 NO AD TECH ON TRAILER-LOAD.COM — EVER (Vince's order, 2026-07-20). SOPIPA-class student-privacy laws prohibit ad tech on school-purpose services; district vetting scans for the tag. The AdSense account lives on other F-Keys properties only. Do not re-add. -->
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22LOCK%C2%B7IN%22%2C%22short_name%22%3A%22LOCK%C2%B7IN%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23140d08%22%2C%22theme_color%22%3A%22%23c8791e%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22ring-logo.png%22%2C%22sizes%22%3A%22any%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
@@ -22,9 +22,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=Barlow+Condensed:wght@400;700;900&display=swap');
 
 /* ================================================================
-   LOCK IN v3.5.170
+   LOCK IN v3.5.171
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.171 - PRE-LAUNCH AIRTIGHT AUDIT. Two real contradictions a district IT reviewer would have
+     caught, both fixed: (1) the CSP STILL whitelisted google-analytics.com / analytics.google.com /
+     static.cloudflareinsights.com in script-src+connect-src — stale permissions from before GA was stripped, directly
+     contradicting the privacy page’s "we don’t use Google Analytics." Removed all three; connect-src is now just
+     self + the Supabase API, script-src is self only. Nothing loaded them (no beacon in the HTML), but the whitelist
+     itself was the tell — and the tightened CSP now BLOCKS any edge-injected analytics beacon, enforcing the claim.
+     (2) privacy.html said accounts collect an "email address" — but accounts are USERNAME + password, email OPTIONAL;
+     rewrote to match the product and the "no student email required" pitch, fixed the leftover "our hosting and
+     analytics may process" line (no analytics service runs), and the never-collect callout. Also: stale "// Zengine"
+     authorship comments in dashboard/ and me/ → F-Keys. Verified clean product-wide: zero ad tech, zero trackers,
+     no overclaims (no "certified/FERPA-compliant/SOC 2/guaranteed"), disclaimer on all 6 public pages, prices
+     consistent ($1,950/$1,450/$29/$490/$4,999), all contacts first-party (hello@ / privacy@, both catch-all-monitored).
 
    CHANGE LOG v3.5.170 - ROUND-TRIP PROOF + REPRESENTATION. The v3.5.169 post-mortem exposed the real design sin:
      the client BELIEVED every post it never checked. Now the daily submit is verified against reality — after the
@@ -2064,7 +2077,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.170 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.171 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2170,7 +2183,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.170 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.171 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2328,7 +2341,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.170 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.171 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2780,7 +2793,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.170
+// LOCK IN v3.5.171
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3232,7 +3245,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.170'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.171'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9737,7 +9750,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.170</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.171</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
