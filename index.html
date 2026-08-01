@@ -152,6 +152,7 @@ footer .zw a:hover{color:var(--acc);}
       <div><div class="n">00:00 UTC</div><div class="l">Daily reset</div></div>
       <div><div class="n" id="stat-walls">—</div><div class="l">Walls loaded</div></div><!-- LIVE counter, public aggregate RPC lockin_stats() -->
       <div><div class="n" id="stat-players">—</div><div class="l">Loaders signed on</div></div>
+      <div><div class="n" id="stat-visits">—</div><div class="l">Visits</div></div><!-- first-party counter: one integer, no cookie/IP/fingerprint -->
       <div><div class="n">38</div><div class="l">Load-theory rules</div></div><!-- counted from the shipped mechanics 2026-07-20: 38 named rules / ~40 enforcement paths, 6 of them unwritten veteran knowledge -->
       <div><div class="n">0</div><div class="l">Downloads needed</div></div><!-- v3.5.166 Amnesiac pass: bare "Downloads: 0" read as "nobody downloaded this" -->
     </div>
@@ -284,12 +285,29 @@ footer .zw a:hover{color:var(--acc);}
 (function(){
   var EP='https://igqpgsqogfrpujdgvefs.supabase.co/rest/v1/rpc/lockin_stats';
   var K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlncXBnc3FvZ2ZycHVqZGd2ZWZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Njc1MzQsImV4cCI6MjA5NjQ0MzUzNH0.8Pn459HUFkqZu7ORSX15E13u9fWSD96OKR0w6yiuJQo';
+  var BUMP='https://igqpgsqogfrpujdgvefs.supabase.co/rest/v1/rpc/lockin_visit';
+  var H={'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json'};
   function put(id,v){var e=document.getElementById(id);if(e&&v!=null)e.textContent=(+v).toLocaleString();}
-  try{
-    fetch(EP,{method:'POST',headers:{'apikey':K,'Authorization':'Bearer '+K,'Content-Type':'application/json'},body:'{}'})
+  function readStats(){
+    fetch(EP,{method:'POST',headers:H,body:'{}'})
       .then(function(r){return r.ok?r.json():null;})
-      .then(function(j){if(!j)return;put('stat-walls',j.walls);put('stat-players',j.players);})
+      .then(function(j){if(!j)return;put('stat-walls',j.walls);put('stat-players',j.players);put('stat-visits',j.visits);})
       .catch(function(){});
+  }
+  try{
+    // Count this visit ONCE per browser tab-session. sessionStorage only (cleared when the tab
+    // closes, never sent anywhere) so a refresh doesn't inflate the number. The server stores a
+    // single integer - no row per visit, nothing that identifies anyone.
+    var counted=false;
+    try{counted=sessionStorage.getItem('liVisited')==='1';}catch(e){}
+    if(counted){readStats();}
+    else{
+      try{sessionStorage.setItem('liVisited','1');}catch(e){}
+      fetch(BUMP,{method:'POST',headers:H,body:'{}'})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(n){if(n!=null)put('stat-visits',n);readStats();})
+        .catch(function(){readStats();});
+    }
   }catch(e){}
 })();
 </script>
