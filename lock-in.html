@@ -22,9 +22,24 @@
 @import url('/fonts/fonts.css');
 
 /* ================================================================
-   LOCK IN v3.5.175
+   LOCK IN v3.5.176
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.176 - CREWS: SELF-SERVE ORGS (and a genuinely broken link, fixed). THE BUG: signup writes
+     lockin_handles.facility_code = NULL and NO code path ever set it — while the instructor dashboard roster
+     (lockin_cohort) reads exactly that column. The FACILITY CODE box only ever reached localStorage, so a student
+     could type a code correctly and STILL never appear on a roster. The field was decorative. THE BUILD: five
+     SECURITY DEFINER RPCs (crew_create / crew_lookup / crew_join / crew_leave / crew_mine) with the tables left
+     sealed — create validates and reserves a code, lookup returns the NAME ONLY so a player can be shown what they
+     are agreeing to before committing, join writes the caller’s OWN handle row, leave clears it. THE FLOW: type a
+     code → a confirmation card names the crew and states plainly that integrity, pace and safety become visible to
+     whoever runs it → JOIN sets the crew AND turns on save+share IN ONE ACTION, because that card IS the informed
+     consent. That single change kills the old failure where a player entered a code, never ticked the separate share
+     box, and left the instructor staring at an empty roster convinced the product was broken. Owners see their crews
+     and codes inline; anyone can LEAVE in one tap (the privacy policy promises exactly that). Join codes are
+     case-insensitive — the code IS the password, one field, no redundant second secret. Verified end-to-end against
+     the live backend: join → handle row → the instructor’s roster shows the member.
 
    CHANGE LOG v3.5.175 - SPEC: ONE NAME FOR THE FREIGHT THAT DOESN’T RIDE THE BELT (his call). The product was
      speaking five dialects at once — NC (106 uses), SP (51), non-con (9), non-conveyable (6), IC (4), irreg (3) —
@@ -827,6 +842,19 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .ops-pts span{font-size:13px;color:var(--t3);}
 .ops-sec{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--acc);text-transform:uppercase;font-weight:bold;margin:12px 0 7px;}
 .ops-sec.first{margin-top:0;}
+.crew-box{border:1.5px solid var(--btn-line);border-radius:8px;padding:11px 13px;margin:10px 0;background:rgba(0,0,0,.06);}
+.crew-hd{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--acc);margin-bottom:7px;}
+.crew-state{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--t2);margin-bottom:7px;}
+.crew-row{display:flex;gap:7px;align-items:center;}
+.crew-row input,.crew-create input{flex:1;min-width:0;padding:8px 10px;min-height:34px;border:1.5px solid var(--btn-line);border-radius:6px;background:var(--bg2);color:var(--t1);font-family:'Share Tech Mono',monospace;font-size:13px;}
+.crew-create input{width:100%;margin-bottom:7px;}
+.crew-btn{padding:8px 15px;min-height:34px;border:1.5px solid var(--btn-line);border-radius:6px;background:var(--acc);color:#241505;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;cursor:pointer;}
+.crew-btn.ghost{background:transparent;color:var(--t2);}
+.crew-mk{margin-top:9px;padding:7px 13px;min-height:34px;width:100%;border:1.5px solid var(--btn-line);border-radius:6px;background:transparent;color:var(--t2);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;cursor:pointer;}
+.crew-mine{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);line-height:1.7;}
+.crew-msg{font-family:'Share Tech Mono',monospace;font-size:12px;margin-top:6px;min-height:15px;color:var(--t3);}
+.crew-msg.err{color:var(--danger);} .crew-msg.ok{color:var(--ok);}
+.crew-cf-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;color:var(--acc);text-align:center;margin:4px 0 10px;}
 .ov-data{position:fixed;inset:0;z-index:600;display:none;align-items:flex-start;justify-content:center;background:rgba(10,7,4,.55);overflow-y:auto;}/* v3.5.39 120->600 so ACCOUNT & DATA shows above the pause/menu (was buried); v3.5.131 scrollable so the bottom buttons are never clipped */
 .ov-data.vis{display:flex;}
 .data-card{margin-top:0;max-width:440px;width:92%;max-height:94vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--acc);border-top:none;border-radius:0 0 12px 12px;padding:18px 20px 24px;box-shadow:0 12px 40px rgba(0,0,0,.5);animation:dataDrop .28s ease;}/* v3.5.131 cap height + scroll so SIGN OUT / SAVE / NOT NOW are always reachable (kremsicle: "cant see what bottom buttons say") */
@@ -2151,7 +2179,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.175 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.176 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2257,7 +2285,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.175 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.176 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2415,7 +2443,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.175 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.176 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2540,13 +2568,39 @@ body[data-cb="trit"]{
     <div class="data-divider">PRIVACY &amp; CONSENT</div>
     <p class="data-p">LOCK IN can save your loading stats. Gameplay is always free. Your data is yours — sharing it with a facility is separate and optional.</p>
     <label class="data-fld">EMAIL <span>(optional — keeps your record across devices)</span><input id="data-email" type="email" placeholder="you@email.com"></label>
-    <label class="data-fld">FACILITY CODE <span>(from your school / employer, if you have one)</span><input id="data-facility" type="text" placeholder="e.g. FAC-DEMO-01"></label>
+    <div class="crew-box" id="crew-box">
+      <div class="crew-hd">◈ YOUR CREW</div>
+      <div id="crew-state" class="crew-state">Sign in to join a crew.</div>
+      <div id="crew-join-row" class="crew-row" style="display:none;">
+        <input id="crew-code" type="text" maxlength="24" placeholder="join code" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button class="crew-btn" onclick="crewLookup()">JOIN</button>
+      </div>
+      <div id="crew-mine" class="crew-mine" style="display:none;"></div>
+      <div id="crew-msg" class="crew-msg"></div>
+      <button class="crew-mk" id="crew-mk" onclick="crewShowCreate()" style="display:none;">+ CREATE A CREW</button>
+      <div id="crew-create" class="crew-create" style="display:none;">
+        <input id="crew-name-in" type="text" maxlength="48" placeholder="crew name (e.g. Legends of FedEx)">
+        <input id="crew-code-in" type="text" maxlength="24" placeholder="join code (e.g. moregooder)" autocapitalize="off" autocorrect="off" spellcheck="false">
+        <div class="crew-row"><button class="crew-btn" onclick="crewCreate()">CREATE</button><button class="crew-btn ghost" onclick="crewHideCreate()">CANCEL</button></div>
+      </div>
+    </div>
+    <input id="data-facility" type="hidden">
     <label class="data-chk"><input id="data-c1" type="checkbox"> Save my loading stats (my record).</label>
     <label class="data-chk"><input id="data-c2" type="checkbox"> Share my stats with my facility’s dashboard.</label>
     <div class="data-btns"><button class="data-save" onclick="zSaveConsent()">SAVE</button><button class="data-cancel" onclick="zCloseData()">NOT NOW</button></div>
     <div class="data-note">Double opt-in: facility sharing needs BOTH boxes. Change it anytime in ADMIN (pause) → ACCOUNT &amp; DATA.</div>
   </div>
 </div>
+
+<!-- v3.5.176 CREW JOIN CONFIRMATION — one action sets the crew AND the share consent, because
+     this card is the informed consent. Splitting them (the old two-checkbox flow) is why rosters
+     came up empty: a player could enter a code and never tick "share". -->
+<div id="ov-crew" class="ov-data"><div class="data-card">
+  <div class="data-hdr">◈ JOIN THIS CREW?</div>
+  <div id="crew-cf-name" class="crew-cf-name">—</div>
+  <p class="data-p">Your loading stats — <b>integrity, pace and safety</b> — become visible to whoever runs this crew.<br>Your account stays yours. You can leave anytime.</p>
+  <div class="data-btns"><button class="data-save" onclick="crewJoinConfirm()">JOIN</button><button class="data-cancel" onclick="crewCancel()">CANCEL</button></div>
+</div></div>
 
 <div id="root">
 
@@ -2867,7 +2921,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.175
+// LOCK IN v3.5.176
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3326,7 +3380,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.175'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.176'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -3552,10 +3606,107 @@ function zOpenData(){
   var p=zLoadPlayer();
   var e=document.getElementById('data-email');if(e)e.value=p.email||'';
   var f=document.getElementById('data-facility');if(f)f.value=p.facility||'';
+  if(typeof crewRefresh==='function')crewRefresh(); // v3.5.176
   var c1=document.getElementById('data-c1');if(c1)c1.checked=!!p.consentSelf;
   var c2=document.getElementById('data-c2');if(c2)c2.checked=!!p.consentShare;
   zAuthLoad();zAuthMode(ZDATA.authMode||'worker');zAuthStatus();
   var ov=document.getElementById('ov-data');if(ov)ov.classList.add('vis');
+}
+// ===== v3.5.176 CREWS =====
+// Self-serve orgs. Before this, lockin_handles.facility_code was written NULL at signup and NO
+// code path ever set it — while the instructor dashboard roster reads exactly that column. So a
+// typed facility code reached localStorage and nothing else, and rosters were always empty.
+var _crewPending=null;
+function crewMsg(t,cls){var e=document.getElementById('crew-msg');if(e){e.textContent=t||'';e.className='crew-msg'+(cls?(' '+cls):'');}}
+function crewRpc(fn,body,cb){
+  try{
+    fetch(ZDATA.endpoint+'/rpc/'+fn,{method:'POST',headers:zAuthHeaders(),body:JSON.stringify(body||{})})
+      .then(function(r){return r.json();}).then(function(j){cb(j||{});})
+      .catch(function(e){console.error(fn+':',e);cb({ok:false,err:'Network error — try again.'});});
+  }catch(e){cb({ok:false,err:'Network error — try again.'});}
+}
+function crewRefresh(){
+  var st=document.getElementById('crew-state'),row=document.getElementById('crew-join-row'),
+      mine=document.getElementById('crew-mine'),mk=document.getElementById('crew-mk');
+  if(!st)return;
+  if(!(typeof zSessionAlive==='function'?zSessionAlive():(ZDATA.session&&ZDATA.session.uid))){
+    st.textContent='Sign in to join a crew.';
+    if(row)row.style.display='none'; if(mine)mine.style.display='none'; if(mk)mk.style.display='none';
+    return;
+  }
+  if(mk)mk.style.display='';
+  crewRpc('lockin_crew_mine',{},function(j){
+    if(!j||!j.ok){st.textContent='Couldn\u2019t reach the yard server.';return;}
+    if(j.code){
+      st.innerHTML='In <b>'+drEsc(j.name||j.code)+'</b> · '+(j.members||0)+' member'+((j.members===1)?'':'s')+
+        ' <button class="crew-btn ghost" style="padding:3px 10px;min-height:28px;font-size:13px;" onclick="crewLeave()">LEAVE</button>';
+      if(row)row.style.display='none';
+    }else{
+      st.textContent='You\u2019re not in a crew yet. Got a join code?';
+      if(row)row.style.display='flex';
+    }
+    var owned=j.owned||[];
+    if(mine){
+      if(owned.length){
+        var h='<b>YOU RUN:</b><br>',i;
+        for(i=0;i<owned.length;i++)h+='◆ '+drEsc(owned[i].name)+' — code <b>'+drEsc(owned[i].code)+'</b><br>';
+        h+='<span style="opacity:.8">Share the code. See the roster at trailer-load.com/dashboard/</span>';
+        mine.innerHTML=h;mine.style.display='';
+      }else mine.style.display='none';
+    }
+  });
+}
+// look up BEFORE joining so the player sees what they are agreeing to
+function crewLookup(){
+  var el=document.getElementById('crew-code'),code=el?el.value.trim():'';
+  if(!code){crewMsg('Enter a join code.','err');return;}
+  crewMsg('Looking\u2026');
+  crewRpc('lockin_crew_lookup',{p_code:code},function(j){
+    if(!j||!j.ok){crewMsg((j&&j.err)||'No crew with that code.','err');return;}
+    crewMsg('');_crewPending=j;
+    var n=document.getElementById('crew-cf-name');if(n)n.textContent=j.name||j.code;
+    var ov=document.getElementById('ov-crew');if(ov)ov.classList.add('vis');
+  });
+}
+function crewCancel(){var ov=document.getElementById('ov-crew');if(ov)ov.classList.remove('vis');_crewPending=null;}
+function crewJoinConfirm(){
+  if(!_crewPending){crewCancel();return;}
+  var code=_crewPending.code;
+  crewRpc('lockin_crew_join',{p_code:code},function(j){
+    crewCancel();
+    if(!j||!j.ok){crewMsg((j&&j.err)||'Could not join.','err');return;}
+    // THE CARD WAS THE CONSENT: joining turns on saving + sharing in one action.
+    var pl=zLoadPlayer();pl.facility=j.code;pl.consentSelf=true;pl.consentShare=true;pl.consentDecided=true;zSavePlayer();
+    var c1=document.getElementById('data-c1'),c2=document.getElementById('data-c2'),f=document.getElementById('data-facility');
+    if(c1)c1.checked=true; if(c2)c2.checked=true; if(f)f.value=j.code;
+    crewMsg('Joined '+(j.name||j.code)+'.','ok');
+    if(typeof showBanner==='function')showBanner('◆ JOINED '+((j.name||j.code)+'').toUpperCase()+'<br><span style="font-size:.72em">Your stats are shared with this crew. Leave anytime in ACCOUNT &amp; DATA.</span>','ok',3600);
+    crewRefresh();
+  });
+}
+function crewLeave(){
+  crewRpc('lockin_crew_leave',{},function(j){
+    if(!j||!j.ok){crewMsg((j&&j.err)||'Could not leave.','err');return;}
+    var pl=zLoadPlayer();pl.facility='';pl.consentShare=false;zSavePlayer();
+    var c2=document.getElementById('data-c2'),f=document.getElementById('data-facility');
+    if(c2)c2.checked=false; if(f)f.value='';
+    crewMsg('You left the crew. Sharing is off.','ok');
+    crewRefresh();
+  });
+}
+function crewShowCreate(){var c=document.getElementById('crew-create');if(c)c.style.display='';var m=document.getElementById('crew-mk');if(m)m.style.display='none';}
+function crewHideCreate(){var c=document.getElementById('crew-create');if(c)c.style.display='none';var m=document.getElementById('crew-mk');if(m)m.style.display='';crewMsg('');}
+function crewCreate(){
+  var n=document.getElementById('crew-name-in'),c=document.getElementById('crew-code-in');
+  var nm=n?n.value.trim():'',cd=c?c.value.trim():'';
+  if(!nm||!cd){crewMsg('Crew name and join code, please.','err');return;}
+  crewMsg('Creating\u2026');
+  crewRpc('lockin_crew_create',{p_name:nm,p_code:cd},function(j){
+    if(!j||!j.ok){crewMsg((j&&j.err)||'Could not create that crew.','err');return;}
+    crewMsg('Created. Share the code: '+j.code,'ok');
+    if(n)n.value='';if(c)c.value='';
+    crewHideCreate();crewRefresh();
+  });
 }
 function zCloseData(){var ov=document.getElementById('ov-data');if(ov)ov.classList.remove('vis');var p=zLoadPlayer();if(!p.consentAsked){p.consentAsked=true;zSavePlayer();}} // v3.5.159 NOT NOW is a real answer — persist it so the card never auto-pops again
 function zSaveConsent(){
@@ -9867,7 +10018,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.175</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.176</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
