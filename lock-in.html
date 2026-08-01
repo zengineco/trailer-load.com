@@ -22,9 +22,26 @@
 @import url('/fonts/fonts.css');
 
 /* ================================================================
-   LOCK IN v3.5.173
+   LOCK IN v3.5.174
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.174 - DEVS RUN #2: WORDS, ICONS, PHANTOM CONTROLS (his call: "the slop mainly resides in the
+     amount of words we use to explain things... staging NCs is unclear, there is no staging button"). He was right,
+     and it was the tip of an iceberg. PHANTOMS — strings naming things the player cannot see or click: (a) briefing
+     rule 8 taught the "BREAK chip", which lives inside a popup opened ONLY by #stg-bag — and #stg-bag carries an
+     inline display:none that no code path ever clears, so the chip is unreachable. The mechanic itself works fine
+     (double-tap a bag riding the chute), so the rule now teaches THAT. (b) safetyWarn — the most-shown corrective
+     string in the game — told players to "throw the piece" when the button has said FLAG since v3.5.115; it now names
+     the three visible controls with their glyphs. (c) the pause hint pointed at a scoreboard pause button deleted in
+     v3.5.37. (d) tapping NC opened tiles labelled SP — one interaction, two names. (e) the report's "Staging actions"
+     row counted what the CONVEYOR dropped, not anything the player did, and named a surface that does not exist —
+     deleted, because a stat that is wrong twice over is worse than no stat. WORD DIET: the safety ladder was a 62-word
+     paragraph describing a diagram — it is now a diagram (22 words); the WATER tooltip leaked the internal code name
+     "the HEY window" (18 words -> 5); the FLAG tooltip ran 28 words with three subordinate clauses; briefing rule 4
+     and the DEFAULT coach line both opened with "SP", an acronym expanded nowhere in 11,500 lines. ICON-FIRST CHROME
+     (his asks, verbatim): ADMIN -> a bare sprocket, OPERATIONS -> a box + STATS, LINEHAUL -> an envelope + MESSAGES.
+     SOCIAL -> BOARDS, and its four near-identical geometric marks became distinguishable at tab size.
 
    CHANGE LOG v3.5.173 - THE DEVS SLOP-CULL (21-item ledger, Desktop\DEVS-LEDGER.txt). Their verdict: the slop was
      REAL BUT SHALLOW — four root causes, not dozens. (1) EVERY cross-screen contradiction the owner saw was ONE bug:
@@ -2119,7 +2136,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.173 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.174 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2132,9 +2149,9 @@ body[data-cb="trit"]{
   <div id="fp-tip">
     <div class="fp-tip-hdr">▸ COACH</div>
     <div id="fp-tip-h">Load your floor first.</div>
-    <div id="fp-tip-s">Place SP freight along the floor before stacking regular freight — it anchors your wall.</div>
+    <div id="fp-tip-s">Odd freight on the floor first. It anchors everything above it.</div>
   </div>
-  <div class="pause-hint">ESC or ⏸ to resume · R to rotate pieces</div>
+  <div class="pause-hint">ESC = resume · R = rotate</div>
   </div>
   </div>
 </div>
@@ -2150,11 +2167,11 @@ body[data-cb="trit"]{
       <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt"><b>Grab &amp; place.</b> Pull a box off the chute, click the wall to set it. <b>[R]</b> rotates.<span class="brief-why">Pieces queue in the chute — rotate before you place to fit tighter.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Build off the floor.</b> Every piece needs support under it — nothing floats.<span class="brief-why">A freestanding stack 4+ high with no wall beside it topples back to the belt.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt"><b>Lock your shelves.</b> Fill a full row to lock it; a locked shelf braces the wall above.<span class="brief-why">Locked shelves also cap a hazmat safely beneath them.</span></div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>Stage the non-cons.</b> Tires, SP &amp; oversize wait in the staging tray at the bottom — click, then wall it.<span class="brief-why">Non-conveyables are the irregular freight the belt can't carry.</span></div></div>
+      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>🛞 Odd freight loads low.</b> Tires and oversize wait in the bottom tray — tap <b>NC</b>, pick one, tap the wall.<span class="brief-why">It anchors everything you stack above it.</span></div>
       <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile &amp; glass ride on top.</b> Never bury them — a crush is a write-up.<span class="brief-why">Load them near the top with only light pieces above.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Hazmat low &amp; locked.</b> Floor it, cap it under a shelf.<span class="brief-why">A hazmat in ANY collapse ends the round — keep it stable.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Lay tires flat.</b> On its edge, a tire rolls the second the door opens.<span class="brief-why">Standing one up is a safety warning — lay it flat before the door opens.</span></div></div>
-      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>Bags spill smalls.</b> Tap the ✂ BREAK chip on a staged bag to spill gap-fillers a box can't reach.<span class="brief-why">Out of smalls? FLAG a coworker for a hand — they'll toss you a bag (the manager notices if you overdo it).</span></div></div>
+      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>📦 Bags break open.</b> Double-tap a bag on the chute — it spills six small pieces for gaps a box can’t reach.<span class="brief-why">Use them to fill the last voids before you seal.</span></div>
       <div class="brief-rule"><div class="brief-rule-num">9</div><div class="brief-rule-txt"><b>Pack tight, then seal.</b> Density is the job — fill, seal at height, beat the clock.<span class="brief-why">Cube fill, not just height — the manager calls the target.</span></div></div>
     </div>
   </div>
@@ -2225,7 +2242,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.173 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.174 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2383,7 +2400,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.173 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.174 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2585,23 +2602,23 @@ body[data-cb="trit"]{
       <!-- v3.5.141: order is ADMIN -> OPERATIONS -> LINEHAUL (left to right), THEN the dispatch text box below the row (Goyim). -->
       <div id="dispatch-bar">
         <div id="ops-console">
-          <button class="console-btn" id="cbtn-admin" onclick="openAdmin()" title="Admin — pause / settings"><span class="ci">⚙</span>ADMIN</button>
-          <button class="console-btn" id="cbtn-ops" onclick="toggleDrawer('ops')" title="Live operations — load rate, pack, balance, incidents"><span class="ci">◈</span>OPERATIONS</button>
-          <button class="console-btn" id="cbtn-lh" onclick="toggleDrawer('linehaul')" title="Linehaul — full dispatch log (every message, nothing missed)"><span class="ci">▸</span>LINEHAUL</button>
+          <button class="console-btn" id="cbtn-admin" onclick="openAdmin()" title="Pause · settings · account" aria-label="Pause and settings"><span class="ci">⚙</span></button>
+          <button class="console-btn" id="cbtn-ops" onclick="toggleDrawer('ops')" title="How you’re doing right now"><span class="ci">▣</span>STATS</button>
+          <button class="console-btn" id="cbtn-lh" onclick="toggleDrawer('linehaul')" title="Every message, nothing missed"><span class="ci">✉</span>MESSAGES</button>
         </div>
         <div id="msg-feed"></div>
       </div>
       <div id="conv-header">
         <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">📦 BREAK JAM</button></div>
-        <button id="water-side" class="strip-act sa-water" onclick="takeDrink()" title="Water break — clears one open minor warning, and covers a FLAG in the HEY window. Cooldown 6s.">💧 WATER</button>
+        <button id="water-side" class="strip-act sa-water" onclick="takeDrink()" title="Clears one warning · 6s">💧 WATER</button>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:7px;">
           <span class="stg-light" id="stg-nc" onclick="openStagingPopup('nc')" title="Non-conveyable staging — tap to load low"><b>NC</b><span class="stg-pie" id="stg-nc-pie"></span><span id="stg-nc-n">0/8</span></span>
           <span class="stg-sep" id="stg-sep" onclick="stgClose()" style="display:none;"></span>
           <span class="stg-light" id="stg-bag" onclick="openStagingPopup('bag')" title="Smalls staging" style="display:none;"><b>SM</b><span class="stg-pie" id="stg-bag-pie"></span><span id="stg-bag-n">0/8</span></span>
         </div>
         <span class="conv-lbl" id="safety-live" style="font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:bold;letter-spacing:.5px;" title="Live safety — open warnings / incidents on record"></span>
-        <button id="throw-side" class="strip-act sa-throw" onclick="throwBox()" title="Flag a hand — wave down a coworker for help reaching a top gap; they toss you a smalls bag to finesse it. Overusing it draws heat. Cooldown 5s.">🙋 FLAG</button>
+        <button id="throw-side" class="strip-act sa-throw" onclick="throwBox()" title="Coworker tosses you a bag · overuse draws heat · 5s.">🙋 FLAG</button>
         <button id="rot-btn" onclick="rotateSel()">↻ ROT [R]</button>
       </div>
       <canvas id="belt-canvas" style="display:none;width:100%;touch-action:none;"></canvas>
@@ -2719,7 +2736,7 @@ body[data-cb="trit"]{
     <div class="td-hdr">LOCK IN <span class="td-badge">TRAINING RECORD</span></div>
     <div class="td-sub">You watched a trainer load a full wall — the way it's done. Everything you saw is checked off. Sign to clock in.</div>
     <div id="tutdone-list" class="td-list"></div>
-    <div class="td-ladder"><b>THE SAFETY LADDER (how you get written up):</b><br>1st slip = a heads-up. 2nd of the SAME thing = a documented WARNING. Ignore it and it becomes an INCIDENT on your record. Stack incidents and you SIGN A WRITE-UP. Five incidents puts you on a practice trailer; four write-ups ends your shift. Water breaks and locking a shelf clear warnings.</div>
+    <div class="td-ladder"><b>⚠ THE LADDER</b><br>SLIP → ⚠ WARNING → ⛔ INCIDENT → ✍ WRITE-UP<br><small>5 incidents = practice trailer · 4 write-ups = shift over</small><br><small>💧 water or 🔒 lock clears a warning</small></div>
     <button class="td-sign" onclick="tutSign()">✍ SIGN HERE — TRAINING COMPLETE</button>
     <button class="td-skip" onclick="tutExit()">Skip — back to menu</button>
   </div>
@@ -2755,13 +2772,13 @@ body[data-cb="trit"]{
   </div>
 </div></div>
 <!-- v3.5.13 LEADERBOARD -->
-<div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">SOCIAL</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
+<div id="ov-leaderboard"><div class="pf-card"><div class="pf-top"><div class="pf-title">BOARDS</div><button class="pf-x" onclick="closeLeaderboard()">✕</button></div><div class="pf-body">
   <!-- v3.5.111 2x2 tabs: ME + FRIENDS on top (you first), DAILY + HALL below -->
   <div class="lb-tabs">
-    <button class="lb-tab active" id="lb-tab-me" onclick="lbTab('me')">◉ ME</button>
-    <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">♦ FRIENDS</button>
-    <button class="lb-tab" id="lb-tab-daily" onclick="lbTab('daily')">◈ DAILY</button>
-    <button class="lb-tab" id="lb-tab-hall" onclick="lbTab('hall')">★ HALL</button>
+    <button class="lb-tab active" id="lb-tab-me" onclick="lbTab('me')">👤 ME</button>
+    <button class="lb-tab" id="lb-tab-friends" onclick="lbTab('friends')">👥 FRIENDS</button>
+    <button class="lb-tab" id="lb-tab-daily" onclick="lbTab('daily')">📅 TODAY</button>
+    <button class="lb-tab" id="lb-tab-hall" onclick="lbTab('hall')">🏆 RECORDS</button>
   </div>
   <div id="lb-pane-me" style="display:none">
     <div class="pf-body" id="lb-me-body" style="padding:0"><div class="pf-loading">Loading your record…</div></div>
@@ -2835,7 +2852,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.173
+// LOCK IN v3.5.174
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3294,7 +3311,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.173'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.174'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -5271,7 +5288,7 @@ function safetyWarn(offense,msg){
   for(i=0;i<S.warnings.length;i++){if(S.warnings[i].offense===offense&&!S.warnings[i].mitigated){prior=S.warnings[i];break;}}
   if(prior){safetyIncident(offense,'Repeat '+_sfLabel(offense)+' \u2014 an unmitigated warning became an incident.');return;}
   S.warnings.push({offense:offense,t:Date.now(),wall:(S.truck||1),mitigated:false,washedBy:null});
-  showBanner('\u26a0 SAFETY WARNING \u2014 '+msg+'<br><span style="font-size:.72em">MITIGATE: lock a shelf, drink water, or throw the piece. Same offense left open = an INCIDENT.</span>','warn',3200);
+  showBanner('\u26a0 SAFETY WARNING \u2014 '+msg+'<br><span style="font-size:.72em">FIX IT: 🔒 lock a shelf · 💧 WATER · 🙋 FLAG. Left open = INCIDENT.</span>','warn',3200);
   if(typeof playSfx==='function')playSfx('dwell');
   updateSafetyHUD();
 }
@@ -6296,7 +6313,7 @@ function stgRender(){
     for(k=0;k<n;k++){
       var theta=(n===1)?0:(-spread/2+spread*(k/(n-1)));
       var x=Math.round(Math.sin(theta)*Rx), y=Math.round(-Math.cos(theta)*Ry);
-      var it=items[k], dim=(it.s.w||2)+'\u00d7'+(it.s.h||2), lbl=pfEsc(it.s.label||it.s.n||(STG_OPEN==='nc'?'SP':'BAG'));
+      var it=items[k], dim=(it.s.w||2)+'\u00d7'+(it.s.h||2), lbl=pfEsc(it.s.label||it.s.n||(STG_OPEN==='nc'?'NC':'BAG'));
       // v3.5.114 tap-to-break chip (was ondblclick, which never fires on touch); event.stopPropagation so the tap doesn't also pick the tile
       var brk=(STG_OPEN==='bag'&&it.s.isBag)?'<div class="stg-brk" onclick="event.stopPropagation();stgBreak('+it.i+')" title="Break the bag into loose smalls to fill gaps (costs PPH)">\u2702 BREAK</div>':'';
       h+='<div class="stg-tile'+(sel===it.i?' sel':'')+'" style="left:'+x+'px;top:'+y+'px;" onclick="stgPick('+it.i+')"><div class="d">'+dim+'</div><div>'+lbl+'</div>'+brk+'</div>';
@@ -9835,7 +9852,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.173</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.174</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9895,7 +9912,6 @@ function psBuild(lifeState,life){
       row('Rotations',lwv('rotations'),S.rotations||0,'rotations')+
       row('Lifts',lwv('lifts'),S.lifts||0,'lifts')+
       row('Rejected drops',lwv('rejects'),S.rejects||0,'rejected_drops')+
-      row('Staging actions',lwv('stagingActions'),S.stagingActions||0,null)+
       row('Hazmat locks',lwv('hazShelfLocks'),S.hazShelfLocks||0,null)+
       row('Bonuses received',lwBonus,S.bonuses||((S.recoveries||0)+(S.doubleLocks||0)+(S.hazShelfLocks||0)+(S.nests||0)),'bonuses')+
       row('Bags broken / placed',LW?((LW.bagsBroken||0)+'/'+(LW.bagsPlaced||0)):null,(S.bagsBroken||0)+'/'+(S.bagsPlaced||0),null)+'</div>'; // v3.5.11 dropped the two perma-"\u2014" rows (Slot occupancy / Pack-fill) \u2014 never implemented, read as slop
