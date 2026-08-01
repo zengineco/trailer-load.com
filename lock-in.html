@@ -22,9 +22,31 @@
 @import url('/fonts/fonts.css');
 
 /* ================================================================
-   LOCK IN v3.5.172
+   LOCK IN v3.5.173
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.173 - THE DEVS SLOP-CULL (21-item ledger, Desktop\DEVS-LEDGER.txt). Their verdict: the slop was
+     REAL BUT SHALLOW — four root causes, not dozens. (1) EVERY cross-screen contradiction the owner saw was ONE bug:
+     fetchLifetime queried lockin_lifetime with `&mode=eq.gameMode` and read a single row, while SOCIAL/ME queried
+     unfiltered and SUMMED every mode — yet both were labelled LIFETIME/CAREER. The deltas WERE the daily row
+     (12 vs 15 incidents, 29 vs 36 sessions, 632 vs 783 shelves, 592 vs 734 double-locks, 77 vs 143 nests). Now one
+     shared lifeAggregate(rows) folds the per-mode rows for BOTH surfaces — counts sum, peak takes a clamped max,
+     averages are session-weighted — so they are mathematically incapable of disagreeing again. (2) PEAK PPH =
+     3,600,000: getPPH() guarded only el<=0, not a sub-millisecond window, so the first piece after a clock start read
+     1 box / 0.001s x 3600 = 3.6M, Math.max latched it forever, and it shipped to the server as a career record.
+     Added PPH_FLOOR_S=5 + PPH_CAP=2000 inside getPPH itself, so every consumer (HUD, score multiplier, report,
+     stored lifetime) is protected at the source; avgPPH got the same treatment; calcScore stopped carrying its own
+     second inline pph formula. Latch, write and read are all clamped, and 21 poisoned server rows were scrubbed to
+     "not measured" rather than faked to the cap — the honest peak is now 1,880 (his real best), not a number nobody
+     earned. (3) THE CLIPBOARD (asked for a month): every board was pinned to width:min(4xx,9xvw) — ~15% of a desktop
+     screen, too small for four leaderboard rows. The art is portrait 619x905, so the binding constraint is HEIGHT:
+     all four surfaces now size by viewport height (up to 1120px) with width following the ratio — undistorted and
+     ~1.6x bigger. (4) THE FULL REPORT joined the clipboard family: it was the ONE surface still on a flat tan sheet.
+     Stretching the PNG under a wide data report would have fattened its centred metal clip, so the report is now
+     built from the SAME materials — the board’s grey shell, its cream paper inset, and a LOCK-IN clip masthead —
+     consistent without warping the art and still wide enough to read three numeric columns. Plus the outline law on
+     the report + social buttons (PRINT/CLOSE, .pf-tab, FOLLOW, .lb-tab → 1.5px var(--btn-line), 6px, 34px).
 
    CHANGE LOG v3.5.172 - 100% FIRST-PARTY: fonts self-hosted. Bebas Neue / Barlow Condensed (400-700) / Share Tech
      Mono downloaded (latin subset, SIL OFL, /fonts/*.woff2) and served from our own domain; all 9 public pages swapped
@@ -1354,7 +1376,7 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{an
 .pmb-theme:hover{border-color:var(--t2);color:var(--t1);}
 /* v3.5.75 UNIFIED CLIPBOARD — menus now sit on the REAL clipboard.png (like the briefing); content lives in the clear writing area */
 .clip-in{position:absolute;left:6%;right:6%;top:23%;bottom:4.5%;overflow-y:auto;display:flex;flex-direction:column;gap:6px;align-items:center;} /* v3.5.77 fitted to the new clipboard.png writing area (619x905, clip ~top 22%) */
-.pause-clip{position:relative;width:min(420px,92vw);aspect-ratio:619/905;background:url('clipboard.png') center/contain no-repeat;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));}
+.pause-clip{position:relative;height:min(1060px,90vh);width:auto;max-width:94vw;aspect-ratio:619/905;background:url('clipboard.png') center/contain no-repeat;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));}
 .pause-clip::before,.pause-clip::after{display:none;}
 .pause-clip .pause-title{color:#3a2c1a;text-shadow:none;font-size:26px;letter-spacing:4px;}
 .pause-clip .pause-sub{color:#9a8a6c;}
@@ -1572,7 +1594,7 @@ body.m-portrait .stg-wheel{bottom:288px;}
   justify-content:center;background:var(--bg);overflow:auto;padding:18px 12px;}
 #briefing.gone{display:none!important;pointer-events:none;} /* v3.5.130 belt-and-suspenders: a dismissed briefing can NEVER intercept clicks */
 /* v3.5.77: the clipboard IS the metal-board art (portrait now, 619x905); commands sit in the clear writing area */
-#clipboard{width:min(430px,92vw);aspect-ratio:619/905;
+#clipboard{height:min(1060px,88vh);width:auto;max-width:92vw;aspect-ratio:619/905;
   background:url('clipboard.png') center/contain no-repeat;
   position:relative;flex:none;filter:drop-shadow(0 14px 38px rgba(0,0,0,.6));}
 /* writing area = clear light page below the clip, inside the frame (clip ~top 22%) */
@@ -1810,7 +1832,7 @@ body[data-cb="trit"]{
 
 /* ── v2.5.0 PROFILE DASHBOARD ── */
 /* v2.11.0 PROFILE = trusty clipboard popup (warm paper + metal clip), same stats logic */
-#ov-profile,#ov-leaderboard{position:fixed;inset:0;z-index:560;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}/* v3.5.31 above the start menu (400) so they're interactive from the menu */
+#ov-profile,#ov-leaderboard{position:fixed;inset:0;z-index:560;display:none;align-items:center;justify-content:center;background:rgba(28,20,16,.92);overflow:auto;padding:34px 12px 30px;}/* v3.5.31 above the start menu (400) so they're interactive from the menu */
 /* v3.5.91 MINI-GAMES submenu overlay — same layering as the profile/leaderboard, reuses .sm-card */
 #ov-minigames{position:fixed;inset:0;z-index:560;display:none;align-items:flex-start;justify-content:center;background:rgba(28,20,16,.95);overflow:auto;padding:34px 12px 30px;}
 #ov-minigames.vis{display:flex;}
@@ -1879,13 +1901,13 @@ body[data-cb="trit"]{
 .lb-at-nm{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;color:#5c4a30;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 /* v3.5.111 2x2 grid, high-contrast (no more gray-on-gray) */
 .lb-tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px;}
-.lb-tab{padding:11px 0;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:#4a3620;background:#fbf7ec;border:1.5px solid #c2b291;border-radius:6px;cursor:pointer;}
-.lb-tab.active{color:#241608;background:#fff;border-color:#8b4513;box-shadow:inset 0 -3px 0 #d4820f;}
-.lb-tab:hover{color:#241608;border-color:#a07c48;}
+.lb-tab{padding:11px 0;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;color:#4a3620;background:#fbf7ec;border:1.5px solid var(--btn-line);border-radius:6px;cursor:pointer;}
+.lb-tab.active{color:#241608;background:#fff;border-color:var(--btn-line);box-shadow:inset 0 -3px 0 #d4820f;}
+.lb-tab:hover{color:#241608;border-color:var(--btn-line);filter:brightness(1.06);}
 .lb-follow-row{display:flex;gap:6px;margin-bottom:12px;}
 #lb-follow-input{flex:1;min-width:0;padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:14px;color:#2a1a08;background:#fff;border:1px solid #c8b898;border-radius:4px;}
 #lb-follow-input:focus{outline:none;border-color:#8b4513;}
-#lb-follow-btn{padding:8px 16px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:#fff;background:#8b4513;border:none;border-radius:4px;cursor:pointer;}
+#lb-follow-btn{padding:8px 16px;min-height:34px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;color:#fff;background:#8b4513;border:1.5px solid var(--btn-line);border-radius:6px;cursor:pointer;}
 #lb-follow-btn:hover{background:#a0531a;}
 .lb-unfollow{background:none;border:none;color:#c08b6a;font-size:16px;cursor:pointer;padding:4px 8px;min-width:24px;min-height:24px;line-height:1;margin-left:8px;}
 .lb-unfollow:hover{color:#c23a1a;}
@@ -1900,13 +1922,13 @@ body[data-cb="trit"]{
 .pf-x:hover{color:#c23a1a;}
 .pf-body{padding:18px 26px 20px;overflow-y:auto;flex:1;}
 /* v3.5.105 THE CLIPBOARD behind the SOCIAL / PROFILE / MINI-GAMES menus — the REAL clipboard.png (like pause + briefing). Content lives in the clear writing area below the clip (~top 22%). */
-#ov-leaderboard .pf-card,#ov-profile .pf-card{background:url('clipboard.png') center/contain no-repeat;width:min(440px,94vw);aspect-ratio:619/905;max-height:none;box-shadow:none;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));border-radius:0;position:relative;display:block;overflow:visible;}
+#ov-leaderboard .pf-card,#ov-profile .pf-card{background:url('clipboard.png') center/contain no-repeat;height:min(1120px,93vh);width:auto;max-width:96vw;aspect-ratio:619/905;max-height:none;box-shadow:none;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));border-radius:0;position:relative;display:block;overflow:visible;}
 #ov-leaderboard .pf-card::before,#ov-leaderboard .pf-card::after,#ov-profile .pf-card::before,#ov-profile .pf-card::after{display:none;}
 #ov-leaderboard .pf-top,#ov-profile .pf-top{position:absolute;left:7%;right:7%;top:22.5%;background:transparent;border:none;padding:0 0 4px;z-index:2;}
 #ov-leaderboard .pf-title,#ov-profile .pf-title{color:#2a1a08;font-size:23px;letter-spacing:2px;}
 #ov-leaderboard .pf-x,#ov-profile .pf-x{width:34px;height:34px;min-width:34px;background:rgba(0,0,0,.06);}
 #ov-leaderboard .pf-body,#ov-profile .pf-body{position:absolute;left:6.5%;right:6.5%;top:30%;bottom:5%;overflow-y:auto;padding:0;}
-#ov-minigames .mg-wrap{background:url('clipboard.png') center/contain no-repeat;width:min(440px,94vw);aspect-ratio:619/905;position:relative;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));}
+#ov-minigames .mg-wrap{background:url('clipboard.png') center/contain no-repeat;height:min(1060px,90vh);width:auto;max-width:94vw;aspect-ratio:619/905;position:relative;filter:drop-shadow(0 16px 42px rgba(0,0,0,.6));}
 #ov-minigames .mg-head{position:absolute;left:7%;right:7%;top:22%;margin:0;}
 #ov-minigames .mg-title{color:#2a1a08;font-size:26px;}
 #ov-minigames .mg-x{color:#5a3f1a;border-color:#b89a6a;background:rgba(0,0,0,.05);}
@@ -1942,9 +1964,9 @@ body[data-cb="trit"]{
 .pf-table tr.pf-me td{background:rgba(224,150,46,.14)!important;box-shadow:inset 3px 0 0 #c8791e;}
 .pf-note{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#9a8a6e;margin-top:14px;line-height:1.4;}
 .pf-auth{padding:6px 2px 4px;}
-.pf-tabs{display:flex;margin-bottom:16px;border:1px solid #c8b898;border-radius:5px;overflow:hidden;}
-.pf-tab{flex:1;background:#e7e0d0;border:none;padding:9px 0;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;color:#8a7a5e;cursor:pointer;}
-.pf-tab.on{background:#8b4513;color:#fff;}
+.pf-tabs{display:flex;gap:7px;margin-bottom:16px;}
+.pf-tab{flex:1;background:#e7e0d0;border:1.5px solid var(--btn-line);border-radius:6px;padding:9px 0;min-height:34px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;color:#8a7a5e;cursor:pointer;}
+.pf-tab.on{background:#8b4513;color:#fff;border-color:var(--btn-line);box-shadow:inset 0 -3px 0 #d4820f;}
 .pf-fld{margin-bottom:11px;}
 .pf-fld label{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#7a6a52;margin-bottom:3px;}
 .pf-fld input{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #c8b898;border-radius:4px;background:#fbf9f3;color:#2a1a08;font-family:'Barlow Condensed',sans-serif;font-size:17px;}
@@ -2002,8 +2024,20 @@ body[data-cb="trit"]{
   background:radial-gradient(80% 70% at 50% 30%,rgba(224,150,46,.07),rgba(20,12,4,.55) 75%),rgba(20,12,4,.5);
   padding:26px 14px 50px;}
 #ov-postsort.vis{display:block;}
-.ps-card{max-width:1020px;margin:0 auto;background:linear-gradient(180deg,#f5eede,#efe6d3);
-  border:1px solid #cdbf9f;border-radius:6px;box-shadow:0 22px 50px rgba(20,12,4,.45);padding:26px 26px 16px;position:relative;}
+.ps-card{max-width:1060px;margin:0 auto;position:relative;
+  /* the metal BOARD (matches clipboard.png's shell) holding a paper sheet */
+  background:linear-gradient(180deg,#c6c6ca,#a9a9ae);
+  border:1px solid #8b8b91;border-radius:16px;
+  box-shadow:0 22px 50px rgba(20,12,4,.55), inset 0 1px 0 rgba(255,255,255,.55);
+  padding:52px 16px 16px;}
+/* the clip at the top of the board — same motif as clipboard.png, drawn so it never distorts */
+.ps-card::before{content:'LOCK-IN';position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px;color:#4a4a50;
+  background:linear-gradient(180deg,#e8e8ec,#b6b6bc);border:1.5px solid #8b8b91;border-radius:7px;
+  padding:5px 30px;box-shadow:0 3px 7px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.8);z-index:2;}
+/* the PAPER the report is actually printed on */
+.ps-sheet{background:linear-gradient(180deg,#f5eede,#efe6d3);border:1px solid #cdbf9f;border-radius:6px;
+  padding:22px 24px 14px;box-shadow:0 2px 8px rgba(20,12,4,.22);}
 .ps-mast{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:3px solid #2a2018;padding-bottom:7px;}
 .ps-mast .lg{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:.85;color:#2a2018;}
 .ps-mast .lg b{color:#c8791e;}
@@ -2046,7 +2080,7 @@ body[data-cb="trit"]{
 .ps-vsum .vr.l .va{color:#8a6a3a;}
 .ps-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:2px solid #cdbf9f;padding-top:7px;font-family:'Share Tech Mono',monospace;font-size:10px;color:#9a8b72;letter-spacing:.05em;}
 .ps-tools{position:sticky;top:0;display:flex;gap:8px;justify-content:flex-end;margin:-12px -12px 8px 0;}
-.ps-tools button{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.05em;cursor:pointer;background:#2a2018;color:#f5eede;border:0;border-radius:5px;padding:7px 11px;}
+.ps-tools button{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.05em;cursor:pointer;background:#2a2018;color:#f5eede;border:1.5px solid var(--btn-line);border-radius:6px;padding:7px 12px;min-height:34px;}
 .ps-login{color:#c23a1a;font-size:10px;}
 @media print{#ov-postsort{position:static;background:#fff;padding:0;}.ps-tools{display:none;}.ps-card{box-shadow:none;border:1px solid #999;max-width:none;}}
 </style>
@@ -2085,7 +2119,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.172 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.173 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2191,7 +2225,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.172 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.173 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2349,7 +2383,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.172 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.173 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2801,7 +2835,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.172
+// LOCK IN v3.5.173
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -2851,6 +2885,13 @@ var AFK_LIMIT=300; // v3.5.118 no-placement idle kill (kills kremsicle's 44-min 
 // NOT smalls, NOT bags. Breaking down a smalls bag to chink your gaps is time you're NOT moving freight, so it
 // drags your pph. A wall sealed below standard is a PRODUCTIVITY incident — documented like a safety write-up.
 var STANDARD_PPH=250;
+// v3.5.173 (Devs BLOCKER) PPH SANITY. getPPH divided freight by elapsed with only an el<=0 guard,
+// so the FIRST piece placed ~1ms after a wall/session clock start read 1/0.001*3600 = 3,600,000 —
+// which Math.max latched into bestPPH permanently and shipped to the server as a lifetime record.
+// A warmup floor (sub-5s reads report 0 and settle to a real number) plus a hard cap kills it at
+// the source, for every consumer: HUD, score multiplier, post-sort report, and the stored lifetime.
+var PPH_FLOOR_S=5, PPH_CAP=2000; // 2000 = 8x the 250 hub standard; the score curve already tops out at 500
+function sanePph(n){n=+n||0;return (n>0&&n<=PPH_CAP)?Math.round(n):(n>PPH_CAP?PPH_CAP:0);} // clamps values ALREADY stored on the server
 var LARGE_DANGER_FAIL=18;
 var PANIC_THRESHOLD=0.85, PANIC_DURATION=60, PANIC_BONUS_MAX=800;
 var STOW_BONUS=200, TETRIS_BONUS=500, BULKHEAD_BONUS=500, BRICK_BONUS=300;
@@ -3253,7 +3294,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.172'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.173'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -3274,10 +3315,10 @@ function zBuildSession(){
     mode:gameMode,app_ver:LI_APP_VER,
     started_at:new Date(S.sessionStartT||Date.now()).toISOString(),ended_at:new Date().toISOString(),
     duration_s:Math.round((Date.now()-(S.sessionStartT||Date.now()))/1000),
-    total_score:S.totalScore||0,best_pph:S.bestPPH||0,walls_loaded:_walls,avg_integrity:ah,incident_count:inc.length,
+    total_score:S.totalScore||0,best_pph:Math.min(PPH_CAP,S.bestPPH||0),walls_loaded:_walls,avg_integrity:ah,incident_count:inc.length,
     summary:{
       score:S.totalScore||0, pieces:S.totalPieces||0, walls:_walls,
-      peakPph:S.bestPPH||0, avgPph:_avgPph, avgIntegrity:ah,
+      peakPph:Math.min(PPH_CAP,S.bestPPH||0), avgPph:_avgPph, avgIntegrity:ah,
       avgWallPct:_avgWallPct, cubeEff:_cubeEff, densityPct:_densityPct, ncUtilPct:(S.ncSpawned?Math.round((S.ncPlaced||0)/S.ncSpawned*100):null), smallsUtilPct:(S.smallsSpawned?Math.round((S.bagsPlaced||0)/S.smallsSpawned*100):null),
       shelvesLocked:S.shelvesLocked||0, doubleLocks:S.doubleLocks||0, nests:S.nests||0,
       incTotal:inc.length, incHazHigh:_ic('HAZMAT_HIGH'), incHazCrush:_ic('HAZMAT_CRUSH'), incSeg:_ic('SEGREGATION'), incKiller:_ic('KILLER'),
@@ -4922,7 +4963,7 @@ function placeBox(source,sourceIdx,gx,gy,rot){
   }
   if(!S.sessionStartT){S.sessionStartT=startT||Date.now();ZDATA.events=[];} // v2.1.9 session clock; v3.5.132 reset the raw event timeline per session (timestamps are relative to sessionStartT) so it never accumulates across sessions — BEFORE the first place is logged
   if(typeof zLog==='function')zLog('place',{x:gx,y:gy,n:box.n||box.label||'?',r:rot||0,src:source});
-  S.bestPPH=Math.max(S.bestPPH||0,getPPH()); // v2.1.9 PEAK pph (fixes the 0 bug)
+  S.bestPPH=Math.min(PPH_CAP,Math.max(S.bestPPH||0,getPPH())); // v2.1.9 PEAK pph · v3.5.173 capped
   // LV10: Drain strike bar on every successful placement
   onPlaceMechanic();
   if(TUTORIAL_MODE&&typeof tutOnPlace==='function'){tutOnPlace(source,box,gx,gy);} // v3.5.137 tutorial step advance
@@ -5884,7 +5925,7 @@ function countCeilingBags(){
   return n;
 }
 function calcScore(segOverride){
-  var el=elapsed(),pph=el>0?Math.round(placed/el*3600):0;
+  var el=elapsed(),pph=getPPH(); // v3.5.173 was a SECOND inline pph formula (placed/el, near-zero unguarded) — one definition now
   var eff=countFilled()/(GW*GH);
   var hp=wallH()/GH;
   var ss=supportScore(G.grid);
@@ -5947,7 +5988,7 @@ function elapsed(){
 // v3.5.90 PPH = REAL FREIGHT per hour (boxes only). This wall's freight = S.boxPieces since the wall baseline.
 // Smalls/bags never entered boxPieces, so they can't inflate pph — and the seconds they cost still count, so
 // stopping to break down a bag genuinely drags your number. Gross (no lift-decrement): pph = freight moved / time.
-function getPPH(){var el=elapsed();if(el<=0)return 0;var wb=(S._wallBase&&S._wallBase.boxPieces)||0;return Math.round(Math.max(0,(S.boxPieces||0)-wb)/el*3600);}
+function getPPH(){var el=elapsed();if(el<PPH_FLOOR_S)return 0;var wb=(S._wallBase&&S._wallBase.boxPieces)||0;return Math.min(PPH_CAP,Math.round(Math.max(0,(S.boxPieces||0)-wb)/el*3600));} // v3.5.173 warmup floor + cap
 
 // ── WIN CHECK ──
 // DECISION: Win requires BOTH 92% height AND minimum density.
@@ -9351,7 +9392,7 @@ function endGameShift(reason){
     var _fin=S.totalScore+(G.score||0);
     document.getElementById('es-score').textContent=_fin;
     if(typeof checkPersonalBest==='function')checkPersonalBest(_fin); // v3.5.146 gold ribbon on a new best
-    document.getElementById('es-pph').textContent=getPPH();
+    S.bestPPH=Math.min(PPH_CAP,Math.max(S.bestPPH||0,getPPH()));document.getElementById('es-pph').textContent=S.bestPPH; // v3.5.173 'Peak PPH' = session peak on EVERY exit path (was current pph here, session peak on clock-out)
     document.getElementById('es-trucks').textContent=shiftState.walls;
     // v3.5.122 kremsicle: the AVG INTEGRITY tile showed "29 PCS" — a piece count in the integrity slot. Show the real
     // average integrity %, and 0% (not a lying 100%) when nothing was actually sealed this session.
@@ -9381,12 +9422,44 @@ function snapWall(){
 }
 function psTxt(id){var e=document.getElementById(id);return e?e.textContent:'\u2014';}
 function psFmtTime(sec){sec=Math.max(0,Math.round(sec||0));var m=Math.floor(sec/60),s2=sec%60;return m+':'+(s2<10?'0':'')+s2;}
+// v3.5.173 (Devs BLOCKER #1) THE ONE CANONICAL CAREER. Both the post-sort LIFETIME column and the
+// SOCIAL/ME panel now fold the same per-mode rows the same way: counts SUM, peak takes the MAX
+// (clamped — old rows hold the 3.6M poison), and averages are session-weighted so a 2-session mode
+// can't drag a 30-session mode. Returns the same column keys a single row exposed, so every existing
+// reader (psBuild's L(), CAREER SESSIONS, the footer, the tiles) works unchanged.
+function lifeAggregate(rows){
+  rows=rows||[];
+  var SUM=['sessions','walls','score','shelves_locked','double_locks','nests','incidents','crunches',
+           'collapses','recoveries','hydration_breaks','rotations','lifts','rejected_drops','bonuses','pieces'];
+  var AVG=['avg_pph','avg_integrity','density_pct','cube_eff','avg_wall_pct','nc_util_pct','smalls_util_pct'];
+  var out={},i,k,r,w,wsum={},asum={};
+  for(i=0;i<SUM.length;i++)out[SUM[i]]=0;
+  out.peak_pph=0;
+  for(i=0;i<rows.length;i++){
+    r=rows[i]||{};
+    for(k=0;k<SUM.length;k++)out[SUM[k]]+=(+r[SUM[k]]||0);
+    out.peak_pph=Math.max(out.peak_pph,sanePph(r.peak_pph));
+    w=(+r.sessions||0)||1; // session-weight the averages
+    for(k=0;k<AVG.length;k++){
+      if(r[AVG[k]]==null||r[AVG[k]]==='')continue;
+      asum[AVG[k]]=(asum[AVG[k]]||0)+(+r[AVG[k]]||0)*w;
+      wsum[AVG[k]]=(wsum[AVG[k]]||0)+w;
+    }
+    if(r.last_seen&&(!out.last_seen||r.last_seen>out.last_seen))out.last_seen=r.last_seen;
+  }
+  for(k=0;k<AVG.length;k++)out[AVG[k]]=wsum[AVG[k]]?Math.round(asum[AVG[k]]/wsum[AVG[k]]):0;
+  out._rows=rows; // the per-mode breakdown, for the BY MODE table
+  return out;
+}
 function fetchLifetime(cb){
   var sx=ZDATA.session;
   if(!sx||!sx.uid){cb('anon',null);return;}
   try{
-    var url=ZDATA.endpoint+'/lockin_lifetime?user_id=eq.'+encodeURIComponent(sx.uid)+'&mode=eq.'+encodeURIComponent(gameMode)+'&select=*';
-    fetch(url,{headers:zAuthHeaders()}).then(function(r){return r.json();}).then(function(j){cb('ok',(j&&j.length)?j[0]:{});}).catch(function(e){console.error('fetchLifetime:',e);cb('err',null);});
+    // v3.5.173 (Devs BLOCKER #1) the mode filter was the whole slop: this said LIFETIME/CAREER but fetched
+    // ONE mode row, while SOCIAL/ME summed EVERY mode row — so the two screens disagreed on incidents,
+    // sessions, shelves, double-locks and nests, and the deltas were exactly the DAILY row. All modes now.
+    var url=ZDATA.endpoint+'/lockin_lifetime?user_id=eq.'+encodeURIComponent(sx.uid)+'&select=*';
+    fetch(url,{headers:zAuthHeaders()}).then(function(r){return r.json();}).then(function(j){cb('ok',lifeAggregate(j||[]));}).catch(function(e){console.error('fetchLifetime:',e);cb('err',null);});
   }catch(e){cb('err',null);}
 }
 function openPostSort(){
@@ -9698,14 +9771,18 @@ function openProfile(){
 function pfRenderPlayer(state,rows){var body=document.getElementById(PF_BODY);if(!body)return;
   if(state!=='ok'){body.innerHTML='<div class="pf-loading">Couldn\u2019t reach the yard server. Try again in a moment.</div>';return;}
   if(!rows||!rows.length){body.innerHTML='<div class="pf-loading">No sealed sessions yet \u2014 load a wall and your record starts here.</div>';return;}
-  var tot={sessions:0,walls:0,score:0,shelves:0,doubles:0,nests:0,incidents:0},i,r,peak=0,ai=0,aiN=0,last=null;
-  for(i=0;i<rows.length;i++){r=rows[i];tot.sessions+=+r.sessions||0;tot.walls+=+r.walls||0;tot.score+=+r.score||0;tot.shelves+=+r.shelves_locked||0;tot.doubles+=+r.double_locks||0;tot.nests+=+r.nests||0;tot.incidents+=+r.incidents||0;if((+r.peak_pph||0)>peak)peak=+r.peak_pph;if(+r.avg_integrity){ai+=(+r.avg_integrity)*(+r.sessions||1);aiN+=(+r.sessions||1);}if(r.last_played&&(!last||r.last_played>last))last=r.last_played;}
-  var avgInt=aiN?Math.round(ai/aiN):0;
+  // v3.5.173 (Devs BLOCKER #1) uses the SAME lifeAggregate() the post-sort report uses, so the two
+  // surfaces are mathematically incapable of disagreeing again (this hand-rolled sum was the other half).
+  var _A=lifeAggregate(rows),i,r;
+  var tot={sessions:_A.sessions,walls:_A.walls,score:_A.score,shelves:_A.shelves_locked,doubles:_A.double_locks,nests:_A.nests,incidents:_A.incidents};
+  var peak=_A.peak_pph,last=_A.last_seen||null;
+  for(i=0;i<rows.length;i++){r=rows[i];if(r.last_played&&(!last||r.last_played>last))last=r.last_played;}
+  var avgInt=_A.avg_integrity||0;
   function tile(l,v){return '<div class="pf-tile"><div class="pf-tval">'+v+'</div><div class="pf-tlbl">'+l+'</div></div>';}
   var h='<div class="pf-hero"><div class="pf-hero-id">'+pfEsc(ZDATA.session.handle||ZDATA.session.email||'PLAYER')+'</div><div class="pf-hero-sub">Last loaded '+pfDate(last)+'</div></div>';
   h+='<div class="pf-tiles">'+tile('WALLS',pfNum(tot.walls))+tile('SESSIONS',pfNum(tot.sessions))+tile('PEAK PPH',pfNum(peak))+tile('AVG INTEGRITY',avgInt+'%')+tile('DOUBLE LOCKS',pfNum(tot.doubles))+tile('NESTS',pfNum(tot.nests))+tile('SHELVES',pfNum(tot.shelves))+tile('INCIDENTS',pfNum(tot.incidents))+'</div>';
   h+='<div class="pf-sec">BY MODE</div><table class="pf-table"><tr><th>MODE</th><th>WALLS</th><th>PEAK PPH</th><th>AVG INT</th><th>SCORE</th></tr>';
-  for(i=0;i<rows.length;i++){r=rows[i];h+='<tr><td>'+pfEsc((r.mode||'\u2014').toUpperCase())+'</td><td>'+pfNum(r.walls)+'</td><td>'+pfNum(r.peak_pph)+'</td><td>'+pfNum(r.avg_integrity)+'%</td><td>'+pfNum(r.score)+'</td></tr>';}
+  for(i=0;i<rows.length;i++){r=rows[i];h+='<tr><td>'+pfEsc((r.mode||'\u2014').toUpperCase())+'</td><td>'+pfNum(r.walls)+'</td><td>'+pfNum(sanePph(r.peak_pph))+'</td><td>'+pfNum(r.avg_integrity)+'%</td><td>'+pfNum(r.score)+'</td></tr>';}
   h+='</table>'+pfFootHTML();body.innerHTML=h;}
 function pfRenderCohort(facs,rows){var body=document.getElementById(PF_BODY);if(!body)return;
   var fnames=[],k;for(k=0;k<facs.length;k++)fnames.push(pfEsc(facs[k].name||facs[k].facility_code));
@@ -9758,7 +9835,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.172</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.173</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
@@ -9836,7 +9913,8 @@ function psBuild(lifeState,life){
 
     H+='<div class="ps-foot"><span>POST-SORT REPORT \u00b7 GENERATED ON SEAL \u00b7 SHOWN WITH LOADER CONSENT</span><span style="display:inline-flex;align-items:center;gap:7px">\u00a9 2026</span></div>';
 
-    var card=document.getElementById('ps-card');if(card)card.innerHTML=H;
+    // v3.5.173 the report prints on the PAPER, which sits on the metal board (.ps-card)
+    var card=document.getElementById('ps-card');if(card)card.innerHTML='<div class="ps-sheet">'+H+'</div>';
   }catch(e){if(typeof liShowErr==='function')liShowErr('psBuild',e);}
 }
 function returnToMenu(){
@@ -10814,7 +10892,7 @@ function _killStoppage(){
 // READS: paused, gOver, animF
 // WRITES: paused, animF, document.documentElement.dataset.theme
 
-function avgPPH(){var t=S.sessionStartT?(Date.now()-S.sessionStartT)/1000:0;return t>0?Math.round((S.boxPieces||0)/t*3600):0;} // v3.5.90 real freight only
+function avgPPH(){var t=S.sessionStartT?(Date.now()-S.sessionStartT)/1000:0;return t>=PPH_FLOOR_S?Math.min(PPH_CAP,Math.round((S.boxPieces||0)/t*3600)):0;} // v3.5.90 real freight only · v3.5.173 same floor+cap as getPPH
 function sessionMinsNow(){return S.sessionStartT?Math.round((Date.now()-S.sessionStartT)/60000):0;}
 function fillTelemetryTiles(){
   function set(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
@@ -10860,7 +10938,7 @@ function clockOut(){
   paused=false;var pov=document.getElementById('ov-pause');if(pov)pov.classList.remove('vis');
   gOver=true;if(animF){cancelAnimationFrame(animF);animF=null;}
   S.totalScore=(S.totalScore||0)+(G.score||0);
-  S.bestPPH=Math.max(S.bestPPH||0,getPPH());
+  S.bestPPH=Math.min(PPH_CAP,Math.max(S.bestPPH||0,getPPH())); // v3.5.173 capped
   finalizeWall(); // v3.5.57 capture the wall on screen (no-op if already sealed)
   if(gameMode==='shift'&&typeof shiftState!=='undefined')shiftState.totalBoxes+=placed;
   var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):((S.totalPieces||0)>0?100:0); // v3.5.122 no lying 100% on an empty session
@@ -11343,7 +11421,7 @@ function endGame(reason,win){
   // DECISION: level mode gets its own end screen with star rating + analytics
   if(gameMode==='level'){showLevelEnd(reason,true);return;}
   try{
-    S.totalScore+=G.score||0;S.bestPPH=Math.max(S.bestPPH,getPPH());
+    S.totalScore+=G.score||0;S.bestPPH=Math.min(PPH_CAP,Math.max(S.bestPPH,getPPH())); // v3.5.173 capped
     finalizeWall();S.trucksDone=S.truck; // v3.5.57 capture the failed/timed-out wall once
     var avgInt=S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):100;
     document.getElementById('es-score').textContent=S.totalScore;
