@@ -22,9 +22,17 @@
 @import url('/fonts/fonts.css');
 
 /* ================================================================
-   LOCK IN v3.5.176
+   LOCK IN v3.5.177
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.177 - HOTFIX: TWO UNCLOSED <div> TAGS BLACKED OUT THE GAME. My v3.5.174/175 rewrites of briefing
+     rules 4 and 8 used index/slice surgery: the slice ended at the FIRST "</div>" after the brief-why span, so each
+     rewrite swallowed the .brief-rule wrapper’s closing tag. Result: <div> open 440 / close 438. The DOM nested wrong
+     from the briefing onward, the layout collapsed, and after the LOCK IN splash the player got a dead screen with no
+     cursor. Both closers restored; tag balance verified 440/440. LESSON, and it is now a ship gate: NEVER rewrite
+     nested markup by string-slicing to the next "</div>" — count the closers or replace the whole element. Every
+     future markup edit gets a div-balance check before commit, the same way var-only and script-parse are checked.
 
    CHANGE LOG v3.5.176 - CREWS: SELF-SERVE ORGS (and a genuinely broken link, fixed). THE BUG: signup writes
      lockin_handles.facility_code = NULL and NO code path ever set it — while the instructor dashboard roster
@@ -2179,7 +2187,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.176 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.177 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2210,11 +2218,11 @@ body[data-cb="trit"]{
       <div class="brief-rule"><div class="brief-rule-num">1</div><div class="brief-rule-txt"><b>Grab &amp; place.</b> Pull a box off the chute, click the wall to set it. <b>[R]</b> rotates.<span class="brief-why">Pieces queue in the chute — rotate before you place to fit tighter.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">2</div><div class="brief-rule-txt"><b>Build off the floor.</b> Every piece needs support under it — nothing floats.<span class="brief-why">A freestanding stack 4+ high with no wall beside it topples back to the belt.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">3</div><div class="brief-rule-txt"><b>Lock your shelves.</b> Fill a full row to lock it; a locked shelf braces the wall above.<span class="brief-why">Locked shelves also cap a hazmat safely beneath them.</span></div></div>
-      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>🛞 SPEC freight loads low.</b> Too big, heavy or hazardous for the belt — tap <b>SPEC</b>, pick a piece, tap the wall.<span class="brief-why">Heavy on the floor anchors everything above it.</span></div>
+      <div class="brief-rule"><div class="brief-rule-num">4</div><div class="brief-rule-txt"><b>🛞 SPEC freight loads low.</b> Too big, heavy or hazardous for the belt — tap <b>SPEC</b>, pick a piece, tap the wall.<span class="brief-why">Heavy on the floor anchors everything above it.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">5</div><div class="brief-rule-txt"><b>Fragile &amp; glass ride on top.</b> Never bury them — a crush is a write-up.<span class="brief-why">Load them near the top with only light pieces above.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">6</div><div class="brief-rule-txt"><b>Hazmat low &amp; locked.</b> Floor it, cap it under a shelf.<span class="brief-why">A hazmat in ANY collapse ends the round — keep it stable.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">7</div><div class="brief-rule-txt"><b>Lay tires flat.</b> On its edge, a tire rolls the second the door opens.<span class="brief-why">Standing one up is a safety warning — lay it flat before the door opens.</span></div></div>
-      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>📦 Bags break open.</b> Double-tap a bag on the chute — it spills six small pieces for gaps a box can’t reach.<span class="brief-why">Use them to fill the last voids before you seal.</span></div>
+      <div class="brief-rule"><div class="brief-rule-num">8</div><div class="brief-rule-txt"><b>📦 Bags break open.</b> Double-tap a bag on the chute — it spills six small pieces for gaps a box can’t reach.<span class="brief-why">Use them to fill the last voids before you seal.</span></div></div>
       <div class="brief-rule"><div class="brief-rule-num">9</div><div class="brief-rule-txt"><b>Pack tight, then seal.</b> Density is the job — fill, seal at height, beat the clock.<span class="brief-why">Cube fill, not just height — the manager calls the target.</span></div></div>
     </div>
   </div>
@@ -2285,7 +2293,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.176 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.177 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2443,7 +2451,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.176 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.177 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2921,7 +2929,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.176
+// LOCK IN v3.5.177
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3380,7 +3388,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.176'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.177'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -10018,7 +10026,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.176</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.177</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
