@@ -9,7 +9,7 @@
 @import url('/fonts/fonts.css');
 
 /* ============================================================
-   SMALLS SORT (LOCK IN)  v1.8
+   SMALLS SORT (LOCK IN)  v1.9
    Drag-sort: 6 routes (NE double-binned at pool corners),
    GENTLE/FLOOR, split QA (DAMAGE+HAZMAT), OVERNIGHT, recovery
    pool, belt-stoppage jam. Industrial-grit palette.
@@ -62,7 +62,7 @@ html,body{width:100%;height:100dvh;
 
 #hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
   padding:6px 12px;height:44px;background:linear-gradient(180deg,#404044,#323234);
-  border-bottom:1px solid #1e1e20;position:relative;z-index:10;box-shadow:0 2px 6px rgba(0,0,0,.4);}
+  border-bottom:1px solid #1e1e20;position:relative;z-index:60;box-shadow:0 2px 6px rgba(0,0,0,.4);} /* v1.9 header must sit ABOVE overlays (.ov is z40) or the start screen kills every header control */
 #hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--acc) 25%,var(--teal) 75%,transparent);opacity:.6;}
 .logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--acc);line-height:1;display:flex;align-items:baseline;gap:7px;text-shadow:0 1px 2px rgba(0,0,0,.5);}
@@ -82,7 +82,7 @@ html,body{width:100%;height:100dvh;
 
 #ftr{flex-shrink:0;text-align:center;padding:4px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:1px;background:#262628;border-top:1px solid #1c1c1e;}
 
-.ov{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;
+.ov{position:absolute;top:44px;left:0;right:0;bottom:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;
   background:radial-gradient(ellipse 120% 100% at 50% 40%,#3a3a3e,#262628);padding:18px;text-align:center;overflow-y:auto;}
 .ov.vis{display:flex;}
 /* v1.2 board + settings cross-wire */
@@ -694,7 +694,7 @@ function smSubmitSession(acc,tput,grade){
     if(!_pl||!_pl.consentSelf){_smPostNote('NOT RECORDED — stats saving is off (game → ACCOUNT & DATA)',false);return;} // no save without self-consent — identical rule to the game's zSendSession
     var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
     var rec={
-      user_id:s.uid, mode:'smalls', app_ver:'ss-1.8',
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.9',
       consent_self:!!_pl.consentSelf, consent_share:!!_pl.consentShare, opt_in_share:!!_pl.consentShare,
       started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
       duration_s:dur,

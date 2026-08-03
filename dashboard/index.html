@@ -142,7 +142,7 @@ var DASH={
   authUrl:'https://igqpgsqogfrpujdgvefs.supabase.co/auth/v1',
   endpoint:'https://igqpgsqogfrpujdgvefs.supabase.co/rest/v1',
   anonKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlncXBnc3FvZ2ZycHVqZGd2ZWZzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4Njc1MzQsImV4cCI6MjA5NjQ0MzUzNH0.8Pn459HUFkqZu7ORSX15E13u9fWSD96OKR0w6yiuJQo',
-  session:null, rows:[], name:'', sortKey:'best_score', sortDir:-1
+  session:null, rows:[], name:'', code:'', sortKey:'best_score', sortDir:-1
 };
 // columns: {key, label, competency, fmt}
 var DCOLS=[
@@ -191,7 +191,7 @@ function dFetchFacility(){
     fetch(DASH.endpoint+'/lockin_facilities?select=name,facility_code',{headers:dHeaders()})
       .then(function(r){if(r.status===401)return null;return r.json();}).then(function(j){
         if(j===null)return; // 401 handled by the cohort path's dExpired
-        if(j&&j.length){DASH.name=j[0].name||j[0].facility_code||'Your program';var who=document.getElementById('who');if(who)who.innerHTML='<b>'+dEsc(DASH.name)+'</b>'+dEsc(DASH.session&&DASH.session.email||'');}
+        if(j&&j.length){DASH.name=j[0].name||j[0].facility_code||'Your program';DASH.code=j[0].facility_code||'';var who=document.getElementById('who');if(who)who.innerHTML='<b>'+dEsc(DASH.name)+'</b>'+dEsc(DASH.session&&DASH.session.email||'');}
       }).catch(function(e){console.error('dFetchFacility:',e);});
   }catch(e){console.error('dFetchFacility:',e);}
 }
@@ -254,7 +254,7 @@ function dRender(){
   document.getElementById('thead').innerHTML=th;
   // body
   var emp=document.getElementById('empty');
-  if(!rows.length){document.getElementById('tbody').innerHTML='';if(emp){emp.style.display='block';emp.textContent=DASH.rows.length?'No students match that filter.':'No students have opted in yet. Share the program code and have students enable stats + your facility code in ACCOUNT & DATA.';}return;}
+  if(!rows.length){document.getElementById('tbody').innerHTML='';if(emp){emp.style.display='block';emp.textContent=DASH.rows.length?'No students match that filter.':'Your roster is ready — it fills in as students join. Give your class your join code'+(DASH.code?(' — '+DASH.code):'')+'. In the game: PAUSE → ADMIN → ACCOUNT & DATA → enter the code and confirm sharing. Students appear here after their first wall.';}return;}
   if(emp)emp.style.display='none';
   var h='',i;
   for(i=0;i<rows.length;i++){var r=rows[i];

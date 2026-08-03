@@ -198,6 +198,7 @@ function mLogin(){
   if(!raw||!pass){mMsg('Enter your username + password.','err');return;}
   var email=(raw.indexOf('@')>=0)?raw:(mClean(raw)+'@players.lockin.app');
   if(raw.indexOf('@')<0&&!mClean(raw)){mMsg('Username: letters, numbers, underscore.','err');return;}
+  try{localStorage.removeItem('meNoSSO');}catch(e){} // v1.3 a deliberate sign-in clears the deliberate sign-out
   mMsg('Clocking in…','');
   try{
     fetch(ME.authUrl+'/token?grant_type=password',{method:'POST',headers:{'Content-Type':'application/json','apikey':ME.anonKey},body:JSON.stringify({email:email,password:pass})})
@@ -351,6 +352,11 @@ function mRender(){
 function mSignOut(){
   ME.session=null;ME.rows=[];
   try{localStorage.removeItem('lockinMeAuth');}catch(e){}
+  // v1.3 an explicit sign-out must STICK. mBoot reads the game's shared liAuth first, so without
+  // this flag the next page load signed the previous student straight back in — on a shared
+  // Chromebook that hands their named record to the next kid. We never delete liAuth (the game
+  // owns its refresh); we just record that THIS page was signed out of deliberately.
+  try{localStorage.setItem('meNoSSO','1');}catch(e){}
   document.getElementById('me').style.display='none';
   document.getElementById('login').style.display='block';
   mMsg('Clocked out.','good');
@@ -367,7 +373,8 @@ function mExpired(){
 function mBoot(){
   // v1.2 (MED) ONE login for players: read the GAME's shared liAuth session first (read-only — never
   // write or delete it; the game owns the refresh). lockinMeAuth stays as this page's own fallback store.
-  try{var g=localStorage.getItem('liAuth');if(g){var gs=JSON.parse(g);
+  var _noSSO=false;try{_noSSO=localStorage.getItem('meNoSSO')==='1';}catch(e){}
+  try{var g=_noSSO?null:localStorage.getItem('liAuth');if(g){var gs=JSON.parse(g);
     if(gs&&gs.access_token&&mJwtFresh(gs.access_token)){ME.session=gs;mEnter();return;}
     if(gs&&gs.access_token)mMsg('Session expired — sign in again.','err');
   }}catch(e){}
