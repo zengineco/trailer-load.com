@@ -22,9 +22,25 @@
 @import url('/fonts/fonts.css');
 
 /* ================================================================
-   LOCK IN v3.5.177
+   LOCK IN v3.5.178
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.178 - LEGIBILITY, MEASURED THIS TIME. He photographed the daily card: bright amber and
+     near-white text on a cream panel, painful to read. Cause was MY v3.5.154 "theme collapse" fix — it scoped the
+     INK vars on #ov-end to dark-theme (light) values but left --bg2/--bg3 resolving to the LIGHT theme’s creams, so
+     #daily-result painted a cream ground and inherited near-white ink. I fixed half the problem and called it done.
+     Now the scoped block sets the SURFACES too, and #daily-result carries its own dark ground. Measured after:
+     streak 9.15:1, rank 12.72:1, board header 6.42:1 (was unreadable). ALSO: the control-strip pills used a 34%-black
+     WASH, so on the light theme the SPEC label measured 1.3:1 and 0/8 measured 2.22:1 — pills now carry an opaque
+     ground. The SAFE / warning / incident readout used --t3, the faintest ink, at 2.4:1 on the light footer; it is a
+     live SAFETY indicator, so it now uses theme-adaptive --t1/--t2. And the full-width SETTINGS button was a tall
+     column with a dead half-row beside it — it lays out horizontally now.
+     THE REAL LESSON: previous "legibility sweeps" GREPPED FOR PATTERNS. They could not catch this, because the colours
+     were individually fine and only collided at runtime through inherited vars. Added `.tools/contrast-audit.js`, a
+     WCAG auditor that composites text alpha, walks ancestors for the true effective ground, skips gradients rather
+     than guessing, and ignores emoji. Menu and end screen now measure ZERO failures. Legibility is a MEASUREMENT from
+     here, never an opinion.
 
    CHANGE LOG v3.5.177 - HOTFIX: TWO UNCLOSED <div> TAGS BLACKED OUT THE GAME. My v3.5.174/175 rewrites of briefing
      rules 4 and 8 used index/slice surgery: the slice ended at the FIRST "</div>" after the brief-why span, so each
@@ -599,6 +615,9 @@
   --t1:#f0e6d4;--t2:#c0ad90;--t3:#8a7860;
   --border:#3a2c20;--border2:#4a3826;--border3:#5a4632;
   --acc:#e0962e;--acc-bright:#f0ad4a;--acc-dim:#b07820;
+  /* v3.5.178 SURFACES TOO. Scoping only the ink (v3.5.154) left --bg2/--bg3 on the LIGHT theme,
+     so #daily-result painted a cream panel and inherited near-white ink — unreadable. */
+  --bg:#1c1410;--bg2:#241a13;--bg3:#2e2016;
 }
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -1541,7 +1560,7 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{an
   padding:13px 16px;border-radius:6px;cursor:pointer;transition:background .15s,border-color .15s;}
 .end-act:hover{background:rgba(34,23,12,1);border-color:var(--acc-bright);}
 .end-act.primary{background:linear-gradient(180deg,var(--acc-bright),var(--acc));color:#0a0600;border-color:var(--acc-bright);}
-.end-act.wide{grid-column:1 / -1;}
+.end-act.wide{grid-column:1 / -1;flex-direction:row;align-items:center;gap:14px;} /* v3.5.178 title+desc side by side so a full-width button has no dead space */
 .ea-t{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;line-height:1;}
 .ea-d{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;line-height:1.15;color:var(--t2);}
 /* v3.5.149 END-SCREEN TRIM — 4 big headline numbers + a collapsible full breakdown */
@@ -1633,7 +1652,7 @@ body.m-portrait #conv-header{flex-wrap:wrap;row-gap:6px;justify-content:center;}
 .chute-light.cl-crit::after{content:'✕';}
 /* v3.4.12 NC/SMALLS pie-chart lights + wheel HUD */
 /* v3.5.112 NC/staging pill sized to match the strip buttons (was tiny 11px = "different game") */
-.stg-light{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 11px;min-height:34px;border-radius:6px;background:rgba(0,0,0,.34);border:1.5px solid var(--btn-line);font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#e8d6b0;user-select:none;} /* v3.5.145 pulled into the unified --btn-line outline system + strip height */
+.stg-light{display:inline-flex;align-items:center;gap:6px;cursor:pointer;padding:6px 11px;min-height:34px;border-radius:6px;background:#1c1410;border:1.5px solid var(--btn-line);font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;color:#e8d6b0;user-select:none;} /* v3.5.145 pulled into the unified --btn-line outline system + strip height */
 .stg-light b{color:var(--acc-bright);font-weight:bold;letter-spacing:.5px;font-size:14px;}
 .stg-pie{width:20px;height:20px;border-radius:50%;background:conic-gradient(#1f9d57 0%, rgba(255,255,255,.13) 0);border:1px solid rgba(0,0,0,.35);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
 .stg-light.s-crit{border-color:#c23a1a;animation:bjblink .5s steps(2) infinite;}
@@ -2072,7 +2091,7 @@ body[data-cb="trit"]{
 .rec-btns{display:flex;flex-direction:column;gap:11px;}
 .rec-dbg{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t3);margin-top:18px;word-break:break-all;opacity:.65;}
 /* ── v2.8.0 DAILY RESULT ── */
-#daily-result{margin:10px 0;padding:12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border2);text-align:left;}
+#daily-result{margin:10px 0;padding:12px;background:#2e2016;border-radius:8px;border:1px solid var(--border2);text-align:left;} /* v3.5.178 explicit dark ground — this panel only ever renders on the dark end screen */
 .dr-head{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc);letter-spacing:1px;}
 .dr-streak{font-family:'Share Tech Mono',monospace;font-size:14px;color:#ffb84a;margin:6px 0 2px;letter-spacing:.5px;} /* v3.5.146 daily streak line */
 .dr-streak b{color:#ffd98a;font-size:16px;}
@@ -2187,7 +2206,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.177 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.178 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2293,7 +2312,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.177 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.178 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2451,7 +2470,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.177 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.178 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2929,7 +2948,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.177
+// LOCK IN v3.5.178
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3388,7 +3407,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.177'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.178'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -5508,7 +5527,7 @@ function updateSafetyHUD(){
   var si=document.getElementById('safety-inc');if(si)si.textContent=inc;
   var el=document.getElementById('safety-live');
   if(el){
-    el.innerHTML='<b style="color:var(--t3)">SAFE</b> <span style="color:'+(w?'var(--warn)':'var(--t3)')+'">'+w+'\u26a0</span> <span style="color:'+(inc?'var(--danger)':'var(--t3)')+'">'+inc+'\u26d4</span>';
+    el.innerHTML='<b style="color:var(--t1)">SAFE</b> <span style="color:'+(w?'var(--warn)':'var(--t2)')+'">'+w+'\u26a0</span> <span style="color:'+(inc?'var(--danger)':'var(--t2)')+'">'+inc+'\u26d4</span>';
     el.title=w+' open warning(s), '+inc+' incident(s) on record';
   }
 }
@@ -10026,7 +10045,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.177</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.178</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
