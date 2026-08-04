@@ -9,7 +9,10 @@
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
 :root{
-  --bg:#f3efe6;--panel:#ffffff;--ink:#241c14;--ink2:#6a5c48;--ink3:#9a8b72;
+  /* --ink3 was #9a8b72, which failed AA on ALL THREE grounds it paints (3.33 on #fff, 2.90 on --bg,
+     3.11 on the sticky header fill). It carries the competency sublabels — the $1,950 argument — and
+     the entire day-one empty state. #736550 measures 5.67 / 4.94 / 5.30. */
+  --bg:#f3efe6;--panel:#ffffff;--ink:#241c14;--ink2:#6a5c48;--ink3:#736550;
   --acc:#c8791e;--acc-dim:#9a5c12;--teal:#138578;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;
   --line:#e3dac9;--line2:#d2c6ad;
 }
@@ -38,6 +41,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-s
 .fld span{display:block;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--ink2);text-transform:uppercase;font-weight:bold;margin-bottom:5px;}
 .fld input{width:100%;padding:11px 13px;background:#fbf9f4;border:1px solid var(--line2);border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--ink);}
 .fld input:focus{outline:none;border-color:var(--acc);}
+/* No ::placeholder rule existed anywhere on the site, so every hint fell to Chrome's #a9a9a9 —
+   2.23:1 on this panel, including 'you@school.edu' on the PAID product's front door.
+   opacity:1 is required or Firefox's default placeholder alpha undoes the fix. */
+.fld input::placeholder,#search::placeholder{color:#736550;opacity:1;}
 #login .btn-acc{width:100%;padding:12px;font-size:16px;margin-top:6px;}
 #login-note{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--ink2);line-height:1.5;margin-top:16px;text-align:center;}
 #login-msg{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;margin-top:12px;min-height:18px;}
@@ -61,12 +68,16 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-s
 #search{flex:1;min-width:160px;padding:9px 12px;background:var(--panel);border:1px solid var(--line2);border-radius:7px;font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--ink);}
 #search:focus{outline:none;border-color:var(--acc);}
 /* table */
-.tbl-wrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto;box-shadow:0 3px 12px rgba(40,28,14,.05);}
+/* The sticky headers never stuck: overflow-x:auto with no height constraint makes .tbl-wrap the sticky
+   containing block, and it never scrolled vertically — so top:0 resolved against a box that never moved
+   and the header row scrolled away with the page. Past ~15 students the director was reading eight
+   unlabelled numeric columns. Giving the wrapper a real height makes the declaration do its job. */
+.tbl-wrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-height:min(70vh,640px);min-height:220px;overflow:auto;box-shadow:0 3px 12px rgba(40,28,14,.05);}
 table{width:100%;border-collapse:collapse;min-width:760px;}
-th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink2);text-transform:uppercase;text-align:right;padding:12px 14px;border-bottom:2px solid var(--line2);cursor:pointer;white-space:nowrap;user-select:none;background:#faf7f0;position:sticky;top:0;}
+th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink2);text-transform:uppercase;text-align:right;padding:12px 14px;border-bottom:2px solid var(--line2);cursor:pointer;white-space:nowrap;user-select:none;background:#faf7f0;position:sticky;top:0;z-index:2;}
 th:first-child{text-align:left;}
 th:hover{color:var(--acc-dim);}
-th .comp{display:block;font-size:10px;color:var(--ink3);letter-spacing:.5px;font-weight:normal;text-transform:none;}
+th .comp{display:block;font-size:11px;color:var(--ink3);letter-spacing:.5px;font-weight:normal;text-transform:none;}/* 10px was under the product's 11px type floor */
 th.sorted{color:var(--acc-dim);}
 th .arr{color:var(--acc);}
 td{font-family:'Share Tech Mono',monospace;font-size:15px;padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--ink);}
@@ -100,7 +111,7 @@ tr:hover td{background:#fbf9f4;}
   <button type="submit" class="btn btn-acc">SIGN IN</button>
   </form>
   <div id="login-msg"></div>
-  <div id="login-note">Program credentials are issued by LOCK IN. Don't have access yet? Email <a href="mailto:hello@trailer-load.com">hello@trailer-load.com</a> to set up your program.</div>
+  <div id="login-note">Program credentials are issued by LOCK IN. Forgot your password, or don't have access yet? Email <a href="mailto:hello@trailer-load.com">hello@trailer-load.com</a> and we'll sort it the same day.</div>
 </div>
 
 <!-- DASHBOARD -->
@@ -175,7 +186,13 @@ function dLogin(){
           try{localStorage.setItem('lockinDashAuth',JSON.stringify(DASH.session));}catch(e){}
           dMsg('','');dEnter();
         } else {
-          dMsg('✕ '+((j&&(j.error_description||j.msg||j.error))||'Sign-in failed — check your credentials.'),'err');
+          // Never hand the customer the auth vendor's raw string. GoTrue says things like
+          // "Unable to validate email address: invalid format" and "For security purposes, you can
+          // only request this after 21 seconds." at the paid product's front door.
+          var raw=((j&&(j.error_description||j.msg||j.error))||'').toLowerCase();
+          var msg='Sign-in failed. Check your program email and password, or email hello@trailer-load.com and we will reset it.';
+          if(raw.indexOf('security purposes')>=0||raw.indexOf('rate')>=0)msg='Too many attempts. Wait a moment and try again.';
+          dMsg('✕ '+msg,'err');
         }
       }).catch(function(e){console.error('dLogin:',e);dMsg('✕ Network error — try again.','err');});
   }catch(e){console.error('dLogin:',e);dMsg('✕ Error — try again.','err');}

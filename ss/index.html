@@ -9,7 +9,7 @@
 @import url('/fonts/fonts.css');
 
 /* ============================================================
-   SMALLS SORT (LOCK IN)  v1.9
+   SMALLS SORT (LOCK IN)  v1.10
    Drag-sort: 6 routes (NE double-binned at pool corners),
    GENTLE/FLOOR, split QA (DAMAGE+HAZMAT), OVERNIGHT, recovery
    pool, belt-stoppage jam. Industrial-grit palette.
@@ -41,7 +41,10 @@
   --bg3:#2a2a2c;          /* recessed */
   --t1:#e8e2d6;           /* light ink on dark */
   --t2:#b0a890;           /* secondary */
-  --t3:#7e7868;           /* tertiary */
+  --t3:#b8b0a0;           /* tertiary — v1.10 was #7e7868, which failed AA on ALL FIVE surfaces it paints
+                             (2.35:1 on the header, where it colored the only two links that leave the page).
+                             #b8b0a0 measures 4.79:1 on the header's lightest stop, 5.26:1 on the overlay,
+                             7.02:1 on the footer. The flagship did this sweep in v3.5.145; this file missed it. */
   --acc:#e0962e;          /* amber */
   --acc-bright:#f0ad4a;--acc-dim:#b07820;--acc-wash:#4a3a1e;
   --teal:#19a594;--teal-bright:#2dc0ad;--teal-wash:#143832;
@@ -61,7 +64,7 @@ html,body{width:100%;height:100dvh;
 #root{display:flex;flex-direction:column;height:100dvh;max-width:680px;margin:0 auto;position:relative;}
 
 #hdr{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
-  padding:6px 12px;height:44px;background:linear-gradient(180deg,#404044,#323234);
+  padding:6px 12px;height:48px;background:linear-gradient(180deg,#404044,#323234);
   border-bottom:1px solid #1e1e20;position:relative;z-index:60;box-shadow:0 2px 6px rgba(0,0,0,.4);} /* v1.9 header must sit ABOVE overlays (.ov is z40) or the start screen kills every header control */
 #hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--acc) 25%,var(--teal) 75%,transparent);opacity:.6;}
@@ -82,13 +85,14 @@ html,body{width:100%;height:100dvh;
 
 #ftr{flex-shrink:0;text-align:center;padding:4px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:1px;background:#262628;border-top:1px solid #1c1c1e;}
 
-.ov{position:absolute;top:44px;left:0;right:0;bottom:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;
+.ov{position:absolute;top:48px;left:0;right:0;bottom:0;z-index:40;/* v1.10 must track #hdr height */display:none;flex-direction:column;align-items:center;justify-content:center;
   background:radial-gradient(ellipse 120% 100% at 50% 40%,#3a3a3e,#262628);padding:18px;text-align:center;overflow-y:auto;}
 .ov.vis{display:flex;}
 /* v1.2 board + settings cross-wire */
-#sm-board-btn,#sm-gear-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;background:rgba(224,150,46,.14);border:1px solid var(--acc);color:var(--acc);border-radius:5px;padding:5px 10px;cursor:pointer;}
+#sm-board-btn,#sm-gear-btn{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;background:rgba(0,0,0,.35);border:1px solid var(--acc);color:var(--acc-bright);border-radius:5px;padding:5px 10px;cursor:pointer;}
+/* v1.10 the 14%-amber wash measured 3.42:1 on the header; the opaque dark fill puts these at 7.39:1 */
 #sm-gear-btn{padding:5px 9px;font-size:14px;}
-#sm-board-btn:hover,#sm-gear-btn:hover{background:rgba(224,150,46,.28);}
+#sm-board-btn:hover,#sm-gear-btn:hover{background:rgba(0,0,0,.55);}
 .bd-tabs{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;justify-content:center;}
 .bd-tab{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.28);color:#bbb;border-radius:6px;padding:7px 14px;cursor:pointer;}
 .bd-tab.active{background:var(--acc);color:#160c00;border-color:var(--acc);font-weight:bold;}
@@ -122,6 +126,18 @@ html,body{width:100%;height:100dvh;
 .btn:active{transform:translateY(2px);}
 .btn.teal{background:linear-gradient(180deg,var(--teal-bright),var(--teal));color:#0e2420;}
 
+/* ── v1.10 THE BUTTON LAW ──────────────────────────────────────────────
+   1.5px outline · 6px radius · 34px minimum height. Every other surface in
+   the product obeys it; this file shipped FIVE radius values and two of its
+   biggest buttons had no outline at all. This block comes last so it wins. */
+.mode-btn,.btn,#copy-btn,.bd-tab,.tgl,.seg button,#sm-board-btn,#sm-gear-btn,#sm-signout{
+  border:1.5px solid var(--acc-dim);border-radius:6px;min-height:34px;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;}
+.mode-btn{flex-direction:column;justify-content:center;}
+#result-card{border-radius:6px;}
+/* the two bare links get a real tap box instead of a 13px-tall text run */
+.hdr-link{display:inline-flex;align-items:center;min-height:34px;padding:0 8px;}
+
 #result-card{background:#2c2c2e;border:2px solid var(--acc);border-radius:12px;padding:14px 18px;box-shadow:var(--shadow-lg);max-width:400px;width:100%;}
 #result-grade{font-family:'Bebas Neue',sans-serif;font-size:58px;line-height:.9;color:var(--ok);letter-spacing:3px;}
 #result-grade-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--t2);margin-bottom:8px;}
@@ -138,12 +154,12 @@ html,body{width:100%;height:100dvh;
 <body>
 <div id="root">
   <div id="hdr">
-    <img class="logo-img" src="logo.png" alt="SMALLS SORT" style="height:42px;width:auto;">
+    <div class="logo">SMALLS SORT<sub>LOCK IN COMPANION</sub></div><!-- v1.10 was a 1 MB PNG rendered 24x down, with the product name spelled a third way ("SMALLSORT") baked into the art. The Bebas lockup below was already written and unused. -->
     <div style="display:flex;align-items:center;gap:12px;">
       <span id="sm-acct" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;display:inline-flex;align-items:center;gap:8px;"></span>
       <button id="sm-board-btn" onclick="smOpenBoard()">★ BOARD</button>
       <button id="sm-gear-btn" onclick="smOpenSettings()" title="Sound & music">⚙</button>
-      <a href="/lock-in.html" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:1px;">← LOCK IN</a>
+      <a class="hdr-link" href="/lock-in.html" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:1px;">← LOCK IN</a>
     </div>
   </div>
   <div id="statbar">
@@ -195,7 +211,12 @@ html,body{width:100%;height:100dvh;
       <button id="copy-btn">⧉ COPY RESULT</button>
       <div id="r-posted" style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--t2);margin-top:8px;min-height:14px;"></div><!-- v1.8 (MED) run-recorded honesty -->
     </div>
-    <button class="btn teal" id="again-btn" style="margin-top:14px;">RUN AGAIN</button>
+    <!-- v1.10 RUN AGAIN replayed the mode you just played and nothing ever re-showed ov-start, so after
+         your first tap two-thirds of the game — the other mode and the rules card — was unreachable. -->
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn teal" id="again-btn">RUN AGAIN</button>
+      <button class="btn" id="menu-btn">☰ MODES</button>
+    </div>
   </div>
 
   <div class="ov" id="ov-board">
@@ -237,7 +258,7 @@ html,body{width:100%;height:100dvh;
 
 <script>
 // ============================================================
-// SMALLS SORT v1.8 | var-only | single STATE object
+// SMALLS SORT v1.10 | var-only | single STATE object
 // ============================================================
 
 // ───── TUNE ─────
@@ -299,6 +320,10 @@ try{var _ss0=JSON.parse(localStorage.getItem('smSettings')||'{}');if(_ss0){if(_s
 
 var cv=document.getElementById('cv');var cx=cv.getContext('2d');
 var W=1,H=1;
+// v1.10 the canvas backing store was sized in CSS pixels only — no devicePixelRatio anywhere in the file.
+// Every Chromebook at 1.25x/1.5x, every retina laptop and every mirrored projector rendered the whole
+// companion soft next to a crisp flagship. The flagship fixed this same defect in v2.6.4.
+var DPR=1;
 var BELT_TOP=0,BELT_BOT=0,BELT_X=0,BELT_W=0,SIDE_W=0,PKG=52;
 var POOL_ZONE=0;
 var uidN=0;
@@ -383,11 +408,18 @@ function poolFrac(){var step=PKG*0.42;return Math.min(1,(STATE.pool.length*step)
 function getPoint(e){var r=cv.getBoundingClientRect();var px=(e.clientX!==undefined?e.clientX:(e.touches&&e.touches[0].clientX));var py=(e.clientY!==undefined?e.clientY:(e.touches&&e.touches[0].clientY));return {x:(px-r.left)*(W/r.width),y:(py-r.top)*(H/r.height)};}
 function onDown(e){
   if(!STATE.running)return;var p=getPoint(e);
-  if(STATE.pool.length>0){var top=STATE.pool[STATE.pool.length-1];if(Math.abs(p.x-top.x)<=PKG*0.75&&Math.abs(p.y-top.y)<=PKG*0.65){top.grabbed=true;STATE.drag={pkg:top,dx:p.x-top.x,dy:p.y-top.y,from:'pool'};return;}}
+  if(STATE.pool.length>0){var top=STATE.pool[STATE.pool.length-1];if(Math.abs(p.x-top.x)<=PKG*0.75&&Math.abs(p.y-top.y)<=PKG*0.65){top.grabbed=true;STATE.drag={pkg:top,dx:p.x-top.x,dy:p.y-top.y,from:'pool'};smCapture(e);return;}}
   var hit=null,hy=-1;
   for(var i=0;i<STATE.belt.length;i++){var pk=STATE.belt[i];if(Math.abs(p.x-pk.x)<=PKG*0.6&&Math.abs(p.y-pk.y)<=PKG*0.55){if(pk.y>hy){hy=pk.y;hit=pk;}}}
   if(hit){hit.grabbed=true;STATE.drag={pkg:hit,dx:p.x-hit.x,dy:p.y-hit.y,from:'belt'};}
+  smCapture(e);
 }
+// v1.10 MOUSE POINTERS GET NO IMPLICIT CAPTURE. pointerup was bound to the canvas only, so releasing over
+// the header/statbar/off-window never fired onUp: the package stayed grabbed, and a grabbed package is
+// skipped by BOTH the belt-advance loop and the draw loop — an invisible frozen item stuck in STATE.belt
+// for the rest of the run. Touch was unaffected, so this only bit on the exact hardware a district buys.
+// The top bin sits 5px from the canvas edge, so overshooting is the NORMAL way to reach it.
+function smCapture(e){if(STATE.drag&&cv.setPointerCapture&&e&&e.pointerId!==undefined){try{cv.setPointerCapture(e.pointerId);}catch(_e){}}}
 function onMove(e){if(!STATE.drag)return;e.preventDefault();var p=getPoint(e);STATE.drag.pkg.x=p.x-STATE.drag.dx;STATE.drag.pkg.y=p.y-STATE.drag.dy;}
 function onUp(e){
   if(!STATE.drag)return;var pkg=STATE.drag.pkg,from=STATE.drag.from;var p=getPoint(e);
@@ -466,7 +498,7 @@ function drawPool(){
   cx.fillStyle='rgba(0,0,0,.22)';cx.fillRect(BELT_X,zoneY,BELT_W,zoneH);
   cx.strokeStyle='rgba(224,80,42,.5)';cx.lineWidth=1.5;cx.setLineDash([6,4]);
   cx.beginPath();cx.moveTo(BELT_X,zoneY+2);cx.lineTo(BELT_X+BELT_W,zoneY+2);cx.stroke();cx.setLineDash([]);
-  cx.fillStyle='rgba(176,168,144,.7)';cx.font="bold 9px 'Share Tech Mono'";cx.textAlign='center';cx.textBaseline='top';
+  cx.fillStyle='rgba(212,206,186,.95)';cx.font="bold 11px 'Share Tech Mono',monospace";cx.textAlign='center';cx.textBaseline='top';
   cx.fillText('POOL — DIG FROM TOP',W/2,zoneY+4);
   var step=PKG*0.42;
   for(var i=0;i<STATE.pool.length;i++){var pk=STATE.pool[i];if(STATE.drag&&STATE.drag.pkg===pk)continue;pk.x=pk.poolX;pk.y=H-PKG*0.5-i*step;drawPkg(pk);}
@@ -562,11 +594,14 @@ function drawBins(){
     cx.strokeStyle=rim;cx.lineWidth=hot?4:(hi?3.2:2.2);
     var ins=hot?2.4:(hi?3:2.6);rrI(r.x,r.y,r.w,r.h,8,ins);cx.stroke();
     // legibility plate behind the code
-    cx.fillStyle='rgba(0,0,0,'+(hi?0.40:0.26)+')';var ph=Math.min(r.h*0.46,26),py=r.y+r.h*0.18;rr(r.x+r.w*0.13,py,r.w*0.74,ph,6);cx.fill();
+    // v1.10 the highest-frequency read in the game shipped at 8px and 6px, fixed-pixel while every
+    // neighbouring label scaled, and white-on-amber at 1.75:1 over the GENTLE bin's top stop. The plate
+    // now runs the full label stack, so the type sits on a known dark ground (7.9:1) instead of the art.
+    cx.fillStyle='rgba(0,0,0,'+(hi?0.52:0.40)+')';var ph=Math.min(r.h*0.80,56),py=r.y+r.h*0.18;rr(r.x+r.w*0.13,py,r.w*0.74,ph,6);cx.fill();
     cx.fillStyle='#fff';cx.font="bold "+Math.min(23,r.h*0.42)+"px 'Bebas Neue'";cx.textAlign='center';cx.textBaseline='middle';
     cx.fillText(b.code,r.x+r.w/2,r.y+r.h*0.40);
-    cx.font="bold "+(hi?9:8)+"px 'Share Tech Mono'";cx.fillStyle='rgba(255,255,255,.96)';cx.fillText(b.name,r.x+r.w/2,r.y+r.h*0.74);
-    if(b.hint){cx.font=(hi?7:6)+"px 'Share Tech Mono'";cx.fillStyle='rgba(255,255,255,.78)';cx.fillText(b.hint,r.x+r.w/2,r.y+r.h*0.90);}
+    cx.font="bold "+(hi?12:11)+"px 'Share Tech Mono',monospace";cx.fillStyle='#fff';cx.fillText(b.name,r.x+r.w/2,r.y+r.h*0.74);
+    if(b.hint){cx.font=(hi?11:10)+"px 'Share Tech Mono',monospace";cx.fillStyle='rgba(255,255,255,.92)';cx.fillText(b.hint,r.x+r.w/2,r.y+r.h*0.90);}
   }
 }
 function pointInRect(px,py,r){return r&&px>=r.x&&px<=r.x+r.w&&py>=r.y&&py<=r.y+r.h;}
@@ -694,7 +729,7 @@ function smSubmitSession(acc,tput,grade){
     if(!_pl||!_pl.consentSelf){_smPostNote('NOT RECORDED — stats saving is off (game → ACCOUNT & DATA)',false);return;} // no save without self-consent — identical rule to the game's zSendSession
     var dur=Math.max(1,Math.round((Date.now()-(STATE.startT||Date.now()))/1000));
     var rec={
-      user_id:s.uid, mode:'smalls', app_ver:'ss-1.9',
+      user_id:s.uid, mode:'smalls', app_ver:'ss-1.10',
       consent_self:!!_pl.consentSelf, consent_share:!!_pl.consentShare, opt_in_share:!!_pl.consentShare,
       started_at:new Date(STATE.startT||Date.now()).toISOString(), ended_at:new Date().toISOString(),
       duration_s:dur,
@@ -788,16 +823,35 @@ function smToggleMusic(){
     SM_AUDIO.play().then(function(){btn.textContent='⏸ PAUSE MUSIC';}).catch(function(){btn.textContent='▶ PLAY MUSIC';});
   } else { SM_AUDIO.pause();btn.textContent='▶ PLAY MUSIC'; }
 }
-function resize(){var f=document.getElementById('field');W=f.offsetWidth;H=f.offsetHeight;cv.width=W;cv.height=H;layout();}
+function resize(){
+  var f=document.getElementById('field');
+  DPR=Math.max(1,Math.min(3,(window.devicePixelRatio)||1));
+  W=f.offsetWidth;H=f.offsetHeight;
+  cv.width=Math.round(W*DPR);cv.height=Math.round(H*DPR);
+  cv.style.width=W+'px';cv.style.height=H+'px';
+  cx.setTransform(DPR,0,0,DPR,0,0); // draw in logical px; getPoint() already maps through getBoundingClientRect
+  layout();
+}
+function showModes(){
+  STATE.running=false;
+  document.getElementById('ov-end').classList.remove('vis');
+  document.getElementById('ov-board').classList.remove('vis');
+  document.getElementById('ov-settings').classList.remove('vis');
+  document.getElementById('ov-start').classList.add('vis');
+}
 function boot(){
   resize();buildBins();
   cv.addEventListener('pointerdown',onDown,{passive:false});
   cv.addEventListener('pointermove',onMove,{passive:false});
   cv.addEventListener('pointerup',onUp,{passive:false});
   cv.addEventListener('pointercancel',function(){if(STATE.drag){STATE.drag.pkg.grabbed=false;STATE.drag=null;}},{passive:true});
+  // belt and braces behind setPointerCapture: a release anywhere still resolves the drag
+  window.addEventListener('pointerup',onUp,{passive:false});
+  window.addEventListener('pointercancel',function(){if(STATE.drag){STATE.drag.pkg.grabbed=false;STATE.drag=null;}},{passive:true});
   document.getElementById('start-forever').addEventListener('pointerdown',function(){startGame('forever');},{passive:true});
   document.getElementById('start-timed').addEventListener('pointerdown',function(){startGame('timed');},{passive:true});
   document.getElementById('again-btn').addEventListener('pointerdown',function(){startGame(STATE.mode||'forever');},{passive:true});
+  document.getElementById('menu-btn').addEventListener('pointerdown',showModes,{passive:true});
   document.getElementById('copy-btn').addEventListener('pointerdown',copyResult,{passive:true});
   window.addEventListener('resize',resize);
   smAcctRender();
@@ -822,7 +876,7 @@ function smAcctRender(){
     var b=document.getElementById('sm-signout');
     if(b)b.addEventListener('click',function(){try{localStorage.removeItem('liAuth');}catch(e){}smAcctRender();},{passive:true});
   }else{
-    el.innerHTML='<a href="/lock-in.html#signin" style="color:var(--t3);text-decoration:none;letter-spacing:1px;">SIGN IN →</a>';
+    el.innerHTML='<a class="hdr-link" href="/lock-in.html#signin" style="color:var(--t3);text-decoration:none;letter-spacing:1px;">SIGN IN →</a>';
   }
 }
 boot();

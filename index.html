@@ -21,7 +21,7 @@
 <!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Student-privacy laws + district vetting. Do not re-add. -->
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
-:root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--ink:#211a12;--t1:#2a2018;--t2:#544738;--t3:#8a7c66;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--acc-wash:#f6e9d3;--teal:#0f7d70;--teal-bright:#19a594;--border:#cdbfa6;--border2:#bcaa8b;--ok:#1f9d57;--sm:#7a4dd0;}
+:root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--ink:#211a12;--t1:#2a2018;--t2:#544738;--t3:#8a7c66;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--acc-wash:#f6e9d3;--teal:#0a6a5e;--teal-bright:#19a594;--border:#cdbfa6;--border2:#bcaa8b;--ok:#1f9d57;--sm:#7a4dd0;}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{margin:0;background:radial-gradient(1100px 420px at 50% -160px,rgba(200,121,30,.12),transparent),var(--bg);color:var(--t1);font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased;}
@@ -50,7 +50,7 @@ a{color:var(--teal);}
 .stripstats{display:flex;justify-content:center;flex-wrap:wrap;gap:0;max-width:640px;margin:30px auto 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg2);}
 .stripstats div{flex:1;min-width:140px;padding:14px 10px;text-align:center;border-right:1px solid var(--border);}
 .stripstats div:last-child{border-right:none;}
-.stripstats .n{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--acc);line-height:1;letter-spacing:1px;}
+.stripstats .n{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--acc-dim);line-height:1;letter-spacing:1px;}
 .stripstats .l{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-top:4px;}
 section{padding:44px 0;border-top:1px solid var(--border);}
 h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:0 0 6px;color:var(--ink);}
@@ -70,7 +70,9 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:
 .mode a:hover{text-decoration:underline;}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;}
-.card h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin:0 0 6px;color:var(--acc);}
+/* --acc on --bg2 is 2.44:1 — the published prices were the lowest-contrast text on the whole site.
+   --acc-dim is 3.87:1, clearing the 3:1 large-text bar at 22px. Keep --acc for fills carrying dark ink. */
+.card h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin:0 0 6px;color:var(--acc-dim);}
 .card p{color:var(--t2);margin:0;font-size:16px;}
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
 .step{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px 20px 18px;}
@@ -248,7 +250,9 @@ footer .zw a:hover{color:var(--acc);}
     <span class="tagpill">Logistics employers</span>
     <span class="tagpill">Workforce-readiness programs</span>
   </div>
-  <div style="margin-top:24px;"><a class="btn play" href="for-districts/">Technical documentation →</a><a class="btn play" href="dashboard/">Open the program dashboard →</a><a class="btn ghost" href="mailto:hello@trailer-load.com?subject=LOCK%20IN%20pilot%20program">Set up a pilot for your program</a></div>
+  <!-- .btn is inline-flex, so with no whitespace between tags and no gap the two amber buttons fused into
+       one continuous orange slab. .cta-row supplies display:flex, gap:12px and flex-wrap, same as the hero. -->
+  <div class="cta-row" style="margin-top:24px;justify-content:flex-start;"><a class="btn play" href="for-districts/">Technical documentation →</a><a class="btn play" href="dashboard/">Open the program dashboard →</a><a class="btn ghost" href="mailto:hello@trailer-load.com?subject=LOCK%20IN%20pilot%20program">Set up a pilot for your program</a></div>
   <div class="disclaim"><strong>Training supplement only.</strong> LOCK IN builds intuition and tracks readiness. It does not replace employer safety training, OSHA training, or any certification requirement. See <a href="terms.html">Terms</a>.</div>
 </div></section>
 

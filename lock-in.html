@@ -22,9 +22,49 @@
 @import url('/fonts/fonts.css');
 
 /* ================================================================
-   LOCK IN v3.5.178
+   LOCK IN v3.5.179
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.179 - THE 19 HIGH FINDINGS FROM THE FINAL PERSNICKETY SWEEP (all four BROKEN items shipped
+     in the prior commit). FLAGSHIP, one fix: the load brief CLIPPED ON THE HARDWARE SCHOOLS BUY. #clipboard is
+     height-driven but every type size inside clamps off viewport WIDTH, so on a 1366x768 Chromebook the type
+     pinned to its maximum while the writing area shrank to ~405px for content needing ~425-530px — and
+     #brief-body centers with overflow:hidden, so it silently ate rule 1 and rule 9 off both ends with no
+     scrollbar. Below 820px tall the stack now scrolls from the top and the type scales off HEIGHT.
+     SMALLSSORT (ss-1.10) took seven, because it was the weakest surface in the product by a distance:
+     (1) MODE SELECT WAS UNREACHABLE after the first tap — nothing ever re-showed ov-start and RUN AGAIN
+     replayed the mode you just played, so two-thirds of the companion was gone until you knew to reload;
+     added a MODES button. (2) DRAG NEVER CAPTURED THE POINTER — mouse pointers get no implicit capture, so
+     releasing over the header or off-window never fired onUp and the package stayed grabbed, which makes it
+     skipped by BOTH the belt loop and the draw loop: an invisible frozen item for the rest of the run. Touch
+     was unaffected, so it only bit on district hardware. (3) NO devicePixelRatio ANYWHERE — the whole
+     companion rendered soft next to a crisp flagship on every Chromebook and projector; the flagship fixed
+     this same defect in v2.6.4. (4) --t3 failed AA on all five surfaces it painted, including the only two
+     links that leave the page. (5) The bins' highest-frequency labels shipped at 8px and 6px, fixed-pixel,
+     white-on-amber at 1.75:1 — the legibility plate now spans the label stack (worst case 6.50:1 measured
+     across all eleven bin colours). (6) The 1 MB logo went away: it rendered at 44px, 24x down, with the
+     product name spelled a THIRD way ("SMALLSORT") baked into the art, two lines below a dead Bebas lockup
+     that fixes all three problems. (7) The button law (1.5px / 6px / 34px) finally applies — five radius
+     values and two outline-less buttons are gone, and the header controls went from 3.42:1 to 7.35:1.
+     DASHBOARD (the paid one): --ink3 failed AA on all three of its grounds while carrying the competency
+     sublabels that ARE the $1,950 argument (now 4.94-5.67:1) and the competency label came off the 10px
+     floor; the STICKY HEADERS never stuck (overflow-x with no height constraint made .tbl-wrap the sticky
+     containing block and it never scrolled, so past ~15 students the director read eight unlabelled numeric
+     columns); the sign-in failure path printed GoTrue's raw strings at the front door and offered no
+     password-reset route; and ::placeholder was unstyled site-wide at 2.23:1, including you@school.edu.
+     FRONT DOOR: the published prices were the LOWEST-CONTRAST TEXT ON THE SITE (2.44:1 -> 3.87:1), and the
+     three CTAs in the schools section had no whitespace and no gap, fusing two amber buttons into one
+     continuous slab. VENDOR IDENTITY: llms.txt/llms-full.txt credited dissolved Zengine and a dead
+     zengine.site in five places while every invoice says F-Keys — a name mismatch is a hard stop in vendor
+     registration, and robots.txt invites every AI crawler in. LEGAL: the Terms had no fees, renewal, refund
+     or termination section on a domain publishing six prices; it now states annual terms, NO auto-renewal,
+     a 30-day unused-license refund, and termination for convenience. DISCOVERY: the sitemap omitted both
+     documents written for CTE directors and carried lastmods a month stale. PRIVACY: for-districts invites
+     reviewers to verify the posture in devtools, and the visit counter was undisclosed — the policy now
+     describes it exactly (one server integer, one sessionStorage flag, no row/cookie/IP/fingerprint).
+     --teal measured exactly 4.00:1 across five pages, a near-miss no eye catches and every scanner does.
+     NEXT: the 25 MED + 12 LOW taste findings.
 
    CHANGE LOG v3.5.178 - LEGIBILITY, MEASURED THIS TIME. He photographed the daily card: bright amber and
      near-white text on a cream panel, painful to read. Cause was MY v3.5.154 "theme collapse" fix — it scoped the
@@ -1700,6 +1740,22 @@ body.m-portrait .stg-wheel{bottom:288px;}
   letter-spacing:.3px;color:#2a1c0e;line-height:1.12;}
 .brief-rule-txt b{color:#a8511a;}
 .brief-why{display:block;font-weight:400;font-size:clamp(9.5px,1.8vw,11px);color:#6a5a42;line-height:1.08;margin-top:0;letter-spacing:.1px;} /* v3.5.84 the "why" detail line */
+/* v3.5.179 THE TEACHING ARTIFACT CLIPPED ON THE HARDWARE SCHOOLS ACTUALLY BUY.
+   #clipboard is HEIGHT-driven (min(1060px,88vh)) but every type size inside clamps off viewport
+   WIDTH — so on a 1366x768 Chromebook the type pinned to its maximum while the writing area shrank
+   to ~405px for content needing ~425-530px. #brief-body centers with overflow:hidden, so it clipped
+   BOTH ends silently: rule 1 (Grab & place) and rule 9 (Pack tight, then seal) simply weren't there,
+   with no scrollbar and no indicator. Below 820px tall the stack now scrolls from the top and the
+   type scales off HEIGHT instead of width. */
+@media (max-height:820px){
+  #brief-body{justify-content:flex-start;overflow-y:auto;}
+  .brief-title{font-size:clamp(16px,2.6vh,21px);}
+  .brief-sub{font-size:clamp(8px,1.3vh,10px);margin-bottom:6px;}
+  .brief-rule{margin-bottom:2px;}
+  .brief-rule-num{font-size:clamp(13px,2.1vh,16px);}
+  .brief-rule-txt{font-size:clamp(11px,1.75vh,13px);line-height:1.1;}
+  .brief-why{font-size:clamp(9px,1.4vh,10.5px);line-height:1.05;}
+}
 #brief-cta-row{display:flex;align-items:center;justify-content:center;margin-top:16px;flex:none;}
 #brief-cta{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;
   background:linear-gradient(180deg,#c8791e,#9a5512);color:#1c1206;border:1.5px solid #e0a64e;border-radius:6px;
@@ -2206,7 +2262,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.178 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.179 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2312,7 +2368,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.178 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.179 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2470,7 +2526,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.178 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.179 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2948,7 +3004,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.178
+// LOCK IN v3.5.179
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3407,7 +3463,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.178'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.179'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -10045,7 +10101,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.178</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.179</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
