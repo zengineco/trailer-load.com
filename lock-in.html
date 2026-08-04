@@ -20,11 +20,43 @@
      Supabase tables + the public aggregate counter. Do not re-add. -->
 <style>
 @import url('/fonts/fonts.css');
+/* TYPE FLOOR: bare <small>/<sub>/<sup> otherwise inherit the browser's 0.8em
+   shrink and land under 11px with no declaration for the gate to catch.
+   Class-specific rules outrank this, so it only floors the uncovered ones. */
+small,sub,sup{font-size:11px;}
+
 
 /* ================================================================
-   LOCK IN v3.5.179
+   LOCK IN v3.5.180
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.180 - THE TYPE FLOOR, ENFORCED. Vince has raised tiny text roughly six times over three
+     months, and he is right that it keeps coming back: every previous pass fixed the INSTANCES it happened
+     to look at, and nothing stopped the next one from landing. I added a clamp(8px,...) myself in v3.5.179.
+     Audited the whole product: 64 sites under 11px. WHERE THEY HID: 32 in flagship CSS, 10 across the
+     satellites, 4 in briefing clamp() MINIMUMS (the minimum is what ships on a short viewport, which is
+     exactly the Chromebook case), and 8 in CANVAS `cx.font=` calls that no CSS grep can see -- including a
+     5.5px belt index digit at 40% alpha. FIXES: the 5.5px digit is DELETED rather than enlarged, because
+     nothing read it and nothing used it (no key binds to a belt slot, and the selection caret already marks
+     the active piece) -- making an unreadable non-feature legible only adds clutter. In-game canvas labels
+     go to 12px: the staged-piece SPEC tag (was 8px), the empty-slot SPEC/BAG placeholder (9px), the floor
+     counters (10px). Belt rotation degrees and the rotation badge go to 11px. Everything else lands on the
+     11px floor the design law already specified. **'SP STAGE 3/8' is now 'SPEC 3/8'** -- fewer words AND
+     bigger type, and it retires the last two dead vocabularies in one edit: the "STAGE" noun (its UI was
+     deleted in v3.4.11) and the "SP" acronym (retired for SPEC in v3.5.175). The briefing clamps were safe
+     to raise because v3.5.179 made #brief-body scroll below 820px tall: measured at a real 1366x768, rules
+     now render 13px / why-lines 11px / numbers 16px AND the whole 9-rule brief fits with 165px to spare.
+     A SECOND HOLE, found by rendering rather than grepping: bare <small>/<sub>/<sup> carry NO font-size at
+     all, so they inherit the browser's 0.8em shrink -- a 10px "(mobile)" label survived the size scan
+     because there was no declaration to catch. 22 such tags across 9 pages now sit on an explicit
+     small,sub,sup{font-size:11px} floor, declared first in each sheet (after @import, which must stay
+     first) so every class-specific rule still outranks it.
+     **GATE INSTALLED: `.tools/typefloor.py`.** It fails the build on any font-size, clamp() minimum, or
+     canvas font under 11px, AND on any page carrying bare shrink tags without a floor rule. Verified by
+     stripping a floor and watching it fire. This is the part that makes it stop coming back -- the rule
+     existed already; enforcement did not. Raising the floor product-wide is now one constant in that file.
+     Also noted, not fixed: `.brief-sub` is dead CSS (0 elements in the DOM).
 
    CHANGE LOG v3.5.179 - THE 19 HIGH FINDINGS FROM THE FINAL PERSNICKETY SWEEP (all four BROKEN items shipped
      in the prior commit). FLAGSHIP, one fix: the load brief CLIPPED ON THE HARDWARE SCHOOLS BUY. #clipboard is
@@ -963,7 +995,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 /* v3.5.108 signed-in = your name, in the cyan "load-rate" tone so it reads as a live account, not a CTA */
 .sm-loginbtn.signed-in{background:#123f3a;color:#5fd6cd;border-color:#2aa9a0;}
 .sm-loginbtn.signed-in:hover{background:#18514a;color:#8be6de;}
-.sm-soon{font-size:10px;letter-spacing:1px;color:var(--t3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;}
+.sm-soon{font-size:11px;letter-spacing:1px;color:var(--t3);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;}
 /* Mode cards — VERTICAL, brick-laid, LARGE legible text */
 #sm-modes{display:flex;flex-direction:column;gap:11px;width:360px;max-width:46vw;margin:0;padding:0 0 0 34px;}
 .sm-card{
@@ -1006,7 +1038,7 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 /* Version / copyright footer */
 #sm-footer{
   position:absolute;bottom:14px;left:0;right:0;text-align:center;
-  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
   color:var(--t3);
 }
 /* v3.5.43 MOBILE MENU — compact, semi-transparent cards so the (crispy) demo shows THROUGH instead of being blanketed; top-right cleared off the logo; briefing clipboard stretched a touch taller so its text stops clipping top/bottom. Desktop untouched. */
@@ -1071,14 +1103,14 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   color:var(--ok);line-height:1;display:block;
 }
 #to-sub{
-  font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:1.5px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;
   color:var(--t3);display:block;margin-top:3px;text-transform:uppercase;
 }
 
 /* Step counter */
 #to-status{
   flex-shrink:0;
-  font-family:'Share Tech Mono',monospace;font-size:10px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
   color:var(--acc);font-weight:bold;letter-spacing:.8px;
   padding:8px 16px 6px;
   border-bottom:1px solid var(--border);
@@ -1128,7 +1160,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 .to-btn-exit{background:transparent;color:var(--t2);border-color:var(--border2);}
 .to-btn-exit:hover{border-color:var(--acc);color:var(--acc);}
 #to-exit-hint{
-  font-family:'Share Tech Mono',monospace;font-size:10.5px;
+  font-family:'Share Tech Mono',monospace;font-size:11px;
   color:var(--t3);letter-spacing:.8px;text-align:center;
 }
 
@@ -1199,7 +1231,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   color:var(--t2);letter-spacing:.5px;
 }
 .ls-diff{
-  font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:bold;
+  font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;
   letter-spacing:1px;padding:2px 6px;border-radius:2px;
   border:1px solid;display:inline-block;align-self:flex-start;margin-top:2px;
 }
@@ -1305,7 +1337,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
   padding:8px 4px 6px;border-bottom:1px solid var(--border2);background:rgba(0,0,0,.2);}
 #fp-grade-card{padding:8px 10px 6px;border-bottom:1px solid var(--border2);text-align:center;}
 #fp-grade{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:4px;line-height:1;display:block;}
-#fp-grade-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);display:block;margin-top:-1px;font-weight:bold;}
+#fp-grade-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--t2);display:block;margin-top:-1px;font-weight:bold;}
 #fp-subs{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px;}
 .fp-sg{display:flex;align-items:center;justify-content:space-between;gap:4px;}
 .fp-sg-lbl{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--t2);width:64px;flex-shrink:0;font-weight:bold;}
@@ -1313,12 +1345,12 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 .fp-sg-fill{height:100%;border-radius:3px;transition:width .4s;}
 .fp-sg-val{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:bold;min-width:30px;text-align:right;}
 #fp-wt{padding:6px 10px;border-bottom:1px solid var(--border);}
-.fp-wt-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.8px;
+.fp-wt-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.8px;
   color:var(--t2);text-transform:uppercase;margin-bottom:4px;font-weight:bold;}
 .fp-wt-bar{display:flex;height:9px;border-radius:3px;overflow:hidden;gap:1px;}
 .fp-wt-seg{height:100%;transition:flex .4s;}
 .fp-wt-leg{display:flex;gap:6px;margin-top:3px;flex-wrap:wrap;}
-.fp-wt-dot{display:flex;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t2);}/* v3.5.34 9->10 weight legend */
+.fp-wt-dot{display:flex;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t2);}/* v3.5.34 9->10 weight legend */
 .fp-wt-dot span{width:8px;height:8px;border-radius:2px;display:inline-block;}
 #fp-counts{padding:9px 14px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:7px;}
 .fp-ct{display:flex;justify-content:space-between;align-items:baseline;}
@@ -1386,7 +1418,7 @@ body.m-portrait #to-principle-card{overflow-y:auto;}
 .sr-cap{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--t2);text-align:center;margin-bottom:5px;text-transform:uppercase;font-weight:bold;text-shadow:0 1px 2px #000;}
 .sr-cap.rdy{color:#5fe6b0;}.sr-cap.loose{color:#f0b84a;}
 .sr-row{display:flex;align-items:center;gap:7px;margin-top:3px;}
-.sr-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.4px;color:var(--t2);width:46px;font-weight:bold;text-align:right;}
+.sr-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.4px;color:var(--t2);width:46px;font-weight:bold;text-align:right;}
 .sr-track{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.5);overflow:hidden;border:1px solid rgba(0,0,0,.5);}
 .sr-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,#c8791e,#e0a64e);transition:width .18s ease;border-radius:4px;}
 .sr-track i.sr-full{background:linear-gradient(90deg,#1f9d57,#3fd07f);}
@@ -1655,7 +1687,7 @@ body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{an
 
 /* Watermark */
 #zw{position:fixed;bottom:3px;right:6px;font-family:'Share Tech Mono',monospace;
-  font-size:9px;color:rgba(42,32,24,.16);letter-spacing:1px;pointer-events:none;z-index:1;}
+  font-size:11px;color:rgba(42,32,24,.16);letter-spacing:1px;pointer-events:none;z-index:1;}
 
 /* Footer conveyor */
 #footer{flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border2);padding:3px 6px 3px;z-index:10;}
@@ -1731,7 +1763,7 @@ body.m-portrait .stg-wheel{bottom:288px;}
 #brief-std{display:flex;flex-direction:column;}
 .brief-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,3.6vw,23px);letter-spacing:2.5px;
   color:#2a1c0e;display:block;margin-bottom:1px;text-shadow:0 1px 0 rgba(255,255,255,.4);}
-.brief-sub{font-family:'Share Tech Mono',monospace;font-size:clamp(8px,1.6vw,10px);letter-spacing:2px;
+.brief-sub{font-family:'Share Tech Mono',monospace;font-size:clamp(11px,1.6vw,13px);letter-spacing:2px;
   color:#6a5a42;text-transform:uppercase;display:block;margin-bottom:clamp(7px,1.6vw,13px);}
 .brief-rule{display:flex;gap:8px;margin-bottom:clamp(2px,0.5vw,4px);align-items:baseline;} /* v3.5.84 tightened for 9 rules + why-lines */
 .brief-rule-num{font-family:'Bebas Neue',sans-serif;font-size:clamp(14px,2.7vw,17px);color:#b5651a;
@@ -1739,7 +1771,7 @@ body.m-portrait .stg-wheel{bottom:288px;}
 .brief-rule-txt{font-family:'Barlow Condensed',sans-serif;font-size:clamp(12px,2.3vw,14px);font-weight:600;
   letter-spacing:.3px;color:#2a1c0e;line-height:1.12;}
 .brief-rule-txt b{color:#a8511a;}
-.brief-why{display:block;font-weight:400;font-size:clamp(9.5px,1.8vw,11px);color:#6a5a42;line-height:1.08;margin-top:0;letter-spacing:.1px;} /* v3.5.84 the "why" detail line */
+.brief-why{display:block;font-weight:400;font-size:clamp(11px,1.8vw,13px);color:#6a5a42;line-height:1.08;margin-top:0;letter-spacing:.1px;} /* v3.5.84 the "why" detail line */
 /* v3.5.179 THE TEACHING ARTIFACT CLIPPED ON THE HARDWARE SCHOOLS ACTUALLY BUY.
    #clipboard is HEIGHT-driven (min(1060px,88vh)) but every type size inside clamps off viewport
    WIDTH — so on a 1366x768 Chromebook the type pinned to its maximum while the writing area shrank
@@ -1750,11 +1782,11 @@ body.m-portrait .stg-wheel{bottom:288px;}
 @media (max-height:820px){
   #brief-body{justify-content:flex-start;overflow-y:auto;}
   .brief-title{font-size:clamp(16px,2.6vh,21px);}
-  .brief-sub{font-size:clamp(8px,1.3vh,10px);margin-bottom:6px;}
+  .brief-sub{font-size:clamp(11px,1.3vh,12px);margin-bottom:6px;}
   .brief-rule{margin-bottom:2px;}
   .brief-rule-num{font-size:clamp(13px,2.1vh,16px);}
   .brief-rule-txt{font-size:clamp(11px,1.75vh,13px);line-height:1.1;}
-  .brief-why{font-size:clamp(9px,1.4vh,10.5px);line-height:1.05;}
+  .brief-why{font-size:clamp(11px,1.4vh,12px);line-height:1.05;}
 }
 #brief-cta-row{display:flex;align-items:center;justify-content:center;margin-top:16px;flex:none;}
 #brief-cta{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;
@@ -1762,9 +1794,9 @@ body.m-portrait .stg-wheel{bottom:288px;}
   padding:11px 26px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.45);}
 #brief-cta:hover{filter:brightness(1.1);}
 #brief-legal{max-width:560px;margin:12px auto 0;font-family:'Share Tech Mono',monospace;
-  font-size:10.5px;color:#7a6e5c;line-height:1.5;text-align:center;padding:0 10px;flex:none;}
+  font-size:11px;color:#7a6e5c;line-height:1.5;text-align:center;padding:0 10px;flex:none;}
 #brief-legal a{color:#c8791e;}
-#brief-voice-note{font-family:'Share Tech Mono',monospace;font-size:10.5px;
+#brief-voice-note{font-family:'Share Tech Mono',monospace;font-size:11px;
   letter-spacing:1px;color:#888;text-align:right;max-width:150px;line-height:1.4;}
 
 /* ── VOICE TOGGLE ── */
@@ -1866,7 +1898,7 @@ body.m-portrait .stg-wheel{bottom:288px;}
 .set-range::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--acc);border:2px solid var(--bg2);cursor:pointer;}
 .set-note{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;
   color:var(--t3);line-height:1.5;margin-top:8px;font-style:italic;}
-.set-foot{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;
+.set-foot{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;
   color:var(--t3);text-align:center;padding:12px 0 2px;}
 /* Reduced-motion: kill CSS animations/transitions (the canvas render loop is unaffected) */
 body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{
@@ -1966,7 +1998,7 @@ body[data-cb="trit"]{
 .safety-txt b{font-size:19px;color:var(--t1);}
 .safety-l{font-size:12px;color:var(--t3);}
 .legend-line{display:flex;align-items:center;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--t2);margin-bottom:6px;}
-.lg-sp{display:inline-block;background:rgba(176,28,10,.95);color:#fff;font-weight:bold;font-size:10px;padding:1px 5px;border-radius:2px;margin-right:6px;letter-spacing:1px;}
+.lg-sp{display:inline-block;background:rgba(176,28,10,.95);color:#fff;font-weight:bold;font-size:11px;padding:1px 5px;border-radius:2px;margin-right:6px;letter-spacing:1px;}
 .legend-haz{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:5px;}
 .lg-d{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;background:var(--acc-wash);border:1.5px solid var(--t1);transform:rotate(45deg);}
 .lg-d > i{transform:rotate(-45deg);font-style:normal;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:bold;color:var(--t1);}
@@ -2011,7 +2043,7 @@ body[data-cb="trit"]{
 .lb-card.shame{box-shadow:inset 3px 0 0 #b3401f;}
 .lb-card-hd{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.6px;color:#2a1a08;display:flex;align-items:center;gap:7px;line-height:1;}
 .lb-card-hd .em{font-size:16px;}
-.lb-card-sub{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:.2px;color:#9a8763;margin:2px 0 8px;line-height:1.35;}
+.lb-card-sub{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2px;color:#9a8763;margin:2px 0 8px;line-height:1.35;}
 .lb-card-rows{display:flex;flex-direction:column;gap:2px;}
 .lb-crow{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:7px;padding:4px 7px;border-radius:5px;background:rgba(255,255,255,.5);}
 .lb-crow .rk{font-family:'Bebas Neue',sans-serif;font-size:15px;color:#a08b6a;text-align:center;line-height:1;}
@@ -2027,18 +2059,18 @@ body[data-cb="trit"]{
 /* v3.5.86 DAILY = the crown jewel: the world's #1 loader gets a hero, + a live reset countdown */
 .lb-daily-crown{background:linear-gradient(135deg,#f6dc90,#e0a838);border:1px solid #b5651a;border-radius:7px;padding:11px 14px;margin-bottom:11px;text-align:center;box-shadow:0 3px 14px rgba(224,150,46,.42);}
 .lb-daily-crown.empty{background:linear-gradient(135deg,#efe7d4,#ddd0b4);box-shadow:none;}
-.lb-daily-crown .dc-lbl{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:1.4px;color:#6a3a08;}
+.lb-daily-crown .dc-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.4px;color:#6a3a08;}
 .lb-daily-crown .dc-name{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;color:#3a1e04;line-height:1;margin:3px 0 2px;word-break:break-all;}
 .lb-daily-crown .dc-score{font-family:'Share Tech Mono',monospace;font-size:12px;color:#6a3a08;font-weight:bold;}
-.lb-daily-reset{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5px;color:#8b6a3a;text-align:center;margin-top:7px;}
+.lb-daily-reset{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:#8b6a3a;text-align:center;margin-top:7px;}
 /* v3.5.107 ALL-TIME DAILY records strip */
 .lb-alltime{margin-top:12px;padding-top:11px;border-top:2px dashed #cebf9c;}
-.lb-at-hd{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#b07a12;margin:0 0 9px;display:flex;align-items:center;gap:7px;}
+.lb-at-hd{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#b07a12;margin:0 0 9px;display:flex;align-items:center;gap:7px;}
 .lb-at-hd::after{content:'';flex:1;height:1px;background:#cebf9c;}
 .lb-at-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .lb-at{background:linear-gradient(180deg,#efe8d7,#e2d8bf);border:1px solid #cebf9c;border-radius:8px;padding:9px 10px;box-shadow:inset 3px 0 0 #e0a838;}
 .lb-at.shame{box-shadow:inset 3px 0 0 #b3401f;}
-.lb-at-lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:#8a7a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-at-lbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:#8a7a5c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .lb-at-val{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;color:#2a1a08;margin:5px 0 2px;font-variant-numeric:tabular-nums;}
 .lb-at.shame .lb-at-val{color:#b3401f;}
 .lb-at-nm{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:bold;color:#5c4a30;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -2094,10 +2126,10 @@ body[data-cb="trit"]{
 .pf-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px;}
 .pf-tile{background:linear-gradient(180deg,#f1ebde,#e3dbc7);border:1px solid #cbbca0;border-radius:6px;padding:12px 6px 9px;text-align:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 1px 2px rgba(80,54,30,.08);}
 .pf-tval{font-family:'Bebas Neue',sans-serif;font-size:29px;color:#7a4a12;line-height:1;letter-spacing:.5px;font-variant-numeric:tabular-nums;}
-.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#8a7a5c;margin-top:5px;text-transform:uppercase;}
+.pf-tlbl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#8a7a5c;margin-top:5px;text-transform:uppercase;}
 .pf-sec{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#7a4a12;text-transform:uppercase;border-bottom:2px solid #8b4513;padding-bottom:5px;margin:20px 0 9px;}
 .pf-table{width:100%;border-collapse:collapse;font-family:'Barlow Condensed',sans-serif;font-size:16px;}
-.pf-table th{font-family:'Share Tech Mono',monospace;font-size:10.5px;letter-spacing:1px;color:#6a5a3e;text-transform:uppercase;text-align:left;padding:8px 8px;background:#e2dac4;border-bottom:1.5px solid #b8a582;position:sticky;top:0;z-index:1;}
+.pf-table th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#6a5a3e;text-transform:uppercase;text-align:left;padding:8px 8px;background:#e2dac4;border-bottom:1.5px solid #b8a582;position:sticky;top:0;z-index:1;}
 .pf-table td{padding:8px 8px;color:#2a1a08;border-bottom:1px solid #e2d8c2;}
 .pf-table td:not(:first-child){font-variant-numeric:tabular-nums;}
 .pf-table tr:nth-child(2n) td{background:rgba(160,130,80,.06);}
@@ -2111,14 +2143,14 @@ body[data-cb="trit"]{
 .pf-tab{flex:1;background:#e7e0d0;border:1.5px solid var(--btn-line);border-radius:6px;padding:9px 0;min-height:34px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1.5px;color:#8a7a5e;cursor:pointer;}
 .pf-tab.on{background:#8b4513;color:#fff;border-color:var(--btn-line);box-shadow:inset 0 -3px 0 #d4820f;}
 .pf-fld{margin-bottom:11px;}
-.pf-fld label{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#7a6a52;margin-bottom:3px;}
+.pf-fld label{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#7a6a52;margin-bottom:3px;}
 .pf-fld input{width:100%;box-sizing:border-box;padding:9px 10px;border:1px solid #c8b898;border-radius:4px;background:#fbf9f3;color:#2a1a08;font-family:'Barlow Condensed',sans-serif;font-size:17px;}
 .pf-fld input:focus{outline:none;border-color:#8b4513;}
 .pf-auth-btns{display:flex;gap:8px;margin-top:6px;}
 .pf-auth-btns .btn-p{flex:1;}
 .pf-ghost{background:transparent!important;border:1px solid #8b4513!important;color:#8b4513!important;}
 .pf-auth-note{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#7a6a52;margin-top:12px;line-height:1.4;min-height:20px;}
-.pf-auth-foot{font-family:'Share Tech Mono',monospace;font-size:10px;color:#a89a7e;margin-top:14px;letter-spacing:.5px;border-top:1px dashed #c8b898;padding-top:10px;}
+.pf-auth-foot{font-family:'Share Tech Mono',monospace;font-size:11px;color:#a89a7e;margin-top:14px;letter-spacing:.5px;border-top:1px dashed #c8b898;padding-top:10px;}
 /* v3.5.63 real game-login: a lit hero badge + a glowing primary CTA (the "something lit up") */
 .pf-authhero{text-align:center;margin:2px 0 18px;}
 .pf-authbadge{display:inline-flex;align-items:center;justify-content:center;width:58px;height:58px;border-radius:13px;background:linear-gradient(158deg,#3a2410,#170d06);color:#f3b24a;font-size:30px;margin-bottom:11px;box-shadow:0 0 0 1px rgba(200,138,42,.35),0 0 24px 3px rgba(224,150,46,.5),inset 0 1px 0 rgba(255,214,150,.28);animation:pfglow 2.6s ease-in-out infinite;}
@@ -2145,7 +2177,7 @@ body[data-cb="trit"]{
 .rec-title{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:2px;color:var(--t1);margin:12px 0 8px;}
 .rec-sub{font-family:'Barlow Condensed',sans-serif;font-size:19px;color:var(--t2);line-height:1.5;margin-bottom:22px;}
 .rec-btns{display:flex;flex-direction:column;gap:11px;}
-.rec-dbg{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--t3);margin-top:18px;word-break:break-all;opacity:.65;}
+.rec-dbg{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--t3);margin-top:18px;word-break:break-all;opacity:.65;}
 /* ── v2.8.0 DAILY RESULT ── */
 #daily-result{margin:10px 0;padding:12px;background:#2e2016;border-radius:8px;border:1px solid var(--border2);text-align:left;} /* v3.5.178 explicit dark ground — this panel only ever renders on the dark end screen */
 .dr-head{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--acc);letter-spacing:1px;}
@@ -2185,15 +2217,15 @@ body[data-cb="trit"]{
 .ps-mast .lg{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:.85;color:#2a2018;}
 .ps-mast .lg b{color:#c8791e;}
 .ps-mast .doc{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.15em;color:#6a5c48;margin-left:10px;}
-.ps-mast .stamp{font-family:'Share Tech Mono',monospace;font-size:10px;color:#c23a1a;border:2px solid #c23a1a;border-radius:4px;padding:3px 8px;transform:rotate(-4deg);letter-spacing:.06em;}
+.ps-mast .stamp{font-family:'Share Tech Mono',monospace;font-size:11px;color:#c23a1a;border:2px solid #c23a1a;border-radius:4px;padding:3px 8px;transform:rotate(-4deg);letter-spacing:.06em;}
 .ps-rule{height:2px;background:#c8791e;margin:0 0 12px;}
 .ps-id{display:grid;grid-template-columns:repeat(4,1fr);gap:1px 22px;font-family:'Share Tech Mono',monospace;margin-bottom:14px;}
 .ps-id div{padding:4px 0;border-bottom:1px dotted #cdbf9f;}
-.ps-id .k{font-size:9px;letter-spacing:.12em;color:#9a8b72;display:block;}
+.ps-id .k{font-size:11px;letter-spacing:.12em;color:#9a8b72;display:block;}
 .ps-id .v{font-size:14px;color:#2a2018;}
 .ps-legend{display:flex;gap:0;margin-bottom:6px;align-items:flex-end;}
-.ps-legend .sp{margin-right:auto;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:10px;letter-spacing:.08em;color:#9a8b72;text-transform:uppercase;align-self:center;}
-.ps-legend .h{width:86px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.08em;padding:3px 0;border-radius:3px 3px 0 0;}
+.ps-legend .sp{margin-right:auto;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:11px;letter-spacing:.08em;color:#9a8b72;text-transform:uppercase;align-self:center;}
+.ps-legend .h{width:86px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.08em;padding:3px 0;border-radius:3px 3px 0 0;}
 .ps-legend .h.w{color:#0e6b60;background:#e0efec;}
 .ps-legend .h.s{color:#9a5c12;background:#f4e6cf;}
 .ps-legend .h.l{color:#8a6a3a;background:#efe6d0;}
@@ -2201,7 +2233,7 @@ body[data-cb="trit"]{
 @media(max-width:700px){.ps-blocks{column-count:1;}#ov-postsort{padding:14px 6px 40px;}.ps-card{padding:18px 14px;}}
 .ps-block{break-inside:avoid;margin-bottom:15px;}
 .ps-block h4{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:.07em;color:#2a2018;border-bottom:2px solid #2a2018;padding-bottom:2px;margin:0 0 1px;}
-.ps-block h4 .d{color:#c8791e;font-size:10px;}
+.ps-block h4 .d{color:#c8791e;font-size:11px;}
 .ps-row{display:grid;grid-template-columns:1fr 86px 86px 86px;align-items:center;border-bottom:1px solid #d9cdb4;min-height:22px;}
 .ps-row:nth-child(odd){background:rgba(120,96,40,.022);}
 .ps-row .m{font-family:'Barlow Condensed',sans-serif;font-size:13.5px;font-weight:500;color:#2a2018;padding-left:2px;}
@@ -2221,10 +2253,10 @@ body[data-cb="trit"]{
 .ps-vsum .vr .lb{color:#9a8b72;letter-spacing:.06em;}
 .ps-vsum .vr.s .va{color:#9a5c12;font-weight:bold;}
 .ps-vsum .vr.l .va{color:#8a6a3a;}
-.ps-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:2px solid #cdbf9f;padding-top:7px;font-family:'Share Tech Mono',monospace;font-size:10px;color:#9a8b72;letter-spacing:.05em;}
+.ps-foot{display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:2px solid #cdbf9f;padding-top:7px;font-family:'Share Tech Mono',monospace;font-size:11px;color:#9a8b72;letter-spacing:.05em;}
 .ps-tools{position:sticky;top:0;display:flex;gap:8px;justify-content:flex-end;margin:-12px -12px 8px 0;}
 .ps-tools button{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.05em;cursor:pointer;background:#2a2018;color:#f5eede;border:1.5px solid var(--btn-line);border-radius:6px;padding:7px 12px;min-height:34px;}
-.ps-login{color:#c23a1a;font-size:10px;}
+.ps-login{color:#c23a1a;font-size:11px;}
 @media print{#ov-postsort{position:static;background:#fff;padding:0;}.ps-tools{display:none;}.ps-card{box-shadow:none;border:1px solid #999;max-width:none;}}
 </style>
 </head>
@@ -2262,7 +2294,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.179 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.180 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2368,7 +2400,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.179 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.180 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2526,7 +2558,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.179 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.180 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -3004,7 +3036,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.179
+// LOCK IN v3.5.180
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3463,7 +3495,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.179'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.180'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -6623,9 +6655,9 @@ function drawFloorSlots(c){
   // Labels sit above the TOP row (slots 5-8)
   var labelY=(FLOOR_NC_SLOTS_Y[4]!==undefined?FLOOR_NC_SLOTS_Y[4]:FLOOR_SLOT_Y)-4;
   if(FLOOR_NC_SLOTS_X.length>0){
-    c.save();c.font='bold 10px Share Tech Mono';c.textBaseline='bottom';
+    c.save();c.font='bold 12px Share Tech Mono';c.textBaseline='bottom';
     c.fillStyle='rgba(200,121,30,.75)';c.textAlign='left';
-    c.fillText('SP STAGE '+ncUsed+'/'+MAX_NC_SLOTS,FLOOR_NC_SLOTS_X[3],labelY);
+    c.fillText('SPEC '+ncUsed+'/'+MAX_NC_SLOTS,FLOOR_NC_SLOTS_X[3],labelY);
     if(ncUsed>=Math.ceil(NC_HAZARD_FILL*MAX_NC_SLOTS)){
       c.fillStyle='rgba(204,56,32,.95)';c.textAlign='right';
       c.fillText('⚠ HAZARD',FLOOR_NC_SLOTS_X[0]+sw,labelY);
@@ -6633,7 +6665,7 @@ function drawFloorSlots(c){
     c.restore();
   }
   if(FLOOR_BAG_SLOTS_X.length>0){
-    c.save();c.font='bold 10px Share Tech Mono';c.textBaseline='bottom';
+    c.save();c.font='bold 12px Share Tech Mono';c.textBaseline='bottom';
     c.fillStyle='rgba(136,88,200,.85)';c.textAlign='left';
     c.fillText('SMALLS '+bagUsed+'/'+MAX_BAG_SLOTS,FLOOR_BAG_SLOTS_X[0],labelY);
     if(bagUsed>=Math.ceil(BAG_DWELL_FILL*MAX_BAG_SLOTS)){
@@ -6671,7 +6703,7 @@ function drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,type,idx){
   c.strokeRect(sx+.5,sy+.5,sw-1,sh-1);
   c.shadowBlur=0;
   if(!slot){
-    c.font='9px Share Tech Mono';c.fillStyle='rgba(60,44,20,.32)';
+    c.font='12px Share Tech Mono';c.fillStyle='rgba(60,44,20,.32)';
     c.textAlign='center';c.textBaseline='middle';
     c.fillText(type==='nc'?'SPEC':'BAG',sx+sw/2,sy+sh/2);
     c.restore();return;
@@ -6699,7 +6731,7 @@ function drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,type,idx){
   c.textBaseline='bottom';c.fillText(dw+'×'+dh,sx+sw/2,sy+sh-2);
   // v2.0.7: visible rotation badge so NC rotation is unmistakable
   if(type==='nc'&&isSel&&rot===1){
-    c.font='bold 9px Share Tech Mono';c.fillStyle='rgba(25,165,148,.98)';
+    c.font='bold 11px Share Tech Mono';c.fillStyle='rgba(25,165,148,.98)';
     c.textAlign='right';c.textBaseline='top';c.fillText('↻90°',sx+sw-2,sy+2);
   }
   if(slot.isBag){ // v3.5.33 new square bag.png tile in the floor slot
@@ -6707,7 +6739,7 @@ function drawOneFloorSlot(c,sx,sy,sw,sh,slot,isSel,type,idx){
     else{c.font=(sh*.34)+'px serif';c.textBaseline='middle';c.fillText('🎒',sx+sw/2,sy+sh*.5+1);}
   }
   if(type==='nc'||slot.isNC){
-    c.font='bold 8px Share Tech Mono';c.fillStyle='rgba(255,60,40,.95)';
+    c.font='bold 12px Share Tech Mono';c.fillStyle='rgba(255,60,40,.95)';
     c.textAlign='left';c.textBaseline='top';c.fillText('SPEC',sx+2,sy+2);
   }
   // v2.1.25 hazmat staged piece -> small colorblind-safe placard
@@ -7433,7 +7465,7 @@ function drawBelt(ts){
     bCtx.font='bold 11px Share Tech Mono';bCtx.textAlign='center';bCtx.textBaseline='bottom';
     bCtx.fillText('▼',aX,10);
     if(selBeltRot>0){
-      bCtx.font='bold 8px Share Tech Mono';bCtx.fillStyle='rgba(200,121,30,.85)';
+      bCtx.font='bold 11px Share Tech Mono';bCtx.fillStyle='rgba(200,121,30,.85)';
       bCtx.textBaseline='top';
       bCtx.fillText(selBeltRot*90+'°',aX,BH-11);
     }
@@ -7653,9 +7685,8 @@ function drawBeltPiece(c,piece,x,y,w,h,isSel,idx,ts){
   if(piece.type==='small'||piece.isGap){c.strokeStyle='rgba(235,235,240,.6)';c.lineWidth=1.1;c.beginPath();c.roundRect(x,y,w,h,R);c.stroke();}/* v3.5.32 white smalls glow */
   if(piece.isPanic){c.strokeStyle='rgba(255,140,0,.7)';c.lineWidth=1.4;c.beginPath();c.roundRect(x,y,w,h,R);c.stroke();}
 
-  // Dim index label below piece
-  c.fillStyle='rgba(160,140,100,.4)';c.font='5.5px Share Tech Mono';c.textAlign='center';c.textBaseline='top';
-  c.fillText((idx+1),x+w*.5,y+h+2);
+  // v3.5.180 the 5.5px/40%-alpha index digit is GONE. Nobody could read it and nothing
+  // used it -- no key binds to a belt slot, and the caret already marks the selection.
 }
 
 // ── PANEL BUILDERS (stubs — slots now on canvas floor) ──
@@ -10101,7 +10132,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.179</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.180</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 

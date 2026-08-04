@@ -9,6 +9,11 @@
 <link rel="canonical" href="https://www.trailer-load.com/me/">
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
+/* TYPE FLOOR: bare <small>/<sub>/<sup> otherwise inherit the browser's 0.8em
+   shrink and land under 11px with no declaration for the gate to catch.
+   Class-specific rules outrank this, so it only floors the uncovered ones. */
+small,sub,sup{font-size:11px;}
+
 :root{--bg:#ece5d8;--panel:#fff;--ink:#241c14;--ink2:#6a5c48;--ink3:#9a8b72;--acc:#c8791e;--acc-dim:#9a5c12;--acc-bright:#e0962e;--teal:#138578;--teal-bright:#19a594;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;--line:#e3dac9;--line2:#d2c6ad;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:16px;line-height:1.4;min-height:100vh;}
@@ -16,7 +21,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-s
 #topbar{background:#1c1410;border-bottom:3px solid var(--acc);color:#f0e6d4;}
 #topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;gap:12px;flex-wrap:wrap;}
 .brand{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:6px;color:var(--acc);line-height:1;}
-.brand small{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:#c0ad90;margin-top:2px;}
+.brand small{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#c0ad90;margin-top:2px;}
 .tb-links a{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:#c0ad90;text-decoration:none;margin-left:14px;}
 .tb-links a:hover{color:var(--acc);}
 .btn{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;border:1px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block;}

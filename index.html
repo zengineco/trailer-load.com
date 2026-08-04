@@ -21,6 +21,11 @@
 <!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Student-privacy laws + district vetting. Do not re-add. -->
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
+/* TYPE FLOOR: bare <small>/<sub>/<sup> otherwise inherit the browser's 0.8em
+   shrink and land under 11px with no declaration for the gate to catch.
+   Class-specific rules outrank this, so it only floors the uncovered ones. */
+small,sub,sup{font-size:11px;}
+
 :root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--ink:#211a12;--t1:#2a2018;--t2:#544738;--t3:#8a7c66;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--acc-wash:#f6e9d3;--teal:#0a6a5e;--teal-bright:#19a594;--border:#cdbfa6;--border2:#bcaa8b;--ok:#1f9d57;--sm:#7a4dd0;}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
@@ -38,7 +43,7 @@ a{color:var(--teal);}
 .hero p.sub{font-size:23px;color:var(--t2);max-width:680px;margin:0 auto 24px;}
 .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 .btn{display:inline-flex;flex-direction:column;align-items:center;gap:1px;font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:1px;text-decoration:none;padding:14px 30px;border-radius:10px;transition:transform .12s,background .15s,box-shadow .15s;}
-.btn small{font-size:10px;letter-spacing:1px;opacity:.85;font-weight:normal;}
+.btn small{font-size:11px;letter-spacing:1px;opacity:.85;font-weight:normal;}
 .btn.play{background:var(--acc);color:#241505;box-shadow:0 6px 18px rgba(200,121,30,.35);}
 .btn.play:hover{background:var(--acc-bright);transform:translateY(-2px);}
 .btn.daily{background:linear-gradient(180deg,#19a594,#0f7d70);color:#fff;box-shadow:0 6px 18px rgba(15,125,112,.32);}
@@ -51,7 +56,7 @@ a{color:var(--teal);}
 .stripstats div{flex:1;min-width:140px;padding:14px 10px;text-align:center;border-right:1px solid var(--border);}
 .stripstats div:last-child{border-right:none;}
 .stripstats .n{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--acc-dim);line-height:1;letter-spacing:1px;}
-.stripstats .l{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-top:4px;}
+.stripstats .l{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-top:4px;}
 section{padding:44px 0;border-top:1px solid var(--border);}
 h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:0 0 6px;color:var(--ink);}
 .lead{color:var(--t2);max-width:730px;margin:0 0 24px;font-size:19px;}
@@ -60,7 +65,7 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:
 .mode{position:relative;background:var(--bg2);border:1px solid var(--border);border-left:5px solid var(--acc);border-radius:12px;padding:22px 20px;}
 .mode.daily{border-left-color:var(--teal-bright);}
 .mode.train{border-left-color:var(--ok);}
-.mode .tag{position:absolute;top:16px;right:16px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#241505;background:var(--acc);border-radius:20px;padding:3px 9px;}
+.mode .tag{position:absolute;top:16px;right:16px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#241505;background:var(--acc);border-radius:20px;padding:3px 9px;}
 .mode.daily .tag{background:var(--teal-bright);}
 .mode.train .tag{background:var(--ok);}
 .mode h3{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;margin:0 0 6px;color:var(--ink);}
@@ -83,7 +88,7 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:
 .pitch .free h3,.pitch .paid h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin:0 0 8px;}
 .pitch .free h3{color:var(--ok);}
 .pitch .paid h3{color:var(--teal);}
-.badge{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;border-radius:20px;padding:3px 9px;vertical-align:middle;margin-left:6px;}
+.badge{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;border-radius:20px;padding:3px 9px;vertical-align:middle;margin-left:6px;}
 .badge.live{background:var(--ok);color:#fff;}
 .badge.soon{background:transparent;color:var(--t2);border:1px solid var(--border2);}
 .pitch ul{padding-left:20px;color:var(--t2);margin:0;}
