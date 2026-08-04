@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clock In — Your Record | LOCK IN</title>
 <meta name="description" content="Clock in to LOCK IN and see your own loading record — walls loaded, integrity, pace, shelves, and safety, across every mode.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23140d08'/%3E%3Crect x='16' y='16' width='32' height='32' rx='3' fill='%23c8791e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#c8791e">
 <!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Do not re-add. -->
 <link rel="canonical" href="https://www.trailer-load.com/me/">
 <link rel="stylesheet" href="/fonts/fonts.css">
@@ -14,7 +16,7 @@
    Class-specific rules outrank this, so it only floors the uncovered ones. */
 small,sub,sup{font-size:11px;}
 
-:root{--bg:#ece5d8;--panel:#fff;--ink:#241c14;--ink2:#6a5c48;--ink3:#9a8b72;--acc:#c8791e;--acc-dim:#9a5c12;--acc-bright:#e0962e;--teal:#138578;--teal-bright:#19a594;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;--line:#e3dac9;--line2:#d2c6ad;}
+:root{--bg:#ece5d8;--panel:#fff;--ink:#241c14;--ink2:#6a5c48;--ink3:#736550;/* was #9a8b72: 3.33:1 on --panel, 2.66:1 on --bg. Carries all nine stat captions and the privacy line. */--acc:#c8791e;--acc-dim:#9a5c12;--acc-bright:#e0962e;--teal:#0a6a5e;--teal-bright:#19a594;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;--line:#e3dac9;--line2:#d2c6ad;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:16px;line-height:1.4;min-height:100vh;}
 .wrap{max-width:900px;margin:0 auto;padding:0 16px;}
@@ -24,10 +26,10 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-s
 .brand small{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#c0ad90;margin-top:2px;}
 .tb-links a{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:#c0ad90;text-decoration:none;margin-left:14px;}
 .tb-links a:hover{color:var(--acc);}
-.btn{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;border:1px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block;}
+.btn{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;min-height:34px;border:1.5px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block;}
 .btn:hover{border-color:var(--acc);color:var(--acc-dim);}
-.btn-acc{background:var(--acc);color:#1a1006;border-color:var(--acc);}
-.btn-acc:hover{background:var(--acc-dim);color:#fff;}
+.btn-acc{background:var(--acc);color:#241505;border-color:var(--acc);}
+.btn-acc:hover{background:var(--acc-bright);color:#241505;}/* never white on amber */
 /* login */
 #login{max-width:380px;margin:8vh auto;background:var(--panel);border:1px solid var(--line2);border-radius:12px;padding:30px 26px;box-shadow:0 12px 40px rgba(40,28,14,.12);}
 #login h1{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:3px;color:var(--acc);line-height:1;}
@@ -36,11 +38,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-s
 .fld span{display:block;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--ink2);text-transform:uppercase;font-weight:bold;margin-bottom:5px;}
 .fld input{width:100%;padding:11px 13px;background:#fbf9f4;border:1px solid var(--line2);border-radius:7px;font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--ink);}
 .fld input:focus{outline:none;border-color:var(--acc);}
+.fld input::placeholder,.lb-add input::placeholder{color:#736550;opacity:1;}
 #login .btn-acc{width:100%;padding:12px;font-size:16px;margin-top:6px;}
 #login-note{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--ink2);line-height:1.5;margin-top:16px;text-align:center;}
 #login-note a{color:var(--teal);}
 #login-msg{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;margin-top:12px;min-height:18px;}
-.err{color:var(--danger);}.good{color:var(--ok);}
+.err{color:var(--danger);}.good{color:#136b39;}
 /* profile */
 #me{display:none;padding:22px 0 60px;}
 .me-hero{background:linear-gradient(135deg,#1c1410,#2e2016);border:1px solid var(--line2);border-radius:14px;padding:22px 24px;color:#f0e6d4;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px;}
@@ -82,7 +85,7 @@ tr:hover td{background:#fbf9f4;}
 .lb-add input{flex:1;min-width:0;padding:9px 12px;background:var(--panel);border:1px solid var(--line2);border-radius:7px;font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--ink);}
 .lb-add input:focus{outline:none;border-color:var(--acc);}
 .lb-add .btn-acc{padding:9px 14px;white-space:nowrap;}
-.lb-unfollow{background:transparent;border:none;color:var(--ink3);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;}
+.lb-unfollow{background:transparent;border:none;color:#736550;cursor:pointer;font-size:14px;min-width:26px;min-height:26px;line-height:1;padding:0 6px;}
 .lb-unfollow:hover{color:var(--danger);}
 .lb-msg{font-family:'Share Tech Mono',monospace;font-size:12px;min-height:16px;margin-bottom:6px;}
 /* the hall — fame/shame ledger, every board we track */
@@ -160,14 +163,14 @@ tr:hover td{background:#fbf9f4;}
     <button class="lb-tab" id="lt-hall" onclick="mTab('hall')">The Hall</button>
     <button class="lb-tab" id="lt-friends" onclick="mTab('friends')">Friends</button>
   </div>
-  <div class="lb-pane" id="lp-daily"><div id="lb-daily" class="lb-board"></div></div>
-  <div class="lb-pane" id="lp-hall" style="display:none;">
+  <div id="lp-daily"><div id="lb-daily" class="lb-board"></div></div>
+  <div id="lp-hall" style="display:none;">
     <div class="hall-colhd fame">◆ Walls of Fame</div>
     <div class="hall-grid" id="hall-fame"></div>
     <div class="hall-colhd shame">✖ Walls of Shame</div>
     <div class="hall-grid" id="hall-shame"></div>
   </div>
-  <div class="lb-pane" id="lp-friends" style="display:none;">
+  <div id="lp-friends" style="display:none;">
     <div class="lb-add">
       <input id="lb-follow-user" type="text" placeholder="follow a loader by username">
       <button class="btn btn-acc" onclick="mFollow()">+ Follow</button>
@@ -270,7 +273,7 @@ function mBoardRows(id,rows,empty,friends){
   for(i=0;i<rows.length;i++){var r=rows[i];
     var sc=(r.score!=null?r.score:(r.best_score!=null?r.best_score:0));
     var mine=(r.is_self||(me&&r.username===me))?' lb-me':'';
-    var unf=(friends&&!r.is_self)?'<button class="lb-unfollow" title="Unfollow" onclick="mUnfollow(\''+(''+r.username).replace(/[^A-Za-z0-9_\-]/g,'')+'\')">✕</button>':'';
+    var unf=(friends&&!r.is_self)?'<button class="lb-unfollow" title="Unfollow" aria-label="Unfollow" onclick="mUnfollow(\''+(''+r.username).replace(/[^A-Za-z0-9_\-]/g,'')+'\')">✕</button>':'';
     h+='<div class="lb-row'+mine+'"><span class="lb-rank">'+(r.rank||(i+1))+'</span><span class="lb-name">'+mEsc(r.username)+(mine?' (you)':'')+'</span><span class="lb-score">'+mNum(sc).toLocaleString()+unf+'</span></div>';
   }
   el.innerHTML=h;
@@ -356,7 +359,7 @@ function mRender(){
 }
 function mSignOut(){
   ME.session=null;ME.rows=[];
-  try{localStorage.removeItem('lockinMeAuth');}catch(e){}
+  try{localStorage.removeItem('lockinMeAuth');var _u=document.getElementById('li-user');if(_u)_u.value='';var _p=document.getElementById('li-pw');if(_p)_p.value='';}catch(e){}
   // v1.3 an explicit sign-out must STICK. mBoot reads the game's shared liAuth first, so without
   // this flag the next page load signed the previous student straight back in — on a shared
   // Chromebook that hands their named record to the next kid. We never delete liAuth (the game
@@ -369,7 +372,7 @@ function mSignOut(){
 // v1.1 (HIGH #3) — honest session expiry: stale tokens said "No walls on record yet" instead of the truth.
 function mJwtFresh(tok){try{var p=JSON.parse(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return (p.exp||0)*1000>Date.now()+30000;}catch(e){return true;}}
 function mExpired(){
-  try{localStorage.removeItem('lockinMeAuth');}catch(e){}
+  try{localStorage.removeItem('lockinMeAuth');var _u=document.getElementById('li-user');if(_u)_u.value='';var _p=document.getElementById('li-pw');if(_p)_p.value='';}catch(e){}
   ME.session=null;
   var d=document.getElementById('me');if(d)d.style.display='none';
   var l=document.getElementById('login');if(l)l.style.display='block';

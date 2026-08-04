@@ -27,9 +27,58 @@ small,sub,sup{font-size:11px;}
 
 
 /* ================================================================
-   LOCK IN v3.5.180
+   LOCK IN v3.5.181
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.181 - THE MED + LOW SWEEP: 36 of the final ledger's remaining 37 findings, across all
+     nine pages. SMALLSSORT (ss-1.11) took eleven and is no longer the weak surface: it shipped with NO CSP
+     AT ALL on the page that reads the shared liAuth token out of localStorage and POSTs it to Supabase (the
+     flagship has had a strict one for versions) -- now CSP + description + canonical + favicon, and fonts
+     move from an @import inside the inline <style> to a <link> like every other satellite. The SETTINGS
+     panel stopped apologising to paying directors for an unresolved rights problem ("Music is paused while
+     the soundtrack is re-licensed") and the whole dead music engine went with it: two display:none controls,
+     a persisted key for a feature that cannot be enabled, and smToggleMusic()'s `return;` followed by 7
+     unreachable lines. The SFX slider fired a two-oscillator chime AND a localStorage write per step, so one
+     0-100 drag synthesised ~100 overlapping chimes through a classroom speaker -- it now previews on release.
+     Fixed the centred-flex overflow trap (`justify-content:safe center`; main-axis `center` puts start-edge
+     overflow in UNSCROLLABLE space, so a short viewport lost the title with no way to scroll back), the
+     board's empty/loading/error states at 3.19:1, three sub-AA strings including the FOREVER strike rule,
+     nine canvas font strings with no generic fallback, and the rules card promising a "QA-HAZMAT" bin that
+     does not exist on the field (misrouting hazmat costs a strike). Also: a zero-attempt run showed 100%
+     accuracy in the HUD all run and then 0% on the card -- both now read as absent, because they are.
+     THE PAID DASHBOARD: CSV export was open to FORMULA INJECTION through the student-chosen handle -- a
+     student sets their handle to =... and the instructor opens the export in Excel on a district machine.
+     That is the one button whose entire purpose is "take this to your gradebook". The sortable headers were
+     MOUSE-ONLY (no tabindex, role, aria-sort or key handler) on the screen the institution is buying, while
+     /for-districts/ advertises "full keyboard play". Sign-out left the password sitting in the input, so
+     "Session expired" handed the next user a filled credential. And the surface had NO NAVIGATION AT ALL --
+     no route to the home page, the game, the documentation or the privacy policy -- while the stylesheet
+     still carried a .foot a rule for a link that no longer existed. Both paid surfaces were also drawn from
+     a slightly different palette under identically-named tokens (--bg #f3efe6 against the house #ece5d8),
+     and BOTH flipped dark ink to WHITE ON AMBER on the primary button's hover -- the one pairing the brand
+     spec spells with the word NEVER. /me/'s unfollow control was the smallest interactive element in the
+     product at 13px tall, roughly half the touch minimum, and it is destructive.
+     THE FRONT DOOR: two pricing cards carried class="card teal" with NO SUCH RULE DEFINED, so the offers he
+     most wants a school to take rendered byte-identical to the standard one beside them. The hero stat strip
+     wrapped 4+3 with mismatched tile widths and a doubled border -- now a grid, seven even tiles. The FAQ
+     JSON-LD did not match its own visible answer, which risks Google stripping the rich result. Employer Bay
+     promised "self-serve, card payment" for a checkout that does not exist anywhere on the domain. And the
+     three buyer-facing pages contradicted each other on price: the Multi-Campus tier existed only on
+     program-overview, the 10-seat minimum only on the homepage, and "first semester" vs "first fall
+     semester" is a real dollar difference -- all three now agree.
+     LEGAL + DISCOVERY: both district pages asserted EXISTING CUSTOMERS in the present tense ("Current pilot
+     programs receive...") when there are none; robots.txt broadcast an internal note about an unreleased
+     prototype and 28 Disallow lines for two directories that do not exist; the llms files published a
+     five-mode list (Practice/Arcade/Tour/Gauntlet) the site has not used in versions, so an answer engine
+     sent a director to doors with different names. Privacy and Terms footers named neither the product nor
+     the company on the two pages a procurement officer scrolls to the bottom of. Legal stamps updated to
+     reflect the genuinely substantive Fees and Cookies changes that landed this week.
+     CONTRAST, all measured not eyeballed: white on the DAILY button's gradient was 3.07:1 at the top stop
+     where the label sits; the .badge.live "LIVE NOW" pill was white on saturated green at 3.49:1; the word
+     FREE was 2.26:1; "Start loading" 2.44:1; the compliance page's meaning-bearing check marks were 2.79:1
+     while its X marks were 4.28:1 -- negatives read sharper than positives. Every replacement verified
+     against its true ground. REMAINING: #46, satellite theme-follow, taken separately.
 
    CHANGE LOG v3.5.180 - THE TYPE FLOOR, ENFORCED. Vince has raised tiny text roughly six times over three
      months, and he is right that it keeps coming back: every previous pass fixed the INSTANCES it happened
@@ -1012,7 +1061,6 @@ html,body{width:100%;height:100dvh;color:var(--t1);
 .sm-card.mode-shift{border-left-color:var(--acc);}
 .sm-card.mode-levels{border-left-color:#9090ff;}
 .sm-card.mode-gauntlet{border-left-color:var(--danger);}
-.sm-card.mode-daily{border-left-color:#9a8b72;}
 .sm-card-ico{font-size:34px;line-height:1;flex:none;width:44px;text-align:center;}
 .sm-card-name{
   font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;
@@ -2294,7 +2342,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.180 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.181 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2400,7 +2448,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.180 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.181 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2558,7 +2606,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.180 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.181 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -2793,8 +2841,7 @@ body[data-cb="trit"]{
         <div id="msg-feed"></div>
       </div>
       <div id="conv-header">
-        <div class="conv-lbl" id="conv-lbl-txt2" style="display:none"></div>
-        <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">📦 BREAK JAM</button></div>
+                <div class="conv-lbl" style="display:flex;align-items:center;gap:8px;"><span id="chute-light" class="chute-light cl-ok" title="Chute flow"></span><button id="breakjam-btn" class="bj-btn" onclick="breakJam()" style="display:none">📦 BREAK JAM</button></div>
         <button id="water-side" class="strip-act sa-water" onclick="takeDrink()" title="Clears one warning · 6s">💧 WATER</button>
         <div class="conv-lbl" style="display:flex;align-items:center;gap:7px;">
           <span class="stg-light" id="stg-nc" onclick="openStagingPopup('nc')" title="Special handling — too big, heavy, or hazardous for the belt. Load it low."><b>SPEC</b><span class="stg-pie" id="stg-nc-pie"></span><span id="stg-nc-n">0/8</span></span>
@@ -3036,7 +3083,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.180
+// LOCK IN v3.5.181
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3495,7 +3542,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.180'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.181'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -10132,7 +10179,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.180</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.181</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 

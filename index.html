@@ -18,6 +18,8 @@
 <meta name="twitter:title" content="LOCK IN — Warehouse Loading Training That Plays Like a Game">
 <meta name="twitter:description" content="A free browser trailer-loading simulator that plays like the real job. Free for workers; a competency dashboard for CTE programs and employers.">
 <meta name="twitter:image" content="https://www.trailer-load.com/logo.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23140d08'/%3E%3Crect x='16' y='16' width='32' height='32' rx='3' fill='%23c8791e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#c8791e">
 <!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Student-privacy laws + district vetting. Do not re-add. -->
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
@@ -26,7 +28,7 @@
    Class-specific rules outrank this, so it only floors the uncovered ones. */
 small,sub,sup{font-size:11px;}
 
-:root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--ink:#211a12;--t1:#2a2018;--t2:#544738;--t3:#8a7c66;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--acc-wash:#f6e9d3;--teal:#0a6a5e;--teal-bright:#19a594;--border:#cdbfa6;--border2:#bcaa8b;--ok:#1f9d57;--sm:#7a4dd0;}
+:root{--bg:#ece5d8;--bg2:#e3dac9;--bg3:#d9cfbb;--ink:#211a12;--t1:#2a2018;--t2:#544738;--t3:#8a7c66;--acc:#c8791e;--acc-bright:#e0962e;--acc-dim:#9a5c12;--acc-wash:#f6e9d3;--teal:#0a6a5e;--teal-bright:#19a594;--border:#cdbfa6;--border2:#bcaa8b;--ok:#1f9d57;--sm:#7a4dd0;--acc-ink:#7d4a0e;--ok-ink:#136b39;}
 *{box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{margin:0;background:radial-gradient(1100px 420px at 50% -160px,rgba(200,121,30,.12),transparent),var(--bg);color:var(--t1);font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.5;-webkit-font-smoothing:antialiased;}
@@ -43,18 +45,18 @@ a{color:var(--teal);}
 .hero p.sub{font-size:23px;color:var(--t2);max-width:680px;margin:0 auto 24px;}
 .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
 .btn{display:inline-flex;flex-direction:column;align-items:center;gap:1px;font-family:'Share Tech Mono',monospace;font-size:16px;letter-spacing:1px;text-decoration:none;padding:14px 30px;border-radius:10px;transition:transform .12s,background .15s,box-shadow .15s;}
-.btn small{font-size:11px;letter-spacing:1px;opacity:.85;font-weight:normal;}
+.btn small{font-size:11px;letter-spacing:1px;font-weight:normal;}/* the .85 alpha was what pushed NO LOGIN / ONE WALL under the bar */
 .btn.play{background:var(--acc);color:#241505;box-shadow:0 6px 18px rgba(200,121,30,.35);}
 .btn.play:hover{background:var(--acc-bright);transform:translateY(-2px);}
-.btn.daily{background:linear-gradient(180deg,#19a594,#0f7d70);color:#fff;box-shadow:0 6px 18px rgba(15,125,112,.32);}
+.btn.daily{background:linear-gradient(180deg,#0f7d70,#0a5a50);color:#eafaf7;box-shadow:0 6px 18px rgba(15,125,112,.32);}/* was #19a594->#0f7d70 with #fff: 3.07:1 at the top stop, where the label sits */
 .btn.daily:hover{transform:translateY(-2px);filter:brightness(1.06);}
-.btn.ghost{background:transparent;color:var(--teal);border:1px solid var(--teal);}
+.btn.ghost{background:transparent;color:#0c665c;border:1.5px solid #0c665c;}
 .btn.ghost:hover{background:var(--teal);color:#fff;}
 .note{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);margin-top:16px;}
 /* stat strip */
-.stripstats{display:flex;justify-content:center;flex-wrap:wrap;gap:0;max-width:640px;margin:30px auto 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg2);}
-.stripstats div{flex:1;min-width:140px;padding:14px 10px;text-align:center;border-right:1px solid var(--border);}
-.stripstats div:last-child{border-right:none;}
+.stripstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));max-width:640px;margin:30px auto 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg2);}
+.stripstats div{padding:14px 10px;text-align:center;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.stripstats div:nth-child(4n),.stripstats div:last-child{border-right:none;}
 .stripstats .n{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--acc-dim);line-height:1;letter-spacing:1px;}
 .stripstats .l{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--t2);text-transform:uppercase;margin-top:4px;}
 section{padding:44px 0;border-top:1px solid var(--border);}
@@ -70,8 +72,8 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:
 .mode.train .tag{background:var(--ok);}
 .mode h3{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1px;margin:0 0 6px;color:var(--ink);}
 .mode p{color:var(--t2);margin:0 0 14px;font-size:16px;}
-.mode a{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;text-decoration:none;color:var(--acc);}
-.mode.daily a{color:var(--teal);}.mode.train a{color:var(--ok);}
+.mode a{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:bold;text-decoration:none;color:var(--acc-ink);}
+.mode.daily a{color:var(--teal);}.mode.train a{color:var(--ok-ink);}
 .mode a:hover{text-decoration:underline;}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;}
@@ -79,6 +81,10 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:
    --acc-dim is 3.87:1, clearing the 3:1 large-text bar at 22px. Keep --acc for fills carrying dark ink. */
 .card h3{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin:0 0 6px;color:var(--acc-dim);}
 .card p{color:var(--t2);margin:0;font-size:16px;}
+/* .card.teal was used on two pricing cards with NO rule defined — the highlighted offers
+   rendered identically to the standard one. Inset rail matches .hall-card.fame in /me/. */
+.card.teal{border-color:var(--teal);box-shadow:inset 4px 0 0 var(--teal-bright);}
+.card.teal h3{color:var(--acc-dim);}
 .steps{counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
 .step{position:relative;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px 20px 18px;}
 .step::before{counter-increment:s;content:counter(s);position:absolute;top:-14px;left:18px;width:30px;height:30px;background:var(--acc);color:#241505;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;}
@@ -86,11 +92,10 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:
 .step p{color:var(--t2);margin:0;font-size:16px;}
 .pitch{background:linear-gradient(135deg,var(--bg3),var(--bg2));border:1px solid var(--border);border-radius:16px;padding:30px;display:grid;grid-template-columns:1fr 1fr;gap:24px;}
 .pitch .free h3,.pitch .paid h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;margin:0 0 8px;}
-.pitch .free h3{color:var(--ok);}
+.pitch .free h3{color:var(--ok-ink);}
 .pitch .paid h3{color:var(--teal);}
 .badge{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;border-radius:20px;padding:3px 9px;vertical-align:middle;margin-left:6px;}
-.badge.live{background:var(--ok);color:#fff;}
-.badge.soon{background:transparent;color:var(--t2);border:1px solid var(--border2);}
+.badge.live{background:var(--ok);color:#06240f;}/* never light ink on a saturated fill */
 .pitch ul{padding-left:20px;color:var(--t2);margin:0;}
 .pitch li{margin-bottom:5px;}
 .who{display:flex;flex-wrap:wrap;gap:10px;}
@@ -114,7 +119,7 @@ h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1px;margin:
 footer{border-top:1px solid var(--border);padding:26px 0 44px;text-align:center;}
 footer .links a{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--teal);text-decoration:none;margin:0 10px;}
 footer .zw{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--t3);margin-top:12px;}
-footer .zw a{color:var(--acc-dim);text-decoration:none;}
+footer .zw a{color:var(--acc-ink);text-decoration:none;}
 footer .zw a:hover{color:var(--acc);}
 @media(max-width:680px){.hero h1{font-size:60px;}.pitch{grid-template-columns:1fr;}}
 </style>
@@ -131,7 +136,7 @@ footer .zw a:hover{color:var(--acc);}
       {"@type":"Question","name":"What does LOCK IN teach?","acceptedAnswer":{"@type":"Answer","text":"Load theory: support and balance, locking complete rows into shelves, keeping the center of gravity centered, fragile on top, hazmat below the waist line, and using dead air inside tires. Every wall is scored on integrity, density, pace, and safety."}},
       {"@type":"Question","name":"What is the daily challenge?","acceptedAnswer":{"@type":"Answer","text":"One wall, the same freight and clock for everyone on Earth, resetting at 00:00 UTC. Everybody plays the identical puzzle and posts to one shared world board. It is a two-minute daily brain-warmup — many classrooms use it to get into work mode."}},
       {"@type":"Question","name":"Do I need experience to start?","acceptedAnswer":{"@type":"Answer","text":"No. Training walks you through a full wall one placement at a time — you watch a trainer build it the right way and sign off when you are ready, exactly like a real first day on the dock. Then you load your own."}},
-      {"@type":"Question","name":"Who is the dashboard for?","acceptedAnswer":{"@type":"Answer","text":"CTE programs (Perkins-eligible), trade and technical schools, and warehouse operations teams. It reports opted-in students' loading competencies: attention to detail, follow-through, throughput, and safety. It is live at trailer-load.com/dashboard and the first pilot programs get free access while onboarding."}},
+      {"@type":"Question","name":"Who is the dashboard for?","acceptedAnswer":{"@type":"Answer","text":"CTE programs (Perkins-eligible), trade and technical schools, and warehouse operations teams. It reports opted-in students' loading competencies: attention to detail, follow-through, throughput, and safety. It's live at trailer-load.com/dashboard — if that's your program, ask about a pilot."}},
       {"@type":"Question","name":"Does LOCK IN replace safety training?","acceptedAnswer":{"@type":"Answer","text":"No. LOCK IN is a training supplement that builds intuition and tracks readiness. It does not replace employer safety training, OSHA training, or any certification requirement."}}
     ]}
   ]
@@ -241,9 +246,10 @@ footer .zw a:hover{color:var(--acc);}
   <h3 style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin:28px 0 10px;">Pricing — published, because your purchasing office deserves a straight number</h3>
   <div class="cards">
     <div class="card"><h3>Site License — $1,950<span style="font-size:14px;color:var(--t2);">/school-year</span></h3><p>Unlimited students, unlimited instructors, one campus. Full program dashboard + reporting. A 100-student program reads that as ~$20 a student.</p></div>
-    <div class="card teal"><h3>Founding Programs — $1,450<span style="font-size:14px;color:var(--t2);">/yr, locked</span></h3><p>First 10 institutions: free through your first semester, then $1,450/yr locked at that rate. You help shape what the dashboard reports.</p></div>
+    <div class="card teal"><h3>Founding Programs — $1,450<span style="font-size:14px;color:var(--t2);">/yr, locked</span></h3><p>First 10 institutions: free through your first fall semester, then $1,450/yr locked at that rate. You help shape what the dashboard reports.</p></div>
     <div class="card"><h3>Per-Seat — $29<span style="font-size:14px;color:var(--t2);">/student/semester</span></h3><p>For small college sections and cohorts (10-seat minimum). Caps at the site-license price automatically — it can only ever get cheaper.</p></div>
-    <div class="card"><h3>Employer Bay — $490<span style="font-size:14px;color:var(--t2);">/yr per location</span></h3><p>For moving companies and dock teams: hiring screen + trainee gauge. Self-serve, card payment, no purchase order needed.</p></div>
+    <div class="card teal"><h3>Multi-Campus — $1,450<span style="font-size:14px;color:var(--t2);">/campus/yr</span></h3><p>Three or more campuses under one district or system. The same unlimited-student site license at each campus, on one invoice.</p></div>
+      <div class="card"><h3>Employer Bay — $490<span style="font-size:14px;color:var(--t2);">/yr per location</span></h3><p>For moving companies and dock teams: hiring screen + trainee gauge. One email, a card or an invoice, live the same week — no purchase order needed.</p></div>
     <div class="card teal"><h3>Custom Edition — $4,999</h3><p>Your school's colors. Your freight mix only. Your facility's own procedures reflected in the drills. Built to order, delivered as your program's own edition.</p></div>
     <div class="card"><h3>Paperwork, ready</h3><p>W-9, formal quote, and a one-page order form on request — built for Perkins purchase orders and micro-purchase thresholds. <a href="mailto:hello@trailer-load.com?subject=LOCK%20IN%20quote%20request">Get a formal quote →</a></p></div>
   </div>
@@ -277,10 +283,10 @@ footer .zw a:hover{color:var(--acc);}
   <div class="companion">
     <div class="em">📦</div>
     <div class="body">
-      <h3>Also: SmallsSort</h3>
+      <h3>Also: Smalls Sort</h3>
       <p>A fast little companion game — sort the smalls off the belt into the right bins before the pool jams the line. Same world, pure reflex. Great for a quick round.</p>
     </div>
-    <a href="ss/">Play SmallsSort →</a>
+    <a href="ss/">Play Smalls Sort →</a>
   </div>
 </div></section>
 

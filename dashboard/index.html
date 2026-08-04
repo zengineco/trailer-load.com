@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LOCK IN — Program Dashboard | trailer-load.com</title>
 <meta name="description" content="LOCK IN program dashboard — student loading competency report for CTE, logistics, and workforce programs. Attention to detail, follow-through, throughput, and safety, per student.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23140d08'/%3E%3Crect x='16' y='16' width='32' height='32' rx='3' fill='%23c8791e'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#c8791e">
+<link rel="canonical" href="https://www.trailer-load.com/dashboard/">
+<meta name="robots" content="noindex,nofollow"><!-- login wall over student data; never index -->
 <!-- NO AD TECH ON TRAILER-LOAD.COM — EVER (2026-07-20). Do not re-add. -->
 <link rel="stylesheet" href="/fonts/fonts.css">
 <style>
@@ -17,8 +21,8 @@ small,sub,sup{font-size:11px;}
   /* --ink3 was #9a8b72, which failed AA on ALL THREE grounds it paints (3.33 on #fff, 2.90 on --bg,
      3.11 on the sticky header fill). It carries the competency sublabels — the $1,950 argument — and
      the entire day-one empty state. #736550 measures 5.67 / 4.94 / 5.30. */
-  --bg:#f3efe6;--panel:#ffffff;--ink:#241c14;--ink2:#6a5c48;--ink3:#736550;
-  --acc:#c8791e;--acc-dim:#9a5c12;--teal:#138578;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;
+  --bg:#ece5d8;--panel:#ffffff;--ink:#211a12;--ink2:#6a5c48;--ink3:#736550;
+  --acc:#c8791e;--acc-dim:#9a5c12;--acc-bright:#e0962e;--teal:#0a6a5e;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;
   --line:#e3dac9;--line2:#d2c6ad;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -32,10 +36,12 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-s
 .brand small{display:block;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:#c0ad90;margin-top:2px;}
 #who{font-family:'Share Tech Mono',monospace;font-size:13px;color:#c0ad90;text-align:right;}
 #who b{color:#f0e6d4;display:block;font-size:15px;}
-.btn{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;border:1px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s;}
+.btn{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;font-weight:bold;min-height:34px;border:1.5px solid var(--line2);background:var(--panel);color:var(--ink2);border-radius:6px;padding:8px 14px;cursor:pointer;transition:all .15s;}
 .btn:hover{border-color:var(--acc);color:var(--acc-dim);}
-.btn-acc{background:var(--acc);color:#1a1006;border-color:var(--acc);}
-.btn-acc:hover{background:var(--acc-dim);color:#fff;}
+.btn-acc{background:var(--acc);color:#241505;border-color:var(--acc);}
+/* was background:--acc-dim;color:#fff — white on amber, the one pairing the brand spec
+   forbids, on the primary button. Brightening on hover matches index.html. */
+.btn-acc:hover{background:var(--acc-bright);color:#241505;}
 .btn-ghost{background:transparent;color:#c0ad90;border-color:#4a3826;}
 .btn-ghost:hover{border-color:var(--acc);color:var(--acc);}
 /* ── LOGIN ── */
@@ -53,7 +59,7 @@ body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-s
 #login .btn-acc{width:100%;padding:12px;font-size:16px;margin-top:6px;}
 #login-note{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--ink2);line-height:1.5;margin-top:16px;text-align:center;}
 #login-msg{font-family:'Share Tech Mono',monospace;font-size:13px;text-align:center;margin-top:12px;min-height:18px;}
-.err{color:var(--danger);}.good{color:var(--ok);}
+.err{color:var(--danger);}.good{color:#136b39;}/* --ok is a light green: 3.49:1. The success line is the one people look for. */
 /* ── DASHBOARD ── */
 #dash{display:none;padding:22px 0 60px;}
 .dash-hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px;}
@@ -82,6 +88,7 @@ table{width:100%;border-collapse:collapse;min-width:760px;}
 th{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.5px;color:var(--ink2);text-transform:uppercase;text-align:right;padding:12px 14px;border-bottom:2px solid var(--line2);cursor:pointer;white-space:nowrap;user-select:none;background:#faf7f0;position:sticky;top:0;z-index:2;}
 th:first-child{text-align:left;}
 th:hover{color:var(--acc-dim);}
+th:focus{outline:2px solid var(--acc);outline-offset:-2px;}/* keyboard sorting needs a visible focus ring */
 th .comp{display:block;font-size:11px;color:var(--ink3);letter-spacing:.5px;font-weight:normal;text-transform:none;}/* 10px was under the product's 11px type floor */
 th.sorted{color:var(--acc-dim);}
 th .arr{color:var(--acc);}
@@ -130,7 +137,7 @@ tr:hover td{background:#fbf9f4;}
   <div class="cards" id="cards"></div>
 
   <div class="toolbar">
-    <input id="search" type="text" placeholder="Filter students…" oninput="dRender()">
+    <input id="search" type="text" aria-label="Filter students by handle" placeholder="Filter students…" oninput="dRender()">
     <button class="btn" onclick="dExport()">⭳ EXPORT CSV</button>
     <button class="btn" onclick="dReload()">↻ REFRESH</button>
     <button class="btn btn-ghost" onclick="dSignOut()" style="border-color:var(--line2);color:var(--ink2);">SIGN OUT</button>
@@ -144,7 +151,7 @@ tr:hover td{background:#fbf9f4;}
     <div id="empty" style="display:none;"></div>
   </div>
 
-  <div class="foot">LOCK IN · trailer-load.com · data shown is opt-in student gameplay only · © 2026</div>
+  <div class="foot">LOCK IN · <a href="/">trailer-load.com</a> · a project of <a href="https://www.f-keys.com/">F-Keys</a> · <a href="/for-districts/">Documentation</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · data shown is opt-in student gameplay only · © 2026</div>
 </div></div>
 
 <script>
@@ -272,7 +279,10 @@ function dRender(){
   document.getElementById('cards').innerHTML=dCards(DASH.rows);
   // header
   var th='',c;for(c=0;c<DCOLS.length;c++){var col=DCOLS[c];var isS=(DASH.sortKey===col.key);
-    th+='<th class="'+(isS?'sorted':'')+'" onclick="dSort(\''+col.key+'\')">'+col.label+(isS?(' <span class="arr">'+(DASH.sortDir<0?'▼':'▲')+'</span>'):'')+(col.comp?('<span class="comp">'+col.comp+'</span>'):'')+'</th>';}
+    // The roster's only data control was mouse-only: cursor:pointer and an onclick, with no
+    // tabindex, role, aria-sort or key handler — so sorting was impossible without a mouse on
+    // the one screen the institution is buying, while /for-districts/ advertises "full keyboard play".
+    th+='<th class="'+(isS?'sorted':'')+'" tabindex="0" role="columnheader" aria-sort="'+(isS?(DASH.sortDir<0?'descending':'ascending'):'none')+'" onclick="dSort(\''+col.key+'\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();dSort(\''+col.key+'\');}">'+col.label+(isS?(' <span class="arr">'+(DASH.sortDir<0?'▼':'▲')+'</span>'):'')+(col.comp?('<span class="comp">'+col.comp+'</span>'):'')+'</th>';}
   document.getElementById('thead').innerHTML=th;
   // body
   var emp=document.getElementById('empty');
@@ -302,7 +312,7 @@ function dExport(){
   if(!rows.length){if(_xb){_xb.textContent='NO OPTED-IN STUDENTS YET';setTimeout(function(){if(_xb)_xb.textContent='⭳ EXPORT CSV';},2200);}return;} // v1.2 (LOW) no more silent header-only file
   var head=['student','sessions','walls','avg_integrity_pct','best_pph','best_score','incidents','last_seen'];
   var lines=[head.join(',')],i;
-  function q(v){v=(v==null?'':(''+v));return /[",\n]/.test(v)?('"'+v.replace(/"/g,'""')+'"'):v;}
+  function q(v){v=(v==null?'':(''+v));if(/^[=+\-@\t\r]/.test(v))v="'"+v;/* a handle starting = + - @ evaluates as a formula when the instructor opens this in Excel on a district machine */return /[",\n]/.test(v)?('"'+v.replace(/"/g,'""')+'"'):v;}
   for(i=0;i<rows.length;i++){var r=rows[i];
     lines.push([r.username,dNum(r.sessions),dNum(r.walls),dNum(r.avg_integrity),dNum(r.best_pph),dNum(r.best_score),dNum(r.incidents),r.last_seen||''].map(q).join(','));}
   var blob=new Blob([lines.join('\n')],{type:'text/csv'});
@@ -314,7 +324,7 @@ function dExport(){
 }
 function dSignOut(){
   DASH.session=null;DASH.rows=[];DASH.name='';
-  try{localStorage.removeItem('lockinDashAuth');}catch(e){}
+  try{localStorage.removeItem('lockinDashAuth');var _e=document.getElementById('li-email');if(_e)_e.value='';var _p=document.getElementById('li-pw');if(_p)_p.value='';}catch(e){}
   document.getElementById('dash').style.display='none';
   document.getElementById('login').style.display='block';
   var who=document.getElementById('who');if(who)who.style.display='none';
@@ -324,7 +334,7 @@ function dSignOut(){
 // "No students have opted in yet" — an apparently WIPED roster. Expired now means expired, said out loud.
 function dJwtFresh(tok){try{var p=JSON.parse(atob(tok.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));return (p.exp||0)*1000>Date.now()+30000;}catch(e){return true;}}
 function dExpired(){
-  try{localStorage.removeItem('lockinDashAuth');}catch(e){}
+  try{localStorage.removeItem('lockinDashAuth');var _e=document.getElementById('li-email');if(_e)_e.value='';var _p=document.getElementById('li-pw');if(_p)_p.value='';}catch(e){}
   DASH.session=null;
   var d=document.getElementById('dash');if(d)d.style.display='none';
   var w=document.getElementById('who');if(w)w.style.display='none';
