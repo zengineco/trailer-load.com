@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+/* v1.4 (#46) THEME FOLLOW -- runs in <head>, before first paint, or the flash it exists
+   to prevent still happens. Reads the GAME's setting read-only; never writes it. */
+(function(){try{var s=JSON.parse(localStorage.getItem('liSettings')||'{}');
+if(s&&s.theme==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LOCK IN — Program Dashboard | trailer-load.com</title>
 <meta name="description" content="LOCK IN program dashboard — student loading competency report for CTE, logistics, and workforce programs. Attention to detail, follow-through, throughput, and safety, per student.">
@@ -25,6 +32,30 @@ small,sub,sup{font-size:11px;}
   --acc:#c8791e;--acc-dim:#9a5c12;--acc-bright:#e0962e;--teal:#0a6a5e;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;
   --line:#e3dac9;--line2:#d2c6ad;
 }
+
+/* v1.4 (#46) WARM-DARK, mirroring lock-in.html's own [data-theme="dark"] tokens so the
+   two surfaces are the same product rather than two approximations of it. */
+[data-theme="dark"]{
+  --bg:#1c1410;--panel:#241a13;--ink:#f0e6d4;--ink2:#c0ad90;--ink3:#a2917a;
+  --acc:#e0962e;--acc-dim:#c8791e;--acc-bright:#f0ad4a;
+  --teal:#2dc0ad;--ok:#28b870;--warn:#e0962e;--danger:#e0593a;
+  --line:#3a2c20;--line2:#4a3826;
+}
+/* #topbar is hardcoded #1c1410, which is EXACTLY the dark --bg — the whole bar vanished.
+   Its 3px amber border is what actually separates it; this just gives it a band to sit in. */
+[data-theme="dark"] #topbar{background:#2e2016;}
+[data-theme="dark"] th{background:#2e2016;}
+[data-theme="dark"] .fld input{background:#1c1410;color:var(--ink);}
+[data-theme="dark"] tr:hover td{background:#2e2016;}
+[data-theme="dark"] .pill.g{background:rgba(40,184,112,.16);color:#5fe0a0;}
+[data-theme="dark"] .pill.w{background:rgba(224,150,46,.18);color:#f0ad4a;}
+[data-theme="dark"] .pill.d{background:rgba(224,89,58,.18);color:#ff8e70;}
+[data-theme="dark"] .good{color:#5fe0a0;}
+[data-theme="dark"] .fld input::placeholder,[data-theme="dark"] #search::placeholder{color:#a2917a;}
+/* A competency report is a document an instructor hands to someone. Print it light. */
+@media print{:root,[data-theme="dark"]{--bg:#fff;--panel:#fff;--ink:#211a12;--ink2:#4a4034;--ink3:#5c5044;--line:#ccc;--line2:#999;}
+  [data-theme="dark"] th{background:#f2f2f2;}#topbar{background:#fff;color:#000;}.toolbar{display:none;}}
+
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:16px;line-height:1.4;min-height:100vh;}
 .wrap{max-width:1140px;margin:0 auto;padding:0 16px;}
@@ -91,7 +122,8 @@ th:hover{color:var(--acc-dim);}
 th:focus{outline:2px solid var(--acc);outline-offset:-2px;}/* keyboard sorting needs a visible focus ring */
 th .comp{display:block;font-size:11px;color:var(--ink3);letter-spacing:.5px;font-weight:normal;text-transform:none;}/* 10px was under the product's 11px type floor */
 th.sorted{color:var(--acc-dim);}
-th .arr{color:var(--acc);}
+th .arr{color:var(--acc-dim);}/* --acc was 3.16:1 on the sticky th fill; this caret is how you know which column is sorted */
+[data-theme="dark"] th .arr{color:var(--acc);}
 td{font-family:'Share Tech Mono',monospace;font-size:15px;padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap;color:var(--ink);}
 td:first-child{text-align:left;font-weight:bold;font-family:'Barlow Condensed',sans-serif;font-size:17px;}
 tr:hover td{background:#fbf9f4;}

@@ -27,9 +27,30 @@ small,sub,sup{font-size:11px;}
 
 
 /* ================================================================
-   LOCK IN v3.5.181
+   LOCK IN v3.5.182
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.182 - #46, THE LAST LEDGER ITEM: the satellites now follow the theme the player chose.
+     `grep data-theme` returned ZERO for dashboard/ and me/ while this file has stamped
+     document.documentElement.dataset.theme off SETTINGS.theme for versions, and it broke in BOTH
+     directions in an ordinary session: a student who picks WARM-DARK here and taps through to /me/ --
+     which is one tap away -- took a full-screen cream flash. Both satellites now read liSettings
+     read-only from a <head> script that runs BEFORE FIRST PAINT (anywhere later and the flash it exists
+     to prevent still happens), and carry a [data-theme="dark"] block mirroring THIS file's tokens exactly
+     rather than approximating them. Caught while testing: #topbar is hardcoded #1c1410, which is exactly
+     the dark --bg, so the entire bar vanished into the page -- it gets its own band now (its 3px amber
+     border was doing all the separating). Also caught: the sort caret .arr was --acc at 3.16:1 on the
+     sticky header fill, and that caret is the only thing telling a director which column is sorted.
+     The dashboard additionally FORCES LIGHT FOR PRINT -- a competency report is a document an instructor
+     hands to somebody, and it should not print as a black rectangle.
+     Verified by scanning every rendered element in BOTH themes with proper alpha compositing: zero
+     contrast failures either way, sticky headers still stick in dark. NOTE: the naive first pass of that
+     scan reported the .pill backgrounds as failures because it read the UNBLENDED rgba() instead of
+     compositing it -- all six pills pass. Measure the real ground or you will chase ghosts.
+     ss/ is deliberately NOT theme-following: its charcoal is a documented art direction ("INDUSTRIAL
+     GRIT"), so a light-theme player meeting charcoal there is a design call for Vince, not a defect.
+     THE FINAL DEVS LEDGER IS NOW CLEARED: 4 BROKEN + 19 HIGH + 25 MED + 12 LOW = 60 of 60.
 
    CHANGE LOG v3.5.181 - THE MED + LOW SWEEP: 36 of the final ledger's remaining 37 findings, across all
      nine pages. SMALLSSORT (ss-1.11) took eleven and is no longer the weak surface: it shipped with NO CSP
@@ -2342,7 +2363,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.181 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.182 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2448,7 +2469,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.181 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.182 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2606,7 +2627,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.181 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.182 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -3083,7 +3104,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.181
+// LOCK IN v3.5.182
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3542,7 +3563,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.181'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.182'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -10179,7 +10200,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.181</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.182</span></div></div>';
     H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 

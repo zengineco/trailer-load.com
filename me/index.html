@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+/* v1.4 (#46) THEME FOLLOW -- runs in <head>, before first paint, or the flash it exists
+   to prevent still happens. Reads the GAME's setting read-only; never writes it. */
+(function(){try{var s=JSON.parse(localStorage.getItem('liSettings')||'{}');
+if(s&&s.theme==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();
+</script>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Clock In — Your Record | LOCK IN</title>
 <meta name="description" content="Clock in to LOCK IN and see your own loading record — walls loaded, integrity, pace, shelves, and safety, across every mode.">
@@ -17,6 +24,22 @@
 small,sub,sup{font-size:11px;}
 
 :root{--bg:#ece5d8;--panel:#fff;--ink:#241c14;--ink2:#6a5c48;--ink3:#736550;/* was #9a8b72: 3.33:1 on --panel, 2.66:1 on --bg. Carries all nine stat captions and the privacy line. */--acc:#c8791e;--acc-dim:#9a5c12;--acc-bright:#e0962e;--teal:#0a6a5e;--teal-bright:#19a594;--ok:#1f9d57;--warn:#d4820f;--danger:#c23a1a;--line:#e3dac9;--line2:#d2c6ad;}
+
+/* v1.4 (#46) WARM-DARK, mirroring lock-in.html's own [data-theme="dark"] tokens so the
+   two surfaces are the same product rather than two approximations of it. */
+[data-theme="dark"]{
+  --bg:#1c1410;--panel:#241a13;--ink:#f0e6d4;--ink2:#c0ad90;--ink3:#a2917a;
+  --acc:#e0962e;--acc-dim:#c8791e;--acc-bright:#f0ad4a;
+  --teal:#2dc0ad;--ok:#28b870;--warn:#e0962e;--danger:#e0593a;
+  --line:#3a2c20;--line2:#4a3826;
+}
+/* #topbar is hardcoded #1c1410, which is EXACTLY the dark --bg — the whole bar vanished. */
+[data-theme="dark"] #topbar{background:#2e2016;}
+[data-theme="dark"] .fld input{background:#1c1410;color:var(--ink);}
+[data-theme="dark"] .good{color:#5fe0a0;}
+[data-theme="dark"] .fld input::placeholder,[data-theme="dark"] .lb-add input::placeholder{color:#a2917a;}
+[data-theme="dark"] .lb-unfollow{color:#a2917a;}
+
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--ink);font-family:'Barlow Condensed',sans-serif;font-size:16px;line-height:1.4;min-height:100vh;}
 .wrap{max-width:900px;margin:0 auto;padding:0 16px;}
