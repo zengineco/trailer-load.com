@@ -27,9 +27,42 @@ small,sub,sup{font-size:11px;}
 
 
 /* ================================================================
-   LOCK IN v3.5.182
+   LOCK IN v3.5.183
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.183 - "APPARENTLY I'M A DAY ONE" + A LIVE DATA LEAK FOUND CHASING IT.
+     Vince opened his own post-sort report after a daily and it read CAREER SESSIONS 0 with every LIFETIME
+     cell blank or zero -- for an account with 42 sessions, 42 walls and a 1,880 peak PPH sitting in the
+     database. THE BUG: PostgREST answers with a JSON ARRAY on success and a JSON OBJECT on failure
+     ({"code":"PGRST301","message":"No suitable key or wrong key type"} on an expired token, and GoTrue
+     tokens live about an hour). fetchLifetime did `lifeAggregate(j||[])`, which handed that error OBJECT
+     straight to the aggregator; the aggregator read `.length` off it, got undefined, skipped its loop
+     entirely, and returned a FULLY ZEROED career -- which fetchLifetime then reported as state 'ok'. The
+     report printed the zeros with total confidence. This is the same class as the v3.5.169/170 fix
+     ("never report success you haven't read back"); that pass hardened every POST and left every GET
+     exactly as it was. Now: a shared `zRows(r,j)` guard requires r.ok AND a real array, `zReadState(r)`
+     separates 401 from everything else, and the four readers (fetchLifetime, fetchProfile,
+     fetchFacilities, fetchCohort -- the last of which would have rendered an error as an EMPTY ROSTER on
+     the paid surface) all route failures to an honest state. The report now prints "?" in every LIFETIME
+     cell, "— unavailable, not zero —" in the footer, and a legend that names the cause: session expired,
+     or could not reach the server, with "this wall and session are still accurate". A genuinely new
+     player still reads a true 0, because a 200 with an empty array is a real answer. /me/ got the same
+     hardening (v1.5): it already caught 401, while a 403 or 500 still fell through to "no walls on record".
+     Verified with four stubbed responses -- 401 -> expired, 500 -> err, 200+[] -> ok/0, 200+rows -> ok/40.
+     ---
+     THE LEAK, found while diagnosing the above: `lockin_lifetime` was created WITHOUT security_invoker,
+     so it ran as its owner and bypassed RLS on lockin_sessions completely. Measured live from a shell
+     with nothing but the publishable anon key: 34 rows covering 14 distinct players' full career records
+     -- sessions, scores, integrity, incident counts -- readable by anyone, with no login. me/index.html
+     literally documents this view as "the RLS-scoped lockin_lifetime view (self only)". It was not.
+     Migration `lifetime_view_security_invoker` sets security_invoker=on; lockin_sessions already carried
+     the right policies (ls_self_select on auth.uid(), ls_instructor_select gated on consent_share AND
+     facility membership), so the view now enforces exactly what every reader already assumed. Re-measured
+     after: anon reads 0 rows, and 0 when targeting a known user_id directly. The public daily board still
+     serves (it is public by design) and lockin_cohort -- the paid roster -- was never exposed. Audited the
+     other eight tables/views from an unauthenticated shell at the same time: handles, sessions, walls,
+     facilities, follows and cohort all correctly return empty.
 
    CHANGE LOG v3.5.182 - #46, THE LAST LEDGER ITEM: the satellites now follow the theme the player chose.
      `grep data-theme` returned ZERO for dashboard/ and me/ while this file has stamped
@@ -2363,7 +2396,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.182 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.183 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2469,7 +2502,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.182 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.183 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2627,7 +2660,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.182 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.183 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -3104,7 +3137,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.182
+// LOCK IN v3.5.183
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3563,7 +3596,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.182'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.183'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9816,6 +9849,20 @@ function lifeAggregate(rows){
   out._rows=rows; // the per-mode breakdown, for the BY MODE table
   return out;
 }
+// ─── v3.5.183 A READ WE COULD NOT COMPLETE IS NEVER AN EMPTY RESULT. ───────────────────
+// PostgREST answers with a JSON ARRAY on success and a JSON OBJECT on failure
+// ({"code":"PGRST301","message":"..."} on an expired token). Every reader below used
+// `j||[]`, which passes that error object through as though it were data. lifeAggregate
+// then read `.length` off the object, found undefined, skipped its loop entirely, and
+// returned a FULLY ZEROED career — which fetchLifetime reported as 'ok'. The post-sort
+// report duly printed CAREER SESSIONS 0, and every LIFETIME cell as 0, for a player with
+// 42 sessions and 1,880 peak PPH.
+// Found 2026-08-08 by Vince opening his own report and being told he was a day one.
+// This is the same class as the v3.5.169/170 write-path fix ("never report success you
+// haven't read back") — that pass covered POSTs and left every GET untouched.
+function zRows(r,j){return (r&&r.ok&&Array.isArray(j))?j:null;}
+function zReadState(r){return (r&&r.status===401)?'expired':'err';}
+
 function fetchLifetime(cb){
   var sx=ZDATA.session;
   if(!sx||!sx.uid){cb('anon',null);return;}
@@ -9824,7 +9871,15 @@ function fetchLifetime(cb){
     // ONE mode row, while SOCIAL/ME summed EVERY mode row — so the two screens disagreed on incidents,
     // sessions, shelves, double-locks and nests, and the deltas were exactly the DAILY row. All modes now.
     var url=ZDATA.endpoint+'/lockin_lifetime?user_id=eq.'+encodeURIComponent(sx.uid)+'&select=*';
-    fetch(url,{headers:zAuthHeaders()}).then(function(r){return r.json();}).then(function(j){cb('ok',lifeAggregate(j||[]));}).catch(function(e){console.error('fetchLifetime:',e);cb('err',null);});
+    var _r=null;
+    fetch(url,{headers:zAuthHeaders()})
+      .then(function(r){_r=r;return r.json();})
+      .then(function(j){
+        var rows=zRows(_r,j);
+        if(!rows){console.error('fetchLifetime:',_r&&_r.status,j);cb(zReadState(_r),null);return;}
+        cb('ok',lifeAggregate(rows));
+      })
+      .catch(function(e){console.error('fetchLifetime:',e);cb('err',null);});
   }catch(e){cb('err',null);}
 }
 function openPostSort(){
@@ -10045,10 +10100,21 @@ function pfEsc(x){x=(x==null?'':''+x);return x.replace(/&/g,'&amp;').replace(/</
 function pfNum(n){return (n==null||isNaN(+n))?'\u2014':Math.round(+n);}
 function pfDate(t){if(!t)return '\u2014';try{var d=new Date(t);return (d.getMonth()+1)+'/'+d.getDate()+'/'+(''+d.getFullYear()).slice(2);}catch(e){return '\u2014';}}
 function fetchProfile(cb){var sx=ZDATA.session;if(!sx||!sx.uid){cb('anon',null);return;}
-  try{fetch(ZDATA.endpoint+'/lockin_lifetime?user_id=eq.'+encodeURIComponent(sx.uid)+'&select=*',{headers:zAuthHeaders()}).then(function(r){return r.json();}).then(function(j){cb('ok',j||[]);}).catch(function(e){console.error('fetchProfile:',e);cb('err',null);});}catch(e){cb('err',null);}}
+  try{var _r=null;fetch(ZDATA.endpoint+'/lockin_lifetime?user_id=eq.'+encodeURIComponent(sx.uid)+'&select=*',{headers:zAuthHeaders()})
+    .then(function(r){_r=r;return r.json();})
+    .then(function(j){var rows=zRows(_r,j);if(!rows){console.error('fetchProfile:',_r&&_r.status,j);cb(zReadState(_r),null);return;}cb('ok',rows);})
+    .catch(function(e){console.error('fetchProfile:',e);cb('err',null);});}catch(e){cb('err',null);}}
 function fetchFacilities(cb){var sx=ZDATA.session;if(!sx||!sx.uid){cb([]);return;}
-  try{fetch(ZDATA.endpoint+'/lockin_facilities?instructor_uid=eq.'+encodeURIComponent(sx.uid)+'&select=facility_code,name',{headers:zAuthHeaders()}).then(function(r){return r.json();}).then(function(j){cb(j||[]);}).catch(function(e){console.error('fetchFacilities:',e);cb([]);});}catch(e){cb([]);}}
-function fetchCohort(cb){try{fetch(ZDATA.endpoint+'/lockin_cohort?select=*&order=last_seen.desc.nullslast',{headers:zAuthHeaders()}).then(function(r){return r.json();}).then(function(j){cb(j||[]);}).catch(function(e){console.error('fetchCohort:',e);cb([]);});}catch(e){cb([]);}}
+  try{var _r=null;fetch(ZDATA.endpoint+'/lockin_facilities?instructor_uid=eq.'+encodeURIComponent(sx.uid)+'&select=facility_code,name',{headers:zAuthHeaders()})
+    .then(function(r){_r=r;return r.json();})
+    .then(function(j){var rows=zRows(_r,j);if(!rows)console.error('fetchFacilities:',_r&&_r.status,j);cb(rows||[]);})
+    .catch(function(e){console.error('fetchFacilities:',e);cb([]);});}catch(e){cb([]);}}
+// An error body here would have rendered as an EMPTY ROSTER — "no students yet" — on the
+// paid surface, which is the same lying-empty-state the satellites were fixed for in v3.5.160.
+function fetchCohort(cb){try{var _r=null;fetch(ZDATA.endpoint+'/lockin_cohort?select=*&order=last_seen.desc.nullslast',{headers:zAuthHeaders()})
+  .then(function(r){_r=r;return r.json();})
+  .then(function(j){var rows=zRows(_r,j);if(!rows)console.error('fetchCohort:',_r&&_r.status,j);cb(rows||[]);})
+  .catch(function(e){console.error('fetchCohort:',e);cb([]);});}catch(e){cb([]);}}
 var PF_MODE='worker';
 function pfMode(m){PF_MODE=m;
   var wt=document.getElementById('pf-tab-w'),ft=document.getElementById('pf-tab-f');
@@ -10174,6 +10240,8 @@ function psBuild(lifeState,life){
     function L(key,suf){
       if(lifeState==='anon')return '\u2014';
       if(lifeState==='loading')return '\u2026';
+      // v3.5.183 a failed read renders as UNKNOWN, never as a number. It used to print 0.
+      if(lifeState==='expired'||lifeState==='err')return '?';
       if(!life||life[key]==null||life[key]==='')return '\u2014';
       return life[key]+(suf||'');
     }
@@ -10199,9 +10267,16 @@ function psBuild(lifeState,life){
       '<div><span class="k">DATE</span><span class="v">'+new Date().toISOString().slice(0,10)+'</span></div>'+
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
-      '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':'\u2026'))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.182</span></div></div>';
-    H+='<div class="ps-legend"><span class="sp">'+(lifeState==='anon'?'\u25c6 LOG IN TO TRACK LIFETIME':'\u25c6 all metrics at three scopes')+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
+      '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':(lifeState==='loading'?'\u2026':'?')))+'</span></div>'+
+      '<div><span class="k">BUILD</span><span class="v">v3.5.183</span></div></div>';
+    // v3.5.183 the legend has to tell the truth about the LIFETIME column, or a report that
+    // could not read the career looks identical to a career that is genuinely empty.
+    var _legend=(lifeState==='anon')?'\u25c6 LOG IN TO TRACK LIFETIME'
+      :(lifeState==='expired')?'\u25c6 LIFETIME UNAVAILABLE \u2014 YOUR SESSION EXPIRED. SIGN IN AND REOPEN THIS REPORT.'
+      :(lifeState==='err')?'\u25c6 LIFETIME UNAVAILABLE \u2014 COULD NOT REACH THE YARD SERVER. THIS WALL AND SESSION ARE STILL ACCURATE.'
+      :(lifeState==='loading')?'\u25c6 LOADING YOUR CAREER\u2026'
+      :'\u25c6 all metrics at three scopes';
+    H+='<div class="ps-legend"><span class="sp">'+_legend+'</span><span class="h w">WALL</span><span class="h s">SESSION</span><span class="h l">LIFETIME</span></div>';
     H+='<div class="ps-blocks">';
 
     var lwPcsSec=(LW&&LW.durS>0)?((LW.pieces||0)/LW.durS).toFixed(2):null;
@@ -10269,7 +10344,7 @@ function psBuild(lifeState,life){
     var g=psTxt('es-grade-big'),rk=psTxt('es-rank'),vd=psTxt('es-verdict');
     // v3.5.131 the ps-ring was hardcoded GREEN — an F showed a green ring ("f is green???"). Color it by the actual grade.
     var _g0=(g||'').charAt(0), _gclr=(g==='F')?'#cc3820':(_g0==='A')?'#1f9d57':(g==='B')?'#2a7d9a':(_g0==='C'||_g0==='D')?'#b8760f':(_g0==='F')?'#cc3820':'#1f9d57';
-    var lifeSum=(lifeState==='ok'&&life&&life.sessions)?((life.avg_pph||'\u2014')+' PPH \u00b7 '+(life.avg_integrity||'\u2014')+' INTEG \u00b7 '+(life.incidents||0)+' INC \u00b7 '+(life.sessions||0)+' SESS'):(lifeState==='anon'?'\u2014 log in to track \u2014':'\u2026');
+    var lifeSum=(lifeState==='ok'&&life&&life.sessions)?((life.avg_pph||'\u2014')+' PPH \u00b7 '+(life.avg_integrity||'\u2014')+' INTEG \u00b7 '+(life.incidents||0)+' INC \u00b7 '+(life.sessions||0)+' SESS'):(lifeState==='anon'?'\u2014 log in to track \u2014':(lifeState==='loading'?'\u2026':'\u2014 unavailable, not zero \u2014'));
     H+='<div class="ps-verdict"><div class="ps-ring" style="border-color:'+_gclr+'"><span style="color:'+_gclr+'">'+g+'</span></div>'+
       '<div class="ps-vmid"><div class="rk">'+rk+'</div><div class="ln">'+vd+'</div></div>'+
       '<div class="ps-vsum"><div class="vr s"><span class="lb">SESSION</span><span class="va">'+g+' \u00b7 '+Math.round((typeof avgPPH==='function')?avgPPH():0)+' PPH \u00b7 '+avgInt+' INTEG \u00b7 '+inc.length+' INC</span></div>'+

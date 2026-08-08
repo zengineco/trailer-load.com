@@ -333,9 +333,17 @@ function mFetch(){
   var emp=document.getElementById('empty');if(emp){emp.style.display='block';emp.textContent='Loading your record…';}
   try{
     fetch(ME.endpoint+'/lockin_lifetime?select=*',{headers:mHeaders()})
-      .then(function(r){if(r.status===401){mExpired();return null;}return r.json();}).then(function(j){
-        if(j===null)return; // v1.1 (HIGH #3) a 401 is a session problem, never "No walls on record"
-        ME.rows=(j&&j.length)?j:[];
+      .then(function(r){if(r.status===401){mExpired();return null;}return r.json().then(function(j){return {ok:r.ok,status:r.status,body:j};});}).then(function(res){
+        if(res===null)return; // v1.1 (HIGH #3) a 401 is a session problem, never "No walls on record"
+        // v1.5 ...and neither is a 403 or a 500. PostgREST returns an OBJECT on error, and an
+        // object has no .length, so it used to fall through to [] and render as an empty career.
+        // Same defect the flagship's post-sort report carried until v3.5.183.
+        if(!res.ok||!Array.isArray(res.body)){
+          console.error('mFetch:',res.status,res.body);
+          if(emp){emp.style.display='block';emp.textContent='Could not load your record — that is a connection problem, not an empty record. Try again in a moment.';}
+          return;
+        }
+        ME.rows=res.body;
         mRender();
       }).catch(function(e){console.error('mFetch:',e);if(emp)emp.textContent='Could not load your record — try again.';});
   }catch(e){console.error('mFetch:',e);}
