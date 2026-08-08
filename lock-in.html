@@ -27,9 +27,24 @@ small,sub,sup{font-size:11px;}
 
 
 /* ================================================================
-   LOCK IN v3.5.183
+   LOCK IN v3.5.184
    LOCK IN — V. Gonzalez — © 2026
    CSS: Warm-industrial LIGHT dock (default), warm-dark toggle, amber+teal.
+
+   CHANGE LOG v3.5.184 - TRAINING'S SIDE PANE OUTLIVED TRAINING (Vince, live). He clicked out of the trainer
+     into DAILY and the side pane kept rendering the training game beside a real mode. Reproduced and it is
+     one missing teardown: `#training-overlay` was hidden in exactly ONE place -- exitTraining() -- which is
+     only reached by the explicit exit button. Leave the trainer any other way (pick a mode from the menu,
+     a #daily deep link from the homepage, the browser back button) and the pane stayed up, narrating a wall
+     that no longer existed, with trainingState.playing still true and its step timer still firing into a
+     live game. The interactive tutorial got exactly this treatment in v3.5.137 ("clear tutorial state on any
+     mode start ... so it never leaks into a real game"); the watch-and-acknowledge trainer that REPLACED it
+     in v3.5.150 never inherited it. Teardown moved into hideStartMenu(), which every mode start routes
+     through -- startDaily / startRegular / startShift / startGauntlet / startTutorial call it directly, and
+     TOUR reaches it via openLevelSelect() -- so no mode can begin with the trainer still attached.
+     Verified live: pane display:flex + timer armed -> after a mode start, display:none, playing false,
+     timer cleared. THE PATTERN WORTH KEEPING: teardown belongs on the ENTRY every path shares, never on one
+     exit that most paths skip.
 
    CHANGE LOG v3.5.183 - "APPARENTLY I'M A DAY ONE" + A LIVE DATA LEAK FOUND CHASING IT.
      Vince opened his own post-sort report after a daily and it read CAREER SESSIONS 0 with every LIFETIME
@@ -2396,7 +2411,7 @@ body[data-cb="trit"]{
   <div class="pause-clip">
   <div class="clip-in">
   <div class="pause-title">PAUSED</div>
-  <div class="pause-sub">LOCK IN v3.5.183 · ADMIN</div>
+  <div class="pause-sub">LOCK IN v3.5.184 · ADMIN</div>
   <div class="pause-menu">
     <button class="pmb pmb-resume" onclick="togglePause()">▶ RESUME</button>
     <button class="pmb" onclick="openSettings()">⚙ SETTINGS</button>
@@ -2502,7 +2517,7 @@ body[data-cb="trit"]{
     </div>
   </div>
   <div id="menu-demo-cap"></div>
-  <div id="sm-footer">LOCK IN v3.5.183 · © 2026</div>
+  <div id="sm-footer">LOCK IN v3.5.184 · © 2026</div>
 </div>
 
 <!-- ═══════════════════ SAFETY WRITE-UP (v3.5.68) ═══════════════════ -->
@@ -2660,7 +2675,7 @@ body[data-cb="trit"]{
         </div>
       </div>
 
-      <div class="set-foot">LOCK IN v3.5.183 · SETTINGS</div>
+      <div class="set-foot">LOCK IN v3.5.184 · SETTINGS</div>
     </div>
   </div>
 </div>
@@ -3137,7 +3152,7 @@ body[data-cb="trit"]{
 
 <script>
 // ================================================================
-// LOCK IN v3.5.183
+// LOCK IN v3.5.184
 // LOCK IN — V. Gonzalez — © 2026
 // LAST STABLE: v2.0.4
 //
@@ -3596,7 +3611,7 @@ function zLog(kind,data){
   if(!ZDATA.events)ZDATA.events=[];
   if(ZDATA.events.length<6000)ZDATA.events.push([Math.round((Date.now()-(S.sessionStartT||Date.now()))/100),kind,data]);
 }
-var LI_APP_VER='3.5.183'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
+var LI_APP_VER='3.5.184'; // v3.5.129 telemetry version stamp — bump WITH the LOCK IN version (was frozen at a stale '2.4.2', so every posted session was mislabeled)
 function zBuildSession(){
   var p=zLoadPlayer();
   var ah=S.intHistory&&S.intHistory.length?Math.round(S.intHistory.reduce(function(a,b){return a+b;},0)/S.intHistory.length):null;
@@ -9165,6 +9180,19 @@ function hideStartMenu(){
   if(typeof liMarkPlayed==='function')liMarkPlayed(); // v3.5.147 they've started a mode — first-run funnel done
   TUTORIAL_MODE=false; // v3.5.137 clear tutorial state on any mode start (startTutorial re-sets it after this call) so it never leaks into a real game
   var _tt=document.getElementById('tut-tip');if(_tt)_tt.classList.remove('vis');
+  // v3.5.184 TRAINING'S SIDE PANE OUTLIVED TRAINING. #training-overlay was hidden in exactly one
+  // place — exitTraining() — so leaving the trainer by ANY other route (the menu, a #daily deep
+  // link, the browser back button) started a real mode with the trainer pane still rendered beside
+  // it, narrating a wall that no longer existed, and its step timer still firing. Vince hit this
+  // going from training into DAILY. The tutorial got this treatment in v3.5.137; the demo trainer
+  // that replaced it in v3.5.150 never did. hideStartMenu() runs on EVERY mode start, so the
+  // teardown belongs here rather than in one exit path that most routes never touch.
+  if(typeof _trainAutoStop==='function')_trainAutoStop();
+  if(typeof trainingState!=='undefined'&&trainingState){
+    trainingState.playing=false;
+    if(trainingState.stepTimer){clearTimeout(trainingState.stepTimer);trainingState.stepTimer=null;}
+  }
+  var _to=document.getElementById('training-overlay');if(_to)_to.classList.remove('vis');
   // v3.5.130 a RUNNING MODE is never under the briefing — that full-screen z-600 clipboard was invisibly eating every
   // click on the bottom bar (kremsicle: "can not reach admin/linehaul"). Force it gone whenever a mode starts.
   var _b=document.getElementById('briefing');if(_b){_b.classList.add('gone');_b.style.display='none';}
@@ -10268,7 +10296,7 @@ function psBuild(lifeState,life){
       '<div><span class="k">DURATION</span><span class="v">'+psFmtTime(durS)+'</span></div>'+
       '<div><span class="k">WALLS SEALED</span><span class="v">'+walls+'</span></div>'+
       '<div><span class="k">CAREER SESSIONS</span><span class="v">'+(lifeState==='ok'&&life?(life.sessions||0):(lifeState==='anon'?'\u2014':(lifeState==='loading'?'\u2026':'?')))+'</span></div>'+
-      '<div><span class="k">BUILD</span><span class="v">v3.5.183</span></div></div>';
+      '<div><span class="k">BUILD</span><span class="v">v3.5.184</span></div></div>';
     // v3.5.183 the legend has to tell the truth about the LIFETIME column, or a report that
     // could not read the career looks identical to a career that is genuinely empty.
     var _legend=(lifeState==='anon')?'\u25c6 LOG IN TO TRACK LIFETIME'
